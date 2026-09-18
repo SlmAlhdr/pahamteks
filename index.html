@@ -28,7 +28,15 @@
 
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
         
+        /* MENCEGAH KILATAN PUTIH SAAT PERTAMA KALI DIBUKA */
+        html { background-color: #05131f; }
+
+        /* ANIMASI BACKGROUND BERPUTAR PERMANEN UNTUK SEMUA HALAMAN */
         body { 
+            background: linear-gradient(-45deg, #0a1f13, #153a52, #115930, #05131f);
+            background-size: 400% 400%;
+            animation: gradientRotate 20s ease infinite;
+            background-attachment: fixed !important; 
             color: var(--text-main); 
             margin: 0; 
             display: flex; 
@@ -36,10 +44,8 @@
             align-items: center; 
             min-height: 100vh; 
             overflow-x: hidden; 
-            transition: background 0.8s ease; 
         }
 
-        /* ANIMASI BACKGROUND BERPUTAR UNTUK HALAMAN SELAIN BERANDA */
         @keyframes gradientRotate {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -56,7 +62,6 @@
         }
         .hello-text {
             position: absolute; top: 0; left: 0;
-            color: rgba(255, 255, 255, 0.05); /* Transparan */
             font-weight: 900;
             white-space: nowrap;
             user-select: none;
@@ -1011,31 +1016,14 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    // --- FUNGSI GANTI HALAMAN YANG MENGATUR WARNA & ANIMASI BACKGROUND ---
+    // --- FUNGSI GANTI HALAMAN (ANIMASI BACKGROUND ROTASI HALUS) ---
     function switchPage(pageName, pushHistory = true) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
         stopTimer();
 
-        // Logika Pengaturan Warna dan Animasi Background
-        if (pageName === 'home') {
-            // WARNA MURNI BERANDA (Biru ke Hijau, seperti Beranda.png) - Tanpa Animasi
-            document.body.style.background = "linear-gradient(to bottom right, #2b95ce, #23bc86)";
-            document.body.style.backgroundSize = "100% 100%";
-            document.body.style.animation = "none";
-        } else if (pageName === 'coding') {
-            // WARNA KODING DENGAN ANIMASI BERPUTAR
-            document.body.style.background = "linear-gradient(-45deg, #153a52, #0a1f13, #0f4c75, #115930)";
-            document.body.style.backgroundSize = "400% 400%";
-            document.body.style.animation = "gradientRotate 15s ease infinite";
-            currentSetupMode = 'coding';
-        } else {
-            // WARNA HALAMAN LAINNYA DENGAN ANIMASI BERPUTAR
-            document.body.style.background = "linear-gradient(-45deg, #115930, #0a1f13, #153a52, #05131f)";
-            document.body.style.backgroundSize = "400% 400%";
-            document.body.style.animation = "gradientRotate 15s ease infinite";
-            if (pageName === 'learn') currentSetupMode = 'learn';
-        }
+        if (pageName === 'coding') currentSetupMode = 'coding';
+        else if (pageName === 'learn') currentSetupMode = 'learn';
 
         document.getElementById('page-' + pageName).classList.add('active-page');
         if(document.getElementById('nav-' + pageName)) document.getElementById('nav-' + pageName).classList.add('active');
@@ -1449,7 +1437,9 @@
             let fontSize = Math.random() * 3 + 1.5; 
             el.style.fontSize = fontSize + 'rem';
             
-            el.style.color = `rgba(255, 255, 255, ${fontSize * 0.02})`;
+            // OPACITY DITAMBAHKAN AGAR LEBIH TERLIHAT
+            let opacity = (fontSize * 0.03) + 0.05; 
+            el.style.color = `rgba(255, 255, 255, ${opacity})`;
             
             container.appendChild(el);
             
