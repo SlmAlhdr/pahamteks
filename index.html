@@ -30,17 +30,6 @@
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
         body { background: var(--bg-green); background-attachment: fixed; color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background 0.5s ease; }
 
-        /* CANVAS AURORA BACKGROUND */
-        #auroraCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -5; /* Berada di belakang konten web */
-            pointer-events: none; /* Mencegah canvas menghalangi klik mouse pengguna */
-        }
-
         /* NAVBAR */
         .navbar { 
             width: 100%; max-width: 1300px; padding: 15px 20px; 
@@ -196,9 +185,6 @@
 </head>
 <body>
 
-<!-- CANVAS UNTUK ANIMASI AURORA BERGERAK -->
-<canvas id="auroraCanvas"></canvas>
-
 <div class="navbar">
     <div class="nav-left">
         <div class="logo" onclick="switchPage('home')">Paham<span style="color:var(--text-muted);">Teks</span></div>
@@ -331,7 +317,6 @@
         <div class="input-group" style="background:var(--card-bg); padding:25px; border-radius:15px; text-align:left;">
             <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom: 15px;">
                 <select id="main-dict-category" class="styled-select" style="flex:1; min-width: 200px; padding:18px; border:2px solid var(--card-border); background:rgba(0,0,0,0.8);" onchange="updateKamusList()">
-                    <!-- Data ini akan diformat ulang secara asinkron di JS (agar sesuai ID/EN) -->
                     <option value="Bahasa Arab" class="opt-ar">Arab</option>
                     <option value="Bahasa Indonesia" class="opt-id">Indonesia</option>
                     <option value="Bahasa Inggris" class="opt-en" selected>Inggris (English)</option>
@@ -646,7 +631,7 @@
     let currentSetupMode = 'learn';
     let currentUser = localStorage.getItem('pahamteks_user') || 'Tamu';
     let authMode = 'login';
-    let globalLanguages = {}; // Menyimpan daftar bahasa terjemahan (A-Z)
+    let globalLanguages = {}; 
 
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
@@ -776,7 +761,6 @@
     
     let currentLang = 'id';
 
-    // FUNGSI RENDER BAHASA DINAMIS (Anti Gagal / Fallback Aman)
     function renderLanguageDropdowns() {
         const s = document.getElementById("source-lang");
         const t = document.getElementById("target-lang");
@@ -787,10 +771,8 @@
         s.innerHTML = ""; 
         t.innerHTML = "";
         
-        // Option pertama selalu "Mendeteksi..."
         s.add(new Option(dict[currentLang].opt_auto_detect, "auto"));
 
-        // Cek API Intl bawaan browser
         let hasIntlAPI = false;
         let langNames;
         try {
@@ -800,13 +782,10 @@
             hasIntlAPI = false;
         }
 
-        // Urutkan Bahasa sesuai Abjad
         const sortedLanguages = Object.entries(globalLanguages).sort((a, b) => a[0].localeCompare(b[0]));
 
         for (const [englishName, code] of sortedLanguages) {
             let displayName = englishName;
-            
-            // Format Khusus Jika Bahasa Inggris: Jangan tambahkan kata "Bahasa"
             if (currentLang === 'en') {
                 if (hasIntlAPI) {
                     try {
@@ -818,9 +797,7 @@
                 } else {
                     displayName = englishName.charAt(0).toUpperCase() + englishName.slice(1);
                 }
-            } 
-            // Format Khusus Jika Bahasa Indonesia: Menggunakan API Intl jika ada
-            else {
+            } else {
                 if (hasIntlAPI) {
                     try {
                         let localName = langNames.of(code);
@@ -841,7 +818,6 @@
         if (currentT && currentT !== "") t.value = currentT; else t.value = "en";
     }
 
-    // --- SINKRONISASI KAMUS SESUAI PILIHAN ID/EN ---
     function updateKamusDropdownText() {
         document.querySelectorAll('.opt-en').forEach(el => el.innerText = dict[currentLang].lang_en);
         document.querySelectorAll('.opt-id').forEach(el => el.innerText = dict[currentLang].lang_id);
@@ -872,12 +848,10 @@
         else if(btnCheck.disabled) btnCheck.innerText = dict[currentLang].btn_ans_select;
         else btnCheck.innerText = dict[currentLang].btn_ans_check;
         
-        // Panggil Update UI secara Asinkron/Aman
         updateTrackingUI(); 
         updateKamusDropdownText();
         updateKamusList();
         
-        // Update API Language Translator
         if (Object.keys(globalLanguages).length > 0) {
             renderLanguageDropdowns();
         }
@@ -1049,10 +1023,10 @@
         stopTimer();
         
         if(pageName === 'coding') {
-            document.body.style.background = "transparent"; // Dibiarkan transparent agar aurora terlihat
+            document.body.style.background = "var(--bg-blue)";
             currentSetupMode = 'coding';
         } else {
-            document.body.style.background = "transparent";
+            document.body.style.background = "var(--bg-green)";
             if(pageName === 'learn') currentSetupMode = 'learn';
         }
 
@@ -1445,61 +1419,7 @@
         });
         document.getElementById('result-breakdown').innerHTML = breakdownHTML;
     }
-
-    // --- LOGIKA ANIMASI AURORA ---
-    const canvas = document.getElementById('auroraCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    let time = 0;
-
-    function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    function drawAurora(yOffset, color, speed, waveHeight) {
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-        
-        for (let x = 0; x <= width; x += 10) {
-            let y = yOffset 
-                  + Math.sin(x * 0.002 + time * speed) * waveHeight 
-                  + Math.cos(x * 0.005 + time * speed * 0.8) * (waveHeight * 0.5);
-            ctx.lineTo(x, y);
-        }
-        
-        ctx.lineTo(width, height);
-        ctx.lineTo(0, height);
-        ctx.closePath();
-
-        let gradient = ctx.createLinearGradient(0, yOffset - waveHeight, 0, height);
-        gradient.addColorStop(0, color);
-        gradient.addColorStop(1, "transparent");
-
-        ctx.fillStyle = gradient;
-        ctx.fill();
-    }
-
-    function animateAurora() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.globalCompositeOperation = 'screen';
-
-        // Tema Aurora: Hijau Neon, Biru Cyan, Putih Silver (Sesuai PahamTeks)
-        drawAurora(height * 0.4, 'rgba(180, 242, 126, 0.15)', 0.001, 150);  
-        drawAurora(height * 0.5, 'rgba(126, 242, 224, 0.1)', 0.0015, 120);  
-        drawAurora(height * 0.3, 'rgba(255, 255, 255, 0.05)', 0.0008, 200); 
-
-        time += 1;
-        requestAnimationFrame(animateAurora);
-    }
-
-    animateAurora();
-
 </script>
+<script src="script.js"></script>
 </body>
 </html>

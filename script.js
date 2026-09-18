@@ -1,65 +1,88 @@
-const canvas = document.getElementById('auroraCanvas');
-const ctx = canvas.getContext('2d');
+// Animasi tulisan "Halo" dalam berbagai bahasa, bergerak acak dari satu
+// ujung layar ke ujung lainnya. Jalankan pada halaman HTML di browser.
 
-let width, height;
-let time = 0;
+function startGreetingAnimation() {
+	const start = () => {
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d");
+	document.body.style.cssText = "margin:0;overflow:hidden;background:#090b1a";
+	document.body.appendChild(canvas);
 
-// Fungsi untuk menyesuaikan ukuran canvas dengan layar browser
-function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+	const greetings = [
+		"Halo", "Hello", "Bonjour", "Hola", "Ciao", "Hallo", "Olá", "Привет",
+		"你好", "こんにちは", "안녕하세요", "مرحبا", "สวัสดี", "नमस्ते", "שלום"
+	];
+	const colors = ["#ff6b6b", "#ffd166", "#06d6a0", "#4cc9f0", "#c77dff", "#f72585"];
+	const items = [];
+
+	function resize() {
+		canvas.width = innerWidth * devicePixelRatio;
+		canvas.height = innerHeight * devicePixelRatio;
+		canvas.style.width = `${innerWidth}px`;
+		canvas.style.height = `${innerHeight}px`;
+		ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+	}
+
+	function createGreeting() {
+		const horizontal = Math.random() < 0.5;
+		const size = 24 + Math.random() * 42;
+		const text = greetings[Math.floor(Math.random() * greetings.length)];
+		const direction = Math.random() < 0.5 ? 1 : -1;
+		const item = {
+			text, size, horizontal, direction,
+			color: colors[Math.floor(Math.random() * colors.length)],
+			progress: -0.2,
+			speed: 0.00015 + Math.random() * 0.00022,
+			fixed: Math.random() * (horizontal ? innerHeight : innerWidth),
+			angle: (Math.random() - 0.5) * 0.12
+		};
+		items.push(item);
+	}
+
+	function animate(time) {
+		ctx.clearRect(0, 0, innerWidth, innerHeight);
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+
+		for (let i = items.length - 1; i >= 0; i--) {
+			const item = items[i];
+			item.progress += item.speed * 16;
+			const distance = item.progress * (horizontal ? innerWidth : innerHeight);
+			const x = horizontal
+				? (item.direction > 0 ? distance : innerWidth - distance)
+				: item.fixed;
+			const y = horizontal
+				? item.fixed
+				: (item.direction > 0 ? distance : innerHeight - distance);
+
+			ctx.save();
+			ctx.translate(x, y);
+			ctx.rotate(item.angle);
+			ctx.font = `700 ${item.size}px system-ui, sans-serif`;
+			ctx.shadowColor = item.color;
+			ctx.shadowBlur = 18;
+			ctx.fillStyle = item.color;
+			ctx.fillText(item.text, 0, 0);
+			ctx.restore();
+
+			if (item.progress > 1.2) items.splice(i, 1);
+		}
+
+		if (items.length < 12 && Math.random() < 0.035) createGreeting();
+		requestAnimationFrame(animate);
+	}
+
+	addEventListener("resize", resize);
+	resize();
+	for (let i = 0; i < 8; i++) {
+		createGreeting();
+		items[i].progress = Math.random();
+	}
+	requestAnimationFrame(animate);
+};
+
+	if (document.body) start();
+	else document.addEventListener("DOMContentLoaded", start, { once: true });
 }
 
-// Memanggil resize saat layar diubah ukurannya
-window.addEventListener('resize', resize);
-resize();
-
-// Fungsi untuk menggambar satu lapisan gelombang aurora
-function drawAurora(yOffset, color, speed, waveHeight) {
-    ctx.beginPath();
-    ctx.moveTo(0, height);
-    
-    // Looping untuk membentuk titik-titik gelombang dari kiri ke kanan
-    for (let x = 0; x <= width; x += 10) {
-        // Mengkombinasikan fungsi sin dan cos agar gerakan gelombang terlihat acak dan natural
-        let y = yOffset 
-              + Math.sin(x * 0.002 + time * speed) * waveHeight 
-              + Math.cos(x * 0.005 + time * speed * 0.8) * (waveHeight * 0.5);
-        ctx.lineTo(x, y);
-    }
-    
-    ctx.lineTo(width, height);
-    ctx.lineTo(0, height);
-    ctx.closePath();
-
-    // Membuat gradasi warna agar gelombang perlahan memudar transparan ke bawah
-    let gradient = ctx.createLinearGradient(0, yOffset - waveHeight, 0, height);
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, "transparent");
-
-    ctx.fillStyle = gradient;
-    ctx.fill();
-}
-
-// Fungsi animasi utama yang berjalan 60 frame per detik
-function animate() {
-    // Menghapus frame sebelumnya
-    ctx.clearRect(0, 0, width, height);
-
-    // Efek blending 'screen' untuk membuat warna aurora terlihat menyala/glowing saat bertumpuk
-    ctx.globalCompositeOperation = 'screen';
-
-    // Menggambar 3 lapisan aurora (Hijau, Biru Muda, dan Ungu)
-    // Parameter: Tinggi Vertikal, Warna (RGBA), Kecepatan Gerak, Tinggi Gelombang
-    drawAurora(height * 0.4, 'rgba(0, 255, 128, 0.15)', 0.001, 150);  // Hijau
-    drawAurora(height * 0.5, 'rgba(0, 200, 255, 0.1)', 0.0015, 120);  // Biru Muda
-    drawAurora(height * 0.3, 'rgba(128, 0, 255, 0.1)', 0.0008, 200);  // Ungu Gelap
-
-    time += 1;
-    requestAnimationFrame(animate); // Memutar animasi secara terus menerus
-}
-
-// Memulai animasi
-animate();
+startGreetingAnimation();

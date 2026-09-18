@@ -46,7 +46,9 @@ def generate_safe(prompt):
         
         # 2. Pasang kunci tersebut ke sistem Google
         genai.configure(api_key=current_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # MENGGUNAKAN MODEL GEMINI TERBARU UNTUK MENGHINDARI ERROR 404
+        model = genai.GenerativeModel('gemini-3.6-flash')
         
         try:
             # 3. Eksekusi perintah
