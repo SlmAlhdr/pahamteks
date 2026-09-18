@@ -157,10 +157,13 @@
         .password-container { position: relative; width: 100%; }
         .password-toggle { position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
 
-        .floating-kamus-btn { position: fixed; bottom: 90px; right: 25px; background: rgba(0,0,0,0.9); color: white; height: 60px; border-radius: 30px; display: flex; justify-content: center; align-items: center; padding: 0 25px; gap: 10px; cursor: pointer; border: 1px solid var(--btn-cyan); z-index: 100; transition: 0.2s; font-weight: 800; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        /* UBAHAN POSISI TOMBOL KAMUS: LEBIH KE BAWAH & KANAN */
+        .floating-kamus-btn { position: fixed; bottom: 30px; right: 30px; background: rgba(0,0,0,0.9); color: white; height: 60px; border-radius: 30px; display: flex; justify-content: center; align-items: center; padding: 0 25px; gap: 10px; cursor: pointer; border: 1px solid var(--btn-cyan); z-index: 100; transition: 0.2s; font-weight: 800; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
         .floating-kamus-btn:hover { background: #111; }
         .kamus-text { display: inline; }
-        .kamus-modal { display: none; position: fixed; bottom: 160px; right: 25px; width: 340px; background: #111; border-radius: 20px; border: 1px solid var(--btn-cyan); z-index: 101; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out;}
+        
+        /* POSISI MODAL KAMUS DISESUAIKAN */
+        .kamus-modal { display: none; position: fixed; bottom: 100px; right: 30px; width: 340px; background: #111; border-radius: 20px; border: 1px solid var(--btn-cyan); z-index: 101; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out;}
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .kamus-header { background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--card-border); color: white; padding: 15px 20px; font-weight: 900; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
         .kamus-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
@@ -169,31 +172,29 @@
         .dict-list-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; color: var(--btn-cyan); font-weight: 700; }
         .dict-list-item:hover { background: rgba(255,255,255,0.1); }
 
-        /* UBAHAN BAGIAN WATERMARK (LEBIH HALUS DAN KECIL) */
+        /* UBAHAN WATERMARK: TANPA BUBBLE, WARNA HITAM, HURUF KECIL */
         .watermark-footer { 
             width: 100%; 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            border-top: 1px solid rgba(0, 0, 0, 0.2); 
             margin-top: auto; 
             display: flex; 
             justify-content: center; 
-            padding: 15px 20px; 
+            padding: 15px 0; 
             z-index: 10; 
             position: relative;
         }
         .watermark-inner { 
             width: 100%; 
             display: flex; 
-            justify-content: center; /* Posisikan ke tengah layar */
+            justify-content: center; /* Diposisikan ke tengah */
         }
         .watermark-box { 
             display: inline-block; 
-            color: rgba(255, 255, 255, 0.4); /* Transparan lembut */
-            font-size: 0.6rem; /* Ukuran dikecilkan */
-            font-weight: 700; 
-            letter-spacing: 0.5px;
-            background: transparent; /* Block latar dihapus */
-            padding: 0; /* Padding kotak dihapus */
-            backdrop-filter: none;
+            color: #000000; /* Warna hitam pekat */
+            font-size: 0.65rem; /* Ukuran lebih kecil */
+            font-weight: 900; 
+            background: transparent; /* Hilangkan kotak bubble */
+            padding: 0; 
         }
 
         @media (max-width: 768px) {
@@ -776,7 +777,7 @@
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
-            lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
             pred_excellent: "Excellent", pred_good: "Good", pred_fair: "Fair", pred_poor: "Poor"
         }
     };
@@ -1449,28 +1450,32 @@
         container.className = 'hello-container';
         document.body.appendChild(container);
 
-        const totalTracks = 8; 
-        const trackHeight = window.innerHeight / totalTracks;
+        // KITA PUNYA TEPAT 15 KATA DAN 15 JALUR. SETIAP KATA PUNYA JALURNYA SENDIRI!
+        const totalTexts = hellos.length;
+        const trackHeight = window.innerHeight / totalTexts; 
         const floatingTexts = [];
 
-        for(let i = 0; i < 20; i++) {
+        for(let i = 0; i < totalTexts; i++) {
             let el = document.createElement('div');
             el.className = 'hello-text';
-            el.innerText = hellos[Math.floor(Math.random() * hellos.length)];
+            el.innerText = hellos[i]; // Ambil kata satu per satu sesuai urutan
 
-            let fontSize = Math.random() * 2 + 1.8; 
+            // Ukuran font dibuat sedikit seragam agar tidak memakan ruang jalur teks lain
+            let fontSize = (Math.random() * 1 + 1.8); 
             el.style.fontSize = fontSize + 'rem';
             
             el.style.color = `rgba(255, 255, 255, 0.08)`;
             
             container.appendChild(el);
             
-            let trackIndex = i % totalTracks;
-            let posY = (trackIndex * trackHeight) + (Math.random() * (trackHeight - 40));
+            // JALUR SPESIFIK: Teks ke-i PASTI berada di jalur ke-i
+            // Sehingga posisinya terkunci dan mustahil bertabrakan secara vertikal
+            let posY = (i * trackHeight) + (trackHeight / 2) - 20; 
             let posX = Math.random() * window.innerWidth;
             
-            let speedX = (Math.random() * 0.25 + 0.1); 
+            let speedX = (Math.random() * 0.3 + 0.15); 
             
+            // Jalur genap gerak ke kanan, jalur ganjil ke kiri
             if (i % 2 === 0) speedX *= -1;
 
             floatingTexts.push({ el, x: posX, y: posY, speedX });
