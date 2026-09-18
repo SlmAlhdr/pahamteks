@@ -29,29 +29,16 @@
         }
 
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
-        body { background: var(--bg-green); background-attachment: fixed; color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background 0.5s ease; }
+        body { background: var(--bg-green); background-attachment: fixed !important; color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background 0.5s ease; }
 
-        /* WADAH UNTUK GAMBAR BACKGROUND UPLOAD */
-        #custom-bg {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -6; /* Lapisan paling belakang */
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        /* OVERLAY GELAP AGAR TEKS TETAP TERBACA JIKA GAMBAR TERANG */
+        /* OVERLAY GELAP UNTUK BERANDA AGAR TEKS TETAP TERBACA */
         #bg-overlay {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.65); /* Efek gelap transparan */
-            z-index: -5; /* Di atas gambar, tapi di bawah animasi teks */
+            background: rgba(0, 0, 0, 0.6); /* Efek gelap transparan */
+            z-index: -5; /* Di atas gambar body, tapi di bawah animasi teks */
             pointer-events: none;
-            display: none; /* Menyala saat gambar ada */
+            display: none; /* Hanya menyala di halaman beranda */
         }
 
         /* ANIMASI TEXT FLOATING (Hello Horizontal Halus) */
@@ -59,7 +46,7 @@
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             pointer-events: none; 
-            z-index: -4; /* Melayang dengan aman di atas background custom */
+            z-index: -4; /* Melayang dengan aman di semua halaman */
             overflow: hidden;
         }
         .hello-text {
@@ -72,12 +59,12 @@
         }
 
         /* NAVBAR & ELEMEN LAINNYA */
-        .navbar { width: 100%; max-width: 1300px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
+        .navbar { width: 100%; max-width: 1300px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; z-index: 10; position: relative;}
         .nav-left { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
         .logo { font-size: 2.2rem; font-weight: 900; color: white; cursor: pointer; }
         .nav-links-wrapper { overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; border-radius: 30px; max-width: 100%; }
         .nav-links-wrapper::-webkit-scrollbar { display: none; }
-        .nav-links { display: flex; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 30px; align-items: center; width: max-content; }
+        .nav-links { display: flex; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 30px; align-items: center; width: max-content; border: 1px solid var(--card-border);}
         .btn-nav { background: transparent; border: none; border-radius: 25px; padding: 10px 18px; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; flex-shrink: 0; white-space: nowrap; }
         .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
         .btn-nav:hover:not(.active) { color: white; }
@@ -92,7 +79,7 @@
         .btn-logout:hover { background: #e84118; }
         @media (max-width: 1050px) { .navbar { flex-wrap: wrap; justify-content: space-between; } .nav-left { order: 1; } .nav-right { order: 2; margin-left: auto; } .nav-links-wrapper { order: 3; width: 100%; margin-top: 10px; } }
 
-        .page { display: none; width: 100%; max-width: 1000px; padding: 0 20px; animation: fadeIn 0.4s ease-out; flex: 1; }
+        .page { display: none; width: 100%; max-width: 1000px; padding: 0 20px; animation: fadeIn 0.4s ease-out; flex: 1; z-index: 1; position: relative;}
         .page.active-page { display: flex; flex-direction: column; align-items: center; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -100,18 +87,18 @@
         .hero h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; }
         .hero p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px; }
         .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; margin-bottom: 40px; }
-        .feature-card { background: rgba(0,0,0,0.7); border-radius: 20px; padding: 30px 20px; text-align: left; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.2s; border: 1px solid var(--card-border); }
-        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card { background: rgba(0,0,0,0.7); border-radius: 20px; padding: 30px 20px; text-align: left; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.2s; border: 1px solid var(--card-border); backdrop-filter: blur(10px);}
+        .feature-card:hover { transform: translateY(-5px); border-color: var(--btn-cyan); }
         .feature-card h2 { font-size: 1.7rem; margin: 0; line-height: 1.2; text-transform: uppercase; }
         .setup-container, .quiz-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; margin-bottom: 50px; }
-        .input-group { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; width: 100%; }
+        .input-group { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; width: 100%; backdrop-filter: blur(10px);}
         
         .styled-select { width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: white; padding: 15px; padding-right: 45px; border-radius: 10px; font-size: 1.1rem; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aab2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important; background-repeat: no-repeat !important; background-position: right 20px center !important; background-size: 18px !important; }
         .styled-select option { background: #115930; color: white; }
-        .lang-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: 0.2s; }
+        .lang-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: 0.2s; backdrop-filter: blur(10px);}
         .lang-option:hover { background: rgba(0,0,0,0.7); }
         .sub-menu { display: none; flex-direction: column; gap: 8px; width: 95%; margin-left: 5%; margin-top: -5px; margin-bottom: 10px;}
-        .sub-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; font-size: 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; transition: 0.2s;}
+        .sub-option { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; font-size: 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; backdrop-filter: blur(5px);}
         .sub-option:hover { background: rgba(255,255,255,0.1); }
         .sub-option input { margin-right: 15px; transform: scale(1.3); accent-color: var(--btn-green); cursor: pointer;}
         .action-row { display: flex; gap: 15px; width: 100%; margin-top: 15px; justify-content: center; flex-wrap: wrap; }
@@ -123,34 +110,34 @@
         .btn-outline-green { background: transparent; border: 2px solid var(--btn-green); color: var(--btn-green); }
         .btn-outline-cyan { background: transparent; border: 2px solid var(--btn-cyan); color: var(--btn-cyan); }
 
-        .dashboard-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 800px; margin-top: 20px; }
+        .dashboard-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 800px; margin-top: 20px; backdrop-filter: blur(10px);}
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid var(--card-border); text-align: center; }
+        .stat-card { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 15px; border: 1px solid var(--card-border); text-align: center; }
         .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--btn-green); margin-top: 5px; }
-        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; border: 1px solid var(--card-border);}
+        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 20px; background: rgba(0,0,0,0.6); border-radius: 15px; padding: 15px; border: 1px solid var(--card-border);}
 
         .translator-container { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; }
         .translation-area { width: 100%; display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; justify-content: center; }
         .text-box-wrapper { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; }
-        .text-box { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .text-box { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; backdrop-filter: blur(10px);}
         textarea { flex: 1; min-height: 220px; border: none; padding: 25px; padding-bottom: 60px; font-size: 1.2rem; color: white; resize: none; outline: none; background: transparent; }
         .btn-swap-wrap { display: flex; align-items: center; padding-top: 45px; }
-        .btn-swap { background: transparent; border: none; font-size: 2rem; color: white; cursor: pointer; transition: 0.2s;}
+        .btn-swap { background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; cursor: pointer; transition: 0.2s;}
         .btn-swap:active { transform: scale(0.9); }
         .btn-speak { position: absolute; bottom: 12px; right: 12px; background: rgba(255,255,255,0.15); border: 1px solid var(--card-border); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; color: white; transition: 0.2s;}
         .btn-speak:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
 
-        .quiz-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; text-align: center; position: relative; }
-        .mc-btn { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; font-size: 1.05rem; font-weight: 700; color: white; cursor: pointer; text-align: left; margin-bottom: 10px; transition: 0.2s; }
+        .quiz-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; text-align: center; position: relative; backdrop-filter: blur(10px);}
+        .mc-btn { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; font-size: 1.05rem; font-weight: 700; color: white; cursor: pointer; text-align: left; margin-bottom: 10px; transition: 0.2s; }
         .mc-btn.selected { border-color: var(--btn-green); background: rgba(180, 242, 126, 0.1); }
         .mc-btn.correct { border-color: var(--correct); background: rgba(88, 204, 2, 0.2); }
         .mc-btn.wrong { border-color: var(--wrong); background: rgba(255, 71, 87, 0.2); }
         .timer-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; margin-bottom: 15px; }
         .timer-bar { width: 100%; height: 100%; background: var(--warning-orange); transition: width 1s linear; }
 
-        .result-box { background: var(--card-bg); border-radius: 20px; padding: 30px; width: 100%; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .result-box { background: var(--card-bg); border-radius: 20px; padding: 30px; width: 100%; margin-bottom: 20px; border: 1px solid var(--card-border); backdrop-filter: blur(10px);}
         .score-circle { width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: 900; margin: 0 auto 20px; border: 8px solid var(--btn-green); color: var(--btn-green); }
-        .explanation-item { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; }
+        .explanation-item { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; overflow-y:auto; padding: 20px; }
         .modal-box { background: #0a110d; width: 100%; max-width: 450px; border-radius: 20px; padding: 30px; border: 1px solid var(--card-border); text-align: center; position: relative; margin: auto;}
@@ -171,9 +158,9 @@
         .dict-list-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; color: var(--btn-cyan); font-weight: 700; }
         .dict-list-item:hover { background: rgba(255,255,255,0.1); }
 
-        .watermark-footer { width: 100%; border-top: 1px solid var(--card-border); margin-top: auto; display: flex; justify-content: center; padding: 10px 0; }
+        .watermark-footer { width: 100%; border-top: 1px solid var(--card-border); margin-top: auto; display: flex; justify-content: center; padding: 10px 0; z-index: 10; position: relative;}
         .watermark-inner { width: 100%; max-width: 320px; padding: 0 20px; display: flex; justify-content: flex-start; }
-        .watermark-box { display: inline-block; color: #b1b1b1; padding: 4px 12px; border-radius: 3px; font-size: 0.70rem; font-weight: 800; }
+        .watermark-box { display: inline-block; color: #b1b1b1; padding: 4px 12px; border-radius: 3px; font-size: 0.70rem; font-weight: 800; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);}
 
         @media (max-width: 768px) {
             .floating-kamus-btn { width: 60px; height: 60px; border-radius: 50%; padding: 0; justify-content: center; }
@@ -182,15 +169,11 @@
             .action-row button { width: 100%; flex: none; }
             .name-fields-row { flex-direction: column; gap: 0; }
             .kamus-modal { width: calc(100% - 40px); right: 20px; bottom: 110px; }
-            /* Menyembunyikan tulisan "Upload BG" di HP agar hemat ruang */
-            .hide-mobile { display: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- WADAH BACKGROUND KUSTOM & OVERLAY GELAP -->
-<div id="custom-bg"></div>
 <div id="bg-overlay"></div>
 
 <div class="navbar">
@@ -211,12 +194,6 @@
     </div>
 
     <div class="nav-right" id="nav-auth-section">
-        <!-- TOMBOL INPUT GAMBAR BACKGROUND -->
-        <label for="bg-upload" class="btn-auth" style="background: rgba(255,255,255,0.1); border: 1px solid var(--card-border); padding: 8px 15px; cursor: pointer; color: white; display: flex; align-items: center; gap: 8px;" title="Ubah Background">
-            🖼️ <span class="hide-mobile" style="font-size: 0.9rem;">BG</span>
-        </label>
-        <input type="file" id="bg-upload" accept="image/*" style="display: none;">
-
         <button id="btn-signin" class="btn-auth" data-i18n="btn_login" onclick="openAuthModal('login')">Sign In</button>
         <button id="btn-signup" class="btn-auth primary" data-i18n="btn_register" onclick="openAuthModal('register')">Sign Up</button>
         
@@ -646,41 +623,6 @@
     let authMode = 'login';
     let globalLanguages = {}; 
 
-    // --- LOGIKA UBAH BACKGROUND ---
-    const bgInput = document.getElementById('bg-upload');
-    const customBgDiv = document.getElementById('custom-bg');
-    const overlayDiv = document.getElementById('bg-overlay');
-    
-    // Cek memori browser apakah pengguna sudah pernah upload background
-    const savedBg = localStorage.getItem('pahamteks_custom_bg');
-    if (savedBg) {
-        customBgDiv.style.backgroundImage = `url(${savedBg})`;
-        customBgDiv.style.opacity = '1';
-        overlayDiv.style.display = 'block'; // Menyalakan efek gelap agar teks terlihat
-    }
-
-    bgInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const imgUrl = event.target.result;
-                customBgDiv.style.backgroundImage = `url(${imgUrl})`;
-                customBgDiv.style.opacity = '1';
-                overlayDiv.style.display = 'block';
-                
-                // Menyimpan gambar ke memori browser agar tidak hilang saat direfresh
-                try {
-                    localStorage.setItem('pahamteks_custom_bg', imgUrl);
-                } catch (err) {
-                    console.warn("Gambar terlalu besar untuk disimpan secara permanen di memori lokal.");
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    // --------------------------------
-
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
             switchPage(event.state.page, false); 
@@ -743,7 +685,7 @@
             setup_code_title: "Pilih Bahasa Pemrograman", setup_code_desc: "Uji kemampuan logika koding Anda",
             cat_web: "🌐 Situs & Naskah", cat_sys: "🌐 Sistem & Perangkat Lunak", cat_mob: "🌐 Seluler, Data & Basis Data", cat_theory: "🌐 Teori & Algoritma Khusus",
             opt_code_html: "HTML & CSS", opt_code_js: "JavaScript / TypeScript", opt_code_py: "Python", opt_code_php: "PHP", opt_code_ruby: "Ruby",
-            opt_code_ds: "Struktur Data (Array, Stack, Tree)", opt_code_crypto: "Kriptografi & Keamanan", opt_code_ml: "Machine Learning Dasar", opt_code_dp: "Design Patterns (OOP)",
+            opt_code_ds: "Struktur Data (Array, Stack, Tree)", opt_code_crypto: "Cryptography & Security", opt_code_ml: "Basic Machine Learning", opt_code_dp: "Design Patterns (OOP)",
             btn_start_code: "MULAI LATIHAN",
             quiz_header: "Latihan Berlangsung", challenge_header: "Permainan Cepat (Timer)", timer_label: "Sisa Waktu Ujian:",
             result_title: "Sesi Selesai!", result_breakdown: "Rincian Pengerjaan", btn_retry: "Kembali ke Menu (Cek Tracking)",
@@ -781,7 +723,7 @@
             opt_lang_id_baku: "Indonesian (Formal)", opt_lang_id_gaul: "Indonesian (Slang)", opt_lang_en_gram: "English (Grammar)", opt_lang_en_slang: "English (Slang)",
             opt_lang_jv: "Javanese", opt_lang_su: "Sundanese", opt_lang_mi: "Minangkabau", opt_lang_ba: "Balinese",
             opt_lang_ar: "Arabic", opt_lang_quran: "Quranic Arabic", opt_lang_he: "Hebrew", opt_lang_tr: "Turkish", opt_lang_fa: "Persia", opt_lang_sw: "Swahili",
-            opt_lang_ja: "Japanese", opt_lang_ko: "Korean", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
+            opt_lang_ja: "Japanese", opt_lang_ko: "Korea", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
             opt_lang_es: "Spanish", opt_lang_fr: "French", opt_lang_de: "German", opt_lang_ru: "Russian", opt_lang_it: "Italian", opt_lang_nl: "Dutch", opt_lang_pt: "Portuguese",
             btn_start_learn: "START LEARNING", btn_challenge: "QUICK PLAY", btn_print: "PRINT MODULE",
             setup_code_level: "Select Algorithm Complexity ⚙", opt_code_1: "Beginner (Basic Syntax, Looping)", opt_code_2: "Intermediate (Functions, OOP)", opt_code_3: "Advanced (Complex Architecture)",
@@ -802,7 +744,7 @@
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
-            lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
             pred_excellent: "Excellent", pred_good: "Good", pred_fair: "Fair", pred_poor: "Poor"
         }
     };
@@ -1065,17 +1007,27 @@
         window.speechSynthesis.speak(utterance);
     }
 
+    // --- FUNGSI GANTI HALAMAN YANG MENGATUR BACKGROUND GAMBAR LOKAL ---
     function switchPage(pageName, pushHistory = true) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
         stopTimer();
         
-        if(pageName === 'coding') {
+        const overlay = document.getElementById('bg-overlay');
+
+        if (pageName === 'home') {
+            // Menerapkan background gambar 'Beranda.png' HANYA saat di halaman Beranda
+            document.body.style.background = "url('Beranda.png') no-repeat center center fixed";
+            document.body.style.backgroundSize = "cover";
+            if (overlay) overlay.style.display = 'block';
+        } else if (pageName === 'coding') {
             document.body.style.background = "var(--bg-blue)";
+            if (overlay) overlay.style.display = 'none';
             currentSetupMode = 'coding';
         } else {
             document.body.style.background = "var(--bg-green)";
-            if(pageName === 'learn') currentSetupMode = 'learn';
+            if (overlay) overlay.style.display = 'none';
+            if (pageName === 'learn') currentSetupMode = 'learn';
         }
 
         document.getElementById('page-' + pageName).classList.add('active-page');
@@ -1487,24 +1439,18 @@
             el.className = 'hello-text';
             el.innerText = hellos[Math.floor(Math.random() * hellos.length)];
 
-            // Ukuran teks bervariasi agar ada efek kedalaman 3D
             let fontSize = Math.random() * 3 + 1.5; 
             el.style.fontSize = fontSize + 'rem';
             
-            // Opacity sedikit lebih terang untuk teks besar (seolah lebih dekat)
             el.style.color = `rgba(255, 255, 255, ${fontSize * 0.02})`;
             
             container.appendChild(el);
             
-            // Tentukan posisi awal acak di dalam layar
             let posX = Math.random() * window.innerWidth;
             let posY = Math.random() * window.innerHeight;
             
-            // Kecepatan HANYA ke samping (Horizontal), lebih lambat dan halus
-            // Teks besar bergerak lebih cepat (parallax)
             let speedX = (Math.random() * 0.3 + 0.1) * (fontSize * 0.3); 
             
-            // Buat separuh teks bergerak ke kiri, separuh ke kanan
             if (i % 2 === 0) speedX *= -1;
 
             floatingTexts.push({ el, x: posX, y: posY, speedX });
@@ -1512,14 +1458,11 @@
 
         function animateTexts() {
             floatingTexts.forEach(t => {
-                // Memperbarui posisi hanya pada sumbu X
                 t.x += t.speedX;
 
-                // Logika Loop: Jika keluar batas layar, pindah ke sisi berlawanan
                 if (t.x > window.innerWidth + 200) t.x = -200;
                 else if (t.x < -200) t.x = window.innerWidth + 200;
 
-                // Terapkan perubahan posisi menggunakan translate3d untuk akselerasi GPU (Sangat Halus)
                 t.el.style.transform = `translate3d(${t.x}px, ${t.y}px, 0)`;
             });
             requestAnimationFrame(animateTexts);
@@ -1530,3 +1473,5 @@
     initFloatingHellos();
 
 </script>
+</body>
+</html>
