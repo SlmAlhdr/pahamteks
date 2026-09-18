@@ -31,53 +31,58 @@
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
         body { background: var(--bg-green); background-attachment: fixed; color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background 0.5s ease; }
 
+        /* WADAH UNTUK GAMBAR BACKGROUND UPLOAD */
+        #custom-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -6; /* Lapisan paling belakang */
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* OVERLAY GELAP AGAR TEKS TETAP TERBACA JIKA GAMBAR TERANG */
+        #bg-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.65); /* Efek gelap transparan */
+            z-index: -5; /* Di atas gambar, tapi di bawah animasi teks */
+            pointer-events: none;
+            display: none; /* Menyala saat gambar ada */
+        }
+
         /* ANIMASI TEXT FLOATING (Hello Horizontal Halus) */
         .hello-container {
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             pointer-events: none; 
-            z-index: -4; 
+            z-index: -4; /* Melayang dengan aman di atas background custom */
             overflow: hidden;
         }
         .hello-text {
-            position: absolute;
-            top: 0; left: 0;
-            color: rgba(255, 255, 255, 0.05); /* Warna dasar transparan */
+            position: absolute; top: 0; left: 0;
+            color: rgba(255, 255, 255, 0.05);
             font-weight: 900;
             white-space: nowrap;
             user-select: none;
-            will-change: transform; /* Memberitahu browser untuk memaksimalkan grafik 3D */
+            will-change: transform; 
         }
 
-        /* NAVBAR */
-        .navbar { 
-            width: 100%; max-width: 1300px; padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 20px; gap: 15px; flex-wrap: wrap; 
-        }
-        
+        /* NAVBAR & ELEMEN LAINNYA */
+        .navbar { width: 100%; max-width: 1300px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
         .nav-left { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
         .logo { font-size: 2.2rem; font-weight: 900; color: white; cursor: pointer; }
-        
-        .nav-links-wrapper {
-            overflow-x: auto; 
-            -ms-overflow-style: none; scrollbar-width: none;
-            border-radius: 30px; max-width: 100%;
-        }
+        .nav-links-wrapper { overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; border-radius: 30px; max-width: 100%; }
         .nav-links-wrapper::-webkit-scrollbar { display: none; }
-
-        .nav-links { 
-            display: flex; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px; 
-            border-radius: 30px; align-items: center; width: max-content; 
-        }
-
+        .nav-links { display: flex; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 30px; align-items: center; width: max-content; }
         .btn-nav { background: transparent; border: none; border-radius: 25px; padding: 10px 18px; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; flex-shrink: 0; white-space: nowrap; }
         .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
         .btn-nav:hover:not(.active) { color: white; }
         .lang-toggle { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--card-border); padding: 8px 12px; font-weight: 900; border-radius: 20px; cursor: pointer; margin-left: 5px; transition: 0.2s; flex-shrink: 0; white-space: nowrap; }
         .lang-toggle:hover { background: rgba(255,255,255,0.2); }
-
         .nav-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
         .btn-auth { background: #1a5632; border: none; border-radius: 20px; padding: 10px 22px; font-size: 1rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; flex-shrink: 0;}
         .btn-auth:hover { background: #134225; }
@@ -85,13 +90,7 @@
         .user-profile { font-weight: 800; color: var(--btn-green); font-size: 1.05rem; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--btn-green); cursor: pointer; flex-shrink: 0;}
         .btn-logout { background: var(--wrong); border: none; border-radius: 20px; padding: 10px 18px; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; flex-shrink: 0;}
         .btn-logout:hover { background: #e84118; }
-
-        @media (max-width: 1050px) {
-            .navbar { flex-wrap: wrap; justify-content: space-between; }
-            .nav-left { order: 1; }
-            .nav-right { order: 2; margin-left: auto; }
-            .nav-links-wrapper { order: 3; width: 100%; margin-top: 10px; }
-        }
+        @media (max-width: 1050px) { .navbar { flex-wrap: wrap; justify-content: space-between; } .nav-left { order: 1; } .nav-right { order: 2; margin-left: auto; } .nav-links-wrapper { order: 3; width: 100%; margin-top: 10px; } }
 
         .page { display: none; width: 100%; max-width: 1000px; padding: 0 20px; animation: fadeIn 0.4s ease-out; flex: 1; }
         .page.active-page { display: flex; flex-direction: column; align-items: center; }
@@ -100,32 +99,21 @@
         .hero { text-align: center; margin-top: 10px; width: 100%; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; }
         .hero p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px; }
-        
         .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; margin-bottom: 40px; }
         .feature-card { background: rgba(0,0,0,0.7); border-radius: 20px; padding: 30px 20px; text-align: left; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.2s; border: 1px solid var(--card-border); }
         .feature-card:hover { transform: translateY(-5px); }
         .feature-card h2 { font-size: 1.7rem; margin: 0; line-height: 1.2; text-transform: uppercase; }
-        
         .setup-container, .quiz-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; margin-bottom: 50px; }
         .input-group { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; width: 100%; }
         
-        .styled-select { 
-            width: 100%; background-color: transparent; border: 1px solid var(--card-border); 
-            color: white; padding: 15px; padding-right: 45px; border-radius: 10px; 
-            font-size: 1.1rem; outline: none; cursor: pointer; 
-            -webkit-appearance: none; -moz-appearance: none; appearance: none; 
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aab2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-            background-repeat: no-repeat !important; background-position: right 20px center !important; background-size: 18px !important; 
-        }
+        .styled-select { width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: white; padding: 15px; padding-right: 45px; border-radius: 10px; font-size: 1.1rem; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aab2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important; background-repeat: no-repeat !important; background-position: right 20px center !important; background-size: 18px !important; }
         .styled-select option { background: #115930; color: white; }
-        
         .lang-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: 0.2s; }
         .lang-option:hover { background: rgba(0,0,0,0.7); }
         .sub-menu { display: none; flex-direction: column; gap: 8px; width: 95%; margin-left: 5%; margin-top: -5px; margin-bottom: 10px;}
         .sub-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; font-size: 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; transition: 0.2s;}
         .sub-option:hover { background: rgba(255,255,255,0.1); }
         .sub-option input { margin-right: 15px; transform: scale(1.3); accent-color: var(--btn-green); cursor: pointer;}
-
         .action-row { display: flex; gap: 15px; width: 100%; margin-top: 15px; justify-content: center; flex-wrap: wrap; }
         .btn-huge { border: none; border-radius: 25px; padding: 15px 30px; font-size: 1.1rem; font-weight: 900; cursor: pointer; transition: 0.2s; color: black; min-width: 180px; text-transform: uppercase; }
         .btn-huge:active { transform: scale(0.95); }
@@ -135,14 +123,12 @@
         .btn-outline-green { background: transparent; border: 2px solid var(--btn-green); color: var(--btn-green); }
         .btn-outline-cyan { background: transparent; border: 2px solid var(--btn-cyan); color: var(--btn-cyan); }
 
-        /* Dashboard Tracking Inline */
         .dashboard-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 800px; margin-top: 20px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid var(--card-border); text-align: center; }
         .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--btn-green); margin-top: 5px; }
         .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; border: 1px solid var(--card-border);}
 
-        /* Translator Area */
         .translator-container { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; }
         .translation-area { width: 100%; display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; justify-content: center; }
         .text-box-wrapper { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; }
@@ -154,7 +140,6 @@
         .btn-speak { position: absolute; bottom: 12px; right: 12px; background: rgba(255,255,255,0.15); border: 1px solid var(--card-border); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; color: white; transition: 0.2s;}
         .btn-speak:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
 
-        /* Quiz Area */
         .quiz-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; text-align: center; position: relative; }
         .mc-btn { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; font-size: 1.05rem; font-weight: 700; color: white; cursor: pointer; text-align: left; margin-bottom: 10px; transition: 0.2s; }
         .mc-btn.selected { border-color: var(--btn-green); background: rgba(180, 242, 126, 0.1); }
@@ -167,7 +152,6 @@
         .score-circle { width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: 900; margin: 0 auto 20px; border: 8px solid var(--btn-green); color: var(--btn-green); }
         .explanation-item { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; }
         
-        /* Modals & Inputs */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; overflow-y:auto; padding: 20px; }
         .modal-box { background: #0a110d; width: 100%; max-width: 450px; border-radius: 20px; padding: 30px; border: 1px solid var(--card-border); text-align: center; position: relative; margin: auto;}
         .auth-input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--card-border); background: #000; color: white; margin-bottom: 10px; font-size: 1rem; outline: none;}
@@ -175,7 +159,6 @@
         .password-container { position: relative; width: 100%; }
         .password-toggle { position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
 
-        /* Kamus Floating Button */
         .floating-kamus-btn { position: fixed; bottom: 90px; right: 25px; background: rgba(0,0,0,0.9); color: white; height: 60px; border-radius: 30px; display: flex; justify-content: center; align-items: center; padding: 0 25px; gap: 10px; cursor: pointer; border: 1px solid var(--btn-cyan); z-index: 100; transition: 0.2s; font-weight: 800; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
         .floating-kamus-btn:hover { background: #111; }
         .kamus-text { display: inline; }
@@ -188,7 +171,6 @@
         .dict-list-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; color: var(--btn-cyan); font-weight: 700; }
         .dict-list-item:hover { background: rgba(255,255,255,0.1); }
 
-        /* Watermark Footer */
         .watermark-footer { width: 100%; border-top: 1px solid var(--card-border); margin-top: auto; display: flex; justify-content: center; padding: 10px 0; }
         .watermark-inner { width: 100%; max-width: 320px; padding: 0 20px; display: flex; justify-content: flex-start; }
         .watermark-box { display: inline-block; color: #b1b1b1; padding: 4px 12px; border-radius: 3px; font-size: 0.70rem; font-weight: 800; }
@@ -200,10 +182,16 @@
             .action-row button { width: 100%; flex: none; }
             .name-fields-row { flex-direction: column; gap: 0; }
             .kamus-modal { width: calc(100% - 40px); right: 20px; bottom: 110px; }
+            /* Menyembunyikan tulisan "Upload BG" di HP agar hemat ruang */
+            .hide-mobile { display: none; }
         }
     </style>
 </head>
 <body>
+
+<!-- WADAH BACKGROUND KUSTOM & OVERLAY GELAP -->
+<div id="custom-bg"></div>
+<div id="bg-overlay"></div>
 
 <div class="navbar">
     <div class="nav-left">
@@ -223,6 +211,12 @@
     </div>
 
     <div class="nav-right" id="nav-auth-section">
+        <!-- TOMBOL INPUT GAMBAR BACKGROUND -->
+        <label for="bg-upload" class="btn-auth" style="background: rgba(255,255,255,0.1); border: 1px solid var(--card-border); padding: 8px 15px; cursor: pointer; color: white; display: flex; align-items: center; gap: 8px;" title="Ubah Background">
+            🖼️ <span class="hide-mobile" style="font-size: 0.9rem;">BG</span>
+        </label>
+        <input type="file" id="bg-upload" accept="image/*" style="display: none;">
+
         <button id="btn-signin" class="btn-auth" data-i18n="btn_login" onclick="openAuthModal('login')">Sign In</button>
         <button id="btn-signup" class="btn-auth primary" data-i18n="btn_register" onclick="openAuthModal('register')">Sign Up</button>
         
@@ -652,6 +646,41 @@
     let authMode = 'login';
     let globalLanguages = {}; 
 
+    // --- LOGIKA UBAH BACKGROUND ---
+    const bgInput = document.getElementById('bg-upload');
+    const customBgDiv = document.getElementById('custom-bg');
+    const overlayDiv = document.getElementById('bg-overlay');
+    
+    // Cek memori browser apakah pengguna sudah pernah upload background
+    const savedBg = localStorage.getItem('pahamteks_custom_bg');
+    if (savedBg) {
+        customBgDiv.style.backgroundImage = `url(${savedBg})`;
+        customBgDiv.style.opacity = '1';
+        overlayDiv.style.display = 'block'; // Menyalakan efek gelap agar teks terlihat
+    }
+
+    bgInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imgUrl = event.target.result;
+                customBgDiv.style.backgroundImage = `url(${imgUrl})`;
+                customBgDiv.style.opacity = '1';
+                overlayDiv.style.display = 'block';
+                
+                // Menyimpan gambar ke memori browser agar tidak hilang saat direfresh
+                try {
+                    localStorage.setItem('pahamteks_custom_bg', imgUrl);
+                } catch (err) {
+                    console.warn("Gambar terlalu besar untuk disimpan secara permanen di memori lokal.");
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    // --------------------------------
+
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
             switchPage(event.state.page, false); 
@@ -752,7 +781,7 @@
             opt_lang_id_baku: "Indonesian (Formal)", opt_lang_id_gaul: "Indonesian (Slang)", opt_lang_en_gram: "English (Grammar)", opt_lang_en_slang: "English (Slang)",
             opt_lang_jv: "Javanese", opt_lang_su: "Sundanese", opt_lang_mi: "Minangkabau", opt_lang_ba: "Balinese",
             opt_lang_ar: "Arabic", opt_lang_quran: "Quranic Arabic", opt_lang_he: "Hebrew", opt_lang_tr: "Turkish", opt_lang_fa: "Persia", opt_lang_sw: "Swahili",
-            opt_lang_ja: "Japanese", opt_lang_ko: "Korea", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
+            opt_lang_ja: "Japanese", opt_lang_ko: "Korean", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
             opt_lang_es: "Spanish", opt_lang_fr: "French", opt_lang_de: "German", opt_lang_ru: "Russian", opt_lang_it: "Italian", opt_lang_nl: "Dutch", opt_lang_pt: "Portuguese",
             btn_start_learn: "START LEARNING", btn_challenge: "QUICK PLAY", btn_print: "PRINT MODULE",
             setup_code_level: "Select Algorithm Complexity ⚙", opt_code_1: "Beginner (Basic Syntax, Looping)", opt_code_2: "Intermediate (Functions, OOP)", opt_code_3: "Advanced (Complex Architecture)",
@@ -773,7 +802,7 @@
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
-            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
             pred_excellent: "Excellent", pred_good: "Good", pred_fair: "Fair", pred_poor: "Poor"
         }
     };
@@ -1501,5 +1530,3 @@
     initFloatingHellos();
 
 </script>
-</body>
-</html>
