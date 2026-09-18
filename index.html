@@ -31,7 +31,7 @@
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
         body { background: var(--bg-green); background-attachment: fixed; color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background 0.5s ease; }
 
-        /* ANIMASI TEXT FLOATING MULTI-ARAH (Hello Berbagai Bahasa) */
+        /* ANIMASI TEXT FLOATING (Hello Horizontal Halus) */
         .hello-container {
             position: fixed;
             top: 0; left: 0;
@@ -43,11 +43,11 @@
         .hello-text {
             position: absolute;
             top: 0; left: 0;
-            color: rgba(255, 255, 255, 0.08); 
+            color: rgba(255, 255, 255, 0.05); /* Warna dasar transparan */
             font-weight: 900;
             white-space: nowrap;
             user-select: none;
-            will-change: transform; 
+            will-change: transform; /* Memberitahu browser untuk memaksimalkan grafik 3D */
         }
 
         /* NAVBAR */
@@ -752,7 +752,7 @@
             opt_lang_id_baku: "Indonesian (Formal)", opt_lang_id_gaul: "Indonesian (Slang)", opt_lang_en_gram: "English (Grammar)", opt_lang_en_slang: "English (Slang)",
             opt_lang_jv: "Javanese", opt_lang_su: "Sundanese", opt_lang_mi: "Minangkabau", opt_lang_ba: "Balinese",
             opt_lang_ar: "Arabic", opt_lang_quran: "Quranic Arabic", opt_lang_he: "Hebrew", opt_lang_tr: "Turkish", opt_lang_fa: "Persia", opt_lang_sw: "Swahili",
-            opt_lang_ja: "Japanese", opt_lang_ko: "Korean", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
+            opt_lang_ja: "Japanese", opt_lang_ko: "Korea", opt_lang_zh: "Mandarin", opt_lang_hi: "Hindi", opt_lang_th: "Thai", opt_lang_vi: "Vietnamese", opt_lang_tl: "Tagalog",
             opt_lang_es: "Spanish", opt_lang_fr: "French", opt_lang_de: "German", opt_lang_ru: "Russian", opt_lang_it: "Italian", opt_lang_nl: "Dutch", opt_lang_pt: "Portuguese",
             btn_start_learn: "START LEARNING", btn_challenge: "QUICK PLAY", btn_print: "PRINT MODULE",
             setup_code_level: "Select Algorithm Complexity ⚙", opt_code_1: "Beginner (Basic Syntax, Looping)", opt_code_2: "Intermediate (Functions, OOP)", opt_code_3: "Advanced (Complex Architecture)",
@@ -773,7 +773,7 @@
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
-            lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
             pred_excellent: "Excellent", pred_good: "Good", pred_fair: "Fair", pred_poor: "Poor"
         }
     };
@@ -1439,7 +1439,7 @@
         document.getElementById('result-breakdown').innerHTML = breakdownHTML;
     }
 
-    // --- LOGIKA ANIMASI TEKS HELLO MELAYANG KE SEMUA ARAH ---
+    // --- LOGIKA ANIMASI TEKS HELLO MELAYANG KE SAMPING (HALUS) ---
     function initFloatingHellos() {
         const hellos = [
             "Halo", "Hello", "こんにちは", "안녕하세요", "Hola", 
@@ -1458,32 +1458,40 @@
             el.className = 'hello-text';
             el.innerText = hellos[Math.floor(Math.random() * hellos.length)];
 
+            // Ukuran teks bervariasi agar ada efek kedalaman 3D
             let fontSize = Math.random() * 3 + 1.5; 
             el.style.fontSize = fontSize + 'rem';
             
+            // Opacity sedikit lebih terang untuk teks besar (seolah lebih dekat)
+            el.style.color = `rgba(255, 255, 255, ${fontSize * 0.02})`;
+            
             container.appendChild(el);
             
+            // Tentukan posisi awal acak di dalam layar
             let posX = Math.random() * window.innerWidth;
             let posY = Math.random() * window.innerHeight;
             
-            let speedX = (Math.random() - 0.5) * (fontSize * 0.6); 
-            let speedY = (Math.random() - 0.5) * (fontSize * 0.6);
+            // Kecepatan HANYA ke samping (Horizontal), lebih lambat dan halus
+            // Teks besar bergerak lebih cepat (parallax)
+            let speedX = (Math.random() * 0.3 + 0.1) * (fontSize * 0.3); 
+            
+            // Buat separuh teks bergerak ke kiri, separuh ke kanan
+            if (i % 2 === 0) speedX *= -1;
 
-            floatingTexts.push({ el, x: posX, y: posY, speedX, speedY });
+            floatingTexts.push({ el, x: posX, y: posY, speedX });
         }
 
         function animateTexts() {
             floatingTexts.forEach(t => {
+                // Memperbarui posisi hanya pada sumbu X
                 t.x += t.speedX;
-                t.y += t.speedY;
 
+                // Logika Loop: Jika keluar batas layar, pindah ke sisi berlawanan
                 if (t.x > window.innerWidth + 200) t.x = -200;
                 else if (t.x < -200) t.x = window.innerWidth + 200;
 
-                if (t.y > window.innerHeight + 100) t.y = -100;
-                else if (t.y < -100) t.y = window.innerHeight + 100;
-
-                t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
+                // Terapkan perubahan posisi menggunakan translate3d untuk akselerasi GPU (Sangat Halus)
+                t.el.style.transform = `translate3d(${t.x}px, ${t.y}px, 0)`;
             });
             requestAnimationFrame(animateTexts);
         }
