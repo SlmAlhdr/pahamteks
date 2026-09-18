@@ -69,7 +69,7 @@
         }
 
         /* NAVBAR & ELEMEN LAINNYA */
-        .navbar { width: 100%; max-width: 1300px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; z-index: 10; position: relative;}
+        .navbar { width: 100%; max-width: 1300px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 15px; flex-wrap: wrap; z-index: 10; position: relative;}
         .nav-left { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
         .logo { font-size: 2.2rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.4); }
         .nav-links-wrapper { overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; border-radius: 30px; max-width: 100%; }
@@ -94,14 +94,16 @@
         .page.active-page { display: flex; flex-direction: column; align-items: center; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .hero { text-align: center; margin-top: 10px; width: 100%; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        /* KONTEN TENGAH DINAIKKAN AGAR TIDAK MENIMPA TOMBOL KAMUS */
+        .hero { text-align: center; margin-top: 0px; width: 100%; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .hero h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; }
         .hero p { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 30px; font-weight: 700; }
-        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; margin-bottom: 40px; }
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; margin-bottom: 90px; } /* margin-bottom diperbesar */
         .feature-card { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 30px 20px; text-align: left; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: transform 0.2s; border: 1px solid var(--card-border); backdrop-filter: blur(12px);}
         .feature-card:hover { transform: translateY(-5px); border-color: var(--btn-cyan); background: rgba(0,0,0,0.6);}
         .feature-card h2 { font-size: 1.7rem; margin: 0; line-height: 1.2; text-transform: uppercase; }
-        .setup-container, .quiz-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; margin-bottom: 50px; }
+        
+        .setup-container, .quiz-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 15px; margin-top: 10px; margin-bottom: 80px; }
         .input-group { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; width: 100%; backdrop-filter: blur(10px);}
         
         .styled-select { width: 100%; background-color: rgba(0,0,0,0.5); border: 1px solid var(--card-border); color: white; padding: 15px; padding-right: 45px; border-radius: 10px; font-size: 1.1rem; outline: none; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aab2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important; background-repeat: no-repeat !important; background-position: right 20px center !important; background-size: 18px !important; }
@@ -127,7 +129,7 @@
         .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--btn-green); margin-top: 5px; }
         .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 20px; background: rgba(0,0,0,0.6); border-radius: 15px; padding: 15px; border: 1px solid var(--card-border);}
 
-        .translator-container { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .translator-container { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; margin-bottom: 60px; }
         .translation-area { width: 100%; display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; justify-content: center; }
         .text-box-wrapper { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; }
         .text-box { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; backdrop-filter: blur(10px);}
@@ -157,13 +159,12 @@
         .password-container { position: relative; width: 100%; }
         .password-toggle { position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
 
-        /* UBAHAN POSISI TOMBOL KAMUS: LEBIH KE BAWAH & KANAN */
-        .floating-kamus-btn { position: fixed; bottom: 30px; right: 30px; background: rgba(0,0,0,0.9); color: white; height: 60px; border-radius: 30px; display: flex; justify-content: center; align-items: center; padding: 0 25px; gap: 10px; cursor: pointer; border: 1px solid var(--btn-cyan); z-index: 100; transition: 0.2s; font-weight: 800; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        /* UBAHAN POSISI TOMBOL KAMUS: LEBIH KE ATAS GARIS FOOTER */
+        .floating-kamus-btn { position: fixed; bottom: 60px; right: 30px; background: rgba(0,0,0,0.9); color: white; height: 60px; border-radius: 30px; display: flex; justify-content: center; align-items: center; padding: 0 25px; gap: 10px; cursor: pointer; border: 1px solid var(--btn-cyan); z-index: 100; transition: 0.2s; font-weight: 800; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
         .floating-kamus-btn:hover { background: #111; }
         .kamus-text { display: inline; }
         
-        /* POSISI MODAL KAMUS DISESUAIKAN */
-        .kamus-modal { display: none; position: fixed; bottom: 100px; right: 30px; width: 340px; background: #111; border-radius: 20px; border: 1px solid var(--btn-cyan); z-index: 101; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out;}
+        .kamus-modal { display: none; position: fixed; bottom: 130px; right: 30px; width: 340px; background: #111; border-radius: 20px; border: 1px solid var(--btn-cyan); z-index: 101; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out;}
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .kamus-header { background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--card-border); color: white; padding: 15px 20px; font-weight: 900; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
         .kamus-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
@@ -172,10 +173,10 @@
         .dict-list-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; color: var(--btn-cyan); font-weight: 700; }
         .dict-list-item:hover { background: rgba(255,255,255,0.1); }
 
-        /* UBAHAN WATERMARK: TANPA BUBBLE, WARNA HITAM, HURUF KECIL */
+        /* UBAHAN WATERMARK: TANPA BUBBLE, WARNA MENYATU (ABU-ABU TRANSLUCENT) */
         .watermark-footer { 
             width: 100%; 
-            border-top: 1px solid rgba(0, 0, 0, 0.2); 
+            border-top: 1px solid rgba(255, 255, 255, 0.15); 
             margin-top: auto; 
             display: flex; 
             justify-content: center; 
@@ -190,10 +191,10 @@
         }
         .watermark-box { 
             display: inline-block; 
-            color: #000000; /* Warna hitam pekat */
-            font-size: 0.65rem; /* Ukuran lebih kecil */
-            font-weight: 900; 
-            background: transparent; /* Hilangkan kotak bubble */
+            color: rgba(255, 255, 255, 0.45); /* Warna yang menempel halus dengan background */
+            font-size: 0.65rem; /* Ukuran mungil seperti watermark */
+            font-weight: 700; 
+            background: transparent; /* Bebas kotak */
             padding: 0; 
         }
 
@@ -732,7 +733,7 @@
             btn_ans_check: "Kunci Jawaban", btn_ans_next: "Lanjut Soal Berikutnya ➔", btn_ans_select: "Pilih Jawaban",
             opt_auto_detect: "Mendeteksi...",
             lang_en: "Inggris (English)", lang_id: "Indonesia", lang_ar: "Arab", lang_ja: "Jepang", lang_de: "Jerman",
-            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanyol",
             pred_excellent: "Sangat Baik", pred_good: "Baik", pred_fair: "Cukup Baik", pred_poor: "Kurang Baik"
         },
         en: {
@@ -777,7 +778,7 @@
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
-            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
             pred_excellent: "Excellent", pred_good: "Good", pred_fair: "Fair", pred_poor: "Poor"
         }
     };
