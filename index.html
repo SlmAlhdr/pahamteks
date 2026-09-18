@@ -57,7 +57,7 @@
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             pointer-events: none; 
-            z-index: -4; 
+            z-index: 0; /* Lapisan diperbaiki agar tidak tenggelam */
             overflow: hidden;
         }
         .hello-text {
@@ -708,7 +708,7 @@
             btn_ans_check: "Kunci Jawaban", btn_ans_next: "Lanjut Soal Berikutnya ➔", btn_ans_select: "Pilih Jawaban",
             opt_auto_detect: "Mendeteksi...",
             lang_en: "Inggris (English)", lang_id: "Indonesia", lang_ar: "Arab", lang_ja: "Jepang", lang_de: "Jerman",
-            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
+            lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "Prancis", lang_es: "Spanyol",
             pred_excellent: "Sangat Baik", pred_good: "Baik", pred_fair: "Cukup Baik", pred_poor: "Kurang Baik"
         },
         en: {
@@ -1016,7 +1016,7 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    // --- FUNGSI GANTI HALAMAN (ANIMASI BACKGROUND ROTASI HALUS) ---
+    // --- FUNGSI GANTI HALAMAN TANPA MENGUBAH BACKGROUND ---
     function switchPage(pageName, pushHistory = true) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
@@ -1437,8 +1437,8 @@
             let fontSize = Math.random() * 3 + 1.5; 
             el.style.fontSize = fontSize + 'rem';
             
-            // OPACITY DITAMBAHKAN AGAR LEBIH TERLIHAT
-            let opacity = (fontSize * 0.03) + 0.05; 
+            // OPACITY DITAMBAHKAN AGAR LEBIH TERLIHAT JELAS
+            let opacity = (fontSize * 0.04) + 0.08; 
             el.style.color = `rgba(255, 255, 255, ${opacity})`;
             
             container.appendChild(el);
