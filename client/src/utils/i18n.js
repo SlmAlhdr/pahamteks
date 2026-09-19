@@ -28,7 +28,20 @@ export const dict = {
         dict_title: "Kamus Pintar AI", dict_ph: "Ketik kata/sintaks...", dict_btn: "CARI ARTI", dict_btn_rand: "ACAK", dict_btn_float: "Kamus Pintar AI",
         btn_why_wrong: "💡 Mengapa Salah? (Tanya AI)", explanation_title: "Penjelasan Cerdas AI",
         trans_mic_start: "Bicara (Speech-to-Text)", trans_mic_listening: "Mendengarkan...",
-        opt_auto_detect: "Deteksi Otomatis"
+        opt_auto_detect: "Deteksi Otomatis",
+        welcome_title: "Selamat Datang di PahamTeks",
+        welcome_subtitle: "Platform Pembelajaran Bahasa Dunia, Logika Pemrograman & AI Terjemahan Cerdas.",
+        welcome_badge: "✨ Pintu Gerbang Bahasa & Koding Global",
+        welcome_login_tab: "Masuk Akun",
+        welcome_reg_tab: "Daftar Akun Baru",
+        guest_btn: "Masuk sebagai Akun Tamu (Guest)",
+        guest_warning_title: "⚠️ Perhatian Akun Tamu (Guest Mode)",
+        guest_warning_desc: "Jika Anda masuk menggunakan Akun Tamu (Guest), seluruh riwayat latihan, pencapaian skor, dan data Anda HANYA tersimpan sementara selama sesi ini dan akan OTOMATIS HILANG setelah halaman web atau browser ditutup.",
+        guest_warning_tip: "Untuk menyimpan progres belajar secara permanen, Anda disarankan membuat akun gratis.",
+        guest_badge: "Tamu (Sesi Sementara)",
+        guest_upgrade_btn: "Simpan Progres (Buat Akun)",
+        guest_notice_bar: "⚠️ Mode Tamu Aktif: Data latihan Anda akan hilang begitu web ini ditutup.",
+        or_divider: "atau masuk tanpa akun"
     },
     en: {
         nav_home: "Home", nav_translator: "Translator", nav_learn: "Languages", nav_coding: "Programming", nav_dashboard: "Tracking", nav_dictionary: "Dictionary",
@@ -59,7 +72,20 @@ export const dict = {
         dict_title: "Smart AI Dictionary", dict_ph: "Type word/term/syntax...", dict_btn: "SEARCH", dict_btn_rand: "RANDOM", dict_btn_float: "Smart AI Dictionary",
         btn_why_wrong: "💡 Why is this wrong? (Ask AI)", explanation_title: "AI Smart Explanation",
         trans_mic_start: "Voice Input (Speech-to-Text)", trans_mic_listening: "Listening...",
-        opt_auto_detect: "Auto Detect"
+        opt_auto_detect: "Auto Detect",
+        welcome_title: "Welcome to PahamTeks",
+        welcome_subtitle: "Global Language Education, Programming Logic & Intelligent AI Translation Platform.",
+        welcome_badge: "✨ Global Language & Coding Gateway",
+        welcome_login_tab: "Sign In",
+        welcome_reg_tab: "Create Account",
+        guest_btn: "Continue as Guest",
+        guest_warning_title: "⚠️ Guest Account Notice",
+        guest_warning_desc: "If you continue as a Guest, all your quiz results, progress, and activity data are ONLY kept temporarily for this session and will be PERMANENTLY LOST once you close this web page or browser.",
+        guest_warning_tip: "To permanently save and track your learning progress, consider creating a free account.",
+        guest_badge: "Guest (Temporary Session)",
+        guest_upgrade_btn: "Save Progress (Sign Up)",
+        guest_notice_bar: "⚠️ Guest Mode Active: Your session data will vanish once this website is closed.",
+        or_divider: "or continue without an account"
     }
 };
 

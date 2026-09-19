@@ -816,3 +816,358 @@ textarea {
     .kamus-modal { width: calc(100% - 40px); right: 20px; bottom: 110px; max-height: calc(100vh - 130px); }
     .kamus-body { max-height: calc(100vh - 190px); }
 }
+
+/* ========================================================
+   MODAL POPUP & AUTHENTICATION STYLES
+   ======================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 10, 18, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-box {
+    background: rgba(10, 26, 40, 0.95);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(126, 242, 224, 0.15);
+    border-radius: 28px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes modalScaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #ffffff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 71, 87, 0.3);
+    color: var(--wrong);
+    transform: rotate(90deg);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.auth-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    padding: 13px 18px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    border-color: var(--btn-cyan);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 16px rgba(126, 242, 224, 0.25);
+}
+
+.auth-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+}
+
+.auth-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.auth-divider span {
+    padding: 0 12px;
+}
+
+/* GUEST WARNING BOX */
+.guest-warning-box {
+    background: rgba(255, 159, 67, 0.12);
+    border: 1.5px dashed rgba(255, 159, 67, 0.4);
+    border-radius: 16px;
+    padding: 14px 16px;
+    text-align: left;
+    color: #ffeaa7;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.guest-warning-box .guest-title {
+    font-weight: 900;
+    color: #ff9f43;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+.btn-guest {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 13px 20px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-guest:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--btn-cyan);
+    color: var(--btn-cyan);
+    transform: translateY(-2px);
+}
+
+/* GUEST BADGE IN NAVBAR */
+.guest-navbar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 159, 67, 0.18);
+    border: 1px solid rgba(255, 159, 67, 0.5);
+    border-radius: 16px;
+    color: #ff9f43;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.guest-top-banner {
+    width: 100%;
+    background: linear-gradient(90deg, #ff9f43, #ee5253);
+    color: #000;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.guest-top-banner button {
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.guest-top-banner button:hover {
+    background: #222;
+    transform: scale(1.05);
+}
+
+/* ========================================================
+   WELCOME PORTAL (BERANDA AWAL BELUM LOGIN)
+   ======================================================== */
+.welcome-portal {
+    width: 100%;
+    max-width: 960px;
+    padding: 10px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    z-index: 1;
+    position: relative;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.welcome-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(126, 242, 224, 0.15);
+    border: 1px solid var(--btn-cyan);
+    color: var(--btn-cyan);
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 20px rgba(126, 242, 224, 0.2);
+}
+
+.welcome-hero {
+    text-align: center;
+    max-width: 750px;
+}
+
+.welcome-hero h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin: 14px 0 10px;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ffffff 40%, var(--btn-cyan) 80%, var(--btn-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-hero p {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.welcome-card-wrapper {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(10, 26, 40, 0.85);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(126, 242, 224, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.welcome-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 16px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.welcome-tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.welcome-tab-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.welcome-features-mini {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.mini-feature-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+}
+

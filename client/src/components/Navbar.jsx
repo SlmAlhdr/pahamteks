@@ -5,6 +5,7 @@ export default function Navbar({
   setActiveTab,
   user,
   onOpenAuth,
+  onGuestLogin,
   onLogout,
   currentLang,
   onToggleLang,
@@ -65,14 +66,33 @@ export default function Navbar({
 
       <div className="nav-right">
         {user ? (
-          <>
-            <div className="user-profile" title="Profil Anda">
-              👤 {user.name}
-            </div>
-            <button className="btn-logout" onClick={onLogout}>
-              {t('btn_logout')}
-            </button>
-          </>
+          user.isGuest ? (
+            <>
+              <div className="guest-navbar-badge" title="Data akan hilang saat browser ditutup">
+                👤 {t('guest_badge')}
+              </div>
+              <button
+                className="btn-auth primary"
+                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                onClick={() => onOpenAuth('register')}
+                title="Daftar akun permanen untuk menyimpan progres"
+              >
+                💾 {t('guest_upgrade_btn')}
+              </button>
+              <button className="btn-logout" onClick={onLogout}>
+                {t('btn_logout')}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="user-profile" title="Profil Anda">
+                👤 {user.name}
+              </div>
+              <button className="btn-logout" onClick={onLogout}>
+                {t('btn_logout')}
+              </button>
+            </>
+          )
         ) : (
           <>
             <button className="btn-auth" onClick={() => onOpenAuth('login')}>
@@ -81,6 +101,16 @@ export default function Navbar({
             <button className="btn-auth primary" onClick={() => onOpenAuth('register')}>
               {t('btn_register')}
             </button>
+            {onGuestLogin && (
+              <button
+                className="btn-auth"
+                style={{ borderColor: 'rgba(255, 159, 67, 0.6)', color: '#ff9f43' }}
+                onClick={onGuestLogin}
+                title="Mode Tamu (Sesi Sementara)"
+              >
+                🚀 {t('guest')}
+              </button>
+            )}
           </>
         )}
       </div>

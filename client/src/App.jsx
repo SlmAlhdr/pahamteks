@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HomeHero from './components/HomeHero';
+import WelcomePortal from './components/WelcomePortal';
 import Translator from './components/Translator';
 import QuizView from './components/QuizView';
 import DictionaryView from './components/DictionaryView';
@@ -18,23 +19,34 @@ export default function App() {
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [quizHistory, setQuizHistory] = useState([]);
 
-  // Muat preferensi user & riwayat dari localStorage
+  // Muat status user & riwayat dari localStorage (akun permanen) atau sessionStorage (guest)
   useEffect(() => {
+    // 1. Cek akun permanen tersimpan di localStorage
     const savedUser = localStorage.getItem('pahamteks_user');
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
+        const savedLogs = localStorage.getItem('pahamteks_logs');
+        if (savedLogs) {
+          setQuizHistory(JSON.parse(savedLogs));
+        }
+        return;
       } catch (e) {
         localStorage.removeItem('pahamteks_user');
       }
     }
 
-    const savedLogs = localStorage.getItem('pahamteks_logs');
-    if (savedLogs) {
+    // 2. Cek akun tamu (guest) tersimpan di sessionStorage
+    const savedGuest = sessionStorage.getItem('pahamteks_guest_user');
+    if (savedGuest) {
       try {
-        setQuizHistory(JSON.parse(savedLogs));
+        setUser(JSON.parse(savedGuest));
+        const savedGuestLogs = sessionStorage.getItem('pahamteks_guest_logs');
+        if (savedGuestLogs) {
+          setQuizHistory(JSON.parse(savedGuestLogs));
+        }
       } catch (e) {
-        setQuizHistory([]);
+        sessionStorage.removeItem('pahamteks_guest_user');
       }
     }
   }, []);
@@ -52,24 +64,70 @@ export default function App() {
     setIsAuthOpen(true);
   };
 
+  // Masuk sebagai Akun Tamu (Session-only, data hilang saat browser ditutup)
+  const handleGuestLogin = () => {
+    const guestUser = { name: 'Tamu (Guest)', isGuest: true };
+    setUser(guestUser);
+    sessionStorage.setItem('pahamteks_guest_user', JSON.stringify(guestUser));
+    
+    // Inisialisasi riwayat tamu dari sessionStorage jika ada
+    const savedGuestLogs = sessionStorage.getItem('pahamteks_guest_logs');
+    if (savedGuestLogs) {
+      try {
+        setQuizHistory(JSON.parse(savedGuestLogs));
+      } catch (e) {
+        setQuizHistory([]);
+      }
+    } else {
+      setQuizHistory([]);
+    }
+    setActiveTab('home');
+  };
+
+  // Masuk/Daftar dengan Akun Permanen
   const handleAuthSuccess = (userData) => {
-    setUser(userData);
-    localStorage.setItem('pahamteks_user', JSON.stringify(userData));
+    const fullUser = { ...userData, isGuest: false };
+    setUser(fullUser);
+    localStorage.setItem('pahamteks_user', JSON.stringify(fullUser));
+    sessionStorage.removeItem('pahamteks_guest_user');
+
+    // Ambil riwayat tersimpan dari akun permanen
+    const savedLogs = localStorage.getItem('pahamteks_logs');
+    if (savedLogs) {
+      try {
+        setQuizHistory(JSON.parse(savedLogs));
+      } catch (e) {
+        setQuizHistory([]);
+      }
+    }
+    setActiveTab('home');
   };
 
   const handleLogout = () => {
+    const wasGuest = user?.isGuest;
     setUser(null);
     localStorage.removeItem('pahamteks_user');
-    localStorage.removeItem('pahamteks_logs');
+    sessionStorage.removeItem('pahamteks_guest_user');
+    sessionStorage.removeItem('pahamteks_guest_logs');
     setQuizHistory([]);
     setActiveTab('home');
-    alert(currentLang === 'id' ? 'Anda berhasil keluar.' : 'Successfully logged out.');
+
+    alert(
+      wasGuest
+        ? (currentLang === 'id' ? 'Sesi tamu telah diakhiri. Data sementara telah dibersihkan.' : 'Guest session ended. Temporary data cleared.')
+        : (currentLang === 'id' ? 'Anda berhasil keluar.' : 'Successfully logged out.')
+    );
   };
 
   const handleFinishQuiz = (newLog) => {
     setQuizHistory(prev => {
       const updated = [newLog, ...prev];
-      localStorage.setItem('pahamteks_logs', JSON.stringify(updated));
+      if (user?.isGuest) {
+        // Simpan hanya di sessionStorage agar hilang saat browser ditutup
+        sessionStorage.setItem('pahamteks_guest_logs', JSON.stringify(updated));
+      } else {
+        localStorage.setItem('pahamteks_logs', JSON.stringify(updated));
+      }
       return updated;
     });
   };
@@ -79,12 +137,23 @@ export default function App() {
       {/* Background Floating Greetings */}
       <BackgroundDrift />
 
+      {/* Guest Mode Warning Notice Bar */}
+      {user?.isGuest && (
+        <div className="guest-top-banner">
+          <span>{t('guest_notice_bar')}</span>
+          <button onClick={() => handleOpenAuth('register')}>
+            {t('guest_upgrade_btn')}
+          </button>
+        </div>
+      )}
+
       {/* Navbar Header */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         user={user}
         onOpenAuth={handleOpenAuth}
+        onGuestLogin={handleGuestLogin}
         onLogout={handleLogout}
         currentLang={currentLang}
         onToggleLang={toggleLanguage}
@@ -94,7 +163,17 @@ export default function App() {
       {/* Main Content Pages */}
       <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
         {activeTab === 'home' && (
-          <HomeHero onNavigate={setActiveTab} t={t} />
+          user ? (
+            <HomeHero onNavigate={setActiveTab} t={t} />
+          ) : (
+            <WelcomePortal
+              onAuthSuccess={handleAuthSuccess}
+              onGuestLogin={handleGuestLogin}
+              onOpenAuthModal={handleOpenAuth}
+              currentLang={currentLang}
+              t={t}
+            />
+          )
         )}
         {activeTab === 'translator' && (
           <Translator t={t} currentLang={currentLang} />
@@ -116,12 +195,13 @@ export default function App() {
       {/* Floating Kamus AI di Bawah Kanan */}
       <KamusFloating t={t} currentLang={currentLang} />
 
-      {/* Modal Autentikasi */}
+      {/* Modal Autentikasi Pop-up */}
       <AuthModal
         isOpen={isAuthOpen}
         initialMode={authInitialMode}
         onClose={() => setIsAuthOpen(false)}
         onAuthSuccess={handleAuthSuccess}
+        onGuestLogin={handleGuestLogin}
         t={t}
       />
 
