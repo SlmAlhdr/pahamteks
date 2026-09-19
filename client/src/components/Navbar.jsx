@@ -12,71 +12,82 @@ export default function Navbar({
 }) {
   return (
     <div className="navbar">
-      <div className="nav-left">
-        <div className="logo" onClick={() => setActiveTab('home')}>
-          Paham<span style={{ color: 'var(--btn-cyan)' }}>Teks</span>
+      {/* Baris Utama: Logo di kiri, Menu di tengah */}
+      <div className="navbar-main">
+        <div className="nav-left">
+          <div className="logo" onClick={() => setActiveTab('home')}>
+            Paham<span style={{ color: 'var(--btn-cyan)' }}>Teks</span>
+          </div>
         </div>
-      </div>
 
-      {/* Menu navigasi HANYA muncul jika sudah login atau sudah masuk sebagai Akun Tamu */}
-      {user && (
-        <div className="nav-links-wrapper">
-          <div className="nav-links">
-            <button
-              className={`btn-nav ${activeTab === 'home' ? 'active' : ''}`}
-              onClick={() => setActiveTab('home')}
-            >
-              {t('nav_home')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'translator' ? 'active' : ''}`}
-              onClick={() => setActiveTab('translator')}
-            >
-              {t('nav_translator')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'learn' ? 'active' : ''}`}
-              onClick={() => setActiveTab('learn')}
-            >
-              {t('nav_learn')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'coding' ? 'active' : ''}`}
-              onClick={() => setActiveTab('coding')}
-            >
-              {t('nav_coding')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'dictionary' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dictionary')}
-            >
-              {t('nav_dictionary')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'tracking' ? 'active' : ''}`}
-              onClick={() => setActiveTab('tracking')}
-              style={{ color: 'var(--btn-cyan)' }}
-            >
-              {t('nav_dashboard')}
-            </button>
+        {/* Menu Navigasi (Hanya muncul jika sudah login atau masuk sebagai Akun Tamu) */}
+        {user ? (
+          <div className="nav-links-wrapper">
+            <div className="nav-links">
+              <button
+                className={`btn-nav ${activeTab === 'home' ? 'active' : ''}`}
+                onClick={() => setActiveTab('home')}
+              >
+                {t('nav_home')}
+              </button>
+              <button
+                className={`btn-nav ${activeTab === 'translator' ? 'active' : ''}`}
+                onClick={() => setActiveTab('translator')}
+              >
+                {t('nav_translator')}
+              </button>
+              <button
+                className={`btn-nav ${activeTab === 'learn' ? 'active' : ''}`}
+                onClick={() => setActiveTab('learn')}
+              >
+                {t('nav_learn')}
+              </button>
+              <button
+                className={`btn-nav ${activeTab === 'coding' ? 'active' : ''}`}
+                onClick={() => setActiveTab('coding')}
+              >
+                {t('nav_coding')}
+              </button>
+              <button
+                className={`btn-nav ${activeTab === 'dictionary' ? 'active' : ''}`}
+                onClick={() => setActiveTab('dictionary')}
+              >
+                {t('nav_dictionary')}
+              </button>
+              <button
+                className={`btn-nav ${activeTab === 'tracking' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tracking')}
+                style={{ color: 'var(--btn-cyan)' }}
+              >
+                {t('nav_dashboard')}
+              </button>
+              <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
+                🌐 {currentLang.toUpperCase()}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Sisi Kanan Penyeimbang Simetris Desktop */}
+        <div className="nav-right-balancer">
+          {!user && (
             <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
               🌐 {currentLang.toUpperCase()}
             </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
-      {/* Sisi Kanan Navbar */}
-      <div className="nav-right">
-        {user ? (
-          user.isGuest ? (
-            <>
-              <div className="guest-navbar-badge" title="Data sesi bersifat sementara">
+      {/* Baris Kedua (DI BAWAH MENU): Akun Tamu, Buat Akun Resmi, dan Keluar */}
+      {user && (
+        <div className="navbar-sub-row">
+          {user.isGuest ? (
+            <div className="guest-action-bar">
+              <span className="guest-navbar-badge" title="Data sesi bersifat sementara">
                 {t('guest_badge')}
-              </div>
+              </span>
               <button
-                className="btn-auth primary"
-                style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+                className="btn-auth primary guest-sub-upgrade"
                 onClick={() => onOpenAuth('register')}
                 title="Daftar akun resmi agar data tersimpan permanen"
               >
@@ -85,24 +96,19 @@ export default function Navbar({
               <button className="btn-logout" onClick={onLogout}>
                 {t('btn_logout')}
               </button>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="user-action-bar">
               <div className="user-profile" title="Profil Akun Resmi">
                 {user.name}
               </div>
               <button className="btn-logout" onClick={onLogout}>
                 {t('btn_logout')}
               </button>
-            </>
-          )
-        ) : (
-          /* Saat belum login: Tampilan bersih, hanya tombol ganti bahasa */
-          <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
-            🌐 {currentLang.toUpperCase()}
-          </button>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
