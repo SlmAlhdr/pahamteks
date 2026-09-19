@@ -1,7 +1,10 @@
-# Node modules
+# Node modules & locks
 node_modules/
 client/node_modules/
 server/node_modules/
+package-lock.json
+client/package-lock.json
+server/package-lock.json
 
 # Build outputs
 dist/
