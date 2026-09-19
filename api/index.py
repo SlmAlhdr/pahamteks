@@ -189,6 +189,47 @@ def dictionary():
     except Exception as e:
         return jsonify({'result': f'⚠️ AI Error: {str(e)}'})
 
+@app.route('/api/explain_answer', methods=['POST'])
+def explain_answer():
+    data = request.json or {}
+    question = data.get('question', '').strip()
+    user_answer = data.get('user_answer', '').strip()
+    correct_answer = data.get('correct_answer', '').strip()
+    category = data.get('category', 'General')
+    lang = data.get('lang', 'id')
+    
+    if not question:
+        return jsonify({'error': 'Pertanyaan tidak boleh kosong!'}), 400
+        
+    if lang == 'en':
+        prompt = (
+            f"You are a friendly, expert tutor in {category}.\n"
+            f"Question: {question}\n"
+            f"User's chosen answer (Incorrect): {user_answer}\n"
+            f"Correct answer: {correct_answer}\n\n"
+            f"Explain clearly and concisely in 2-3 short bullet points or brief paragraphs:\n"
+            f"1. Why the user's answer ('{user_answer}') is incorrect or what misconception it has.\n"
+            f"2. Why the correct answer ('{correct_answer}') is right, including the underlying rule/concept.\n"
+            f"Keep the tone encouraging, educational, and direct. Do not write generic greetings."
+        )
+    else:
+        prompt = (
+            f"Kamu adalah tutor edukasi yang ramah dan ahli dalam topik {category}.\n"
+            f"Pertanyaan: {question}\n"
+            f"Pilihan jawaban pengguna (Salah): {user_answer}\n"
+            f"Kunci jawaban yang benar: {correct_answer}\n\n"
+            f"Jelaskan secara ringkas, padat, dan jelas dalam 2-3 poin atau paragraf pendek:\n"
+            f"1. Mengapa pilihan '{user_answer}' kurang tepat / salah (jelaskan kekeliruannya).\n"
+            f"2. Mengapa pilihan '{correct_answer}' adalah jawaban yang benar (jelaskan konsep/aturan dasarnya).\n"
+            f"Gunakan bahasa yang bersahabat, mendidik, dan langsung pada intinya tanpa basa-basi."
+        )
+        
+    try:
+        response = generate_safe(prompt)
+        return jsonify({'explanation': response.text.strip()})
+    except Exception as e:
+        return jsonify({'explanation': f"⚠️ Gagal memuat penjelasan AI: {str(e)}"})
+
 @app.route('/')
 @app.route('/index.html')
 def home():

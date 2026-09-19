@@ -152,6 +152,16 @@
         .score-circle { width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: 900; margin: 0 auto 20px; border: 8px solid var(--btn-green); color: var(--btn-green); background: rgba(0,0,0,0.4);}
         .explanation-item { background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; }
         
+        .btn-why-wrong { background: rgba(255, 159, 67, 0.15); color: #ffb86c; border: 1.5px solid var(--warning-orange); border-radius: 16px; padding: 14px 20px; font-size: 1.05rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(255, 159, 67, 0.2); }
+        .btn-why-wrong:hover:not(:disabled) { background: var(--warning-orange); color: #111; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 159, 67, 0.4); }
+        .btn-why-wrong:disabled { opacity: 0.6; cursor: not-allowed; }
+        .quiz-explanation-box { background: rgba(10, 24, 34, 0.92); border: 1.5px solid var(--btn-cyan); border-radius: 16px; padding: 20px; margin-top: 18px; text-align: left; position: relative; backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6); animation: fadeIn 0.35s ease-out; }
+        .explanation-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; }
+        .explanation-title { font-size: 1.05rem; font-weight: 800; color: var(--btn-cyan); display: flex; align-items: center; gap: 8px; }
+        .explanation-content { font-size: 0.98rem; line-height: 1.7; color: #e6edf3; white-space: pre-wrap; }
+        .btn-mini-explain { background: rgba(255, 159, 67, 0.15); color: #ffb86c; border: 1px solid var(--warning-orange); border-radius: 10px; padding: 6px 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-mini-explain:hover:not(:disabled) { background: var(--warning-orange); color: #111; }
+        .breakdown-explanation-box { background: rgba(0, 0, 0, 0.65); border: 1px solid var(--btn-cyan); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 0.92rem; line-height: 1.6; color: #e6edf3; white-space: pre-wrap; animation: fadeIn 0.3s ease-out; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; overflow-y:auto; padding: 20px; backdrop-filter: blur(5px);}
         .modal-box { background: #0a110d; width: 100%; max-width: 450px; border-radius: 20px; padding: 30px; border: 1px solid var(--card-border); text-align: center; position: relative; margin: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8);}
         .auth-input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--card-border); background: #000; color: white; margin-bottom: 10px; font-size: 1rem; outline: none;}
@@ -585,6 +595,24 @@
                 <button class="btn-speak" style="position:static; margin-top:-5px;" title="Baca Soal" onclick="speakText(document.getElementById('quiz-question').innerText, currentLang === 'id' ? 'id-ID' : 'en-US')">🔊</button>
             </div>
             <div id="mc-options"></div>
+            
+            <!-- Tombol & Kotak Penjelasan AI "Mengapa Salah?" -->
+            <button id="btn-why-wrong" class="btn-why-wrong" style="display:none;" onclick="askAiWhyWrong()">
+                <span id="btn-why-wrong-text">💡 Mengapa Salah? (Tanya AI)</span>
+            </button>
+
+            <div id="quiz-explanation-box" class="quiz-explanation-box" style="display:none;">
+                <div class="explanation-header">
+                    <div class="explanation-title">
+                        🤖 <span id="quiz-explanation-title-text">Penjelasan Cerdas AI</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-speak" style="position:static;" title="Baca Penjelasan" onclick="speakText(document.getElementById('quiz-explanation-text').innerText, currentLang === 'id' ? 'id-ID' : 'en-US')">🔊</button>
+                        <button onclick="toggleQuizExplanationBox()" title="Tutup Penjelasan" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:1.3rem; font-weight:bold; line-height:1; padding: 0 5px;">&times;</button>
+                    </div>
+                </div>
+                <div id="quiz-explanation-text" class="explanation-content"></div>
+            </div>
         </div>
         <button id="btn-check" class="btn-huge btn-grey" disabled onclick="processQuiz()" style="width:100%;">Pilih Jawaban</button>
     </div>
@@ -731,6 +759,7 @@
             dict_title: "Kamus Pintar AI", dict_ph: "Ketik kata/sintaks...", dict_btn: "CARI ARTI", dict_btn_rand: "ACAK", dict_btn_rand_short: "Acak", dict_btn_float: "Kamus Pintar AI",
             dict_word_list: "Daftar Kosakata:",
             btn_ans_check: "Kunci Jawaban", btn_ans_next: "Lanjut Soal Berikutnya ➔", btn_ans_select: "Pilih Jawaban",
+            btn_why_wrong: "💡 Mengapa Salah? (Tanya AI)", btn_explain_loading: "🤖 Menganalisis alasan...", explanation_title: "Penjelasan Cerdas AI", btn_mini_explain: "💡 Mengapa Salah?",
             opt_auto_detect: "Mendeteksi...",
             lang_en: "Inggris (English)", lang_id: "Indonesia", lang_ar: "Arab", lang_ja: "Jepang", lang_de: "Jerman",
             lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanyol",
@@ -776,6 +805,7 @@
             dict_title: "Smart AI Dictionary", dict_ph: "Type word/term/syntax...", dict_btn: "SEARCH", dict_btn_rand: "RANDOM", dict_btn_rand_short: "Rand", dict_btn_float: "Smart AI Dictionary",
             dict_word_list: "Vocabulary List:",
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
+            btn_why_wrong: "💡 Why is this wrong? (Ask AI)", btn_explain_loading: "🤖 Analyzing reason...", explanation_title: "AI Smart Explanation", btn_mini_explain: "💡 Why is this wrong?",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
             lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
@@ -871,6 +901,16 @@
         if(btnCheck.innerText.includes("➔")) btnCheck.innerText = dict[currentLang].btn_ans_next;
         else if(btnCheck.disabled) btnCheck.innerText = dict[currentLang].btn_ans_select;
         else btnCheck.innerText = dict[currentLang].btn_ans_check;
+
+        const btnWhyWrongText = document.getElementById("btn-why-wrong-text");
+        if (btnWhyWrongText && !btnWhyWrongText.innerText.includes("...")) {
+            btnWhyWrongText.innerText = dict[currentLang].btn_why_wrong;
+        }
+        const explTitle = document.getElementById("quiz-explanation-title-text");
+        if (explTitle) explTitle.innerText = dict[currentLang].explanation_title;
+        document.querySelectorAll('.btn-mini-explain').forEach(el => {
+            if (!el.innerText.includes("...")) el.innerText = dict[currentLang].btn_mini_explain;
+        });
         
         updateTrackingUI(); 
         updateKamusDropdownText();
@@ -1329,6 +1369,18 @@
         isChecking = true; selectedAnswer = null;
         const currentData = activeQuizPool[currentQuizIndex];
         
+        // Sembunyikan tombol Mengapa Salah dan kotak penjelasan
+        const btnWhyWrong = document.getElementById("btn-why-wrong");
+        if (btnWhyWrong) {
+            btnWhyWrong.style.display = "none";
+            btnWhyWrong.disabled = false;
+            document.getElementById("btn-why-wrong-text").innerText = dict[currentLang].btn_why_wrong;
+        }
+        const explBox = document.getElementById("quiz-explanation-box");
+        if (explBox) explBox.style.display = "none";
+        const explText = document.getElementById("quiz-explanation-text");
+        if (explText) explText.innerText = "";
+        
         document.getElementById("quiz-instruction").innerText = `${currentLang === 'id' ? 'Soal' : 'Question'} ${currentQuizIndex + 1} / ${activeQuizPool.length}`;
         document.getElementById("quiz-question").innerText = currentData.question;
         
@@ -1374,6 +1426,10 @@
         isChecking = false;
         const correctAnswer = activeQuizPool[currentQuizIndex].answer;
         userAnswersLog.push({ question: activeQuizPool[currentQuizIndex].question, selected: "(Waktu Habis)", correct: correctAnswer });
+        const currentData = activeQuizPool[currentQuizIndex];
+        const correctAnswer = currentData.answer;
+        const timedOutLabel = currentLang === 'id' ? "(Waktu Habis)" : "(Time's Up)";
+        userAnswersLog.push({ question: currentData.question, selected: timedOutLabel, correct: correctAnswer, explanation: null });
         
         document.querySelectorAll('.mc-btn').forEach(btn => { 
             btn.disabled = true; 
@@ -1384,6 +1440,13 @@
         btnCheck.disabled = false;
         btnCheck.innerText = currentLang === 'id' ? "Waktu Habis! Lanjut ➔" : "Time's up! Next ➔";
         btnCheck.className = "btn-huge btn-orange";
+
+        const btnWhyWrong = document.getElementById("btn-why-wrong");
+        if (btnWhyWrong) {
+            document.getElementById("btn-why-wrong-text").innerText = dict[currentLang].btn_why_wrong;
+            btnWhyWrong.style.display = "flex";
+            btnWhyWrong.disabled = false;
+        }
     }
 
     function processQuiz() {
@@ -1399,6 +1462,11 @@
         const correctAnswer = activeQuizPool[currentQuizIndex].answer;
         if (selectedAnswer === correctAnswer) correctAnswersCount++;
         userAnswersLog.push({ question: activeQuizPool[currentQuizIndex].question, selected: selectedAnswer, correct: correctAnswer });
+        const currentData = activeQuizPool[currentQuizIndex];
+        const correctAnswer = currentData.answer;
+        const isCorrect = (selectedAnswer === correctAnswer);
+        if (isCorrect) correctAnswersCount++;
+        userAnswersLog.push({ question: currentData.question, selected: selectedAnswer, correct: correctAnswer, explanation: null });
 
         document.querySelectorAll('.mc-btn').forEach(btn => { 
             btn.disabled = true; 
@@ -1406,6 +1474,132 @@
             else if (btn.innerText === selectedAnswer) btn.classList.add('wrong');
         });
         btnCheck.innerText = dict[currentLang].btn_ans_next;
+
+        if (!isCorrect) {
+            const btnWhyWrong = document.getElementById("btn-why-wrong");
+            if (btnWhyWrong) {
+                document.getElementById("btn-why-wrong-text").innerText = dict[currentLang].btn_why_wrong;
+                btnWhyWrong.style.display = "flex";
+                btnWhyWrong.disabled = false;
+            }
+        }
+    }
+
+    function askAiWhyWrong() {
+        const currentData = activeQuizPool[currentQuizIndex];
+        if (!currentData) return;
+        const btnWhyWrong = document.getElementById("btn-why-wrong");
+        const btnText = document.getElementById("btn-why-wrong-text");
+        const explBox = document.getElementById("quiz-explanation-box");
+        const explText = document.getElementById("quiz-explanation-text");
+        const explTitle = document.getElementById("quiz-explanation-title-text");
+
+        if (explTitle) explTitle.innerText = dict[currentLang].explanation_title || "Penjelasan Cerdas AI";
+        btnText.innerText = dict[currentLang].btn_explain_loading || "🤖 Menganalisis alasan...";
+        btnWhyWrong.disabled = true;
+
+        let logItem = userAnswersLog[currentQuizIndex];
+        if (logItem && logItem.explanation) {
+            explText.innerText = logItem.explanation;
+            explBox.style.display = "block";
+            btnWhyWrong.style.display = "none";
+            return;
+        }
+
+        const userAns = selectedAnswer || (currentLang === 'id' ? "(Waktu Habis)" : "(Time's Up)");
+
+        fetch(`${serverUrl}/api/explain_answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: currentData.question,
+                user_answer: userAns,
+                correct_answer: currentData.answer,
+                category: currentQuizCategory,
+                lang: currentLang
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const explanation = data.explanation || (currentLang === 'id' ? "Tidak ada penjelasan tersedia." : "No explanation available.");
+            if (logItem) logItem.explanation = explanation;
+            explText.innerText = explanation;
+            explBox.style.display = "block";
+            btnWhyWrong.style.display = "none";
+        })
+        .catch(err => {
+            explText.innerText = `⚠️ ${err.message || 'Gagal terhubung ke AI'}`;
+            explBox.style.display = "block";
+            btnText.innerText = dict[currentLang].btn_why_wrong;
+            btnWhyWrong.disabled = false;
+        });
+    }
+
+    function toggleQuizExplanationBox() {
+        const box = document.getElementById("quiz-explanation-box");
+        const btnWhyWrong = document.getElementById("btn-why-wrong");
+        if (box) {
+            box.style.display = "none";
+            if (btnWhyWrong) {
+                btnWhyWrong.style.display = "flex";
+                btnWhyWrong.disabled = false;
+                document.getElementById("btn-why-wrong-text").innerText = dict[currentLang].btn_why_wrong;
+            }
+        }
+    }
+
+    function explainBreakdownItem(idx) {
+        const ans = userAnswersLog[idx];
+        if (!ans) return;
+        const box = document.getElementById(`breakdown-box-${idx}`);
+        const btn = document.getElementById(`btn-breakdown-exp-${idx}`);
+        if (!box) return;
+
+        if (box.style.display === "block") {
+            box.style.display = "none";
+            return;
+        }
+
+        if (ans.explanation) {
+            box.innerText = ans.explanation;
+            box.style.display = "block";
+            return;
+        }
+
+        if (btn) {
+            btn.innerText = dict[currentLang].btn_explain_loading || "🤖 Menganalisis...";
+            btn.disabled = true;
+        }
+
+        fetch(`${serverUrl}/api/explain_answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: ans.question,
+                user_answer: ans.selected,
+                correct_answer: ans.correct,
+                category: currentQuizCategory,
+                lang: currentLang
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            ans.explanation = data.explanation || (currentLang === 'id' ? "Tidak ada penjelasan tersedia." : "No explanation available.");
+            box.innerText = ans.explanation;
+            box.style.display = "block";
+            if (btn) {
+                btn.innerText = dict[currentLang].btn_mini_explain || "💡 Mengapa Salah?";
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            box.innerText = `⚠️ Error: ${err.message || 'Gagal terhubung ke AI'}`;
+            box.style.display = "block";
+            if (btn) {
+                btn.innerText = dict[currentLang].btn_mini_explain || "💡 Mengapa Salah?";
+                btn.disabled = false;
+            }
+        });
     }
 
     function showQuizResult() {
@@ -1434,6 +1628,16 @@
                     <div style="font-weight:bold; margin-bottom:5px;">${idx+1}. ${ans.question}</div>
                     <div style="color:${color};">${currentLang === 'id' ? 'Jawaban Anda:' : 'Your Answer:'} ${ans.selected} ${isCorrect ? '✅' : '❌'}</div>
                     ${!isCorrect ? `<div style="color:var(--btn-green);">${currentLang === 'id' ? 'Jawaban Benar:' : 'Correct Answer:'}${ans.correct}</div>` : ''}
+                    <div style="color:${color}; font-weight:700;">${currentLang === 'id' ? 'Jawaban Anda:' : 'Your Answer:'} ${ans.selected} ${isCorrect ? '✅' : '❌'}</div>
+                    ${!isCorrect ? `
+                        <div style="color:var(--btn-green); font-weight:700; margin-top:3px; margin-bottom:6px;">${currentLang === 'id' ? 'Jawaban Benar:' : 'Correct Answer:'} ${ans.correct}</div>
+                        <button class="btn-mini-explain" id="btn-breakdown-exp-${idx}" onclick="explainBreakdownItem(${idx})">
+                            ${dict[currentLang].btn_mini_explain || "💡 Mengapa Salah?"}
+                        </button>
+                        <div id="breakdown-box-${idx}" class="breakdown-explanation-box" style="display: ${ans.explanation ? 'block' : 'none'};">
+                            ${ans.explanation ? ans.explanation : ''}
+                        </div>
+                    ` : ''}
                 </div>
             `;
         });
