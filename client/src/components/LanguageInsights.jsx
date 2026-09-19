@@ -333,3 +333,4 @@ export default function LanguageInsights({ t, currentLang }) {
     </div>
   );
 }
+

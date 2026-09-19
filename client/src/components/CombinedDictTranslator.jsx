@@ -43,3 +43,4 @@ export default function CombinedDictTranslator({ t, currentLang, initialSubTab =
     </div>
   );
 }
+

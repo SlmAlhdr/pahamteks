@@ -33,3 +33,4 @@ export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode 
     </div>
   );
 }
+
