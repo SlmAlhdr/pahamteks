@@ -233,7 +233,7 @@ export default function AuthModal({
               <input
                 type="text"
                 className="auth-input"
-                placeholder="Kode OTP (Demo: 123456)"
+                placeholder="Masukkan 6 digit kode verifikasi"
                 required
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}

@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { getDb, isDbConnected } from '../config/db.js';
+import { sendOtpEmail } from '../utils/emailService.js';
 
 // Fallback in-memory database jika MySQL belum dikonfigurasi password-nya
 const memUsers = new Map();
@@ -42,49 +43,82 @@ export const authResolvers = {
     Mutation: {
         sendOtp: async (_, { email }) => {
             if (!email || !email.trim()) {
-                return { success: false, message: 'Email wajib diisi!' };
+                return { success: false, message: 'Alamat email wajib diisi!' };
             }
             const cleanEmail = email.trim().toLowerCase();
 
+            // 1. Cek apakah email sudah terdaftar
             if (isDbConnected()) {
                 const db = getDb();
                 try {
                     const [existing] = await db.execute('SELECT id FROM users WHERE email = ?', [cleanEmail]);
                     if (existing.length > 0) {
-                        return { success: false, message: 'Email sudah terdaftar! Silakan Sign In.' };
+                        return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
                     }
-                    const otpCode = '123456'; // Default OTP simulasi
-                    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+                } catch (err) {
+                    console.warn('[DB Check Existing Email]', err.message);
+                }
+            } else if (memUsers.has(cleanEmail)) {
+                return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
+            }
+
+            // 2. Generate kode OTP 6-digit acak
+            const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+
+            // 3. Simpan OTP di database atau memori
+            if (isDbConnected()) {
+                const db = getDb();
+                try {
                     await db.execute(
                         'INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE otp_code = VALUES(otp_code), expires_at = VALUES(expires_at)',
                         [cleanEmail, otpCode, expiresAt]
                     );
-                    return { success: true, message: 'Kode OTP verifikasi berhasil dikirim (Kode: 123456)!' };
                 } catch (err) {
-                    console.warn('[DB Send OTP]', err.message);
+                    console.warn('[DB Save OTP]', err.message);
+                    memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
                 }
+            } else {
+                memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
             }
 
-            if (memUsers.has(cleanEmail)) {
-                return { success: false, message: 'Email sudah terdaftar! Silakan Sign In.' };
-            }
-            memOtp.set(cleanEmail, '123456');
-            return { success: true, message: 'Kode OTP terkirim! (Kode simulasi: 123456)' };
+            // 4. Kirim email nyata ke alamat email tujuan
+            const emailResult = await sendOtpEmail(cleanEmail, otpCode);
+
+            return {
+                success: true,
+                message: emailResult.message
+            };
         },
 
         register: async (_, { email, password, fname, lname, otp }) => {
             if (!email || !password || !fname || !lname || !otp) {
-                return { success: false, message: 'Mohon lengkapi semua kolom formulir!' };
+                return { success: false, message: 'Mohon lengkapi semua kolom formulir pendaftaran!' };
             }
             const cleanEmail = email.trim().toLowerCase();
+            const cleanOtp = otp.trim();
 
             if (isDbConnected()) {
                 const db = getDb();
                 try {
-                    // Validasi OTP
-                    const [otpRows] = await db.execute('SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?', [cleanEmail]);
-                    if (otpRows.length === 0 || otpRows[0].otp_code !== otp.trim()) {
-                        return { success: false, message: 'Kode OTP tidak cocok atau sudah kadaluarsa!' };
+                    // Validasi OTP dari Database
+                    const [otpRows] = await db.execute(
+                        'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
+                        [cleanEmail]
+                    );
+
+                    if (otpRows.length === 0) {
+                        return { success: false, message: 'Kode verifikasi belum dikirim atau sudah kadaluarsa. Silakan kirim ulang.' };
+                    }
+
+                    const record = otpRows[0];
+                    if (new Date(record.expires_at) < new Date()) {
+                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
+                        return { success: false, message: 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang kode baru.' };
+                    }
+
+                    if (record.otp_code !== cleanOtp) {
+                        return { success: false, message: 'Kode verifikasi salah! Periksa kembali email Anda.' };
                     }
 
                     const salt = await bcrypt.genSalt(10);
@@ -95,11 +129,12 @@ export const authResolvers = {
                         [cleanEmail, hash, fname.trim(), lname.trim()]
                     );
 
+                    // Hapus OTP setelah berhasil digunakan
                     await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
 
                     return {
                         success: true,
-                        message: 'Pendaftaran berhasil! Selamat datang di PahamTeks.',
+                        message: 'Pendaftaran akun resmi berhasil! Selamat datang di PahamTeks.',
                         user: {
                             id: String(res.insertId),
                             email: cleanEmail,
@@ -111,14 +146,28 @@ export const authResolvers = {
                     if (err.code === 'ER_DUP_ENTRY') {
                         return { success: false, message: 'Email ini sudah terdaftar!' };
                     }
-                    return { success: false, message: `Database error: ${err.message}` };
+                    console.warn('[DB Register Error]', err.message);
                 }
             }
 
             // Fallback memori
-            if (memOtp.get(cleanEmail) !== otp.trim()) {
-                return { success: false, message: 'Kode OTP salah!' };
+            const memRecord = memOtp.get(cleanEmail);
+            if (!memRecord) {
+                return { success: false, message: 'Kode verifikasi belum diminta atau sudah kadaluarsa.' };
             }
+
+            const storedCode = typeof memRecord === 'object' ? memRecord.code : memRecord;
+            const expiresAtTime = typeof memRecord === 'object' ? memRecord.expiresAt : Infinity;
+
+            if (Date.now() > expiresAtTime) {
+                memOtp.delete(cleanEmail);
+                return { success: false, message: 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang.' };
+            }
+
+            if (storedCode !== cleanOtp) {
+                return { success: false, message: 'Kode verifikasi salah!' };
+            }
+
             const fullName = `${fname} ${lname}`.trim();
             memUsers.set(cleanEmail, { email: cleanEmail, password, name: fullName });
             memOtp.delete(cleanEmail);
