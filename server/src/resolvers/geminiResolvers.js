@@ -47,11 +47,26 @@ export const geminiResolvers = {
         },
 
         dictionary: async (_, { keyword }) => {
+        dictionary: async (_, { keyword, lang = 'id' }) => {
             if (!keyword || !keyword.trim()) {
                 return { result: '', error: 'Kata kunci pencarian tidak boleh kosong!' };
+                return { result: '', error: lang === 'en' ? 'Search keyword cannot be empty!' : 'Kata kunci pencarian tidak boleh kosong!' };
             }
             try {
                 const prompt = `Jelaskan kata atau istilah "${keyword}" dalam konteks kamus edukasi bahasa & pemrograman secara alami, mengalir, dan ramah seperti seorang mentor manusia yang sedang menjelaskan langsung (human-like).
+                const isEn = lang === 'en';
+                const prompt = isEn
+                    ? `Explain the word or term "${keyword}" in the context of an educational language & programming dictionary in a natural, fluent, and warm manner, like an expert human mentor speaking directly to a student.
+
+Writing Guidelines:
+- Do NOT include words like "AI Dictionary" or horizontal lines "---".
+- Start directly with its essential definition/function in clear, accessible English.
+- Include:
+  1. Core Definition & Concept: explain what it means and its primary purpose.
+  2. Real-world Example: a natural example sentence (for languages) or a clean code snippet (for programming).
+  3. Quick Tip / Best Practice: helpful practical context.
+- Politely decline only if completely outside education, languages, science, or technology.`
+                    : `Jelaskan kata atau istilah "${keyword}" dalam konteks kamus edukasi bahasa & pemrograman secara alami, mengalir, dan ramah seperti seorang mentor manusia yang sedang menjelaskan langsung (human-like).
 
 Pedoman Penulisan:
 - JANGAN menuliskan kata "Kamus AI", "Kamus Pintar AI", atau garis pemisah "---".
@@ -61,15 +76,20 @@ Pedoman Penulisan:
   2. Contoh Nyata: kalimat contoh (jika kosakata bahasa) atau contoh kode sederhana (jika pemrograman).
   3. Tips Singkat: konteks penggunaan yang berguna.
 - Tolak dengan sopan hanya jika topik benar-benar di luar edukasi, bahasa, sains, atau teknologi.`;
+
                 const text = await generateSafeContent(prompt);
                 return { result: text, error: null };
             } catch (err) {
                 return { result: '', error: `⚠️ AI Error: ${err.message}` };
+                return { result: '', error: `⚠️ Error: ${err.message}` };
             }
         },
 
         generateQuiz: async (_, { categories, level }) => {
             const cacheKey = `${level}_${categories.sort().join('_')}`;
+        generateQuiz: async (_, { categories, level, lang = 'id' }) => {
+            const isEn = lang === 'en';
+            const cacheKey = `${lang}_${level}_${categories.sort().join('_')}`;
             if (quizCache.has(cacheKey)) {
                 const cached = [...quizCache.get(cacheKey)];
                 return cached.sort(() => Math.random() - 0.5);
@@ -89,6 +109,35 @@ Pedoman Penulisan:
                 `- Di array "options", tulis teks pilihannya saja secara murni. JANGAN menambahkan awalan huruf seperti "A.", "B.", "C.", "D." di awal teks.\n` +
                 `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
                 `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
+            const prompt = isEn
+                ? `Create 5 educational multiple-choice quiz questions for ${level || 'Beginner'} level on the topics: ${categories.join(', ')}.\n` +
+                  `Format as exact JSON Array:\n` +
+                  `[\n` +
+                  `  {\n` +
+                  `    "instruction": "Short prompt instruction (e.g., Choose the correct answer)",\n` +
+                  `    "question": "Complete question text in English",\n` +
+                  `    "options": ["First option", "Second option", "Third option", "Fourth option"],\n` +
+                  `    "answer": "A"\n` +
+                  `  }\n` +
+                  `]\n` +
+                  `IMPORTANT:\n` +
+                  `- In the 'options' array, write ONLY clean option text without 'A.', 'B.', etc.\n` +
+                  `- The 'answer' value MUST be a single capital letter ('A', 'B', 'C', or 'D') corresponding to the correct option index.\n` +
+                  `- Replace double quotes (") inside questions/options with single quotes ('). Return ONLY a valid JSON array.`
+                : `Buat 5 soal kuis edukatif tingkat ${level || 'Pemula'} materi: ${categories.join(', ')}.\n` +
+                  `Format JSON Array persis ini:\n` +
+                  `[\n` +
+                  `  {\n` +
+                  `    "instruction": "Perintah singkat (contoh: Pilihlah jawaban yang paling tepat)",\n` +
+                  `    "question": "Kalimat soal lengkap",\n` +
+                  `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
+                  `    "answer": "A"\n` +
+                  `  }\n` +
+                  `]\n` +
+                  `PENTING:\n` +
+                  `- Di array "options", tulis teks pilihannya saja secara murni. JANGAN menambahkan awalan huruf seperti "A.", "B.", "C.", "D." di awal teks.\n` +
+                  `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
+                  `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
                 const raw = await generateSafeContent(prompt);
@@ -99,8 +148,10 @@ Pedoman Penulisan:
                 return [
                     {
                         instruction: "🚨 SISTEM ERROR",
+                        instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
                         options: ["Cek API Key", "Tunggu", "Refresh", "Ok"],
+                        options: isEn ? ["Check API Key", "Wait", "Refresh", "Ok"] : ["Cek API Key", "Tunggu", "Refresh", "Ok"],
                         answer: "A"
                     }
                 ];
@@ -122,6 +173,37 @@ Pedoman Penulisan:
                 `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.".\n` +
                 `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") sesuai opsi yang benar.\n` +
                 `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
+        generateChallenge: async (_, { category, lang = 'id' }) => {
+            const isEn = lang === 'en';
+            const prompt = isEn
+                ? `Create 3 challenging exam questions on the topic: ${category || 'General'}.\n` +
+                  `Format as exact JSON Array:\n` +
+                  `[\n` +
+                  `  {\n` +
+                  `    "instruction": "Advanced Challenge",\n` +
+                  `    "question": "Complete question text in English",\n` +
+                  `    "options": ["First option", "Second option", "Third option", "Fourth option"],\n` +
+                  `    "answer": "A"\n` +
+                  `  }\n` +
+                  `]\n` +
+                  `IMPORTANT:\n` +
+                  `- In the 'options' array, provide ONLY clean option text without 'A.', 'B.' prefixes.\n` +
+                  `- The 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') corresponding to the correct option index.\n` +
+                  `- Replace double quotes (") with single quotes ('). Return ONLY a valid JSON array.`
+                : `Buat 3 soal ujian tantangan materi: ${category || 'General'}.\n` +
+                  `Format JSON Array persis ini:\n` +
+                  `[\n` +
+                  `  {\n` +
+                  `    "instruction": "Tantangan Khusus",\n` +
+                  `    "question": "Kalimat soal lengkap",\n` +
+                  `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
+                  `    "answer": "A"\n` +
+                  `  }\n` +
+                  `]\n` +
+                  `PENTING:\n` +
+                  `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.".\n` +
+                  `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") sesuai opsi yang benar.\n` +
+                  `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
                 const raw = await generateSafeContent(prompt);
@@ -130,8 +212,10 @@ Pedoman Penulisan:
                 return [
                     {
                         instruction: "🚨 SISTEM ERROR",
+                        instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
                         options: ["Cek API", "Tunggu", "Ok", "Batal"],
+                        options: isEn ? ["Check API", "Wait", "Ok", "Cancel"] : ["Cek API", "Tunggu", "Ok", "Batal"],
                         answer: "A"
                     }
                 ];

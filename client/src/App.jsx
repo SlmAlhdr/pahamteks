@@ -196,6 +196,7 @@ export default function App() {
           <>
             {activeTab === 'home' && (
               <HomeHero onNavigate={setActiveTab} t={t} />
+              <HomeHero onNavigate={setActiveTab} t={t} currentLang={currentLang} />
             )}
             {activeTab === 'learning' && (
               <LearningHub
@@ -217,6 +218,7 @@ export default function App() {
                 history={quizHistory}
                 onOpenAuth={handleOpenAuth}
                 onBackHome={() => setActiveTab('home')}
+                currentLang={currentLang}
               />
             )}
             {/* Fallback kompatibilitas jika navigasi memanggil nama tab spesifik */}
@@ -242,6 +244,7 @@ export default function App() {
                 history={quizHistory}
                 onOpenAuth={handleOpenAuth}
                 onBackHome={() => setActiveTab('home')}
+                currentLang={currentLang}
               />
             )}
           </>

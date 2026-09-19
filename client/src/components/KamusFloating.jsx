@@ -21,6 +21,7 @@ export default function KamusFloating({ t, currentLang }) {
     setResult(currentLang === 'id' ? 'Mencari penjelasan...' : 'Searching definition...');
     try {
       const res = await fetchDictionary({ variables: { keyword: kw } });
+      const res = await fetchDictionary({ variables: { keyword: kw, lang: currentLang } });
       if (res.data?.dictionary?.result) {
         setResult(res.data.dictionary.result);
       } else if (res.data?.dictionary?.error) {
@@ -97,8 +98,10 @@ export default function KamusFloating({ t, currentLang }) {
                 }}
                 onClick={handleRandom}
                 title="Pilih kata acak"
+                title={currentLang === 'en' ? 'Pick a random word' : 'Pilih kata acak'}
               >
                 {t('dict_btn_rand_short') || 'Acak'}
+                {t('dict_btn_rand_short') || (currentLang === 'en' ? 'Random' : 'Acak')}
               </button>
             </div>
 
@@ -109,6 +112,7 @@ export default function KamusFloating({ t, currentLang }) {
               disabled={loading || !keyword.trim()}
             >
               {loading ? 'Mencari...' : t('dict_btn')}
+              {loading ? (currentLang === 'en' ? 'Searching...' : 'Mencari...') : t('dict_btn')}
             </button>
 
             {result && (
@@ -130,6 +134,7 @@ export default function KamusFloating({ t, currentLang }) {
                   }}
                   onClick={() => speakText(result)}
                   title="Baca Hasil"
+                  title={currentLang === 'en' ? 'Listen to definition' : 'Baca Hasil'}
                 >
                   🔊
                 </button>

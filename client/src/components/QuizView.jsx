@@ -42,6 +42,7 @@ export function isOptionCorrect(opt, index, q) {
 }
 
 const LEARN_CATEGORIES = [
+const LEARN_CATEGORIES_ID = [
   { name: 'Populer (Indo & Inggris)', items: ['Indonesia (Baku)', 'Indonesia (Gaul)', 'Inggris (Grammar)', 'Inggris (Slang)'] },
   { name: 'Bahasa Nusantara', items: ['Jawa', 'Sunda', 'Minang', 'Bali'] },
   { name: 'Timur Tengah & Afrika', items: ['Arab', "Al-Qur'an", 'Ibrani', 'Turki', 'Persia'] },
@@ -50,10 +51,26 @@ const LEARN_CATEGORIES = [
 ];
 
 const CODING_CATEGORIES = [
+const LEARN_CATEGORIES_EN = [
+  { name: 'Popular (Indonesian & English)', items: ['Indonesian (Formal)', 'Indonesian (Slang)', 'English (Grammar)', 'English (Slang)'] },
+  { name: 'Indonesian Regional Languages', items: ['Javanese', 'Sundanese', 'Minangkabau', 'Balinese'] },
+  { name: 'Middle East & Africa', items: ['Arabic', "Quranic Arabic", 'Hebrew', 'Turkish', 'Persian'] },
+  { name: 'Asia & Pacific', items: ['Japanese', 'Korean', 'Mandarin', 'Hindi', 'Thai'] },
+  { name: 'Europe', items: ['Spanish', 'French', 'German', 'Russian', 'Italian', 'Dutch'] }
+];
+
+const CODING_CATEGORIES_ID = [
   { name: 'Situs & Naskah', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
   { name: 'Sistem & Perangkat Lunak', items: ['C / C++', 'Rust', 'Go (Golang)', 'Java', 'C#'] },
   { name: 'Data & Basis Data', items: ['SQL Database', 'NoSQL MongoDB', 'Struktur Data (Array, Tree)', 'Machine Learning'] },
   { name: 'Teori & Algoritma', items: ['Algoritma Sorting', 'Kriptografi & Keamanan', 'Design Patterns (OOP)', 'API & GraphQL'] }
+];
+
+const CODING_CATEGORIES_EN = [
+  { name: 'Web & Scripting', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
+  { name: 'Systems & Software', items: ['C / C++', 'Rust', 'Go (Golang)', 'Java', 'C#'] },
+  { name: 'Data & Databases', items: ['SQL Database', 'NoSQL MongoDB', 'Data Structures (Array, Tree)', 'Machine Learning'] },
+  { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
 export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz }) {
@@ -78,14 +95,23 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   const [explainMutation] = useMutation(EXPLAIN_ANSWER_MUTATION);
 
   const categoriesData = mode === 'learn' ? LEARN_CATEGORIES : CODING_CATEGORIES;
+  const learnCategories = currentLang === 'en' ? LEARN_CATEGORIES_EN : LEARN_CATEGORIES_ID;
+  const codingCategories = currentLang === 'en' ? CODING_CATEGORIES_EN : CODING_CATEGORIES_ID;
+  const categoriesData = mode === 'learn' ? learnCategories : codingCategories;
 
   // Reset state saat mode berganti
+  // Reset state saat mode atau bahasa berganti
   useEffect(() => {
     setQuestions([]);
     setIsFinished(false);
     setSelectedAnswerIndex(null);
     setSelectedTopic(mode === 'learn' ? 'Inggris (Grammar)' : 'JavaScript / TypeScript');
   }, [mode]);
+    const defaultTopic = mode === 'learn' 
+      ? (currentLang === 'en' ? 'English (Grammar)' : 'Inggris (Grammar)')
+      : 'JavaScript / TypeScript';
+    setSelectedTopic(defaultTopic);
+  }, [mode, currentLang]);
 
   const handleStart = async (isChallengeMode = false) => {
     setCurrentIndex(0);
@@ -98,13 +124,16 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     try {
       if (isChallengeMode) {
         const res = await fetchChallenge({ variables: { category: selectedTopic } });
+        const res = await fetchChallenge({ variables: { category: selectedTopic, lang: currentLang } });
         if (res.data?.generateChallenge) setQuestions(res.data.generateChallenge);
       } else {
         const res = await fetchQuiz({ variables: { categories: [selectedTopic], level } });
+        const res = await fetchQuiz({ variables: { categories: [selectedTopic], level, lang: currentLang } });
         if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
       }
     } catch (err) {
       alert('Gagal memuat soal: ' + err.message);
+      alert(currentLang === 'en' ? ('Failed to load questions: ' + err.message) : ('Gagal memuat soal: ' + err.message));
     }
   };
 
@@ -179,6 +208,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
       }
     } catch (err) {
       setExplanation('⚠️ Gagal: ' + err.message);
+      setExplanation((currentLang === 'en' ? '⚠️ Failed: ' : '⚠️ Gagal: ') + err.message);
     } finally {
       setExplaining(false);
     }
@@ -259,6 +289,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               disabled={quizLoading || challengeLoading}
             >
               {quizLoading ? 'Menyiapkan...' : (mode === 'learn' ? t('btn_start_learn') : t('btn_start_code'))}
+              {quizLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : (mode === 'learn' ? t('btn_start_learn') : t('btn_start_code'))}
             </button>
             <button
               className="btn-huge btn-cyan"
@@ -266,6 +297,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               disabled={quizLoading || challengeLoading}
             >
               {challengeLoading ? 'Menyiapkan...' : t('btn_challenge')}
+              {challengeLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : t('btn_challenge')}
             </button>
           </div>
         </div>
@@ -281,6 +313,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               </span>
               <span style={{ color: 'var(--btn-green)', fontWeight: 800 }}>
                 Skor: {score}
+                {currentLang === 'en' ? 'Score' : 'Skor'}: {score}
               </span>
             </div>
 
@@ -338,6 +371,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                   disabled={explaining}
                 >
                   {explaining ? 'Menyiapkan penjelasan...' : `💡 ${t('btn_why_wrong')}`}
+                  {explaining ? (currentLang === 'en' ? 'Preparing explanation...' : 'Menyiapkan penjelasan...') : `💡 ${t('btn_why_wrong')}`}
                 </button>
 
                 {explanation && (
@@ -351,6 +385,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                         style={{ width: '32px', height: '32px', position: 'static' }}
                         onClick={() => speakText(explanation)}
                         title="Dengarkan Penjelasan"
+                        title={currentLang === 'en' ? 'Listen to Explanation' : 'Dengarkan Penjelasan'}
                       >
                         🔊
                       </button>
@@ -385,6 +420,9 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
             </div>
             <p style={{ fontSize: '1.2rem', marginBottom: '25px', fontWeight: 700 }}>
               Benar <span style={{ color: 'var(--btn-green)' }}>{score}</span> dari {questions.length} Soal
+              {currentLang === 'en' ? 'Correct ' : 'Benar '}
+              <span style={{ color: 'var(--btn-green)' }}>{score}</span>
+              {currentLang === 'en' ? ` out of ${questions.length} Questions` : ` dari ${questions.length} Soal`}
             </p>
 
             <button className="btn-huge btn-green" onClick={() => setQuestions([])}>

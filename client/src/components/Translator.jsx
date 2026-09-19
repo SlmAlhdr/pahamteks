@@ -118,6 +118,7 @@ export default function Translator({ t, currentLang }) {
           } catch (err) {
             setMicStatus('');
             alert('Gagal transkripsi suara: ' + err.message);
+            alert((currentLang === 'en' ? 'Voice transcription failed: ' : 'Gagal transkripsi suara: ') + err.message);
           }
         };
       };
@@ -127,6 +128,7 @@ export default function Translator({ t, currentLang }) {
       setMicStatus(currentLang === 'id' ? '🎙️ Sedang mendengarkan suara Anda...' : '🎙️ Listening to your voice...');
     } catch (err) {
       alert('Tidak dapat mengakses mikrofon: ' + err.message);
+      alert((currentLang === 'en' ? 'Unable to access microphone: ' : 'Tidak dapat mengakses mikrofon: ') + err.message);
     }
   };
 
@@ -186,6 +188,7 @@ export default function Translator({ t, currentLang }) {
                   className="btn-speak"
                   onClick={() => speakText(sourceText, sourceLang)}
                   title="Dengarkan Suara"
+                  title={currentLang === 'en' ? 'Listen to Audio' : 'Dengarkan Suara'}
                   type="button"
                 >
                   🔊
@@ -197,6 +200,11 @@ export default function Translator({ t, currentLang }) {
           {/* Swap Button */}
           <div className="btn-swap-wrap">
             <button className="btn-swap" onClick={handleSwap} title="Tukar Bahasa">
+            <button
+              className="btn-swap"
+              onClick={handleSwap}
+              title={currentLang === 'en' ? 'Swap Languages' : 'Tukar Bahasa'}
+            >
               ⇄
             </button>
           </div>
@@ -223,6 +231,7 @@ export default function Translator({ t, currentLang }) {
                   className="btn-copy"
                   onClick={copyToClipboard}
                   title="Salin Teks"
+                  title={currentLang === 'en' ? 'Copy Text' : 'Salin Teks'}
                   type="button"
                 >
                   📋
@@ -231,6 +240,7 @@ export default function Translator({ t, currentLang }) {
                   className="btn-speak"
                   onClick={() => speakText(targetText, targetLang)}
                   title="Dengarkan Suara"
+                  title={currentLang === 'en' ? 'Listen to Audio' : 'Dengarkan Suara'}
                   type="button"
                 >
                   🔊
@@ -253,6 +263,7 @@ export default function Translator({ t, currentLang }) {
             disabled={translating || transcribing}
           >
             {translating ? 'Menerjemahkan...' : t('btn_translate')}
+            {translating ? (currentLang === 'en' ? 'Translating...' : 'Menerjemahkan...') : t('btn_translate')}
           </button>
         </div>
       </div>
