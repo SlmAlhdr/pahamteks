@@ -1247,15 +1247,170 @@
         sT.value = tT.value; tT.value = ""; triggerTranslate();
     }
 
+    let mediaRecorderInstance = null;
+    let audioChunks = [];
+    let isAudioRecording = false;
+    let autoStopRecordingTimer = null;
     let speechRecognitionInstance = null;
     let isSpeechRecording = false;
 
     function toggleSpeechRecognition() {
+        const micBtn = document.getElementById("btn-voice-input");
+        const statusElem = document.getElementById("status");
+        const sourceText = document.getElementById("source-text");
+        const sourceLang = document.getElementById("source-lang").value;
+
+        if (isAudioRecording) {
+            stopAudioRecording();
+            return;
+        }
+        if (isSpeechRecording) {
+            if (speechRecognitionInstance) {
+                try { speechRecognitionInstance.stop(); } catch(e) {}
+            }
+            return;
+        }
+
+        // 1. Coba MediaRecorder untuk mengirim audio langsung ke backend AI Gemini (/api/transcribe)
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    audioChunks = [];
+                    isAudioRecording = true;
+
+                    let chosenMime = 'audio/webm';
+                    if (!MediaRecorder.isTypeSupported('audio/webm')) {
+                        if (MediaRecorder.isTypeSupported('audio/mp4')) chosenMime = 'audio/mp4';
+                        else if (MediaRecorder.isTypeSupported('audio/ogg')) chosenMime = 'audio/ogg';
+                        else if (MediaRecorder.isTypeSupported('audio/wav')) chosenMime = 'audio/wav';
+                        else chosenMime = '';
+                    }
+
+                    const options = chosenMime ? { mimeType: chosenMime } : {};
+                    try {
+                        mediaRecorderInstance = new MediaRecorder(stream, options);
+                    } catch(e) {
+                        mediaRecorderInstance = new MediaRecorder(stream);
+                    }
+
+                    mediaRecorderInstance.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorderInstance.onstart = () => {
+                        if (micBtn) {
+                            micBtn.classList.add("listening");
+                            micBtn.title = dict[currentLang].trans_mic_listening || "Merekam... Klik mic lagi untuk memproses";
+                        }
+                        if (statusElem) {
+                            statusElem.innerText = currentLang === 'id' 
+                                ? "🎙️ Sedang merekam suara... (Bicara sekarang, lalu klik mic lagi untuk memproses)" 
+                                : "🎙️ Recording voice... (Speak now, click mic again to process)";
+                            statusElem.style.color = "var(--warning-orange)";
+                        }
+
+                        // Batas maksimal rekaman 12 detik
+                        clearTimeout(autoStopRecordingTimer);
+                        autoStopRecordingTimer = setTimeout(() => {
+                            if (isAudioRecording) stopAudioRecording();
+                        }, 12000);
+                    };
+
+                    mediaRecorderInstance.onstop = () => {
+                        stream.getTracks().forEach(track => track.stop());
+                        clearTimeout(autoStopRecordingTimer);
+
+                        if (micBtn) {
+                            micBtn.classList.remove("listening");
+                            micBtn.title = dict[currentLang].trans_mic_start || "Bicara (Speech-to-Text)";
+                        }
+
+                        if (audioChunks.length === 0) {
+                            if (statusElem) {
+                                statusElem.innerText = currentLang === 'id' ? "⚠️ Tidak ada suara terekam." : "⚠️ No voice recorded.";
+                                statusElem.style.color = "var(--wrong)";
+                            }
+                            isAudioRecording = false;
+                            return;
+                        }
+
+                        if (statusElem) {
+                            statusElem.innerText = currentLang === 'id' ? "🤖 AI mentranskripsi suara Anda..." : "🤖 AI transcribing your voice...";
+                            statusElem.style.color = "var(--btn-cyan)";
+                        }
+
+                        const actualMime = mediaRecorderInstance.mimeType || 'audio/webm';
+                        const recordedBlob = new Blob(audioChunks, { type: actualMime });
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(recordedBlob);
+                        reader.onloadend = () => {
+                            const base64Audio = reader.result;
+                            fetch(`${serverUrl}/api/transcribe`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    audio: base64Audio,
+                                    mime_type: actualMime,
+                                    lang: currentLang
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                isAudioRecording = false;
+                                if (data.text) {
+                                    sourceText.value = data.text;
+                                    if (statusElem) {
+                                        statusElem.innerText = currentLang === 'id' ? "✅ Transkripsi selesai!" : "✅ Transcription complete!";
+                                        statusElem.style.color = "var(--btn-green)";
+                                    }
+                                    triggerTranslate();
+                                } else if (data.error) {
+                                    if (statusElem) {
+                                        statusElem.innerText = `⚠️ ${data.error}`;
+                                        statusElem.style.color = "var(--wrong)";
+                                    }
+                                }
+                            })
+                            .catch(err => {
+                                isAudioRecording = false;
+                                console.warn("Backend transcribe error:", err);
+                                if (statusElem) {
+                                    statusElem.innerText = currentLang === 'id' ? "⚠️ Gagal menghubungi server transkripsi." : "⚠️ Failed to connect to transcription server.";
+                                    statusElem.style.color = "var(--wrong)";
+                                }
+                            });
+                        };
+                    };
+
+                    mediaRecorderInstance.start();
+                })
+                .catch(err => {
+                    isAudioRecording = false;
+                    console.warn("getUserMedia failed, using WebSpeech fallback:", err);
+                    runSpeechRecognitionFallback();
+                });
+        } else {
+            runSpeechRecognitionFallback();
+        }
+    }
+
+    function stopAudioRecording() {
+        isAudioRecording = false;
+        clearTimeout(autoStopRecordingTimer);
+        if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
+            try {
+                mediaRecorderInstance.stop();
+            } catch(e) {}
+        }
+    }
+
+    function runSpeechRecognitionFallback() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
             alert(currentLang === 'id' 
-                ? "Browser Anda belum mendukung Web Speech Recognition (Speech-to-Text). Silakan gunakan Google Chrome, Microsoft Edge, atau browser berbasis Chromium." 
-                : "Your browser does not support Web Speech Recognition (Speech-to-Text). Please use Google Chrome, Microsoft Edge, or a Chromium-based browser.");
+                ? "Browser Anda belum mendukung input mikrofon atau Speech-to-Text. Silakan gunakan Google Chrome atau Edge." 
+                : "Your browser does not support microphone input or Speech-to-Text. Please use Google Chrome or Edge.");
             return;
         }
 
@@ -1263,13 +1418,6 @@
         const statusElem = document.getElementById("status");
         const sourceText = document.getElementById("source-text");
         const sourceLang = document.getElementById("source-lang").value;
-
-        if (isSpeechRecording) {
-            if (speechRecognitionInstance) {
-                try { speechRecognitionInstance.stop(); } catch(e) {}
-            }
-            return;
-        }
 
         try {
             speechRecognitionInstance = new SpeechRecognition();
@@ -1309,14 +1457,14 @@
 
         speechRecognitionInstance.onresult = (event) => {
             let transcript = "";
-            for (let i = 0; i < event.results.length; i++) {
+            for (let i = event.resultIndex; i < event.results.length; i++) {
                 transcript += event.results[i][0].transcript;
             }
             sourceText.value = transcript;
         };
 
         speechRecognitionInstance.onerror = (event) => {
-            console.warn("Speech recognition error:", event.error);
+            console.warn("Speech recognition fallback error:", event.error);
             if (statusElem) {
                 if (event.error === 'not-allowed') {
                     statusElem.innerText = currentLang === 'id' 
@@ -1343,7 +1491,7 @@
         try {
             speechRecognitionInstance.start();
         } catch (e) {
-            console.error("Speech start error:", e);
+            console.error("Speech fallback start error:", e);
             stopRecordingUI();
         }
     }

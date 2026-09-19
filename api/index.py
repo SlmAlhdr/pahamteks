@@ -6,6 +6,7 @@ import random
 import os
 import re
 import itertools
+import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -34,21 +35,26 @@ def generate_safe(prompt):
         raise Exception("API Key Gemini belum terpasang di Vercel (Gunakan GEMINI_API_KEY_1).")
     
     max_attempts = len(api_keys_pool) * 2
+    # Prioritaskan model Gemini resmi yang mendukung teks & multimodal audio
+    models_to_try = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-3.6-flash']
     
     for attempt in range(max_attempts):
         current_key = next(key_cycle)
         genai.configure(api_key=current_key)
-        model = genai.GenerativeModel('gemini-3.6-flash')
         
-        try:
-            return model.generate_content(prompt)
-        except Exception as e:
-            err_str = str(e).lower()
-            if "429" in err_str or "quota" in err_str:
-                print(f"[ROUND ROBIN] Kunci limit. Beralih ke kunci berikutnya...")
-                continue
-            else:
-                raise e
+        for m_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(m_name)
+                return model.generate_content(prompt)
+            except Exception as e:
+                err_str = str(e).lower()
+                if "404" in err_str or "not found" in err_str:
+                    continue
+                elif "429" in err_str or "quota" in err_str:
+                    print(f"[ROUND ROBIN] Kunci limit. Beralih ke kunci berikutnya...")
+                    break
+                else:
+                    raise e
                 
     raise Exception("Seluruh kuota dari semua API Key Anda telah habis. Mohon tunggu beberapa saat.")
 
@@ -229,6 +235,61 @@ def explain_answer():
         return jsonify({'explanation': response.text.strip()})
     except Exception as e:
         return jsonify({'explanation': f"⚠️ Gagal memuat penjelasan AI: {str(e)}"})
+
+@app.route('/api/transcribe', methods=['POST'])
+@app.route('/api/speech_to_text', methods=['POST'])
+def transcribe():
+    audio_bytes = None
+    mime_type = "audio/webm"
+    lang = "id"
+
+    # 1. Mendukung multipart/form-data upload file audio
+    if 'audio' in request.files:
+        file = request.files['audio']
+        audio_bytes = file.read()
+        mime_type = file.mimetype or "audio/webm"
+        lang = request.form.get('lang', 'id')
+    # 2. Mendukung JSON payload dengan base64 audio
+    elif request.is_json or request.json:
+        data = request.json or {}
+        audio_data = data.get('audio', '')
+        mime_type = data.get('mime_type', 'audio/webm')
+        lang = data.get('lang', 'id')
+        if ',' in audio_data:
+            audio_data = audio_data.split(',', 1)[1]
+        if audio_data:
+            try:
+                audio_bytes = base64.b64decode(audio_data)
+            except Exception as e:
+                return jsonify({'error': 'Format Base64 audio tidak valid!'}), 400
+
+    if not audio_bytes:
+        return jsonify({'error': 'Data audio tidak ditemukan atau kosong!'}), 400
+
+    # Normalisasi format mime type
+    clean_mime = mime_type.split(';')[0].strip()
+    if not clean_mime:
+        clean_mime = "audio/webm"
+
+    if lang == 'en':
+        prompt_text = "Please transcribe the speech in this audio verbatim into text. ONLY return the plain transcribed words, with no extra commentary, notes, or quotes."
+    else:
+        prompt_text = "Transkripsikan ucapan yang terdengar di dalam audio ini ke dalam teks secara akurat dan persis. HANYA berikan teks hasil transkripsinya saja, tanpa tanda petik atau penjelasan tambahan."
+
+    content_parts = [
+        {
+            "mime_type": clean_mime,
+            "data": audio_bytes
+        },
+        prompt_text
+    ]
+
+    try:
+        response = generate_safe(content_parts)
+        transcription = response.text.strip().strip('"').strip("'")
+        return jsonify({'text': transcription})
+    except Exception as e:
+        return jsonify({'error': f"Gagal mentranskripsi audio: {str(e)}"}), 500
 
 @app.route('/')
 @app.route('/index.html')
