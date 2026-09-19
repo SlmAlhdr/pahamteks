@@ -1,6 +1,5 @@
 import React from 'react';
 
-export default function HomeHero({ onNavigate, t }) {
 export default function HomeHero({ onNavigate, t, currentLang }) {
   return (
     <div className="page" style={{ width: '100%', maxWidth: '1000px' }}>
@@ -14,7 +13,6 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
         <div className="feature-card">
           <h2>📚 {t('nav_learning')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('card_2_desc')} Asah juga logika pemrograman algoritma dalam satu modul belajar terintegrasi.
             {t('card_2_desc')} {currentLang === 'en' ? 'Sharpen your coding logic and algorithms in one integrated learning module.' : 'Asah juga logika pemrograman algoritma dalam satu modul belajar terintegrasi.'}
           </p>
           <button
@@ -30,7 +28,6 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
         <div className="feature-card">
           <h2>📖 {t('nav_dict_trans')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('card_1_desc')} Dilengkapi glosarium kosakata lengkap A - Z dan fitur komparasi wawasan bahasa.
             {t('card_1_desc')} {currentLang === 'en' ? 'Equipped with a comprehensive A - Z glossary and language insights comparison.' : 'Dilengkapi glosarium kosakata lengkap A - Z dan fitur komparasi wawasan bahasa.'}
           </p>
           <button
@@ -46,7 +43,6 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
         <div className="feature-card">
           <h2>📊 {t('account_title')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('account_subtitle')} Pantau tingkat akurasi dan riwayat pengerjaan kuis Anda.
             {t('account_subtitle')} {currentLang === 'en' ? 'Monitor your learning accuracy rate and complete quiz session history.' : 'Pantau tingkat akurasi dan riwayat pengerjaan kuis Anda.'}
           </p>
           <button
@@ -54,7 +50,6 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
             style={{ marginTop: 'auto', width: '100%' }}
             onClick={() => onNavigate('account')}
           >
-            Buka Pelacakan Akun
             {currentLang === 'en' ? 'Open Account Tracking' : 'Buka Pelacakan Akun'}
           </button>
         </div>

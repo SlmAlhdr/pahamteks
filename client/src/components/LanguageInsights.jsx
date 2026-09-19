@@ -3,8 +3,6 @@ import { useLazyQuery } from '@apollo/client';
 import { GET_DICTIONARY } from '../graphql/queries';
 import HumanFormattedText from './HumanFormattedText';
 
-// Database profil perbandingan bahasa manusia
-const HUMAN_LANG_DATA = {
 // Database profil perbandingan bahasa manusia (Indonesia)
 const HUMAN_LANG_DATA_ID = {
   'Indonesia': {
@@ -73,8 +71,6 @@ const HUMAN_LANG_DATA_ID = {
   }
 };
 
-// Database profil perbandingan bahasa pemrograman
-const CODE_LANG_DATA = {
 // Database profil perbandingan bahasa manusia (English)
 const HUMAN_LANG_DATA_EN = {
   'Indonesia': {
@@ -302,8 +298,6 @@ export default function LanguageInsights({ t, currentLang }) {
   };
 
   const handleRunAiComparison = async () => {
-    const prompt = `Bandingkan secara mendalam dan terstruktur fitur antara bahasa ${lang1} dan ${lang2}. Soroti perbedaan arsitektur/tata bahasa, kemudahan belajar, serta skenario penggunaan terbaik masing-masing. Berikan dalam bahasa Indonesia yang ringkas dan profesional.`;
-    setAiAnalysis(currentLang === 'id' ? 'Menghubungi AI untuk perbandingan mendalam...' : 'Connecting to AI for deep comparison...');
     const l1 = getLangName(lang1);
     const l2 = getLangName(lang2);
     const prompt = currentLang === 'en'
@@ -312,7 +306,6 @@ export default function LanguageInsights({ t, currentLang }) {
 
     setAiAnalysis(currentLang === 'en' ? 'Connecting to AI for deep comparison...' : 'Menghubungi AI untuk perbandingan mendalam...');
     try {
-      const res = await fetchDictionary({ variables: { keyword: prompt } });
       const res = await fetchDictionary({ variables: { keyword: prompt, lang: currentLang } });
       if (res.data?.dictionary?.result) {
         setAiAnalysis(res.data.dictionary.result);
@@ -324,7 +317,6 @@ export default function LanguageInsights({ t, currentLang }) {
     }
   };
 
-  const currentDataset = insightMode === 'human' ? HUMAN_LANG_DATA : CODE_LANG_DATA;
   const currentDataset = insightMode === 'human'
     ? (currentLang === 'en' ? HUMAN_LANG_DATA_EN : HUMAN_LANG_DATA_ID)
     : (currentLang === 'en' ? CODE_LANG_DATA_EN : CODE_LANG_DATA_ID);
@@ -366,7 +358,6 @@ export default function LanguageInsights({ t, currentLang }) {
             onChange={(e) => setLang1(e.target.value)}
           >
             {langList.map((l) => (
-              <option key={l} value={l} disabled={l === lang2}>{l}</option>
               <option key={l} value={l} disabled={l === lang2}>
                 {getLangName(l)}
               </option>
@@ -384,7 +375,6 @@ export default function LanguageInsights({ t, currentLang }) {
             onChange={(e) => setLang2(e.target.value)}
           >
             {langList.map((l) => (
-              <option key={l} value={l} disabled={l === lang1}>{l}</option>
               <option key={l} value={l} disabled={l === lang1}>
                 {getLangName(l)}
               </option>
@@ -398,14 +388,12 @@ export default function LanguageInsights({ t, currentLang }) {
         {/* Kolom Bahasa 1 */}
         <div className="comparison-col">
           <div className="comparison-header col-1">
-            <h3>{lang1}</h3>
             <h3>{getLangName(lang1)}</h3>
             <span className="comparison-badge">{insightMode === 'human' ? data1.family : data1.typing}</span>
           </div>
           <div className="comparison-body">
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? t('insights_card_family') : 'Paradigma'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Language Family' : t('insights_card_family'))
                   : (currentLang === 'en' ? 'Paradigm' : 'Paradigma')}
@@ -414,7 +402,6 @@ export default function LanguageInsights({ t, currentLang }) {
             </div>
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? 'Aksara / Huruf' : 'Sistem Pengetikan'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Script / Writing System' : 'Aksara / Huruf')
                   : (currentLang === 'en' ? 'Type System' : 'Sistem Pengetikan')}
@@ -431,7 +418,6 @@ export default function LanguageInsights({ t, currentLang }) {
             </div>
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? t('insights_card_difficulty') : 'Mekanisme Eksekusi'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Learning Difficulty' : t('insights_card_difficulty'))
                   : (currentLang === 'en' ? 'Execution Mechanism' : 'Mekanisme Eksekusi')}
@@ -448,14 +434,12 @@ export default function LanguageInsights({ t, currentLang }) {
         {/* Kolom Bahasa 2 */}
         <div className="comparison-col">
           <div className="comparison-header col-2">
-            <h3>{lang2}</h3>
             <h3>{getLangName(lang2)}</h3>
             <span className="comparison-badge">{insightMode === 'human' ? data2.family : data2.typing}</span>
           </div>
           <div className="comparison-body">
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? t('insights_card_family') : 'Paradigma'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Language Family' : t('insights_card_family'))
                   : (currentLang === 'en' ? 'Paradigm' : 'Paradigma')}
@@ -464,7 +448,6 @@ export default function LanguageInsights({ t, currentLang }) {
             </div>
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? 'Aksara / Huruf' : 'Sistem Pengetikan'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Script / Writing System' : 'Aksara / Huruf')
                   : (currentLang === 'en' ? 'Type System' : 'Sistem Pengetikan')}
@@ -481,7 +464,6 @@ export default function LanguageInsights({ t, currentLang }) {
             </div>
             <div className="comparison-item">
               <span className="item-label">
-                {insightMode === 'human' ? t('insights_card_difficulty') : 'Mekanisme Eksekusi'}
                 {insightMode === 'human'
                   ? (currentLang === 'en' ? 'Learning Difficulty' : t('insights_card_difficulty'))
                   : (currentLang === 'en' ? 'Execution Mechanism' : 'Mekanisme Eksekusi')}
@@ -504,7 +486,6 @@ export default function LanguageInsights({ t, currentLang }) {
           onClick={handleRunAiComparison}
           disabled={aiLoading}
         >
-          {aiLoading ? 'Menganalisis Perbandingan...' : `✨ Minta Analisis Perbandingan AI (${lang1} vs ${lang2})`}
           {aiLoading
             ? (currentLang === 'en' ? 'Analyzing Comparison...' : 'Menganalisis Perbandingan...')
             : (currentLang === 'en'
@@ -517,7 +498,6 @@ export default function LanguageInsights({ t, currentLang }) {
       {aiAnalysis && (
         <div className="ai-comparison-result-card">
           <div className="ai-result-title">
-            <span>🤖 Hasil Analisis Komparatif AI: {lang1} & {lang2}</span>
             <span>
               {currentLang === 'en'
                 ? `🤖 AI Comparative Analysis: ${getLangName(lang1)} & ${getLangName(lang2)}`
@@ -525,7 +505,6 @@ export default function LanguageInsights({ t, currentLang }) {
             </span>
           </div>
           <div className="ai-result-content">
-            {aiAnalysis}
             <HumanFormattedText content={aiAnalysis} />
           </div>
         </div>
@@ -533,4 +512,3 @@ export default function LanguageInsights({ t, currentLang }) {
     </div>
   );
 }
-

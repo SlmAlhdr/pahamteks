@@ -195,7 +195,6 @@ export default function App() {
         ) : (
           <>
             {activeTab === 'home' && (
-              <HomeHero onNavigate={setActiveTab} t={t} />
               <HomeHero onNavigate={setActiveTab} t={t} currentLang={currentLang} />
             )}
             {activeTab === 'learning' && (

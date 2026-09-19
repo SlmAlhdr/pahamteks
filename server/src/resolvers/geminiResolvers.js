@@ -46,14 +46,11 @@ export const geminiResolvers = {
             }));
         },
 
-        dictionary: async (_, { keyword }) => {
         dictionary: async (_, { keyword, lang = 'id' }) => {
             if (!keyword || !keyword.trim()) {
-                return { result: '', error: 'Kata kunci pencarian tidak boleh kosong!' };
                 return { result: '', error: lang === 'en' ? 'Search keyword cannot be empty!' : 'Kata kunci pencarian tidak boleh kosong!' };
             }
             try {
-                const prompt = `Jelaskan kata atau istilah "${keyword}" dalam konteks kamus edukasi bahasa & pemrograman secara alami, mengalir, dan ramah seperti seorang mentor manusia yang sedang menjelaskan langsung (human-like).
                 const isEn = lang === 'en';
                 const prompt = isEn
                     ? `Explain the word or term "${keyword}" in the context of an educational language & programming dictionary in a natural, fluent, and warm manner, like an expert human mentor speaking directly to a student.
@@ -80,13 +77,10 @@ Pedoman Penulisan:
                 const text = await generateSafeContent(prompt);
                 return { result: text, error: null };
             } catch (err) {
-                return { result: '', error: `⚠️ AI Error: ${err.message}` };
                 return { result: '', error: `⚠️ Error: ${err.message}` };
             }
         },
 
-        generateQuiz: async (_, { categories, level }) => {
-            const cacheKey = `${level}_${categories.sort().join('_')}`;
         generateQuiz: async (_, { categories, level, lang = 'id' }) => {
             const isEn = lang === 'en';
             const cacheKey = `${lang}_${level}_${categories.sort().join('_')}`;
@@ -95,20 +89,6 @@ Pedoman Penulisan:
                 return cached.sort(() => Math.random() - 0.5);
             }
 
-            const prompt = `Buat 5 soal kuis edukatif tingkat ${level || 'Pemula'} materi: ${categories.join(', ')}.\n` +
-                `Format JSON Array persis ini:\n` +
-                `[\n` +
-                `  {\n` +
-                `    "instruction": "Perintah singkat (contoh: Pilihlah jawaban yang paling tepat)",\n` +
-                `    "question": "Kalimat soal lengkap",\n` +
-                `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
-                `    "answer": "A"\n` +
-                `  }\n` +
-                `]\n` +
-                `PENTING:\n` +
-                `- Di array "options", tulis teks pilihannya saja secara murni. JANGAN menambahkan awalan huruf seperti "A.", "B.", "C.", "D." di awal teks.\n` +
-                `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
-                `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
             const prompt = isEn
                 ? `Create 5 educational multiple-choice quiz questions for ${level || 'Beginner'} level on the topics: ${categories.join(', ')}.\n` +
                   `Format as exact JSON Array:\n` +
@@ -147,10 +127,8 @@ Pedoman Penulisan:
             } catch (err) {
                 return [
                     {
-                        instruction: "🚨 SISTEM ERROR",
                         instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
-                        options: ["Cek API Key", "Tunggu", "Refresh", "Ok"],
                         options: isEn ? ["Check API Key", "Wait", "Refresh", "Ok"] : ["Cek API Key", "Tunggu", "Refresh", "Ok"],
                         answer: "A"
                     }
@@ -158,21 +136,6 @@ Pedoman Penulisan:
             }
         },
 
-        generateChallenge: async (_, { category }) => {
-            const prompt = `Buat 3 soal ujian tantangan materi: ${category || 'General'}.\n` +
-                `Format JSON Array persis ini:\n` +
-                `[\n` +
-                `  {\n` +
-                `    "instruction": "Tantangan Khusus",\n` +
-                `    "question": "Kalimat soal lengkap",\n` +
-                `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
-                `    "answer": "A"\n` +
-                `  }\n` +
-                `]\n` +
-                `PENTING:\n` +
-                `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.".\n` +
-                `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") sesuai opsi yang benar.\n` +
-                `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
         generateChallenge: async (_, { category, lang = 'id' }) => {
             const isEn = lang === 'en';
             const prompt = isEn
@@ -211,10 +174,8 @@ Pedoman Penulisan:
             } catch (err) {
                 return [
                     {
-                        instruction: "🚨 SISTEM ERROR",
                         instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
-                        options: ["Cek API", "Tunggu", "Ok", "Batal"],
                         options: isEn ? ["Check API", "Wait", "Ok", "Cancel"] : ["Cek API", "Tunggu", "Ok", "Batal"],
                         answer: "A"
                     }

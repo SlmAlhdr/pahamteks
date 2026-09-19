@@ -1,6 +1,5 @@
 import React from 'react';
 
-export default function DashboardView({ t, user, history = [], onOpenAuth, onBackHome }) {
 export default function DashboardView({ t, user, history = [], onOpenAuth, onBackHome, currentLang }) {
   const totalSessions = history.length;
   const avgScore = totalSessions > 0
@@ -23,16 +22,13 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
         </div>
         <div className="account-details-col">
           <div className="account-name-row">
-            <h2 className="account-user-name">{user?.name || 'Pengguna'}</h2>
             <h2 className="account-user-name">{user?.name || (currentLang === 'en' ? 'User' : 'Pengguna')}</h2>
             <span className={`account-status-pill ${user?.isGuest ? 'guest' : 'official'}`}>
-              {user?.isGuest ? t('guest_badge') : 'Akun Resmi Terverifikasi'}
               {user?.isGuest ? t('guest_badge') : (currentLang === 'en' ? 'Verified Official Account' : 'Akun Resmi Terverifikasi')}
             </span>
           </div>
 
           <p className="account-email-text">
-            {user?.email ? user.email : (user?.isGuest ? 'Sesi tamu browser sementara (data hilang saat tab ditutup)' : '-')}
             {user?.email ? user.email : (user?.isGuest ? (currentLang === 'en' ? 'Temporary guest session (data resets upon browser close)' : 'Sesi tamu browser sementara (data hilang saat tab ditutup)') : '-')}
           </p>
 
@@ -73,7 +69,6 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
             {t('stat_accuracy')}
           </div>
           <div className="stat-num" style={{ color: avgScore >= 70 ? 'var(--btn-green)' : 'var(--warning-orange)' }}>
-            {avgScore >= 80 ? 'Sangat Baik' : avgScore >= 60 ? 'Baik' : 'Perlu Latihan'}
             {avgScore >= 80
               ? (currentLang === 'en' ? 'Excellent' : 'Sangat Baik')
               : avgScore >= 60
@@ -92,7 +87,6 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
         {history.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '30px 10px', color: 'var(--text-muted)' }}>
             <p style={{ fontSize: '1rem', marginBottom: '8px' }}>{t('dash_empty')}</p>
-            <span style={{ fontSize: '0.85rem' }}>Mulai latihan di menu <strong>Pembelajaran Bahasa</strong> untuk mencatat perkembangan Anda.</span>
             <span style={{ fontSize: '0.85rem' }}>
               {currentLang === 'en'
                 ? 'Start practicing in the Language Learning menu to record your progress.'

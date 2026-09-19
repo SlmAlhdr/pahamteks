@@ -41,7 +41,6 @@ export function isOptionCorrect(opt, index, q) {
   return false;
 }
 
-const LEARN_CATEGORIES = [
 const LEARN_CATEGORIES_ID = [
   { name: 'Populer (Indo & Inggris)', items: ['Indonesia (Baku)', 'Indonesia (Gaul)', 'Inggris (Grammar)', 'Inggris (Slang)'] },
   { name: 'Bahasa Nusantara', items: ['Jawa', 'Sunda', 'Minang', 'Bali'] },
@@ -50,7 +49,6 @@ const LEARN_CATEGORIES_ID = [
   { name: 'Benua Eropa', items: ['Spanyol', 'Prancis', 'Jerman', 'Rusia', 'Italia', 'Belanda'] }
 ];
 
-const CODING_CATEGORIES = [
 const LEARN_CATEGORIES_EN = [
   { name: 'Popular (Indonesian & English)', items: ['Indonesian (Formal)', 'Indonesian (Slang)', 'English (Grammar)', 'English (Slang)'] },
   { name: 'Indonesian Regional Languages', items: ['Javanese', 'Sundanese', 'Minangkabau', 'Balinese'] },
@@ -94,19 +92,15 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   const [fetchChallenge, { loading: challengeLoading }] = useLazyQuery(GENERATE_CHALLENGE, { fetchPolicy: 'network-only' });
   const [explainMutation] = useMutation(EXPLAIN_ANSWER_MUTATION);
 
-  const categoriesData = mode === 'learn' ? LEARN_CATEGORIES : CODING_CATEGORIES;
   const learnCategories = currentLang === 'en' ? LEARN_CATEGORIES_EN : LEARN_CATEGORIES_ID;
   const codingCategories = currentLang === 'en' ? CODING_CATEGORIES_EN : CODING_CATEGORIES_ID;
   const categoriesData = mode === 'learn' ? learnCategories : codingCategories;
 
-  // Reset state saat mode berganti
   // Reset state saat mode atau bahasa berganti
   useEffect(() => {
     setQuestions([]);
     setIsFinished(false);
     setSelectedAnswerIndex(null);
-    setSelectedTopic(mode === 'learn' ? 'Inggris (Grammar)' : 'JavaScript / TypeScript');
-  }, [mode]);
     const defaultTopic = mode === 'learn' 
       ? (currentLang === 'en' ? 'English (Grammar)' : 'Inggris (Grammar)')
       : 'JavaScript / TypeScript';
@@ -123,16 +117,13 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
     try {
       if (isChallengeMode) {
-        const res = await fetchChallenge({ variables: { category: selectedTopic } });
         const res = await fetchChallenge({ variables: { category: selectedTopic, lang: currentLang } });
         if (res.data?.generateChallenge) setQuestions(res.data.generateChallenge);
       } else {
-        const res = await fetchQuiz({ variables: { categories: [selectedTopic], level } });
         const res = await fetchQuiz({ variables: { categories: [selectedTopic], level, lang: currentLang } });
         if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
       }
     } catch (err) {
-      alert('Gagal memuat soal: ' + err.message);
       alert(currentLang === 'en' ? ('Failed to load questions: ' + err.message) : ('Gagal memuat soal: ' + err.message));
     }
   };
@@ -207,7 +198,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
         setExplanation(res.data.explainAnswer.error);
       }
     } catch (err) {
-      setExplanation('⚠️ Gagal: ' + err.message);
       setExplanation((currentLang === 'en' ? '⚠️ Failed: ' : '⚠️ Gagal: ') + err.message);
     } finally {
       setExplaining(false);
@@ -288,7 +278,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               onClick={() => handleStart(false)}
               disabled={quizLoading || challengeLoading}
             >
-              {quizLoading ? 'Menyiapkan...' : (mode === 'learn' ? t('btn_start_learn') : t('btn_start_code'))}
               {quizLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : (mode === 'learn' ? t('btn_start_learn') : t('btn_start_code'))}
             </button>
             <button
@@ -296,7 +285,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               onClick={() => handleStart(true)}
               disabled={quizLoading || challengeLoading}
             >
-              {challengeLoading ? 'Menyiapkan...' : t('btn_challenge')}
               {challengeLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : t('btn_challenge')}
             </button>
           </div>
@@ -312,7 +300,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                 {t('quiz_header')} • {selectedTopic} ({currentIndex + 1}/{questions.length})
               </span>
               <span style={{ color: 'var(--btn-green)', fontWeight: 800 }}>
-                Skor: {score}
                 {currentLang === 'en' ? 'Score' : 'Skor'}: {score}
               </span>
             </div>
@@ -370,7 +357,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                   onClick={handleAskWhyWrong}
                   disabled={explaining}
                 >
-                  {explaining ? 'Menyiapkan penjelasan...' : `💡 ${t('btn_why_wrong')}`}
                   {explaining ? (currentLang === 'en' ? 'Preparing explanation...' : 'Menyiapkan penjelasan...') : `💡 ${t('btn_why_wrong')}`}
                 </button>
 
@@ -384,7 +370,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                         className="btn-speak"
                         style={{ width: '32px', height: '32px', position: 'static' }}
                         onClick={() => speakText(explanation)}
-                        title="Dengarkan Penjelasan"
                         title={currentLang === 'en' ? 'Listen to Explanation' : 'Dengarkan Penjelasan'}
                       >
                         🔊
@@ -419,7 +404,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               {Math.round((score / questions.length) * 100)}
             </div>
             <p style={{ fontSize: '1.2rem', marginBottom: '25px', fontWeight: 700 }}>
-              Benar <span style={{ color: 'var(--btn-green)' }}>{score}</span> dari {questions.length} Soal
               {currentLang === 'en' ? 'Correct ' : 'Benar '}
               <span style={{ color: 'var(--btn-green)' }}>{score}</span>
               {currentLang === 'en' ? ` out of ${questions.length} Questions` : ` dari ${questions.length} Soal`}
