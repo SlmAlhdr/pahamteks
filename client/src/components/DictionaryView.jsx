@@ -63,7 +63,7 @@ export default function DictionaryView({ t, currentLang }) {
           />
           <button
             className="btn-huge btn-green"
-            style={{ minWidth: '100px', padding: '12px 20px' }}
+            style={{ minWidth: '100px', padding: '12px 20px', textTransform: 'none', fontWeight: 800 }}
             onClick={handleRandom}
           >
             {t('dict_btn_rand')}

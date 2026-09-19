@@ -5,7 +5,6 @@ import { LOGIN_MUTATION, REGISTER_MUTATION, SEND_OTP_MUTATION } from '../graphql
 export default function WelcomePortal({
   onAuthSuccess,
   onGuestLogin,
-  onOpenAuthModal,
   currentLang,
   t
 }) {
@@ -23,7 +22,7 @@ export default function WelcomePortal({
 
   const handleSendOtp = async () => {
     if (!email.trim()) {
-      setStatusMsg({ text: 'Masukkan email terlebih dahulu!', isError: true });
+      setStatusMsg({ text: 'Masukkan alamat email terlebih dahulu.', isError: true });
       return;
     }
     setStatusMsg({ text: '', isError: false });
@@ -32,7 +31,7 @@ export default function WelcomePortal({
       if (res.data?.sendOtp?.success) {
         setStatusMsg({ text: t('auth_otp_msg'), isError: false });
       } else {
-        setStatusMsg({ text: res.data?.sendOtp?.message || 'Gagal mengirim OTP', isError: true });
+        setStatusMsg({ text: res.data?.sendOtp?.message || 'Gagal mengirim kode verifikasi.', isError: true });
       }
     } catch (err) {
       setStatusMsg({ text: err.message, isError: true });
@@ -47,7 +46,7 @@ export default function WelcomePortal({
       if (res.data?.login?.success) {
         onAuthSuccess(res.data.login.user);
       } else {
-        setStatusMsg({ text: res.data?.login?.message || 'Email atau password salah', isError: true });
+        setStatusMsg({ text: res.data?.login?.message || 'Email atau kata sandi tidak cocok.', isError: true });
       }
     } catch (err) {
       setStatusMsg({ text: err.message, isError: true });
@@ -64,7 +63,7 @@ export default function WelcomePortal({
       if (res.data?.register?.success) {
         onAuthSuccess(res.data.register.user);
       } else {
-        setStatusMsg({ text: res.data?.register?.message || 'Registrasi gagal', isError: true });
+        setStatusMsg({ text: res.data?.register?.message || 'Registrasi akun gagal diproses.', isError: true });
       }
     } catch (err) {
       setStatusMsg({ text: err.message, isError: true });
@@ -165,7 +164,7 @@ export default function WelcomePortal({
             </button>
           </form>
         ) : (
-          /* Tab Form: Register */
+          /* Tab Form: Pendaftaran Akun Resmi */
           <form onSubmit={handleRegister} className="auth-form">
             <div className="auth-row">
               <div style={{ flex: 1 }}>
@@ -222,19 +221,19 @@ export default function WelcomePortal({
                   onClick={handleSendOtp}
                   disabled={otpLoading || !email.trim()}
                 >
-                  {otpLoading ? '...' : 'Kirim OTP'}
+                  {otpLoading ? 'Mengirim...' : 'Kirim Kode'}
                 </button>
               </div>
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                Kode Verifikasi OTP
+                Kode Verifikasi Email
               </label>
               <input
                 type="text"
                 className="auth-input"
-                placeholder="Kode OTP (Demo: 123456)"
+                placeholder="Kode verifikasi (Demo: 123456)"
                 required
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
@@ -271,16 +270,16 @@ export default function WelcomePortal({
           <span>{t('or_divider')}</span>
         </div>
 
-        {/* Guest Account Button */}
+        {/* Guest Account Button (Tanpa Simbol Emoji Roket) */}
         <button
           type="button"
           className="btn-guest"
           onClick={onGuestLogin}
         >
-          🚀 {t('guest_btn')}
+          {t('guest_btn')}
         </button>
 
-        {/* Guest Warning Box with clear explanation */}
+        {/* Guest Warning Box with clear human-like explanation */}
         <div className="guest-warning-box">
           <div className="guest-title">
             {t('guest_warning_title')}
@@ -289,12 +288,12 @@ export default function WelcomePortal({
             {t('guest_warning_desc')}
           </div>
           <div style={{ marginTop: '4px', fontSize: '0.82rem', color: 'rgba(255, 234, 167, 0.85)' }}>
-            💡 {t('guest_warning_tip')}
+            {t('guest_warning_tip')}
           </div>
         </div>
       </div>
 
-      {/* Feature Highlights Footer */}
+      {/* Feature Highlights Footer (Dipertahankan seperti Foto ke-5) */}
       <div className="welcome-features-mini">
         <div className="mini-feature-chip">🌐 50+ Bahasa Asing</div>
         <div className="mini-feature-chip">💻 Pemrograman & Logika</div>

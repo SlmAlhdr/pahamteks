@@ -86,9 +86,16 @@ export default function KamusFloating({ t, currentLang }) {
               />
               <button
                 className="btn-huge btn-green"
-                style={{ padding: '10px 14px', minWidth: 'auto', fontSize: '0.85rem' }}
+                style={{
+                  padding: '10px 16px',
+                  minWidth: 'auto',
+                  fontSize: '0.85rem',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'none',
+                  fontWeight: 800
+                }}
                 onClick={handleRandom}
-                title="Acak Kata"
+                title="Pilih kata acak"
               >
                 {t('dict_btn_rand_short') || 'Acak'}
               </button>

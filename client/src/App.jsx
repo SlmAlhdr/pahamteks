@@ -162,38 +162,40 @@ export default function App() {
 
       {/* Main Content Pages */}
       <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-        {activeTab === 'home' && (
-          user ? (
-            <HomeHero onNavigate={setActiveTab} t={t} />
-          ) : (
-            <WelcomePortal
-              onAuthSuccess={handleAuthSuccess}
-              onGuestLogin={handleGuestLogin}
-              onOpenAuthModal={handleOpenAuth}
-              currentLang={currentLang}
-              t={t}
-            />
-          )
-        )}
-        {activeTab === 'translator' && (
-          <Translator t={t} currentLang={currentLang} />
-        )}
-        {activeTab === 'learn' && (
-          <QuizView mode="learn" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
-        )}
-        {activeTab === 'coding' && (
-          <QuizView mode="coding" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
-        )}
-        {activeTab === 'dictionary' && (
-          <DictionaryView t={t} currentLang={currentLang} />
-        )}
-        {activeTab === 'tracking' && (
-          <DashboardView t={t} history={quizHistory} />
+        {!user ? (
+          <WelcomePortal
+            onAuthSuccess={handleAuthSuccess}
+            onGuestLogin={handleGuestLogin}
+            onOpenAuthModal={handleOpenAuth}
+            currentLang={currentLang}
+            t={t}
+          />
+        ) : (
+          <>
+            {activeTab === 'home' && (
+              <HomeHero onNavigate={setActiveTab} t={t} />
+            )}
+            {activeTab === 'translator' && (
+              <Translator t={t} currentLang={currentLang} />
+            )}
+            {activeTab === 'learn' && (
+              <QuizView mode="learn" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
+            )}
+            {activeTab === 'coding' && (
+              <QuizView mode="coding" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
+            )}
+            {activeTab === 'dictionary' && (
+              <DictionaryView t={t} currentLang={currentLang} />
+            )}
+            {activeTab === 'tracking' && (
+              <DashboardView t={t} history={quizHistory} />
+            )}
+          </>
         )}
       </main>
 
-      {/* Floating Kamus AI di Bawah Kanan */}
-      <KamusFloating t={t} currentLang={currentLang} />
+      {/* Floating Kamus AI HANYA muncul jika sudah login atau masuk sebagai guest */}
+      {user && <KamusFloating t={t} currentLang={currentLang} />}
 
       {/* Modal Autentikasi Pop-up */}
       <AuthModal

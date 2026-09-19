@@ -295,7 +295,7 @@ export default function AuthModal({
                 onClose();
               }}
             >
-              🚀 {t('guest_btn')}
+              {t('guest_btn')}
             </button>
 
             <div className="guest-warning-box">
