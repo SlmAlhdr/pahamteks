@@ -34,6 +34,7 @@ export const typeDefs = `#graphql
     type User {
         id: ID!
         email: String!
+        username: String
         name: String!
         createdAt: String
     }
@@ -88,13 +89,20 @@ export const typeDefs = `#graphql
         register(
             email: String!
             password: String!
-            fname: String!
-            lname: String!
+            username: String
+            fname: String
+            lname: String
             otp: String!
         ): AuthResponse!
         login(
             email: String!
             password: String!
+        ): AuthResponse!
+        requestPasswordReset(email: String!): AuthResponse!
+        resetPassword(
+            email: String!
+            otp: String!
+            newPassword: String!
         ): AuthResponse!
         logActivity(
             action: String!

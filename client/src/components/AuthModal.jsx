@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import { LOGIN_MUTATION, REGISTER_MUTATION, SEND_OTP_MUTATION } from '../graphql/mutations';
+import {
+  LOGIN_MUTATION,
+  REGISTER_MUTATION,
+  SEND_OTP_MUTATION,
+  REQUEST_PASSWORD_RESET_MUTATION,
+  RESET_PASSWORD_MUTATION
+} from '../graphql/mutations';
 
 export default function AuthModal({
   isOpen,
@@ -10,17 +16,20 @@ export default function AuthModal({
   initialMode = 'login',
   t
 }) {
-  const [mode, setMode] = useState(initialMode);
+  const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fname, setFname] = useState('');
-  const [lname, setLname] = useState('');
+  const [username, setUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [statusMsg, setStatusMsg] = useState({ text: '', isError: false });
 
   const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
   const [registerMutation, { loading: regLoading }] = useMutation(REGISTER_MUTATION);
   const [sendOtpMutation, { loading: otpLoading }] = useMutation(SEND_OTP_MUTATION);
+  const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
+  const [resetPasswordMutation, { loading: resetLoading }] = useMutation(RESET_PASSWORD_MUTATION);
 
   useEffect(() => {
     if (isOpen) {
@@ -31,9 +40,10 @@ export default function AuthModal({
 
   if (!isOpen) return null;
 
+  // 1. Kirim OTP untuk Registrasi Akun Baru
   const handleSendOtp = async () => {
     if (!email.trim()) {
-      setStatusMsg({ text: 'Masukkan email terlebih dahulu!', isError: true });
+      setStatusMsg({ text: 'Masukkan alamat email terlebih dahulu!', isError: true });
       return;
     }
     setStatusMsg({ text: '', isError: false });
@@ -49,6 +59,65 @@ export default function AuthModal({
     }
   };
 
+  // 2. Kirim OTP untuk Reset Password (Lupa Kata Sandi)
+  const handleRequestPasswordReset = async () => {
+    if (!email.trim()) {
+      setStatusMsg({ text: 'Masukkan email atau username akun Anda!', isError: true });
+      return;
+    }
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await requestResetMutation({ variables: { email } });
+      if (res.data?.requestPasswordReset?.success) {
+        setStatusMsg({ text: res.data.requestPasswordReset.message, isError: false });
+      } else {
+        setStatusMsg({ text: res.data?.requestPasswordReset?.message || 'Gagal meminta reset kata sandi', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
+  // 3. Submit Reset Password dengan OTP
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!email.trim() || !otp.trim() || !newPassword.trim()) {
+      setStatusMsg({ text: 'Harap lengkapi semua kolom!', isError: true });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setStatusMsg({ text: 'Kata sandi baru minimal 6 karakter!', isError: true });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setStatusMsg({ text: 'Konfirmasi kata sandi tidak cocok!', isError: true });
+      return;
+    }
+
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await resetPasswordMutation({
+        variables: { email, otp, newPassword }
+      });
+      if (res.data?.resetPassword?.success) {
+        setStatusMsg({ text: res.data.resetPassword.message, isError: false });
+        // Bersihkan state & arahkan ke login
+        setTimeout(() => {
+          setMode('login');
+          setPassword('');
+          setOtp('');
+          setNewPassword('');
+          setConfirmPassword('');
+        }, 1800);
+      } else {
+        setStatusMsg({ text: res.data?.resetPassword?.message || 'Gagal mereset kata sandi', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
+  // 4. Submit Login
   const handleLogin = async (e) => {
     e.preventDefault();
     setStatusMsg({ text: '', isError: false });
@@ -58,19 +127,24 @@ export default function AuthModal({
         onAuthSuccess(res.data.login.user);
         onClose();
       } else {
-        setStatusMsg({ text: res.data?.login?.message || 'Email atau password salah', isError: true });
+        setStatusMsg({ text: res.data?.login?.message || 'Email/username atau kata sandi salah', isError: true });
       }
     } catch (err) {
       setStatusMsg({ text: err.message, isError: true });
     }
   };
 
+  // 5. Submit Register Akun dengan 1 Kotak Username
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!username.trim()) {
+      setStatusMsg({ text: 'Silakan isi username unik untuk akun Anda!', isError: true });
+      return;
+    }
     setStatusMsg({ text: '', isError: false });
     try {
       const res = await registerMutation({
-        variables: { email, password, fname, lname, otp }
+        variables: { email, password, username: username.trim(), otp }
       });
       if (res.data?.register?.success) {
         onAuthSuccess(res.data.register.user);
@@ -83,13 +157,19 @@ export default function AuthModal({
     }
   };
 
+  const getModalTitle = () => {
+    if (mode === 'login') return t('auth_login_title');
+    if (mode === 'register') return t('auth_reg_title');
+    return t('auth_reset_title');
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header with Close Button */}
         <div className="modal-header">
           <h2 style={{ fontSize: '1.6rem', margin: 0, fontWeight: 900, color: '#ffffff' }}>
-            {mode === 'login' ? t('auth_login_title') : t('auth_reg_title')}
+            {getModalTitle()}
           </h2>
           <button className="modal-close-btn" onClick={onClose} title="Tutup / Close">
             ✕
@@ -111,25 +191,38 @@ export default function AuthModal({
           />
         )}
 
-        {mode === 'login' ? (
+        {/* 1. FORM LOGIN */}
+        {mode === 'login' && (
           <form onSubmit={handleLogin} className="auth-form">
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                {t('auth_ph_email')}
+                {t('auth_ph_email_or_user')}
               </label>
               <input
-                type="email"
+                type="text"
                 className="auth-input"
-                placeholder="nama@email.com"
+                placeholder="nama@email.com atau username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                {t('auth_ph_pass')}
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                  {t('auth_ph_pass')}
+                </label>
+                <span
+                  style={{ fontSize: '0.82rem', color: 'var(--btn-cyan)', cursor: 'pointer', fontWeight: 700 }}
+                  onClick={() => {
+                    setMode('forgot');
+                    setStatusMsg({ text: '', isError: false });
+                  }}
+                >
+                  {t('auth_forgot_pass')}
+                </span>
+              </div>
               <input
                 type="password"
                 className="auth-input"
@@ -164,37 +257,27 @@ export default function AuthModal({
               </span>
             </div>
           </form>
-        ) : (
+        )}
+
+        {/* 2. FORM REGISTER (1 KOTAK USERNAME) */}
+        {mode === 'register' && (
           <form onSubmit={handleRegister} className="auth-form">
-            <div className="auth-row">
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                  {t('auth_ph_fname')}
-                </label>
-                <input
-                  type="text"
-                  className="auth-input"
-                  placeholder="Nama Depan"
-                  required
-                  value={fname}
-                  onChange={(e) => setFname(e.target.value)}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                  {t('auth_ph_lname')}
-                </label>
-                <input
-                  type="text"
-                  className="auth-input"
-                  placeholder="Nama Belakang"
-                  required
-                  value={lname}
-                  onChange={(e) => setLname(e.target.value)}
-                />
-              </div>
+            {/* 1 Kotak Username Saja */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                {t('auth_ph_username')}
+              </label>
+              <input
+                type="text"
+                className="auth-input"
+                placeholder={t('auth_ph_username_hint')}
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
 
+            {/* Email & Tombol Kirim OTP */}
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
                 {t('auth_ph_email')}
@@ -226,20 +309,22 @@ export default function AuthModal({
               </div>
             </div>
 
+            {/* Kode Verifikasi OTP */}
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                Kode Verifikasi OTP
+                Kode Verifikasi OTP (6 Digit)
               </label>
               <input
                 type="text"
                 className="auth-input"
-                placeholder="Masukkan 6 digit kode verifikasi"
+                placeholder="Masukkan 6 digit kode verifikasi email"
                 required
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
               />
             </div>
 
+            {/* Kata Sandi */}
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
                 {t('auth_ph_pass')}
@@ -280,8 +365,112 @@ export default function AuthModal({
           </form>
         )}
 
-        {/* Guest Mode Option with Warning */}
-        {onGuestLogin && (
+        {/* 3. FORM RESET PASSWORD (LUPA KATA SANDI) */}
+        {mode === 'forgot' && (
+          <form onSubmit={handleResetPassword} className="auth-form">
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 10px', lineHeight: 1.5 }}>
+              {t('auth_reset_desc')}
+            </p>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                {t('auth_ph_email_or_user')}
+              </label>
+              <div className="auth-row">
+                <input
+                  type="text"
+                  className="auth-input"
+                  placeholder="Email terdaftar akun Anda"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn-huge btn-cyan"
+                  style={{
+                    minWidth: '120px',
+                    padding: '12px 14px',
+                    fontSize: '0.85rem',
+                    borderRadius: '14px',
+                    flexShrink: 0
+                  }}
+                  onClick={handleRequestPasswordReset}
+                  disabled={resetReqLoading || !email.trim()}
+                >
+                  {resetReqLoading ? '...' : t('auth_btn_send_reset')}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                Kode Verifikasi Reset (6 Digit)
+              </label>
+              <input
+                type="text"
+                className="auth-input"
+                placeholder="Masukkan 6 digit kode dari email"
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+
+            <div className="auth-row">
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  {t('auth_new_pass')}
+                </label>
+                <input
+                  type="password"
+                  className="auth-input"
+                  placeholder={t('auth_new_pass_ph')}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  {t('auth_confirm_pass')}
+                </label>
+                <input
+                  type="password"
+                  className="auth-input"
+                  placeholder={t('auth_confirm_pass_ph')}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-huge btn-green"
+              style={{ width: '100%', marginTop: '6px', minWidth: 'unset' }}
+              disabled={resetLoading}
+            >
+              {resetLoading ? 'Memproses...' : t('auth_btn_save_pass')}
+            </button>
+
+            <div style={{ textAlign: 'center', marginTop: '4px' }}>
+              <span
+                style={{ color: 'var(--btn-cyan)', cursor: 'pointer', fontWeight: 800, fontSize: '0.9rem' }}
+                onClick={() => {
+                  setMode('login');
+                  setStatusMsg({ text: '', isError: false });
+                }}
+              >
+                ← {t('auth_back_to_login')}
+              </span>
+            </div>
+          </form>
+        )}
+
+        {/* Guest Mode Option with Warning (Hanya muncul jika mode login) */}
+        {mode === 'login' && onGuestLogin && (
           <>
             <div className="auth-divider">
               <span>{t('or_divider')}</span>
@@ -318,7 +507,8 @@ export default function AuthModal({
             color: 'rgba(255,255,255,0.7)',
             fontSize: '0.9rem',
             padding: '10px',
-            minWidth: 'unset'
+            minWidth: 'unset',
+            marginTop: '10px'
           }}
           onClick={onClose}
         >

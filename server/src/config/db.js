@@ -29,8 +29,21 @@ export async function testDbConnection() {
     try {
         const connection = await pool.getConnection();
         isConnected = true;
-        connection.release();
         console.log('✅ [MySQL] Terhubung ke database MySQL:', dbConfig.database);
+
+        // Auto-migrate kolom username jika belum ada di tabel users
+        try {
+            const [columns] = await connection.query("SHOW COLUMNS FROM `users` LIKE 'username'");
+            if (columns.length === 0) {
+                console.log('🔄 [MySQL] Menambahkan kolom `username` ke tabel users...');
+                await connection.query("ALTER TABLE `users` ADD COLUMN `username` VARCHAR(100) UNIQUE NULL AFTER `email`");
+                console.log('✅ [MySQL] Kolom `username` berhasil ditambahkan ke tabel users.');
+            }
+        } catch (mErr) {
+            // Abaikan jika tabel users belum ada
+        }
+
+        connection.release();
         return true;
     } catch (err) {
         isConnected = false;

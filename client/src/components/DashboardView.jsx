@@ -22,7 +22,9 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
         </div>
         <div className="account-details-col">
           <div className="account-name-row">
-            <h2 className="account-user-name">{user?.name || (currentLang === 'en' ? 'User' : 'Pengguna')}</h2>
+            <h2 className="account-user-name">
+              {user?.username ? `@${user.username}` : (user?.name || (currentLang === 'en' ? 'User' : 'Pengguna'))}
+            </h2>
             <span className={`account-status-pill ${user?.isGuest ? 'guest' : 'official'}`}>
               {user?.isGuest ? t('guest_badge') : (currentLang === 'en' ? 'Verified Official Account' : 'Akun Resmi Terverifikasi')}
             </span>

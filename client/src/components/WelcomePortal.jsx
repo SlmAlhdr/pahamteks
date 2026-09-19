@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { LOGIN_MUTATION, REGISTER_MUTATION, SEND_OTP_MUTATION } from '../graphql/mutations';
+import {
+  LOGIN_MUTATION,
+  REGISTER_MUTATION,
+  SEND_OTP_MUTATION,
+  REQUEST_PASSWORD_RESET_MUTATION,
+  RESET_PASSWORD_MUTATION
+} from '../graphql/mutations';
 
 export default function WelcomePortal({
   onAuthSuccess,
@@ -8,17 +14,20 @@ export default function WelcomePortal({
   currentLang,
   t
 }) {
-  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
+  const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register' | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fname, setFname] = useState('');
-  const [lname, setLname] = useState('');
+  const [username, setUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [statusMsg, setStatusMsg] = useState({ text: '', isError: false });
 
   const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
   const [registerMutation, { loading: regLoading }] = useMutation(REGISTER_MUTATION);
   const [sendOtpMutation, { loading: otpLoading }] = useMutation(SEND_OTP_MUTATION);
+  const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
+  const [resetPasswordMutation, { loading: resetLoading }] = useMutation(RESET_PASSWORD_MUTATION);
 
   const handleSendOtp = async () => {
     if (!email.trim()) {
@@ -38,6 +47,61 @@ export default function WelcomePortal({
     }
   };
 
+  const handleRequestPasswordReset = async () => {
+    if (!email.trim()) {
+      setStatusMsg({ text: 'Masukkan email atau username akun Anda!', isError: true });
+      return;
+    }
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await requestResetMutation({ variables: { email } });
+      if (res.data?.requestPasswordReset?.success) {
+        setStatusMsg({ text: res.data.requestPasswordReset.message, isError: false });
+      } else {
+        setStatusMsg({ text: res.data?.requestPasswordReset?.message || 'Gagal meminta reset kata sandi', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!email.trim() || !otp.trim() || !newPassword.trim()) {
+      setStatusMsg({ text: 'Harap lengkapi semua kolom!', isError: true });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setStatusMsg({ text: 'Kata sandi baru minimal 6 karakter!', isError: true });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setStatusMsg({ text: 'Konfirmasi kata sandi tidak cocok!', isError: true });
+      return;
+    }
+
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await resetPasswordMutation({
+        variables: { email, otp, newPassword }
+      });
+      if (res.data?.resetPassword?.success) {
+        setStatusMsg({ text: res.data.resetPassword.message, isError: false });
+        setTimeout(() => {
+          setActiveTab('login');
+          setPassword('');
+          setOtp('');
+          setNewPassword('');
+          setConfirmPassword('');
+        }, 1800);
+      } else {
+        setStatusMsg({ text: res.data?.resetPassword?.message || 'Gagal mereset kata sandi', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setStatusMsg({ text: '', isError: false });
@@ -46,7 +110,7 @@ export default function WelcomePortal({
       if (res.data?.login?.success) {
         onAuthSuccess(res.data.login.user);
       } else {
-        setStatusMsg({ text: res.data?.login?.message || 'Email atau kata sandi tidak cocok.', isError: true });
+        setStatusMsg({ text: res.data?.login?.message || 'Email/username atau kata sandi tidak cocok.', isError: true });
       }
     } catch (err) {
       setStatusMsg({ text: err.message, isError: true });
@@ -55,10 +119,14 @@ export default function WelcomePortal({
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!username.trim()) {
+      setStatusMsg({ text: 'Silakan isi username unik untuk akun Anda!', isError: true });
+      return;
+    }
     setStatusMsg({ text: '', isError: false });
     try {
       const res = await registerMutation({
-        variables: { email, password, fname, lname, otp }
+        variables: { email, password, username: username.trim(), otp }
       });
       if (res.data?.register?.success) {
         onAuthSuccess(res.data.register.user);
@@ -84,28 +152,47 @@ export default function WelcomePortal({
       {/* Main Authentication & Guest Entry Card */}
       <div className="welcome-card-wrapper">
         {/* Tab Switcher */}
-        <div className="welcome-tabs">
-          <button
-            type="button"
-            className={`welcome-tab-btn ${activeTab === 'login' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('login');
-              setStatusMsg({ text: '', isError: false });
-            }}
-          >
-            {t('welcome_login_tab')}
-          </button>
-          <button
-            type="button"
-            className={`welcome-tab-btn ${activeTab === 'register' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('register');
-              setStatusMsg({ text: '', isError: false });
-            }}
-          >
-            {t('welcome_reg_tab')}
-          </button>
-        </div>
+        {activeTab === 'forgot' ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>
+              {t('auth_reset_title')}
+            </h3>
+            <button
+              type="button"
+              className="welcome-tab-btn"
+              style={{ padding: '6px 14px', fontSize: '0.85rem' }}
+              onClick={() => {
+                setActiveTab('login');
+                setStatusMsg({ text: '', isError: false });
+              }}
+            >
+              {t('auth_back_to_login')}
+            </button>
+          </div>
+        ) : (
+          <div className="welcome-tabs">
+            <button
+              type="button"
+              className={`welcome-tab-btn ${activeTab === 'login' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('login');
+                setStatusMsg({ text: '', isError: false });
+              }}
+            >
+              {t('welcome_login_tab')}
+            </button>
+            <button
+              type="button"
+              className={`welcome-tab-btn ${activeTab === 'register' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('register');
+                setStatusMsg({ text: '', isError: false });
+              }}
+            >
+              {t('welcome_reg_tab')}
+            </button>
+          </div>
+        )}
 
         {/* Status / Error Message */}
         {statusMsg.text && (
@@ -124,16 +211,16 @@ export default function WelcomePortal({
         )}
 
         {/* Tab Form: Login */}
-        {activeTab === 'login' ? (
+        {activeTab === 'login' && (
           <form onSubmit={handleLogin} className="auth-form">
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                {t('auth_ph_email')}
+                {t('auth_ph_email_or_user')}
               </label>
               <input
-                type="email"
+                type="text"
                 className="auth-input"
-                placeholder="nama@email.com"
+                placeholder="nama@email.com atau username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -141,9 +228,20 @@ export default function WelcomePortal({
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                {t('auth_ph_pass')}
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                  {t('auth_ph_pass')}
+                </label>
+                <span
+                  style={{ fontSize: '0.82rem', color: 'var(--btn-cyan)', cursor: 'pointer', fontWeight: 700 }}
+                  onClick={() => {
+                    setActiveTab('forgot');
+                    setStatusMsg({ text: '', isError: false });
+                  }}
+                >
+                  {t('auth_forgot_pass')}
+                </span>
+              </div>
               <input
                 type="password"
                 className="auth-input"
@@ -163,36 +261,24 @@ export default function WelcomePortal({
               {loginLoading ? 'Memproses...' : t('auth_btn_login')}
             </button>
           </form>
-        ) : (
-          /* Tab Form: Pendaftaran Akun Resmi */
+        )}
+
+        {/* Tab Form: Pendaftaran Akun Resmi */}
+        {activeTab === 'register' && (
           <form onSubmit={handleRegister} className="auth-form">
-            <div className="auth-row">
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                  {t('auth_ph_fname')}
-                </label>
-                <input
-                  type="text"
-                  className="auth-input"
-                  placeholder="Nama Depan"
-                  required
-                  value={fname}
-                  onChange={(e) => setFname(e.target.value)}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                  {t('auth_ph_lname')}
-                </label>
-                <input
-                  type="text"
-                  className="auth-input"
-                  placeholder="Nama Belakang"
-                  required
-                  value={lname}
-                  onChange={(e) => setLname(e.target.value)}
-                />
-              </div>
+            {/* 1 Kotak Username Saja */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                {t('auth_ph_username')}
+              </label>
+              <input
+                type="text"
+                className="auth-input"
+                placeholder={t('auth_ph_username_hint')}
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
 
             <div>
@@ -221,14 +307,14 @@ export default function WelcomePortal({
                   onClick={handleSendOtp}
                   disabled={otpLoading || !email.trim()}
                 >
-                  {otpLoading ? 'Mengirim...' : 'Kirim Kode'}
+                  {otpLoading ? '...' : 'Kirim Kode'}
                 </button>
               </div>
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                Kode Verifikasi Email
+                Kode Verifikasi Email (6 Digit)
               </label>
               <input
                 type="text"
@@ -261,6 +347,98 @@ export default function WelcomePortal({
               disabled={regLoading}
             >
               {regLoading ? 'Memproses...' : t('auth_btn_verify')}
+            </button>
+          </form>
+        )}
+
+        {/* Tab Form: Reset Password (Lupa Kata Sandi) */}
+        {activeTab === 'forgot' && (
+          <form onSubmit={handleResetPassword} className="auth-form">
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 10px', lineHeight: 1.5 }}>
+              {t('auth_reset_desc')}
+            </p>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                {t('auth_ph_email_or_user')}
+              </label>
+              <div className="auth-row">
+                <input
+                  type="text"
+                  className="auth-input"
+                  placeholder="Email terdaftar akun Anda"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn-huge btn-cyan"
+                  style={{
+                    minWidth: '120px',
+                    padding: '12px 14px',
+                    fontSize: '0.85rem',
+                    borderRadius: '14px',
+                    flexShrink: 0
+                  }}
+                  onClick={handleRequestPasswordReset}
+                  disabled={resetReqLoading || !email.trim()}
+                >
+                  {resetReqLoading ? '...' : t('auth_btn_send_reset')}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                Kode Verifikasi Reset (6 Digit)
+              </label>
+              <input
+                type="text"
+                className="auth-input"
+                placeholder="Masukkan 6 digit kode dari email"
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+
+            <div className="auth-row">
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  {t('auth_new_pass')}
+                </label>
+                <input
+                  type="password"
+                  className="auth-input"
+                  placeholder={t('auth_new_pass_ph')}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  {t('auth_confirm_pass')}
+                </label>
+                <input
+                  type="password"
+                  className="auth-input"
+                  placeholder={t('auth_confirm_pass_ph')}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-huge btn-green"
+              style={{ width: '100%', marginTop: '6px', minWidth: 'unset' }}
+              disabled={resetLoading}
+            >
+              {resetLoading ? 'Menyimpan...' : t('auth_btn_save_pass')}
             </button>
           </form>
         )}

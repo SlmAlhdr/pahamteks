@@ -60,13 +60,15 @@ export const REGISTER_MUTATION = gql`
   mutation Register(
     $email: String!
     $password: String!
-    $fname: String!
-    $lname: String!
+    $username: String
+    $fname: String
+    $lname: String
     $otp: String!
   ) {
     register(
       email: $email
       password: $password
+      username: $username
       fname: $fname
       lname: $lname
       otp: $otp
@@ -76,6 +78,7 @@ export const REGISTER_MUTATION = gql`
       user {
         id
         email
+        username
         name
       }
     }
@@ -90,8 +93,27 @@ export const LOGIN_MUTATION = gql`
       user {
         id
         email
+        username
         name
       }
+    }
+  }
+`;
+
+export const REQUEST_PASSWORD_RESET_MUTATION = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email) {
+      success
+      message
+    }
+  }
+`;
+
+export const RESET_PASSWORD_MUTATION = gql`
+  mutation ResetPassword($email: String!, $otp: String!, $newPassword: String!) {
+    resetPassword(email: $email, otp: $otp, newPassword: $newPassword) {
+      success
+      message
     }
   }
 `;

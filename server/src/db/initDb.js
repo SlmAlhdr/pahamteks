@@ -48,6 +48,18 @@ async function initDatabase() {
             }
         }
 
+        // Migrasi kolom username jika tabel users sudah ada sebelumnya
+        try {
+            const [columns] = await connection.query("SHOW COLUMNS FROM `users` LIKE 'username'");
+            if (columns.length === 0) {
+                console.log('🔄 [DB INIT] Menambahkan kolom `username` ke tabel users...');
+                await connection.query("ALTER TABLE `users` ADD COLUMN `username` VARCHAR(100) UNIQUE NULL AFTER `email`");
+                console.log('✅ [DB INIT] Kolom `username` berhasil ditambahkan.');
+            }
+        } catch (migErr) {
+            console.warn('⚠️ [DB INIT] Peringatan migrasi username:', migErr.message);
+        }
+
         console.log('🎉 [DB INIT] Seluruh tabel skema MySQL (users, otp, logs, quiz, dll.) berhasil disiapkan!');
     } catch (err) {
         console.error('❌ [DB INIT] Gagal menginisialisasi database MySQL:');

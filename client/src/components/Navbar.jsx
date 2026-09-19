@@ -57,7 +57,7 @@ export default function Navbar({
               onClick={() => setActiveTab('account')}
               title="Buka Data Akun & Pelacakan Belajar"
             >
-              📊 {user.name}
+              📊 {user?.username ? `@${user.username}` : user?.name}
             </button>
             <button className="btn-logout" onClick={onLogout}>
               {t('btn_logout')}
