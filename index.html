@@ -1424,8 +1424,6 @@
 
     function handleTimeOut() {
         isChecking = false;
-        const correctAnswer = activeQuizPool[currentQuizIndex].answer;
-        userAnswersLog.push({ question: activeQuizPool[currentQuizIndex].question, selected: "(Waktu Habis)", correct: correctAnswer });
         const currentData = activeQuizPool[currentQuizIndex];
         const correctAnswer = currentData.answer;
         const timedOutLabel = currentLang === 'id' ? "(Waktu Habis)" : "(Time's Up)";
@@ -1459,9 +1457,6 @@
         }
 
         isChecking = false;
-        const correctAnswer = activeQuizPool[currentQuizIndex].answer;
-        if (selectedAnswer === correctAnswer) correctAnswersCount++;
-        userAnswersLog.push({ question: activeQuizPool[currentQuizIndex].question, selected: selectedAnswer, correct: correctAnswer });
         const currentData = activeQuizPool[currentQuizIndex];
         const correctAnswer = currentData.answer;
         const isCorrect = (selectedAnswer === correctAnswer);
@@ -1626,8 +1621,6 @@
             breakdownHTML += `
                 <div class="explanation-item" style="border-left: 5px solid ${color};">
                     <div style="font-weight:bold; margin-bottom:5px;">${idx+1}. ${ans.question}</div>
-                    <div style="color:${color};">${currentLang === 'id' ? 'Jawaban Anda:' : 'Your Answer:'} ${ans.selected} ${isCorrect ? '✅' : '❌'}</div>
-                    ${!isCorrect ? `<div style="color:var(--btn-green);">${currentLang === 'id' ? 'Jawaban Benar:' : 'Correct Answer:'}${ans.correct}</div>` : ''}
                     <div style="color:${color}; font-weight:700;">${currentLang === 'id' ? 'Jawaban Anda:' : 'Your Answer:'} ${ans.selected} ${isCorrect ? '✅' : '❌'}</div>
                     ${!isCorrect ? `
                         <div style="color:var(--btn-green); font-weight:700; margin-top:3px; margin-bottom:6px;">${currentLang === 'id' ? 'Jawaban Benar:' : 'Correct Answer:'} ${ans.correct}</div>
