@@ -1,0 +1,104 @@
+import { gql } from '@apollo/client';
+
+export const TRANSLATE_MUTATION = gql`
+  mutation Translate($text: String!, $source: String!, $target: String!) {
+    translate(text: $text, source: $source, target: $target) {
+      translatedText
+      error
+    }
+  }
+`;
+
+export const EXPLAIN_ANSWER_MUTATION = gql`
+  mutation ExplainAnswer(
+    $question: String!
+    $userAnswer: String!
+    $correctAnswer: String!
+    $category: String
+    $lang: String
+  ) {
+    explainAnswer(
+      question: $question
+      userAnswer: $userAnswer
+      correctAnswer: $correctAnswer
+      category: $category
+      lang: $lang
+    ) {
+      explanation
+      error
+    }
+  }
+`;
+
+export const TRANSCRIBE_AUDIO_MUTATION = gql`
+  mutation TranscribeAudio(
+    $audioBase64: String!
+    $mimeType: String
+    $lang: String
+  ) {
+    transcribeAudio(
+      audioBase64: $audioBase64
+      mimeType: $mimeType
+      lang: $lang
+    ) {
+      text
+      error
+    }
+  }
+`;
+
+export const SEND_OTP_MUTATION = gql`
+  mutation SendOtp($email: String!) {
+    sendOtp(email: $email) {
+      success
+      message
+    }
+  }
+`;
+
+export const REGISTER_MUTATION = gql`
+  mutation Register(
+    $email: String!
+    $password: String!
+    $fname: String!
+    $lname: String!
+    $otp: String!
+  ) {
+    register(
+      email: $email
+      password: $password
+      fname: $fname
+      lname: $lname
+      otp: $otp
+    ) {
+      success
+      message
+      user {
+        id
+        email
+        name
+      }
+    }
+  }
+`;
+
+export const LOGIN_MUTATION = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      success
+      message
+      user {
+        id
+        email
+        name
+      }
+    }
+  }
+`;
+
+export const LOG_ACTIVITY_MUTATION = gql`
+  mutation LogActivity($action: String!, $details: String, $userId: ID) {
+    logActivity(action: $action, details: $details, userId: $userId)
+  }
+`;
+

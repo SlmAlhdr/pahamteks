@@ -1,0 +1,19 @@
+{
+  "name": "pahamteks-final",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PahamTeks - Modern AI Platform with React, Node.js GraphQL & MySQL",
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "init:db": "npm --prefix server run init-db",
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build"
+  }
+}
+

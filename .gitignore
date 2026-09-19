@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+
+# Environment variables & secrets
+.env
+server/.env
+client/.env.local
+*.env
+
+# Cache & temporary files
+.cache/
+__pycache__/
+api/__pycache__/
+*.pyc
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Vercel deployment
+.vercel/
+

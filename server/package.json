@@ -1,0 +1,23 @@
+{
+  "name": "pahamteks-server",
+  "version": "1.0.0",
+  "description": "GraphQL Server with Node.js, Express, Apollo Server, Gemini AI & MySQL for PahamTeks",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "init-db": "node src/db/initDb.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "@google/genai": "^2.3.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "graphql": "^16.10.0",
+    "mysql2": "^3.12.0"
+  }
+}
+
