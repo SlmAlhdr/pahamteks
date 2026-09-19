@@ -139,6 +139,12 @@
         .btn-swap:active { transform: scale(0.9); }
         .btn-speak { position: absolute; bottom: 12px; right: 12px; background: rgba(255,255,255,0.2); border: 1px solid var(--card-border); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; color: white; transition: 0.2s;}
         .btn-speak:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+        .text-box-actions { position: absolute; bottom: 12px; right: 12px; display: flex; align-items: center; gap: 8px; z-index: 5; }
+        .text-box-actions .btn-speak, .text-box-actions .btn-mic { position: static; }
+        .btn-mic { background: rgba(255,255,255,0.2); border: 1px solid var(--card-border); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; color: white; transition: 0.2s; }
+        .btn-mic:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+        .btn-mic.listening { background: #ff4757 !important; border-color: #ff4757 !important; color: white !important; animation: micPulse 1.2s infinite; }
+        @keyframes micPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); } 70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
 
         .quiz-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; text-align: center; position: relative; backdrop-filter: blur(10px);}
         .mc-btn { width: 100%; background: rgba(0,0,0,0.7); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; font-size: 1.05rem; font-weight: 700; color: white; cursor: pointer; text-align: left; margin-bottom: 10px; transition: 0.2s; }
@@ -325,7 +331,10 @@
                 </select>
                 <div class="text-box">
                     <textarea id="source-text" data-i18n-ph="trans_ph_source" placeholder="Ketik teks yang ingin di terjemahkan..."></textarea>
-                    <button class="btn-speak" title="Baca Teks" onclick="speakText(document.getElementById('source-text').value, document.getElementById('source-lang').value === 'auto' ? 'id-ID' : document.getElementById('source-lang').value)">🔊</button>
+                    <div class="text-box-actions">
+                        <button id="btn-voice-input" class="btn-mic" title="Bicara (Speech-to-Text)" onclick="toggleSpeechRecognition()">🎤</button>
+                        <button class="btn-speak" title="Baca Teks" onclick="speakText(document.getElementById('source-text').value, document.getElementById('source-lang').value === 'auto' ? 'id-ID' : document.getElementById('source-lang').value)">🔊</button>
+                    </div>
                 </div>
             </div>
             <div class="btn-swap-wrap"><button class="btn-swap" onclick="swapLangs()">⇄</button></div>
@@ -335,7 +344,9 @@
                 </select>
                 <div class="text-box">
                     <textarea id="target-text" data-i18n-ph="trans_ph_target" placeholder="Terjemahan atau pelafalan..." readonly></textarea>
-                    <button class="btn-speak" title="Baca Terjemahan" onclick="speakText(document.getElementById('target-text').value, document.getElementById('target-lang').value)">🔊</button>
+                    <div class="text-box-actions">
+                        <button class="btn-speak" title="Baca Terjemahan" onclick="speakText(document.getElementById('target-text').value, document.getElementById('target-lang').value)">🔊</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -760,6 +771,7 @@
             dict_word_list: "Daftar Kosakata:",
             btn_ans_check: "Kunci Jawaban", btn_ans_next: "Lanjut Soal Berikutnya ➔", btn_ans_select: "Pilih Jawaban",
             btn_why_wrong: "💡 Mengapa Salah? (Tanya AI)", btn_explain_loading: "🤖 Menganalisis alasan...", explanation_title: "Penjelasan Cerdas AI", btn_mini_explain: "💡 Mengapa Salah?",
+            trans_mic_start: "Bicara (Speech-to-Text)", trans_mic_listening: "Sedang mendengarkan... Klik untuk berhenti", trans_mic_status: "🎙️ Sedang mendengarkan suara Anda...",
             opt_auto_detect: "Mendeteksi...",
             lang_en: "Inggris (English)", lang_id: "Indonesia", lang_ar: "Arab", lang_ja: "Jepang", lang_de: "Jerman",
             lang_ko: "Korea", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanyol",
@@ -806,6 +818,7 @@
             dict_word_list: "Vocabulary List:",
             btn_ans_check: "Submit Answer", btn_ans_next: "Next Question ➔", btn_ans_select: "Select Answer",
             btn_why_wrong: "💡 Why is this wrong? (Ask AI)", btn_explain_loading: "🤖 Analyzing reason...", explanation_title: "AI Smart Explanation", btn_mini_explain: "💡 Why is this wrong?",
+            trans_mic_start: "Voice Input (Speech-to-Text)", trans_mic_listening: "Listening... Click to stop", trans_mic_status: "🎙️ Listening to your voice...",
             opt_auto_detect: "Auto Detect",
             lang_en: "English", lang_id: "Indonesian", lang_ar: "Arabic", lang_ja: "Japanese", lang_de: "German",
             lang_ko: "Korean", lang_zh: "Mandarin", lang_fr: "French", lang_es: "Spanish",
@@ -911,6 +924,11 @@
         document.querySelectorAll('.btn-mini-explain').forEach(el => {
             if (!el.innerText.includes("...")) el.innerText = dict[currentLang].btn_mini_explain;
         });
+
+        const micBtn = document.getElementById("btn-voice-input");
+        if (micBtn && !micBtn.classList.contains("listening")) {
+            micBtn.title = dict[currentLang].trans_mic_start;
+        }
         
         updateTrackingUI(); 
         updateKamusDropdownText();
@@ -1227,6 +1245,121 @@
         const s = document.getElementById("source-lang"), t = document.getElementById("target-lang"), sT = document.getElementById("source-text"), tT = document.getElementById("target-text");
         let tempL = s.value === "auto" ? "id" : s.value; s.value = t.value; t.value = tempL;
         sT.value = tT.value; tT.value = ""; triggerTranslate();
+    }
+
+    let speechRecognitionInstance = null;
+    let isSpeechRecording = false;
+
+    function toggleSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert(currentLang === 'id' 
+                ? "Browser Anda belum mendukung Web Speech Recognition (Speech-to-Text). Silakan gunakan Google Chrome, Microsoft Edge, atau browser berbasis Chromium." 
+                : "Your browser does not support Web Speech Recognition (Speech-to-Text). Please use Google Chrome, Microsoft Edge, or a Chromium-based browser.");
+            return;
+        }
+
+        const micBtn = document.getElementById("btn-voice-input");
+        const statusElem = document.getElementById("status");
+        const sourceText = document.getElementById("source-text");
+        const sourceLang = document.getElementById("source-lang").value;
+
+        if (isSpeechRecording) {
+            if (speechRecognitionInstance) {
+                try { speechRecognitionInstance.stop(); } catch(e) {}
+            }
+            return;
+        }
+
+        try {
+            speechRecognitionInstance = new SpeechRecognition();
+        } catch (e) {
+            alert("Gagal menginisialisasi Speech Recognition: " + e.message);
+            return;
+        }
+
+        speechRecognitionInstance.continuous = false;
+        speechRecognitionInstance.interimResults = true;
+
+        let langCode = 'id-ID';
+        if (sourceLang && sourceLang !== 'auto') {
+            const langMap = {
+                'id': 'id-ID', 'en': 'en-US', 'ar': 'ar-SA', 'ja': 'ja-JP', 'ko': 'ko-KR',
+                'zh-cn': 'zh-CN', 'zh-tw': 'zh-TW', 'fr': 'fr-FR', 'de': 'de-DE', 'es': 'es-ES',
+                'ru': 'ru-RU', 'it': 'it-IT', 'nl': 'nl-NL', 'pt': 'pt-PT', 'tr': 'tr-TR',
+                'th': 'th-TH', 'vi': 'vi-VN', 'hi': 'hi-IN', 'jw': 'id-ID', 'su': 'id-ID'
+            };
+            langCode = langMap[sourceLang] || sourceLang;
+        } else {
+            langCode = currentLang === 'id' ? 'id-ID' : 'en-US';
+        }
+        speechRecognitionInstance.lang = langCode;
+
+        speechRecognitionInstance.onstart = () => {
+            isSpeechRecording = true;
+            if (micBtn) {
+                micBtn.classList.add("listening");
+                micBtn.title = dict[currentLang].trans_mic_listening;
+            }
+            if (statusElem) {
+                statusElem.innerText = dict[currentLang].trans_mic_status;
+                statusElem.style.color = "var(--warning-orange)";
+            }
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+            let transcript = "";
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            sourceText.value = transcript;
+        };
+
+        speechRecognitionInstance.onerror = (event) => {
+            console.warn("Speech recognition error:", event.error);
+            if (statusElem) {
+                if (event.error === 'not-allowed') {
+                    statusElem.innerText = currentLang === 'id' 
+                        ? "⚠️ Izin mikrofon ditolak. Izinkan akses mic di browser Anda." 
+                        : "⚠️ Microphone permission denied. Please allow mic access.";
+                } else if (event.error === 'no-speech') {
+                    statusElem.innerText = currentLang === 'id' 
+                        ? "⚠️ Suara tidak terdeteksi. Silakan coba lagi." 
+                        : "⚠️ No speech detected. Please try again.";
+                } else {
+                    statusElem.innerText = `⚠️ Mic: ${event.error}`;
+                }
+            }
+            stopRecordingUI();
+        };
+
+        speechRecognitionInstance.onend = () => {
+            stopRecordingUI();
+            if (sourceText.value.trim()) {
+                triggerTranslate();
+            }
+        };
+
+        try {
+            speechRecognitionInstance.start();
+        } catch (e) {
+            console.error("Speech start error:", e);
+            stopRecordingUI();
+        }
+    }
+
+    function stopRecordingUI() {
+        isSpeechRecording = false;
+        const micBtn = document.getElementById("btn-voice-input");
+        const statusElem = document.getElementById("status");
+        if (micBtn) {
+            micBtn.classList.remove("listening");
+            micBtn.title = dict[currentLang].trans_mic_start;
+        }
+        if (statusElem && !statusElem.innerText.startsWith("⚠️") && !statusElem.innerText.includes("AI")) {
+            statusElem.style.color = "var(--btn-green)";
+            statusElem.innerText = currentLang === 'id' ? "Siap." : "Ready.";
+        }
     }
 
     const dictDatabase = {
