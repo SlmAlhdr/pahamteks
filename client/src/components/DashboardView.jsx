@@ -1,18 +1,52 @@
 import React from 'react';
 
-export default function DashboardView({ t, history = [] }) {
+export default function DashboardView({ t, user, history = [], onOpenAuth, onBackHome }) {
   const totalSessions = history.length;
   const avgScore = totalSessions > 0
     ? Math.round(history.reduce((acc, curr) => acc + (curr.score / curr.total) * 100, 0) / totalSessions)
     : 0;
 
   return (
-    <div className="page" style={{ width: '100%', maxWidth: '850px' }}>
-      <div className="hero" style={{ marginBottom: '20px' }}>
-        <h1>{t('dash_title')}</h1>
-        <p>{t('dash_subtitle')}</p>
+    <div className="page" style={{ width: '100%', maxWidth: '900px' }}>
+      <div className="hero" style={{ marginBottom: '22px' }}>
+        <h1>{t('account_title')}</h1>
+        <p>{t('account_subtitle')}</p>
       </div>
 
+      {/* Kartu Informasi Akun Pengguna */}
+      <div className="account-info-card" style={{ marginBottom: '25px' }}>
+        <div className="account-avatar-col">
+          <div className="account-avatar-icon">
+            {user?.isGuest ? '👤' : '⭐'}
+          </div>
+        </div>
+        <div className="account-details-col">
+          <div className="account-name-row">
+            <h2 className="account-user-name">{user?.name || 'Pengguna'}</h2>
+            <span className={`account-status-pill ${user?.isGuest ? 'guest' : 'official'}`}>
+              {user?.isGuest ? t('guest_badge') : 'Akun Resmi Terverifikasi'}
+            </span>
+          </div>
+
+          <p className="account-email-text">
+            {user?.email ? user.email : (user?.isGuest ? 'Sesi tamu browser sementara (data hilang saat tab ditutup)' : '-')}
+          </p>
+
+          {user?.isGuest && onOpenAuth && (
+            <div style={{ marginTop: '10px' }}>
+              <button
+                className="btn-auth primary"
+                style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+                onClick={() => onOpenAuth('register')}
+              >
+                🚀 {t('guest_upgrade_btn')}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Statistik Pelacakan Belajar */}
       <div className="stats-grid">
         <div className="stat-card">
           <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 700 }}>
@@ -40,13 +74,17 @@ export default function DashboardView({ t, history = [] }) {
         </div>
       </div>
 
-      <div className="dashboard-box" style={{ width: '100%' }}>
-        <h3 style={{ marginBottom: '15px', fontSize: '1.2rem' }}>
+      {/* Riwayat Pengerjaan Kuis */}
+      <div className="dashboard-box" style={{ width: '100%', marginTop: '20px' }}>
+        <h3 style={{ marginBottom: '15px', fontSize: '1.2rem', color: 'var(--text-main)' }}>
           {t('dash_history')}
         </h3>
 
         {history.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)' }}>{t('dash_empty')}</p>
+          <div style={{ textAlign: 'center', padding: '30px 10px', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '1rem', marginBottom: '8px' }}>{t('dash_empty')}</p>
+            <span style={{ fontSize: '0.85rem' }}>Mulai latihan di menu <strong>Pembelajaran Bahasa</strong> untuk mencatat perkembangan Anda.</span>
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {history.map((h, i) => (
@@ -77,4 +115,3 @@ export default function DashboardView({ t, history = [] }) {
     </div>
   );
 }
-

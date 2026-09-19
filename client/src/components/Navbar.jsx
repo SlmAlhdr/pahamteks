@@ -30,35 +30,16 @@ export default function Navbar({
               {t('nav_home')}
             </button>
             <button
-              className={`btn-nav ${activeTab === 'translator' ? 'active' : ''}`}
-              onClick={() => setActiveTab('translator')}
+              className={`btn-nav ${activeTab === 'learning' ? 'active' : ''}`}
+              onClick={() => setActiveTab('learning')}
             >
-              {t('nav_translator')}
+              📚 {t('nav_learning')}
             </button>
             <button
-              className={`btn-nav ${activeTab === 'learn' ? 'active' : ''}`}
-              onClick={() => setActiveTab('learn')}
+              className={`btn-nav ${activeTab === 'dict_trans' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dict_trans')}
             >
-              {t('nav_learn')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'coding' ? 'active' : ''}`}
-              onClick={() => setActiveTab('coding')}
-            >
-              {t('nav_coding')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'dictionary' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dictionary')}
-            >
-              {t('nav_dictionary')}
-            </button>
-            <button
-              className={`btn-nav ${activeTab === 'tracking' ? 'active' : ''}`}
-              onClick={() => setActiveTab('tracking')}
-              style={{ color: 'var(--btn-cyan)' }}
-            >
-              {t('nav_dashboard')}
+              📖 {t('nav_dict_trans')}
             </button>
             <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
               🌐 {currentLang.toUpperCase()}
@@ -71,9 +52,13 @@ export default function Navbar({
       <div className="nav-right-balancer">
         {user && !user.isGuest ? (
           <div className="user-profile-header">
-            <div className="user-profile" title="Profil Akun Resmi">
-              {user.name}
-            </div>
+            <button
+              className={`user-profile ${activeTab === 'account' ? 'active' : ''}`}
+              onClick={() => setActiveTab('account')}
+              title="Buka Data Akun & Pelacakan Belajar"
+            >
+              📊 {user.name}
+            </button>
             <button className="btn-logout" onClick={onLogout}>
               {t('btn_logout')}
             </button>

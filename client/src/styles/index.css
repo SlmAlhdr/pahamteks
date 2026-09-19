@@ -1408,3 +1408,404 @@ textarea {
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* ========================================================
+   SUB-TABS NAVIGATION (PEMBELAJARAN BAHASA & KAMUS/TRANSLATOR)
+   ======================================================== */
+.sub-tabs-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 10px;
+    border-radius: 30px;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: max-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+.sub-tab-btn {
+    background: transparent;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.sub-tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.sub-tab-btn.active {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================================
+   GLOSARIUM KOSAKATA MULTI-BAHASA (A - Z)
+   ======================================================== */
+.az-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.az-letter-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.az-letter-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.az-letter-btn.active {
+    background: var(--btn-cyan);
+    color: #000;
+    border-color: var(--btn-cyan);
+    font-weight: 900;
+}
+
+.az-word-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.az-word-card {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.az-word-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--btn-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.az-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.az-word-title {
+    font-weight: 800;
+    font-size: 0.98rem;
+    color: #ffffff;
+}
+
+.az-lang-pill {
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.az-lang-pill.lang-code { background: rgba(126, 242, 224, 0.2); color: var(--btn-cyan); border: 1px solid var(--btn-cyan); }
+.az-lang-pill.lang-ja { background: rgba(255, 107, 129, 0.2); color: #ff6b81; border: 1px solid #ff6b81; }
+.az-lang-pill.lang-fr { background: rgba(112, 161, 255, 0.2); color: #70a1ff; border: 1px solid #70a1ff; }
+.az-lang-pill.lang-de { background: rgba(234, 181, 67, 0.2); color: #eab543; border: 1px solid #eab543; }
+.az-lang-pill.lang-ar { background: rgba(46, 213, 115, 0.2); color: #2ed573; border: 1px solid #2ed573; }
+.az-lang-pill.lang-es { background: rgba(255, 159, 67, 0.2); color: #ff9f43; border: 1px solid #ff9f43; }
+.az-lang-pill.lang-id { background: rgba(255, 71, 87, 0.2); color: #ff4757; border: 1px solid #ff4757; }
+
+.az-word-desc {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* ========================================================
+   FITUR WAWASAN & KOMPARASI BAHASA
+   ======================================================== */
+.insights-selector-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 16px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.insights-select-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.insights-select-col label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.insights-select {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s;
+}
+
+.insights-select:focus {
+    border-color: var(--btn-cyan);
+}
+
+.insights-vs-badge {
+    background: linear-gradient(135deg, var(--btn-cyan), var(--btn-green));
+    color: #000;
+    font-weight: 900;
+    padding: 8px 14px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    box-shadow: 0 0 15px rgba(126, 242, 224, 0.3);
+}
+
+.comparison-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .comparison-matrix {
+        grid-template-columns: 1fr;
+    }
+}
+
+.comparison-col {
+    background: rgba(10, 26, 40, 0.7);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.comparison-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comparison-header.col-1 {
+    background: linear-gradient(90deg, rgba(126, 242, 224, 0.15), rgba(126, 242, 224, 0.02));
+}
+
+.comparison-header.col-2 {
+    background: linear-gradient(90deg, rgba(180, 242, 126, 0.15), rgba(180, 242, 126, 0.02));
+}
+
+.comparison-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 900;
+}
+
+.comparison-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.comparison-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comparison-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-label {
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--btn-cyan);
+}
+
+.comparison-item p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.sample-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #e6fffa;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+}
+
+.ai-comparison-result-card {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--btn-cyan);
+    border-radius: 18px;
+    padding: 22px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.ai-result-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--btn-cyan);
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.ai-result-content {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    white-space: pre-line;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* ========================================================
+   KARTU DATA AKUN & PELACAKAN
+   ======================================================== */
+.account-info-card {
+    background: rgba(10, 26, 40, 0.75);
+    border: 1.5px solid var(--card-border);
+    border-radius: 20px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.account-avatar-col {
+    flex-shrink: 0;
+}
+
+.account-avatar-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--btn-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.account-details-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.account-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.account-user-name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffffff;
+}
+
+.account-status-pill {
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.account-status-pill.guest {
+    background: rgba(255, 159, 67, 0.2);
+    border: 1px solid #ff9f43;
+    color: #ff9f43;
+}
+
+.account-status-pill.official {
+    background: rgba(180, 242, 126, 0.2);
+    border: 1px solid var(--btn-green);
+    color: var(--btn-green);
+}
+
+.account-email-text {
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+}
+
+

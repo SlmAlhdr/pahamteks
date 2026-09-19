@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HomeHero from './components/HomeHero';
 import WelcomePortal from './components/WelcomePortal';
-import Translator from './components/Translator';
-import QuizView from './components/QuizView';
-import DictionaryView from './components/DictionaryView';
+import LearningHub from './components/LearningHub';
+import CombinedDictTranslator from './components/CombinedDictTranslator';
 import DashboardView from './components/DashboardView';
 import KamusFloating from './components/KamusFloating';
 import AuthModal from './components/AuthModal';
@@ -144,8 +143,13 @@ export default function App() {
             <span>{t('guest_notice_bar')}</span>
           </div>
           <div className="guest-top-banner-actions">
-            <span className="guest-top-badge">
-              {t('guest_badge')}
+            <span
+              className="guest-top-badge"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setActiveTab('account')}
+              title="Klik untuk membuka Data Akun & Pelacakan Belajar"
+            >
+              📊 {t('guest_badge')}
             </span>
             <button
               className="btn-banner-upgrade"
@@ -193,20 +197,52 @@ export default function App() {
             {activeTab === 'home' && (
               <HomeHero onNavigate={setActiveTab} t={t} />
             )}
-            {activeTab === 'translator' && (
-              <Translator t={t} currentLang={currentLang} />
+            {activeTab === 'learning' && (
+              <LearningHub
+                t={t}
+                currentLang={currentLang}
+                onFinishQuiz={handleFinishQuiz}
+              />
             )}
-            {activeTab === 'learn' && (
-              <QuizView mode="learn" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
+            {activeTab === 'dict_trans' && (
+              <CombinedDictTranslator
+                t={t}
+                currentLang={currentLang}
+              />
             )}
-            {activeTab === 'coding' && (
-              <QuizView mode="coding" t={t} currentLang={currentLang} onFinishQuiz={handleFinishQuiz} />
+            {activeTab === 'account' && (
+              <DashboardView
+                t={t}
+                user={user}
+                history={quizHistory}
+                onOpenAuth={handleOpenAuth}
+                onBackHome={() => setActiveTab('home')}
+              />
             )}
-            {activeTab === 'dictionary' && (
-              <DictionaryView t={t} currentLang={currentLang} />
+            {/* Fallback kompatibilitas jika navigasi memanggil nama tab spesifik */}
+            {(activeTab === 'translator' || activeTab === 'dictionary') && (
+              <CombinedDictTranslator
+                t={t}
+                currentLang={currentLang}
+                initialSubTab={activeTab === 'translator' ? 'trans' : 'dict'}
+              />
+            )}
+            {(activeTab === 'learn' || activeTab === 'coding') && (
+              <LearningHub
+                t={t}
+                currentLang={currentLang}
+                onFinishQuiz={handleFinishQuiz}
+                initialMode={activeTab === 'coding' ? 'coding' : 'learn'}
+              />
             )}
             {activeTab === 'tracking' && (
-              <DashboardView t={t} history={quizHistory} />
+              <DashboardView
+                t={t}
+                user={user}
+                history={quizHistory}
+                onOpenAuth={handleOpenAuth}
+                onBackHome={() => setActiveTab('home')}
+              />
             )}
           </>
         )}

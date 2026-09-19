@@ -9,48 +9,48 @@ export default function HomeHero({ onNavigate, t }) {
       </div>
 
       <div className="cards-container">
-        {/* Card 1: Translator */}
+        {/* Card 1: Pembelajaran Bahasa (Bahasa Dunia & Pemrograman) */}
         <div className="feature-card">
-          <h2>{t('card_1_title')}</h2>
+          <h2>📚 {t('nav_learning')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('card_1_desc')}
+            {t('card_2_desc')} Asah juga logika pemrograman algoritma dalam satu modul belajar terintegrasi.
           </p>
           <button
             className="btn-huge btn-green"
             style={{ marginTop: 'auto', width: '100%' }}
-            onClick={() => onNavigate('translator')}
+            onClick={() => onNavigate('learning')}
           >
-            {t('nav_translator')}
+            {t('nav_learning')}
           </button>
         </div>
 
-        {/* Card 2: Bahasa Asing */}
+        {/* Card 2: Kamus & Penerjemah AI */}
         <div className="feature-card">
-          <h2>{t('card_2_title')}</h2>
+          <h2>📖 {t('nav_dict_trans')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('card_2_desc')}
+            {t('card_1_desc')} Dilengkapi glosarium kosakata lengkap A - Z dan fitur komparasi wawasan bahasa.
           </p>
           <button
             className="btn-huge btn-cyan"
             style={{ marginTop: 'auto', width: '100%' }}
-            onClick={() => onNavigate('learn')}
+            onClick={() => onNavigate('dict_trans')}
           >
-            {t('btn_start_learn')}
+            {t('nav_dict_trans')}
           </button>
         </div>
 
-        {/* Card 3: Ngoding / Pemrograman */}
+        {/* Card 3: Data Akun & Pelacakan Belajar */}
         <div className="feature-card">
-          <h2>{t('card_3_title')}</h2>
+          <h2>📊 {t('account_title')}</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-            {t('card_3_desc')}
+            {t('account_subtitle')} Pantau tingkat akurasi dan riwayat pengerjaan kuis Anda.
           </p>
           <button
             className="btn-huge btn-grey"
             style={{ marginTop: 'auto', width: '100%' }}
-            onClick={() => onNavigate('coding')}
+            onClick={() => onNavigate('account')}
           >
-            {t('btn_start_code')}
+            Buka Pelacakan Akun
           </button>
         </div>
       </div>
