@@ -137,13 +137,31 @@ export default function App() {
       {/* Background Floating Greetings */}
       <BackgroundDrift />
 
-      {/* Guest Mode Warning Notice Bar */}
+      {/* Garis Blok Paling Atas (Full width dari samping ke samping) */}
       {user?.isGuest && (
         <div className="guest-top-banner">
-          <span>{t('guest_notice_bar')}</span>
-          <button onClick={() => handleOpenAuth('register')}>
-            {t('guest_upgrade_btn')}
-          </button>
+          <div className="guest-top-banner-text">
+            <span>{t('guest_notice_bar')}</span>
+          </div>
+          <div className="guest-top-banner-actions">
+            <span className="guest-top-badge">
+              {t('guest_badge')}
+            </span>
+            <button
+              className="btn-banner-upgrade"
+              onClick={() => handleOpenAuth('register')}
+              title="Daftar akun resmi agar data tersimpan permanen"
+            >
+              {t('guest_upgrade_btn')}
+            </button>
+            <button
+              className="btn-banner-logout"
+              onClick={handleLogout}
+              title="Keluar dari sesi tamu"
+            >
+              {t('btn_logout')}
+            </button>
+          </div>
         </div>
       )}
 
