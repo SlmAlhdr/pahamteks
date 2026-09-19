@@ -5,8 +5,9 @@ import nodemailer from 'nodemailer';
  * Mendukung Gmail langsung (dengan App Password) atau custom SMTP host.
  */
 function createTransporter() {
-  const user = process.env.EMAIL_USER || process.env.SMTP_USER;
-  const pass = process.env.EMAIL_PASS || process.env.SMTP_PASS;
+  const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
+  const rawPass = (process.env.EMAIL_PASS || process.env.SMTP_PASS || '').trim();
+  const pass = rawPass.replace(/\s+/g, ''); // Menghapus spasi otomatis jika pengguna copy-paste dari Sandi Aplikasi Google
   const host = process.env.SMTP_HOST;
   const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 465;
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
@@ -24,9 +25,11 @@ function createTransporter() {
     });
   }
 
-  // Default menggunakan service Gmail
+  // Default menggunakan Gmail SMTP resmi port 465 (SSL langsung)
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: { user, pass }
   });
 }
@@ -135,3 +138,4 @@ export async function sendOtpEmail(toEmail, otpCode) {
     };
   }
 }
+
