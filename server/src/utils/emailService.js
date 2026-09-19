@@ -97,18 +97,11 @@ export async function sendOtpEmail(toEmail, otpCode) {
   `;
 
   if (!transporter) {
-    console.log('\n========================================================');
-    console.log('[EMAIL SERVICE - SIMULASI OTP]');
-    console.log(`Tujuan: ${toEmail}`);
-    console.log(`Kode OTP: ${otpCode}`);
-    console.log('Catatan: Agar email terkirim langsung ke Gmail penerima,');
-    console.log('tambahkan EMAIL_USER dan EMAIL_PASS di file server/.env');
-    console.log('========================================================\n');
-
+    console.error('[EMAIL SERVICE] Gagal: EMAIL_USER dan EMAIL_PASS belum diisi!');
     return {
-      success: true,
+      success: false,
       delivered: false,
-      message: `Kode verifikasi telah dikirim ke ${toEmail}.`
+      message: 'Gagal mengirim: Pengirim email belum diatur (EMAIL_USER & EMAIL_PASS kosong di server/.env atau Vercel Settings).'
     };
   }
 
@@ -129,12 +122,10 @@ export async function sendOtpEmail(toEmail, otpCode) {
     };
   } catch (err) {
     console.error('[EMAIL SERVICE ERROR]', err.message);
-    // Jika SMTP gagal (misal credentials salah), tetap log kode di terminal agar proses registrasi tidak macet
-    console.log(`[EMAIL SERVICE FALLBACK] Kode OTP untuk ${toEmail}: ${otpCode}`);
     return {
-      success: true,
+      success: false,
       delivered: false,
-      message: `Kode verifikasi telah dikirim. Jika belum masuk, periksa koneksi atau folder spam Anda.`
+      message: `Gagal mengirim email: ${err.message}. Pastikan alamat email dan 16-karakter Sandi Aplikasi Google (EMAIL_PASS) Anda benar.`
     };
   }
 }

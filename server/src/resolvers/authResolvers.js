@@ -86,7 +86,7 @@ export const authResolvers = {
             const emailResult = await sendOtpEmail(cleanEmail, otpCode);
 
             return {
-                success: true,
+                success: emailResult.success,
                 message: emailResult.message
             };
         },
