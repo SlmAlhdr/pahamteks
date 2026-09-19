@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const GREETINGS = [
   "Hello", "Bonjour", "Hola", "Ciao", "Konnichiwa", "Namaste", 
@@ -7,39 +7,66 @@ const GREETINGS = [
 ];
 
 export default function BackgroundDrift() {
-  const [items, setItems] = useState([]);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const generated = Array.from({ length: 12 }).map((_, i) => ({
-      id: i,
-      text: GREETINGS[i % GREETINGS.length],
-      top: `${(i * 8) + 5}%`,
-      left: `${(i * 15) % 85}%`,
-      opacity: (0.03 + (i % 4) * 0.02).toFixed(2),
-      fontSize: `${1.4 + (i % 3) * 0.6}rem`,
-      color: i % 2 === 0 ? 'var(--btn-cyan)' : 'var(--btn-green)'
-    }));
-    setItems(generated);
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Bersihkan container
+    container.innerHTML = '';
+
+    const totalTexts = GREETINGS.length;
+    const trackHeight = Math.max(window.innerHeight / totalTexts, 40);
+    const floatingTexts = [];
+
+    for (let i = 0; i < totalTexts; i++) {
+      const el = document.createElement('div');
+      el.className = 'hello-text';
+      el.innerText = GREETINGS[i];
+
+      // Variasi ukuran font yang proporsional
+      const fontSize = (Math.random() * 0.7 + 1.3).toFixed(2);
+      el.style.fontSize = `${fontSize}rem`;
+      el.style.color = i % 2 === 0 ? 'rgba(126, 242, 224, 0.08)' : 'rgba(180, 242, 126, 0.08)';
+
+      container.appendChild(el);
+
+      const posY = (i * trackHeight) + (trackHeight / 2) - 15;
+      let posX = Math.random() * window.innerWidth;
+      let speedX = (Math.random() * 0.4 + 0.25);
+      
+      // Jalur genap bergerak ke kiri, jalur ganjil ke kanan
+      if (i % 2 === 0) speedX *= -1;
+
+      floatingTexts.push({ el, x: posX, y: posY, speedX });
+    }
+
+    let animId;
+    function animateTexts() {
+      const width = window.innerWidth;
+      floatingTexts.forEach(t => {
+        t.x += t.speedX;
+
+        // Loop melayang kembali saat keluar layar
+        if (t.speedX > 0 && t.x > width + 150) {
+          t.x = -200;
+        } else if (t.speedX < 0 && t.x < -200) {
+          t.x = width + 150;
+        }
+
+        t.el.style.transform = `translate3d(${t.x}px, ${t.y}px, 0)`;
+      });
+      animId = requestAnimationFrame(animateTexts);
+    }
+
+    animateTexts();
+
+    return () => {
+      if (animId) cancelAnimationFrame(animId);
+      if (container) container.innerHTML = '';
+    };
   }, []);
 
-  return (
-    <div className="hello-container">
-      {items.map(item => (
-        <div
-          key={item.id}
-          className="hello-text"
-          style={{
-            top: item.top,
-            left: item.left,
-            opacity: item.opacity,
-            fontSize: item.fontSize,
-            color: item.color
-          }}
-        >
-          {item.text}
-        </div>
-      ))}
-    </div>
-  );
+  return <div ref={containerRef} className="hello-container" />;
 }
-
