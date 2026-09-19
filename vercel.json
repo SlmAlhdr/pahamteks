@@ -3,9 +3,8 @@
   "buildCommand": "npm --prefix client run build",
   "outputDirectory": "client/dist",
   "rewrites": [
-    { "source": "/graphql", "destination": "/api/index.js" },
-    { "source": "/health", "destination": "/api/index.js" },
+    { "source": "/graphql", "destination": "/api/graphql.js" },
+    { "source": "/health", "destination": "/api/graphql.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
-
