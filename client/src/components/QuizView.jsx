@@ -2,6 +2,44 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { GENERATE_QUIZ, GENERATE_CHALLENGE } from '../graphql/queries';
 import { EXPLAIN_ANSWER_MUTATION } from '../graphql/mutations';
+import HumanFormattedText from './HumanFormattedText';
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+
+export function cleanOptionText(raw) {
+  if (raw == null) return '';
+  const str = String(raw).trim();
+  // Bersihkan awalan huruf 'A.', 'B.', 'A)', 'A:', '[A]', '1.', dll jika ada
+  return str.replace(/^[A-Ea-e1-5][.)\:\-\s]\s*/, '').trim();
+}
+
+export function isOptionCorrect(opt, index, q) {
+  if (!q || !q.answer) return false;
+  const targetLetter = LETTERS[index] || '';
+  const rawAns = String(q.answer).trim();
+  const cleanAns = rawAns.toUpperCase();
+  const cleanOpt = cleanOptionText(opt).toUpperCase();
+  const rawOpt = String(opt).trim().toUpperCase();
+
+  // 1. Jika kunci jawaban berupa huruf indeks 'A', 'B', 'C', 'D'
+  if (cleanAns === targetLetter) return true;
+
+  // 2. Jika kunci jawaban berawalan 'A.' atau 'A)' atau 'A '
+  if (cleanAns.startsWith(targetLetter + '.') || cleanAns.startsWith(targetLetter + ')') || cleanAns.startsWith(targetLetter + ' ')) {
+    return true;
+  }
+
+  // 3. Jika cocok dengan teks opsi (baik yang sudah dibersihkan maupun teks mentah)
+  if (cleanAns === cleanOpt || cleanAns === rawOpt) return true;
+
+  // 4. Jika cocok setelah tanda kutip dihilangkan ('const' vs const)
+  const stripQuotes = (s) => s.replace(/['"`]/g, '').trim();
+  if (stripQuotes(cleanAns) === stripQuotes(cleanOpt) || stripQuotes(cleanAns) === stripQuotes(rawOpt)) {
+    return true;
+  }
+
+  return false;
+}
 
 const LEARN_CATEGORIES = [
   { name: 'Populer (Indo & Inggris)', items: ['Indonesia (Baku)', 'Indonesia (Gaul)', 'Inggris (Grammar)', 'Inggris (Slang)'] },
@@ -25,7 +63,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [userAnswersLog, setUserAnswersLog] = useState([]);
@@ -45,12 +83,13 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   useEffect(() => {
     setQuestions([]);
     setIsFinished(false);
+    setSelectedAnswerIndex(null);
     setSelectedTopic(mode === 'learn' ? 'Inggris (Grammar)' : 'JavaScript / TypeScript');
   }, [mode]);
 
   const handleStart = async (isChallengeMode = false) => {
     setCurrentIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswerIndex(null);
     setScore(0);
     setIsFinished(false);
     setUserAnswersLog([]);
@@ -71,27 +110,32 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
   const currentQ = questions[currentIndex];
 
-  const handleSelectAnswer = (opt) => {
-    if (selectedAnswer !== null) return;
-    const letter = opt.charAt(0);
-    setSelectedAnswer(letter);
+  const handleSelectAnswer = (opt, index) => {
+    if (selectedAnswerIndex !== null) return;
+    setSelectedAnswerIndex(index);
 
-    const isCorrect = letter.toUpperCase() === currentQ.answer.toUpperCase();
+    const isCorrect = isOptionCorrect(opt, index, currentQ);
     if (isCorrect) setScore(prev => prev + 1);
+
+    const userChoiceStr = `${LETTERS[index] || ''}. ${cleanOptionText(opt)}`;
+    const correctIdx = currentQ.options.findIndex((o, idx) => isOptionCorrect(o, idx, currentQ));
+    const correctChoiceStr = correctIdx !== -1
+      ? `${LETTERS[correctIdx]}. ${cleanOptionText(currentQ.options[correctIdx])}`
+      : currentQ.answer;
 
     setUserAnswersLog(prev => [
       ...prev,
       {
         question: currentQ.question,
-        userAnswer: opt,
-        correctAnswer: currentQ.answer,
+        userAnswer: userChoiceStr,
+        correctAnswer: correctChoiceStr,
         isCorrect
       }
     ]);
   };
 
   const handleNext = () => {
-    setSelectedAnswer(null);
+    setSelectedAnswerIndex(null);
     setExplanation('');
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(prev => prev + 1);
@@ -109,14 +153,21 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   };
 
   const handleAskWhyWrong = async () => {
-    if (!currentQ || selectedAnswer === null) return;
+    if (!currentQ || selectedAnswerIndex === null) return;
     setExplaining(true);
     try {
+      const chosenOpt = currentQ.options[selectedAnswerIndex];
+      const userChoiceStr = `${LETTERS[selectedAnswerIndex] || ''}. ${cleanOptionText(chosenOpt)}`;
+      const correctIdx = currentQ.options.findIndex((o, idx) => isOptionCorrect(o, idx, currentQ));
+      const correctChoiceStr = correctIdx !== -1
+        ? `${LETTERS[correctIdx]}. ${cleanOptionText(currentQ.options[correctIdx])}`
+        : currentQ.answer;
+
       const res = await explainMutation({
         variables: {
           question: currentQ.question,
-          userAnswer: selectedAnswer,
-          correctAnswer: currentQ.answer,
+          userAnswer: userChoiceStr,
+          correctAnswer: correctChoiceStr,
           category: selectedTopic,
           lang: currentLang
         }
@@ -251,13 +302,14 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
             {/* Multiple Choice Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {currentQ.options.map((opt, i) => {
-                const letter = opt.charAt(0);
+                const letter = LETTERS[i] || '•';
+                const text = cleanOptionText(opt);
                 let btnClass = 'mc-btn';
 
-                if (selectedAnswer !== null) {
-                  const isCorrect = letter.toUpperCase() === currentQ.answer.toUpperCase();
-                  const isChosen = letter.toUpperCase() === selectedAnswer.toUpperCase();
-                  if (isCorrect) {
+                if (selectedAnswerIndex !== null) {
+                  const isThisCorrect = isOptionCorrect(opt, i, currentQ);
+                  const isChosen = selectedAnswerIndex === i;
+                  if (isThisCorrect) {
                     btnClass = 'mc-btn correct';
                   } else if (isChosen) {
                     btnClass = 'mc-btn wrong';
@@ -268,31 +320,31 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                   <button
                     key={i}
                     className={btnClass}
-                    onClick={() => handleSelectAnswer(opt)}
-                    disabled={selectedAnswer !== null}
+                    onClick={() => handleSelectAnswer(opt, i)}
+                    disabled={selectedAnswerIndex !== null}
                   >
-                    <strong>{letter}.</strong> {opt.substring(2)}
+                    <strong style={{ color: 'var(--btn-cyan)', marginRight: '6px' }}>{letter}.</strong> {text}
                   </button>
                 );
               })}
             </div>
 
-            {/* "Mengapa Salah?" Button */}
-            {selectedAnswer !== null && selectedAnswer.toUpperCase() !== currentQ.answer.toUpperCase() && (
+            {/* "Kenapa Salah? Ini Penjelasannya" Button */}
+            {selectedAnswerIndex !== null && !isOptionCorrect(currentQ.options[selectedAnswerIndex], selectedAnswerIndex, currentQ) && (
               <div>
                 <button
                   className="btn-why-wrong"
                   onClick={handleAskWhyWrong}
                   disabled={explaining}
                 >
-                  {explaining ? '🤖 Menganalisis alasan...' : t('btn_why_wrong')}
+                  {explaining ? 'Menyiapkan penjelasan...' : `💡 ${t('btn_why_wrong')}`}
                 </button>
 
                 {explanation && (
                   <div className="quiz-explanation-box">
                     <div className="explanation-header">
                       <div className="explanation-title">
-                        🤖 {t('explanation_title')}
+                        💡 {t('explanation_title')}
                       </div>
                       <button
                         className="btn-speak"
@@ -303,14 +355,16 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                         🔊
                       </button>
                     </div>
-                    <div className="explanation-content">{explanation}</div>
+                    <div className="explanation-content">
+                      <HumanFormattedText content={explanation} />
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
             {/* Next Question Button */}
-            {selectedAnswer !== null && (
+            {selectedAnswerIndex !== null && (
               <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
                 <button className="btn-huge btn-cyan" onClick={handleNext}>
                   {currentIndex + 1 < questions.length ? t('btn_ans_next') : t('result_title')}

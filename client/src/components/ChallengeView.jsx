@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { Award, Zap, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { GENERATE_CHALLENGE } from '../graphql/queries';
+import { cleanOptionText, isOptionCorrect } from './QuizView';
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
 export default function ChallengeView() {
   const [category, setCategory] = useState('English Idioms & Grammar');
@@ -28,15 +31,16 @@ export default function ChallengeView() {
     }
   };
 
-  const handleSelect = (qIndex, opt) => {
+  const handleSelect = (qIndex, optIndex) => {
     if (submitted) return;
-    setAnswers(prev => ({ ...prev, [qIndex]: opt.charAt(0) }));
+    setAnswers(prev => ({ ...prev, [qIndex]: optIndex }));
   };
 
   const calculateScore = () => {
     let s = 0;
     questions.forEach((q, i) => {
-      if (answers[i] && answers[i].toUpperCase() === q.answer.toUpperCase()) {
+      const chosenOptIndex = answers[i];
+      if (chosenOptIndex !== undefined && q.options[chosenOptIndex] && isOptionCorrect(q.options[chosenOptIndex], chosenOptIndex, q)) {
         s++;
       }
     });
@@ -90,13 +94,14 @@ export default function ChallengeView() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {q.options.map((opt, optIndex) => {
-                  const letter = opt.charAt(0);
-                  const isSelected = answers[qIndex] === letter;
+                  const letter = LETTERS[optIndex] || '•';
+                  const text = cleanOptionText(opt);
+                  const isSelected = answers[qIndex] === optIndex;
                   let style = { padding: '10px 16px', textAlign: 'left', width: '100%' };
                   let btnClass = isSelected ? 'btn-cyan' : 'btn-outline';
 
                   if (submitted) {
-                    const isCorrect = letter.toUpperCase() === q.answer.toUpperCase();
+                    const isCorrect = isOptionCorrect(opt, optIndex, q);
                     if (isCorrect) {
                       btnClass = 'btn-green';
                     } else if (isSelected) {
@@ -111,10 +116,10 @@ export default function ChallengeView() {
                       key={optIndex}
                       className={btnClass}
                       style={style}
-                      onClick={() => handleSelect(qIndex, opt)}
+                      onClick={() => handleSelect(qIndex, optIndex)}
                       disabled={submitted}
                     >
-                      <strong>{letter}.</strong> {opt.substring(2)}
+                      <strong style={{ color: 'var(--cyan)', marginRight: '6px' }}>{letter}.</strong> {text}
                     </button>
                   );
                 })}

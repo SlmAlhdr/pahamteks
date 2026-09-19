@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { GET_DICTIONARY } from '../graphql/queries';
+import HumanFormattedText from './HumanFormattedText';
 
 const RANDOM_WORDS = [
   'Algorithm', 'Asynchronous', 'Polymorphism', 'Encapsulation', 'Database',
@@ -17,7 +18,7 @@ export default function KamusFloating({ t, currentLang }) {
 
   const handleSearch = async (kw = keyword) => {
     if (!kw.trim()) return;
-    setResult(currentLang === 'id' ? 'Menghubungkan ke server AI...' : 'Connecting to AI server...');
+    setResult(currentLang === 'id' ? 'Mencari penjelasan...' : 'Searching definition...');
     try {
       const res = await fetchDictionary({ variables: { keyword: kw } });
       if (res.data?.dictionary?.result) {
@@ -113,7 +114,7 @@ export default function KamusFloating({ t, currentLang }) {
             {result && (
               <div style={{ position: 'relative', marginTop: '5px' }}>
                 <div id="float-kamus-result" style={{ display: 'block' }}>
-                  {result}
+                  <HumanFormattedText content={result} />
                 </div>
                 <button
                   id="btn-speak-float-kamus"

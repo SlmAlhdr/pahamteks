@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { GET_DICTIONARY } from '../graphql/queries';
+import HumanFormattedText from './HumanFormattedText';
 
 // Istilah Populer
 const QUICK_WORDS = [
@@ -248,27 +249,29 @@ export default function DictionaryView({ t, currentLang }) {
           {loading ? 'Mencari...' : t('dict_btn')}
         </button>
 
-        {/* Hasil Definisi AI */}
+        {/* Hasil Definisi Human-Like */}
         {result && (
           <div style={{
             background: 'rgba(255,255,255,0.08)',
             border: '1px solid var(--btn-cyan)',
-            borderRadius: '12px',
-            padding: '20px',
+            borderRadius: '16px',
+            padding: '24px',
             marginTop: '20px',
             position: 'relative',
             lineHeight: 1.7,
-            whiteSpace: 'pre-line'
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
           }}>
             <button
               className="btn-speak"
-              style={{ position: 'absolute', top: '15px', right: '15px', width: '35px', height: '35px' }}
+              style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px' }}
               onClick={() => speakText(result)}
               title="Dengarkan Arti"
             >
               🔊
             </button>
-            <div style={{ paddingRight: '45px' }}>{result}</div>
+            <div style={{ paddingRight: '45px' }}>
+              <HumanFormattedText content={result} />
+            </div>
           </div>
         )}
 

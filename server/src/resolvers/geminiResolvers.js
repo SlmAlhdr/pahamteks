@@ -51,7 +51,16 @@ export const geminiResolvers = {
                 return { result: '', error: 'Kata kunci pencarian tidak boleh kosong!' };
             }
             try {
-                const prompt = `Kamus AI. Cari: '${keyword}'. Berikan Definisi & contoh kalimat (jika bahasa) atau Fungsi & contoh (jika IT). Tolak jika di luar topik edukasi.`;
+                const prompt = `Jelaskan kata atau istilah "${keyword}" dalam konteks kamus edukasi bahasa & pemrograman secara alami, mengalir, dan ramah seperti seorang mentor manusia yang sedang menjelaskan langsung (human-like).
+
+Pedoman Penulisan:
+- JANGAN menuliskan kata "Kamus AI", "Kamus Pintar AI", atau garis pemisah "---".
+- Mulai langsung dengan definisi/fungsi esensialnya dengan bahasa yang enak dibaca.
+- Cantumkan:
+  1. Definisi & Konsep Utama: jelaskan apa arti dan tujuannya.
+  2. Contoh Nyata: kalimat contoh (jika kosakata bahasa) atau contoh kode sederhana (jika pemrograman).
+  3. Tips Singkat: konteks penggunaan yang berguna.
+- Tolak dengan sopan hanya jika topik benar-benar di luar edukasi, bahasa, sains, atau teknologi.`;
                 const text = await generateSafeContent(prompt);
                 return { result: text, error: null };
             } catch (err) {
@@ -63,14 +72,23 @@ export const geminiResolvers = {
             const cacheKey = `${level}_${categories.sort().join('_')}`;
             if (quizCache.has(cacheKey)) {
                 const cached = [...quizCache.get(cacheKey)];
-                // Shuffle agar urutan variatif
                 return cached.sort(() => Math.random() - 0.5);
             }
 
-            const prompt = `Buat 5 soal kuis tingkat ${level || 'Pemula'} materi: ${categories.join(', ')}.\n` +
+            const prompt = `Buat 5 soal kuis edukatif tingkat ${level || 'Pemula'} materi: ${categories.join(', ')}.\n` +
                 `Format JSON Array persis ini:\n` +
-                `[ { "instruction": "Perintah", "question": "Soal lengkap", "options": ["A", "B", "C", "D"], "answer": "A" } ]\n` +
-                `GANTI tanda kutip ganda (") di dalam soal/opsi dengan kutip tunggal ('). Output JSON saja.`;
+                `[\n` +
+                `  {\n` +
+                `    "instruction": "Perintah singkat (contoh: Pilihlah jawaban yang paling tepat)",\n` +
+                `    "question": "Kalimat soal lengkap",\n` +
+                `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
+                `    "answer": "A"\n` +
+                `  }\n` +
+                `]\n` +
+                `PENTING:\n` +
+                `- Di array "options", tulis teks pilihannya saja secara murni. JANGAN menambahkan awalan huruf seperti "A.", "B.", "C.", "D." di awal teks.\n` +
+                `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
+                `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
                 const raw = await generateSafeContent(prompt);
@@ -83,17 +101,27 @@ export const geminiResolvers = {
                         instruction: "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
                         options: ["Cek API Key", "Tunggu", "Refresh", "Ok"],
-                        answer: "Cek API Key"
+                        answer: "A"
                     }
                 ];
             }
         },
 
         generateChallenge: async (_, { category }) => {
-            const prompt = `Buat 3 soal ujian SULIT topik: ${category || 'General'}.\n` +
+            const prompt = `Buat 3 soal ujian tantangan materi: ${category || 'General'}.\n` +
                 `Format JSON Array persis ini:\n` +
-                `[ { "instruction": "Tantangan", "question": "Soal lengkap", "options": ["A", "B", "C", "D"], "answer": "A" } ]\n` +
-                `GANTI tanda kutip ganda (") di dalam soal/opsi dengan kutip tunggal ('). Output JSON saja.`;
+                `[\n` +
+                `  {\n` +
+                `    "instruction": "Tantangan Khusus",\n` +
+                `    "question": "Kalimat soal lengkap",\n` +
+                `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
+                `    "answer": "A"\n` +
+                `  }\n` +
+                `]\n` +
+                `PENTING:\n` +
+                `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.".\n` +
+                `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") sesuai opsi yang benar.\n` +
+                `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
                 const raw = await generateSafeContent(prompt);
@@ -104,7 +132,7 @@ export const geminiResolvers = {
                         instruction: "🚨 SISTEM ERROR",
                         question: `Detail: ${err.message}`,
                         options: ["Cek API", "Tunggu", "Ok", "Batal"],
-                        answer: "Ok"
+                        answer: "A"
                     }
                 ];
             }
@@ -141,22 +169,22 @@ export const geminiResolvers = {
 
             const isEn = lang === 'en';
             const prompt = isEn
-                ? `You are a friendly, expert tutor in ${category}.\n` +
+                ? `You are a supportive, warm, and expert human mentor in ${category}.\n` +
                   `Question: ${question}\n` +
-                  `User's chosen answer (Incorrect): ${userAnswer}\n` +
+                  `Student's chosen answer: ${userAnswer}\n` +
                   `Correct answer: ${correctAnswer}\n\n` +
-                  `Explain clearly and concisely in 2-3 short bullet points:\n` +
-                  `1. Why the user's answer ('${userAnswer}') is incorrect or what misconception it has.\n` +
-                  `2. Why the correct answer ('${correctAnswer}') is right, including the underlying rule/concept.\n` +
-                  `Keep the tone encouraging, educational, and direct.`
-                : `Kamu adalah tutor edukasi yang ramah dan ahli dalam topik ${category}.\n` +
-                  `Pertanyaan: ${question}\n` +
-                  `Pilihan jawaban pengguna (Salah): ${userAnswer}\n` +
+                  `Write a friendly, encouraging, and human explanation in 2 clear, helpful points:\n` +
+                  `1. Why "${userAnswer}" is a tricky slip and why it is not the right fit here.\n` +
+                  `2. Why "${correctAnswer}" is the correct answer, with the key concept or mnemonic to remember it easily.\n` +
+                  `Do NOT use robotic openings like "As an AI". Keep it conversational, encouraging, and easy to understand.`
+                : `Kamu adalah guru/mentor belajar yang hangat, ramah, dan suportif dalam materi ${category}.\n` +
+                  `Soal: ${question}\n` +
+                  `Jawaban yang dipilih pemelajar: ${userAnswer}\n` +
                   `Kunci jawaban yang benar: ${correctAnswer}\n\n` +
-                  `Jelaskan secara ringkas, padat, dan jelas dalam 2-3 poin:\n` +
-                  `1. Mengapa pilihan '${userAnswer}' kurang tepat / salah (jelaskan kekeliruannya).\n` +
-                  `2. Mengapa pilihan '${correctAnswer}' adalah jawaban yang benar (jelaskan konsep/aturan dasarnya).\n` +
-                  `Gunakan bahasa yang bersahabat, mendidik, dan langsung pada intinya.`;
+                  `Berikan penjelasan yang mengalir bersahabat (seperti kakak membimbing adiknya):\n` +
+                  `1. Kenapa pilihan "${userAnswer}" kurang tepat dan di mana letak kekeliruannya.\n` +
+                  `2. Kenapa pilihan "${correctAnswer}" adalah jawaban yang benar serta konsep/aturan kuncinya agar mudah dipahami.\n` +
+                  `JANGAN menggunakan kalimat kaku seperti "Sebagai AI". Tulis langsung dengan gaya bertutur yang hangat dan membimbing.`;
 
             try {
                 const explanation = await generateSafeContent(prompt);
@@ -164,7 +192,7 @@ export const geminiResolvers = {
             } catch (err) {
                 return {
                     explanation: '',
-                    error: `⚠️ Gagal memuat penjelasan AI: ${err.message}`
+                    error: `⚠️ Gagal memuat penjelasan: ${err.message}`
                 };
             }
         },
@@ -182,4 +210,3 @@ export const geminiResolvers = {
         }
     }
 };
-
