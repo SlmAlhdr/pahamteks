@@ -303,8 +303,11 @@ export default function LanguageInsights({ t, currentLang }) {
     const prompt = currentLang === 'en'
       ? `Provide an in-depth and structured comparison of features between ${l1} and ${l2}. Highlight architectural and syntactic differences, learning curves, and primary use cases for each. Deliver a clear, helpful, and professional comparison.`
       : `Bandingkan secara mendalam dan terstruktur fitur antara bahasa ${lang1} dan ${lang2}. Soroti perbedaan arsitektur/tata bahasa, kemudahan belajar, serta skenario penggunaan terbaik masing-masing. Berikan dalam bahasa Indonesia yang ringkas dan profesional.`;
+      ? `Provide a clear, natural, and helpful comparison between ${l1} and ${l2}. Explain differences in structure/syntax, learning curve, strengths, and practical use cases. Write like an experienced, friendly mentor in natural conversational human language. Avoid robotic phrases or stating that you are an AI.`
+      : `Bandingkan secara jelas, ramah, dan mendalam antara bahasa ${lang1} dan ${lang2}. Jelaskan perbedaan struktur/tata bahasa, kemudahan belajar, kelebihan, serta contoh situasi penggunaannya. Tuliskan dengan gaya bahasa manusia yang mengalir, alami, enak dibaca seperti penjelasan dari seorang teman atau mentor berpengalaman, tanpa kata-kata robotik/kaku atau menyebut bahwa kamu adalah AI.`;
 
     setAiAnalysis(currentLang === 'en' ? 'Connecting to AI for deep comparison...' : 'Menghubungi AI untuk perbandingan mendalam...');
+    setAiAnalysis(currentLang === 'en' ? 'Preparing comparison breakdown...' : 'Sedang menyiapkan perbandingan...');
     try {
       const res = await fetchDictionary({ variables: { keyword: prompt, lang: currentLang } });
       if (res.data?.dictionary?.result) {
@@ -479,6 +482,7 @@ export default function LanguageInsights({ t, currentLang }) {
       </div>
 
       {/* Tombol AI Deep Dive Comparison */}
+      {/* Tombol Perbandingan Bahasa */}
       <div style={{ textAlign: 'center', marginTop: '30px', marginBottom: '20px' }}>
         <button
           className="btn-huge btn-cyan"
@@ -488,13 +492,17 @@ export default function LanguageInsights({ t, currentLang }) {
         >
           {aiLoading
             ? (currentLang === 'en' ? 'Analyzing Comparison...' : 'Menganalisis Perbandingan...')
+            ? (currentLang === 'en' ? 'Comparing Languages...' : 'Sedang Membandingkan...')
             : (currentLang === 'en'
                 ? `✨ Request AI Comparative Analysis (${getLangName(lang1)} vs ${getLangName(lang2)})`
                 : `✨ Minta Analisis Perbandingan AI (${lang1} vs ${lang2})`)}
+                ? `✨ Let's Compare (${getLangName(lang1)} vs ${getLangName(lang2)})`
+                : `✨ Mari Kita Bandingkan (${lang1} vs ${lang2})`)}
         </button>
       </div>
 
       {/* Hasil Analisis AI */}
+      {/* Hasil Analisis Perbandingan */}
       {aiAnalysis && (
         <div className="ai-comparison-result-card">
           <div className="ai-result-title">
@@ -502,6 +510,8 @@ export default function LanguageInsights({ t, currentLang }) {
               {currentLang === 'en'
                 ? `🤖 AI Comparative Analysis: ${getLangName(lang1)} & ${getLangName(lang2)}`
                 : `🤖 Hasil Analisis Komparatif AI: ${lang1} & ${lang2}`}
+                ? `🔍 Comparison Breakdown: ${getLangName(lang1)} & ${getLangName(lang2)}`
+                : `🔍 Hasil Perbandingan: ${lang1} & ${lang2}`}
             </span>
           </div>
           <div className="ai-result-content">
