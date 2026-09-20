@@ -484,6 +484,176 @@ export function LukiCivet({ size = 125, className = '' }) {
 }
 
 /**
+ * Properti Interaktif 1: "Meja Belajar & Laptop Koding Teksie" (TeksieDeskKit)
+ * Berada tepat di samping kiri Teksie untuk mengisi ruang kosong dengan nuansa belajar & koding
+ */
+export function TeksieDeskKit({ size = 94, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={Math.round(size * 0.85)}
+      viewBox="0 0 110 90"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.35))' }}
+    >
+      <defs>
+        <linearGradient id="dkScreen" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#0b1926" />
+          <stop offset="100%" stopColor="#022c22" />
+        </linearGradient>
+        <linearGradient id="dkBookRed" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#ef4444" />
+          <stop offset="100%" stopColor="#991b1b" />
+        </linearGradient>
+        <linearGradient id="dkBookGreen" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#10b981" />
+          <stop offset="100%" stopColor="#065f46" />
+        </linearGradient>
+        <linearGradient id="dkBookBlue" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#0ea5e9" />
+          <stop offset="100%" stopColor="#0369a1" />
+        </linearGradient>
+      </defs>
+
+      {/* Bayangan Meja */}
+      <ellipse cx="55" cy="85" rx="46" ry="5" fill="rgba(15, 23, 42, 0.3)" />
+
+      {/* Tumpukan Buku Glosarium Bahasa di Kiri */}
+      {/* Buku 1 (Bawah - Biru) */}
+      <rect x="8" y="70" width="38" height="10" rx="2.5" fill="url(#dkBookBlue)" stroke="#38bdf8" strokeWidth="1" />
+      <rect x="10" y="72" width="32" height="6" fill="#f8fafc" opacity="0.9" />
+      <rect x="8" y="70" width="4" height="10" rx="1.5" fill="#0284c7" />
+
+      {/* Buku 2 (Tengah - Hijau Zamrud) */}
+      <rect x="12" y="60" width="36" height="10" rx="2.5" fill="url(#dkBookGreen)" stroke="#4ade80" strokeWidth="1" />
+      <rect x="14" y="62" width="30" height="6" fill="#f8fafc" opacity="0.9" />
+      <rect x="12" y="60" width="4" height="10" rx="1.5" fill="#047857" />
+      {/* Pita Pembatas Buku Merah */}
+      <path d="M42 66L45 74L42 72L39 74Z" fill="#f43f5e" />
+
+      {/* Buku 3 (Atas - Oranye) */}
+      <rect x="14" y="50" width="32" height="9" rx="2" fill="url(#dkBookRed)" stroke="#f87171" strokeWidth="1" />
+      <circle cx="30" cy="54.5" r="2.2" fill="#ffd700" />
+
+      {/* Laptop Mini Koding Cyber di Kanan */}
+      {/* Layar Laptop Terbuka */}
+      <rect x="48" y="24" width="46" height="34" rx="4" fill="url(#dkScreen)" stroke="#38bdf8" strokeWidth="2.5" />
+      {/* Isi Layar: Sintaks Kode & Logo */}
+      <rect x="52" y="28" width="38" height="26" rx="2" fill="#03131e" />
+      {/* Baris Kode Mini */}
+      <circle cx="56" cy="32" r="1.2" fill="#ef4444" />
+      <circle cx="60" cy="32" r="1.2" fill="#facc15" />
+      <circle cx="64" cy="32" r="1.2" fill="#22c55e" />
+      <path d="M55 38H68" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M70 38H77" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M55 43H74" stroke="#f472b6" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M57 48H82" stroke="#facc15" strokeWidth="1.5" strokeLinecap="round" />
+
+      {/* Alas Keyboard Laptop */}
+      <polygon points="44,58 98,58 92,72 50,72" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.8" />
+      <rect x="56" y="60" width="30" height="7" rx="1.5" fill="#0f172a" />
+      <rect x="66" y="68" width="10" height="2.5" rx="1" fill="#334155" />
+
+      {/* Cangkir Kopi / Teh Hangat dengan Uap */}
+      <g>
+        <rect x="92" y="66" width="11" height="12" rx="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" />
+        <path d="M103 69C105 69 106 72 103 74" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <ellipse cx="97.5" cy="67" rx="4.5" ry="1.5" fill="#78350f" />
+        {/* Uap Hangat */}
+        <path d="M96 63C95 61 97 59 96 57" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" opacity="0.65" />
+        <path d="M99 63C100 61 98 59 99 57" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" opacity="0.65" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * Properti Interaktif 2: "HoloGlobe Dunia 50+ Bahasa" (HoloGlobeDesk)
+ * Berada di samping kanan Teksie menghiasi area antara Teksie dan Luki
+ */
+export function HoloGlobeDesk({ size = 84, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.35))' }}
+    >
+      <defs>
+        <radialGradient id="hgOcean" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="60%" stopColor="#0284c7" />
+          <stop offset="100%" stopColor="#034e7b" />
+        </radialGradient>
+        <linearGradient id="hgGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fde047" />
+          <stop offset="60%" stopColor="#eab308" />
+          <stop offset="100%" stopColor="#a16207" />
+        </linearGradient>
+      </defs>
+
+      {/* Bayangan Lantai */}
+      <ellipse cx="50" cy="94" rx="26" ry="4" fill="rgba(15, 23, 42, 0.3)" />
+
+      {/* Kaki Penyangga Emas */}
+      <ellipse cx="50" cy="90" rx="16" ry="4" fill="url(#hgGold)" />
+      <rect x="47" y="70" width="6" height="20" rx="2" fill="url(#hgGold)" />
+
+      {/* Busur Meridian Emas */}
+      <path
+        d="M26 48C26 62 36 73 50 73C56 73 62 70 66 65"
+        stroke="url(#hgGold)"
+        strokeWidth="3.8"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <circle cx="50" cy="22" r="3.2" fill="url(#hgGold)" />
+      <circle cx="50" cy="74" r="3.2" fill="url(#hgGold)" />
+
+      {/* Bola Dunia Biru 3D */}
+      <circle cx="50" cy="48" r="22" fill="url(#hgOcean)" stroke="#7ef2e0" strokeWidth="1.5" />
+
+      {/* Benua Hijau Stylized */}
+      <path
+        d="M40 36C44 34 50 36 52 40C48 44 44 42 40 44C38 42 36 38 40 36Z"
+        fill="#4ade80"
+        opacity="0.9"
+      />
+      <path
+        d="M48 48C54 46 62 48 64 54C60 58 56 56 52 60C48 58 46 52 48 48Z"
+        fill="#4ade80"
+        opacity="0.9"
+      />
+      <path
+        d="M36 50C38 48 42 50 42 54C40 56 36 56 36 50Z"
+        fill="#4ade80"
+        opacity="0.9"
+      />
+
+      {/* Garis Lintang & Bujur Holografis */}
+      <ellipse cx="50" cy="48" rx="22" ry="7" stroke="#7ef2e0" strokeWidth="1" strokeDasharray="2 2" opacity="0.6" />
+      <ellipse cx="50" cy="48" rx="10" ry="22" stroke="#7ef2e0" strokeWidth="1" strokeDasharray="2 2" opacity="0.5" />
+
+      {/* Kilau Permukaan Bola */}
+      <path
+        d="M36 34C42 30 54 30 60 34C54 32 42 32 36 34Z"
+        fill="#ffffff"
+        opacity="0.5"
+      />
+
+      {/* Bintang / Satelit Kecil Mengorbit */}
+      <circle cx="68" cy="34" r="3" fill="#ffd700" />
+      <circle cx="68" cy="34" r="1.2" fill="#ffffff" />
+    </svg>
+  );
+}
+
+/**
  * Suara Sintesis Interaktif Menggunakan Web Audio API (Zero Dependency)
  */
 function playCharacterSound(type) {
@@ -539,6 +709,24 @@ function playCharacterSound(type) {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
       osc.start(now);
       osc.stop(now + 0.38);
+    } else if (type === 'desk') {
+      // Nada synthesizer cerdas seperti keyboard koding sci-fi
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(659.25, now);
+      osc.frequency.exponentialRampToValueAtTime(1318.5, now + 0.22);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    } else if (type === 'globe') {
+      // Nada denting lonceng magis bola dunia
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.setValueAtTime(1174.66, now + 0.09);
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
     }
   } catch (e) {
     // Audio diabaikan jika diblokir browser
@@ -562,6 +750,42 @@ const CHARACTER_INFO = {
       'Hi! I’m Teksie the Smart Civet! Ready to boost your brain with me today? 🐾',
       'At PahamTeks, learning languages and coding is 100% interactive & fun! ✨',
       'Fun tip: Hold your mouse down on me to pick me up and carry me anywhere! 🚀'
+    ]
+  },
+  desk: {
+    name: 'Meja Belajar Teksie',
+    titleId: 'Laptop Koding & Glosarium A-Z',
+    titleEn: 'Teksie’s Coding & Study Desk',
+    avatar: '💻',
+    color: '#38bdf8',
+    glowColor: 'rgba(56, 189, 248, 0.45)',
+    quotesId: [
+      'Laptop koding Teksie aktif: "console.log(PahamTeks)" siap memproses tantanganmu! 💻✨',
+      'Tumpukan buku glosarium A - Z siap membantumu mencari arti kata & istilah kapan saja! 📚',
+      'Tips belajar: Latihan konsisten 15 menit setiap hari melatih memori jangka panjang jauh lebih kuat! ☕'
+    ],
+    quotesEn: [
+      'Teksie’s laptop is live: "console.log(PahamTeks)" is ready to debug and code! 💻✨',
+      'Stack of A - Z glossaries ready to decode any word or syntax in a flash! 📚',
+      'Study tip: 15 minutes of daily practice trains long-term memory best! ☕'
+    ]
+  },
+  globe: {
+    name: 'HoloGlobe Dunia',
+    titleId: 'Eksplorasi 50+ Bahasa Dunia',
+    titleEn: '50+ World Languages HoloGlobe',
+    avatar: '🌐',
+    color: '#10b981',
+    glowColor: 'rgba(16, 185, 129, 0.45)',
+    quotesId: [
+      'Menjelajahi 50+ bahasa dunia dari Tokyo, Paris, Kairo, Madrid, hingga Berlin! 🌍✈️',
+      'Setiap kosakata baru adalah paspor emas untuk terhubung dengan dunia luas! 🎌',
+      'Pilihlah bahasa yang kamu minati dan raih skor akurasi terbaik di kuis interaktif! 🚀'
+    ],
+    quotesEn: [
+      'Exploring 50+ world languages across Tokyo, Paris, Cairo, Madrid, and Berlin! 🌍✈️',
+      'Each new vocabulary word is a golden passport to connect with the globe! 🎌',
+      'Pick a language you love and hit top accuracy scores in smart quizzes! 🚀'
     ]
   },
   aki: {
@@ -802,6 +1026,18 @@ export function CharacterCluster({ currentLang = 'id' }) {
         </span>
       </div>
 
+      {/* 1b. Properti Belajar: Meja Belajar & Laptop Koding Teksie (Di Samping Kiri Teksie) */}
+      <div
+        className={`cluster-interactive-char cluster-prop-desk ${bouncingChar === 'desk' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('desk')}
+        title="Klik meja belajar & laptop koding Teksie!"
+      >
+        <TeksieDeskKit size={88} />
+        <span className="cluster-hover-badge badge-desk">
+          💻 {currentLang === 'en' ? 'Teksie’s Study Kit' : 'Meja Belajar Teksie'}
+        </span>
+      </div>
+
       {/* 2. Karakter 2: Teksie Si Musang Cerdas (Tengah Utama & Menonjol) */}
       <div
         className={`cluster-interactive-char cluster-char-teksie ${bouncingChar === 'teksie' ? 'is-bouncing' : ''}`}
@@ -811,6 +1047,18 @@ export function CharacterCluster({ currentLang = 'id' }) {
         <TeksieFox size={155} />
         <span className="cluster-hover-badge badge-teksie">
           🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
+        </span>
+      </div>
+
+      {/* 2b. Properti Belajar: HoloGlobe 50+ Bahasa Dunia (Di Samping Kanan Teksie) */}
+      <div
+        className={`cluster-interactive-char cluster-prop-globe ${bouncingChar === 'globe' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('globe')}
+        title="Klik bola dunia eksplorasi bahasa!"
+      >
+        <HoloGlobeDesk size={78} />
+        <span className="cluster-hover-badge badge-globe">
+          🌐 {currentLang === 'en' ? '50+ World Languages' : '50+ Bahasa Dunia'}
         </span>
       </div>
 
