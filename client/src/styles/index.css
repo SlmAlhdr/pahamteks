@@ -2674,131 +2674,115 @@ textarea {
     cursor: pointer;
 }
 
-/* Animasi saat berjalan (walking) */
-@keyframes pawStepFront {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-
-@keyframes pawStepBack {
-    0%, 100% { transform: translateY(-6px); }
-    50% { transform: translateY(0); }
-}
-
-@keyframes walkingBob {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-4px); }
-}
-
-.is-walking .paw-front {
-    animation: pawStepFront 0.28s ease-in-out infinite alternate;
-}
-
-.is-walking .paw-back {
-    animation: pawStepBack 0.28s ease-in-out infinite alternate;
-}
-
-.is-walking .teksie-animated-svg {
-    animation: walkingBob 0.28s ease-in-out infinite alternate;
-}
-
 /* ========================================================
-   ANIMASI BERJALAN MUSANG 4 KAKI (QUADRUPED 4-LEG WALK CYCLE)
+   ANIMASI TEKSIE: DIAM & TIDUR SAAT USER IDLE
    ======================================================== */
-@keyframes quadrupedSwingA {
-    0% { transform: rotate(24deg); }
-    100% { transform: rotate(-24deg); }
+
+/* Animasi nafas halus saat terjaga */
+@keyframes awakeBreathe {
+    0%, 100% { transform: translateY(0) scale(1, 1); }
+    50% { transform: translateY(-3px) scale(0.99, 1.01); }
 }
 
-@keyframes quadrupedSwingB {
-    0% { transform: rotate(-24deg); }
-    100% { transform: rotate(24deg); }
+.is-awake .teksie-animated-svg {
+    animation: awakeBreathe 3.4s ease-in-out infinite;
+    transform-origin: center bottom;
 }
 
-/* Kaki berpasangan diagonal (trot cycle alami & montok) */
-.is-walking .leg-front-right {
-    animation: quadrupedSwingA 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-    transform-origin: 92px 50px;
+/* Animasi tangan melambai ramah */
+@keyframes pawWaveSlow {
+    0%, 100% { transform: rotate(18deg); }
+    50% { transform: rotate(32deg) translateY(-2px); }
 }
 
-.is-walking .leg-hind-left {
-    animation: quadrupedSwingA 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-    transform-origin: 34px 52px;
+.teksie-waving-paw {
+    animation: pawWaveSlow 1.8s ease-in-out infinite alternate;
+    transform-origin: 86px 88px;
 }
 
-.is-walking .leg-front-left {
-    animation: quadrupedSwingB 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-    transform-origin: 82px 54px;
+/* Animasi nafas tidur pulas (deep rhythmic breathing) */
+@keyframes sleepDeepBreathe {
+    0%, 100% { transform: scale(1, 1) translateY(0); }
+    50% { transform: scale(1.03, 0.97) translateY(1.5px); }
 }
 
-.is-walking .leg-hind-right {
-    animation: quadrupedSwingB 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-    transform-origin: 44px 48px;
+.is-sleeping .teksie-sleeping-svg {
+    animation: sleepDeepBreathe 3.6s ease-in-out infinite;
+    transform-origin: 65px 110px;
 }
 
-/* Pantulan badan musang gembul yang membal ceria ala Duolingo */
-@keyframes civetBodyWalkBob {
-    0% { transform: translateY(0) scale(1, 1); }
-    50% { transform: translateY(-4px) scale(0.98, 1.02); }
-    100% { transform: translateY(0) scale(1, 1); }
+/* Ekor tidur melingkar bernafas pelan */
+@keyframes sleepTailRest {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(4deg); }
 }
 
-.is-walking .civet-torso,
-.is-walking .civet-head-side {
-    animation: civetBodyWalkBob 0.22s ease-in-out infinite alternate;
+.teksie-sleep-tail {
+    animation: sleepTailRest 3.6s ease-in-out infinite;
+    transform-origin: 40px 105px;
 }
 
-/* Bayangan lantai yang merenggang & merapat dinamis */
-@keyframes civetShadowSquash {
-    0%, 100% { transform: scale(1); opacity: 0.28; }
-    50% { transform: scale(0.85); opacity: 0.16; }
+/* Wadah huruf Zzz melayang di atas kepala */
+.teksie-sleep-zzz-container {
+    position: absolute;
+    top: -20px;
+    right: 4px;
+    pointer-events: none;
+    width: 44px;
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }
 
-.is-walking .civet-ground-shadow {
-    animation: civetShadowSquash 0.22s ease-in-out infinite alternate;
-    transform-origin: 68px 94px;
+.teksie-zzz {
+    position: absolute;
+    font-family: 'Fredoka', 'Nunito', 'Segoe UI', sans-serif;
+    font-weight: 900;
+    color: #38bdf8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.75), 0 2px 4px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    user-select: none;
 }
 
-/* Ekor musang bergoyang alami */
-@keyframes civetTailSwayAnim {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(18deg); }
+.teksie-zzz.z1 {
+    font-size: 1.05rem;
+    animation: floatZzz 2.6s ease-in-out infinite 0s;
 }
 
-.civet-tail-sway {
-    animation: civetTailSwayAnim 0.45s ease-in-out infinite alternate;
-    transform-origin: 28px 48px;
+.teksie-zzz.z2 {
+    font-size: 1.35rem;
+    animation: floatZzz 2.6s ease-in-out infinite 0.8s;
 }
 
-/* Animasi saat memainkan kursor (is-playing) */
-@keyframes playBatPaw {
-    0%, 100% { transform: rotate(15deg) translateY(0); }
-    50% { transform: rotate(50deg) translateY(-10px); }
+.teksie-zzz.z3 {
+    font-size: 1.7rem;
+    animation: floatZzz 2.6s ease-in-out infinite 1.6s;
 }
 
-.is-playing .teksie-play-paw {
-    animation: playBatPaw 0.35s ease-in-out infinite alternate;
-    transform-origin: 85px 74px;
+@keyframes floatZzz {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.6) rotate(0deg);
+    }
+    25% {
+        opacity: 0.95;
+        transform: translate(6px, -12px) scale(0.9) rotate(8deg);
+    }
+    75% {
+        opacity: 0.8;
+        transform: translate(14px, -28px) scale(1.15) rotate(-6deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(22px, -44px) scale(1.35) rotate(12deg);
+    }
 }
 
-@keyframes happyWiggle {
-    0%, 100% { transform: rotate(-2deg); }
-    50% { transform: rotate(4deg) scale(1.05); }
-}
-
-.is-playing .teksie-figure-wrapper {
-    animation: happyWiggle 0.6s ease-in-out infinite alternate;
-}
-
-/* Animasi saat mouse diarahkan ke Teksie (HOVER) -> DIA BERHENTI */
-.is-hovered .paw-front,
-.is-hovered .paw-back,
-.is-hovered .teksie-animated-svg {
-    animation-play-state: paused !important;
-}
-
+/* Animasi saat mouse diarahkan ke Teksie (HOVER) */
 .is-hovered .teksie-figure-wrapper {
-    transform: translateY(-4px) scale(1.08);
+    transform: translateY(-4px) scale(1.06);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .teksie-speech-bubble {
