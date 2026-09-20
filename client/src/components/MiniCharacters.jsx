@@ -3,8 +3,7 @@ import {
   DownPointer2DIcon,
   CodeTag2DIcon,
   Sparkle2DIcon,
-  Rocket2DIcon,
-  Trophy2DIcon
+  Rocket2DIcon
 } from './Art2DIcons';
 
 /**
@@ -662,15 +661,15 @@ export function ClusterStagePlatform({ className = '' }) {
   return (
     <div className={`cluster-stage-platform ${className}`}>
       <svg
-        viewBox="0 0 580 80"
+        viewBox="0 0 580 50"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         style={{ width: '100%', height: 'auto', display: 'block' }}
       >
         <defs>
-          {/* Bayangan Lantai Luar */}
+          {/* Bayangan Lantai Luar Bawah Podium */}
           <radialGradient id="stageGroundShadow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(0, 0, 0, 0.65)" />
+            <stop offset="0%" stopColor="rgba(0, 0, 0, 0.7)" />
             <stop offset="60%" stopColor="rgba(0, 0, 0, 0.25)" />
             <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
           </radialGradient>
@@ -685,7 +684,7 @@ export function ClusterStagePlatform({ className = '' }) {
           {/* Permukaan Atas Panggung (Top Deck Surface) */}
           <radialGradient id="stageTopDeck" cx="50%" cy="30%" r="65%">
             <stop offset="0%" stopColor="#1a4d40" />
-            <stop offset="50%" stopColor="#0e352b" />
+            <stop offset="55%" stopColor="#0e352b" />
             <stop offset="100%" stopColor="#061e18" />
           </radialGradient>
 
@@ -693,82 +692,67 @@ export function ClusterStagePlatform({ className = '' }) {
           <linearGradient id="stageNeonRim" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#38bdf8" />
             <stop offset="25%" stopColor="#4ade80" />
-            <stop offset="50%" stopColor="#ffd700" />
+            <stop offset="50%" stopColor="#38bdf8" />
             <stop offset="75%" stopColor="#4ade80" />
             <stop offset="100%" stopColor="#38bdf8" />
           </linearGradient>
 
           {/* Spotlight Tengah Bawah Teksie */}
           <radialGradient id="stageSpotlight" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="rgba(56, 189, 248, 0.35)" />
-            <stop offset="60%" stopColor="rgba(74, 222, 128, 0.15)" />
+            <stop offset="0%" stopColor="rgba(56, 189, 248, 0.25)" />
+            <stop offset="60%" stopColor="rgba(74, 222, 128, 0.1)" />
             <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
           </radialGradient>
         </defs>
 
         {/* 1. Bayangan Panggung di Lantai Dasar */}
-        <ellipse cx="290" cy="58" rx="275" ry="16" fill="url(#stageGroundShadow)" />
+        <ellipse cx="290" cy="42" rx="275" ry="8" fill="url(#stageGroundShadow)" />
 
         {/* 2. Ketebalan 3D Bagian Bawah / Depan Podium */}
         <path
-          d="M 20 30 C 20 54, 560 54, 560 30 L 560 48 C 560 72, 20 72, 20 48 Z"
+          d="M 20 18 C 20 32, 560 32, 560 18 L 560 34 C 560 48, 20 48, 20 34 Z"
           fill="url(#stageBevel)"
         />
 
-        {/* Lis Bawah Emas Tipis */}
+        {/* Lis Bawah Sian Halus */}
         <path
-          d="M 30 48 C 110 68, 470 68, 550 48"
-          stroke="rgba(255, 215, 0, 0.4)"
-          strokeWidth="2"
+          d="M 35 34 C 120 46, 460 46, 545 34"
+          stroke="rgba(56, 189, 248, 0.3)"
+          strokeWidth="1.5"
           strokeLinecap="round"
         />
 
         {/* Garis Aksen Vertikal Modern pada Tebal Panggung */}
-        <line x1="140" y1="44" x2="140" y2="58" stroke="rgba(56, 189, 248, 0.3)" strokeWidth="2" strokeLinecap="round" />
-        <line x1="290" y1="48" x2="290" y2="64" stroke="rgba(255, 215, 0, 0.5)" strokeWidth="3" strokeLinecap="round" />
-        <circle cx="290" cy="67" r="3" fill="#ffd700" />
-        <line x1="440" y1="44" x2="440" y2="58" stroke="rgba(56, 189, 248, 0.3)" strokeWidth="2" strokeLinecap="round" />
+        <line x1="160" y1="26" x2="160" y2="38" stroke="rgba(56, 189, 248, 0.25)" strokeWidth="2" strokeLinecap="round" />
+        <line x1="290" y1="28" x2="290" y2="42" stroke="rgba(74, 222, 128, 0.4)" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="290" cy="44" r="2.5" fill="#4ade80" />
+        <line x1="420" y1="26" x2="420" y2="38" stroke="rgba(56, 189, 248, 0.25)" strokeWidth="2" strokeLinecap="round" />
 
         {/* 3. Permukaan Atas Podium (Tempat Karakter Duduk & Berdiri) */}
         <ellipse
           cx="290"
-          cy="30"
+          cy="18"
           rx="270"
-          ry="22"
+          ry="14"
           fill="url(#stageTopDeck)"
           stroke="url(#stageNeonRim)"
-          strokeWidth="3.5"
+          strokeWidth="2.5"
         />
 
         {/* Lis Dalam Halus */}
         <ellipse
           cx="290"
-          cy="29"
+          cy="18"
           rx="252"
-          ry="17"
+          ry="11"
           fill="none"
-          stroke="rgba(126, 242, 224, 0.35)"
-          strokeWidth="1.5"
-          strokeDasharray="8 6"
+          stroke="rgba(126, 242, 224, 0.28)"
+          strokeWidth="1.2"
+          strokeDasharray="6 5"
         />
 
         {/* 4. Efek Cahaya Pijar di Tengah (Spotlight Teksie) */}
-        <ellipse cx="290" cy="28" rx="95" ry="13" fill="url(#stageSpotlight)" />
-
-        {/* 5. Bayangan Kontak Karakter pada Permukaan Podium */}
-        {/* Bayangan Aki (Kucing) */}
-        <ellipse cx="80" cy="35" rx="34" ry="7" fill="rgba(0, 0, 0, 0.45)" />
-        {/* Bayangan Meja Belajar Laptop */}
-        <ellipse cx="178" cy="33" rx="36" ry="6.5" fill="rgba(0, 0, 0, 0.45)" />
-        {/* Bayangan Teksie (Musang Cerdas) */}
-        <ellipse cx="290" cy="35" rx="60" ry="11" fill="rgba(0, 0, 0, 0.55)" />
-        {/* Bayangan HoloGlobe */}
-        <ellipse cx="388" cy="34" rx="26" ry="6" fill="rgba(0, 0, 0, 0.4)" />
-        {/* Bayangan Luki (Luwak Mentor) */}
-        <ellipse cx="468" cy="35" rx="34" ry="7.5" fill="rgba(0, 0, 0, 0.45)" />
-        {/* Pijar Jet Robot Bitto */}
-        <ellipse cx="538" cy="38" rx="22" ry="5.5" fill="rgba(56, 189, 248, 0.3)" />
-        <ellipse cx="538" cy="38" rx="12" ry="3" fill="rgba(126, 242, 224, 0.5)" />
+        <ellipse cx="290" cy="18" rx="90" ry="8" fill="url(#stageSpotlight)" />
       </svg>
     </div>
   );
@@ -935,13 +919,13 @@ const CHARACTER_INFO = {
     color: '#d97706',
     glowColor: 'rgba(217, 119, 6, 0.45)',
     quotesId: [
-      'Luar biasa! 🏆 Aku Luki si mentor bijak. Konsisten 5 menit sehari, kamu pasti juara! 👍',
-      'Piala emas ini untukmu! Terus kumpulkan poin dan puncaki podium prestasi! 🌟',
+      'Luar biasa! 🏆 Aku Luki si mentor bijak. Konsisten 5 menit sehari, kamu pasti makin mahir! 👍',
+      'Piala emas ini untukmu! Terus kumpulkan poin dan raih hasil belajar terbaikmu! 🌟',
       'Jangan takut salah saat kuis! Dari koreksi itulah pemahamanmu semakin matang! 🏅'
     ],
     quotesEn: [
-      'Awesome! 🏆 I’m Luki the mentor. Practice 5 minutes daily and claim the podium! 👍',
-      'This golden trophy is waiting for you! Keep earning points and reach #1! 🌟',
+      'Awesome! 🏆 I’m Luki the mentor. Practice 5 minutes daily and level up! 👍',
+      'This golden trophy is waiting for you! Keep earning points and reach your personal best! 🌟',
       'Never fear mistakes in quizzes! Review the explanations to level up fast! 🏅'
     ]
   },
@@ -981,10 +965,6 @@ const BUBBLE_FACTS = {
   ar: {
     id: '🇸🇦 "Marhaban" (مرحباً) adalah sapaan bahasa Arab yang ramah bermakna "Selamat Datang"!',
     en: '🇸🇦 "Marhaban" (مرحباً) is an Arabic greeting meaning "Welcome"!'
-  },
-  rank: {
-    id: '🏆 Podium Prestasi melacak akurasi kuis dan riwayat belajar harianmu!',
-    en: '🏆 The Podium tracks your quiz accuracy and daily learning streaks!'
   }
 };
 
@@ -1129,13 +1109,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk info bahasa Arab!"
       >
         <span className="bubble-flag">AR</span> Marhaban! (مرحباً)
-      </div>
-      <div
-        className="floating-bubble bubble-podium"
-        onClick={() => handleBubbleClick('rank')}
-        title="Klik untuk info podium prestasi!"
-      >
-        <Trophy2DIcon size={14} color="#ffd700" /> Rank #1 Podium
       </div>
 
       {/* 1. Karakter 1: Aki Si Kucing Penjelajah Bahasa (Kiri) */}
