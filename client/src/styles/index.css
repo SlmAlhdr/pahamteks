@@ -2702,6 +2702,62 @@ textarea {
     animation: walkingBob 0.28s ease-in-out infinite alternate;
 }
 
+/* ========================================================
+   ANIMASI BERJALAN MUSANG 4 KAKI (QUADRUPED 4-LEG WALK CYCLE)
+   ======================================================== */
+@keyframes quadrupedSwingA {
+    0% { transform: rotate(20deg); }
+    100% { transform: rotate(-20deg); }
+}
+
+@keyframes quadrupedSwingB {
+    0% { transform: rotate(-20deg); }
+    100% { transform: rotate(20deg); }
+}
+
+/* Kaki berpasangan diagonal (trot cycle alami) */
+.is-walking .leg-front-right {
+    animation: quadrupedSwingA 0.24s ease-in-out infinite alternate;
+    transform-origin: 92px 50px;
+}
+
+.is-walking .leg-hind-left {
+    animation: quadrupedSwingA 0.24s ease-in-out infinite alternate;
+    transform-origin: 38px 48px;
+}
+
+.is-walking .leg-front-left {
+    animation: quadrupedSwingB 0.24s ease-in-out infinite alternate;
+    transform-origin: 84px 50px;
+}
+
+.is-walking .leg-hind-right {
+    animation: quadrupedSwingB 0.24s ease-in-out infinite alternate;
+    transform-origin: 42px 48px;
+}
+
+/* Badan musang lentur memanjang saat melangkah */
+@keyframes civetBodyWalkBob {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-3px) rotate(1deg); }
+}
+
+.is-walking .civet-torso,
+.is-walking .civet-head-side {
+    animation: civetBodyWalkBob 0.24s ease-in-out infinite alternate;
+}
+
+/* Ekor musang bergoyang alami */
+@keyframes civetTailSwayAnim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(18deg); }
+}
+
+.civet-tail-sway {
+    animation: civetTailSwayAnim 0.5s ease-in-out infinite alternate;
+    transform-origin: 28px 42px;
+}
+
 /* Animasi saat memainkan kursor (is-playing) */
 @keyframes playBatPaw {
     0%, 100% { transform: rotate(15deg) translateY(0); }
