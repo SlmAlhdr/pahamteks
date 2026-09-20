@@ -183,11 +183,14 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
         </linearGradient>
       </defs>
 
-      {/* Telinga Musang Cerdas Semi-3D */}
-      <polygon points="12,18 4,4 18,12" fill="#ea580c" />
-      <polygon points="11,16 6,7 16,12" fill="#f472b6" opacity="0.8" />
-      <polygon points="28,18 36,4 22,12" fill="#ea580c" />
-      <polygon points="29,16 34,7 24,12" fill="#f472b6" opacity="0.8" />
+      {/* Telinga Musang Cerdas (Compact Rounded Civet Ears) */}
+      <path d="M14 15L8 6C5 11 8 18 15 20Z" fill="#ea580c" />
+      <path d="M13 14L9 8C7 12 9 16 14 18Z" fill="#fed7aa" />
+      <path d="M13 14L10 10C9 13 11 16 14 17Z" fill="#f472b6" opacity="0.75" />
+
+      <path d="M26 15L32 6C35 11 32 18 25 20Z" fill="#ea580c" />
+      <path d="M27 14L31 8C33 12 31 16 26 18Z" fill="#fed7aa" />
+      <path d="M27 14L30 10C31 13 29 16 26 17Z" fill="#f472b6" opacity="0.75" />
 
       {/* Kepala Bulat Musang Semi-3D */}
       <circle cx="20" cy="24" r="14" fill="url(#navTeksieFur)" />
