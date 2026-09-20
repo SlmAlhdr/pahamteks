@@ -2780,7 +2780,7 @@ textarea {
 }
 
 /* Animasi saat mouse diarahkan ke Teksie (HOVER) */
-.is-hovered .teksie-figure-wrapper {
+.is-hovered:not(.is-lifted) .teksie-figure-wrapper {
     transform: translateY(-4px) scale(1.06);
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -2823,9 +2823,69 @@ textarea {
 
 .teksie-figure-wrapper {
     position: relative;
-    cursor: pointer;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
     filter: drop-shadow(0 8px 20px rgba(0,0,0,0.45));
-    transition: filter 0.2s;
+    transition: filter 0.2s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.teksie-figure-wrapper:active {
+    cursor: grabbing;
+}
+
+/* ========================================================
+   ANIMASI TEKSIE DIANGKAT (LIFTED / HELD DRAG)
+   ======================================================== */
+.teksie-companion-box.is-lifted .teksie-figure-wrapper {
+    cursor: grabbing !important;
+    animation: teksieLiftedDangle 0.85s ease-in-out infinite alternate !important;
+    filter: drop-shadow(0 26px 36px rgba(0, 0, 0, 0.55)) !important;
+}
+
+.teksie-companion-box.is-lifted .teksie-animated-svg {
+    animation: none !important;
+}
+
+@keyframes teksieLiftedDangle {
+    0% {
+        transform: translateY(-16px) scale(1.08, 1.12) rotate(-4deg);
+    }
+    100% {
+        transform: translateY(-16px) scale(1.08, 1.12) rotate(4deg);
+    }
+}
+
+/* Goyangan kaki menggantung saat diangkat */
+.is-lifted .teksie-lifted-feet {
+    animation: liftedFeetWiggle 0.6s ease-in-out infinite alternate;
+    transform-origin: 80px 140px;
+}
+
+@keyframes liftedFeetWiggle {
+    0% { transform: rotate(-3deg) translateY(0); }
+    100% { transform: rotate(3deg) translateY(1.5px); }
+}
+
+/* Animasi mendarat (landing bounce / plop) */
+.teksie-companion-box.is-landing .teksie-figure-wrapper {
+    animation: teksieLandingBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+@keyframes teksieLandingBounce {
+    0% {
+        transform: translateY(-12px) scale(0.95, 1.12);
+    }
+    40% {
+        transform: translateY(4px) scale(1.2, 0.84);
+    }
+    75% {
+        transform: translateY(-2px) scale(0.98, 1.02);
+    }
+    100% {
+        transform: translateY(0) scale(1, 1);
+    }
 }
 
 .mascot-minimize-btn {

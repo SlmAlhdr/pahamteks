@@ -18,7 +18,7 @@ import React, { useState, useEffect, useRef } from 'react';
  */
 
 // POSE 1: Maskot Teksie Asli Sesuai Foto 2 (Cute Chubby Fennec/Civet Mascot)
-export function TeksieSittingPortrait({ isHovered, size = 96 }) {
+export function TeksieSittingPortrait({ isHovered, isLifted = false, size = 96 }) {
   return (
     <svg
       width={size}
@@ -67,8 +67,14 @@ export function TeksieSittingPortrait({ isHovered, size = 96 }) {
         </radialGradient>
       </defs>
 
-      {/* Bayangan Lantai Halus */}
-      <ellipse cx="80" cy="154" rx="46" ry="6" fill="rgba(15, 23, 42, 0.25)" />
+      {/* Bayangan Lantai: Mengecil dan turun saat diangkat melayang */}
+      <ellipse
+        cx="80"
+        cy={isLifted ? 158 : 154}
+        rx={isLifted ? 20 : 46}
+        ry={isLifted ? 3 : 6}
+        fill={isLifted ? "rgba(15, 23, 42, 0.12)" : "rgba(15, 23, 42, 0.25)"}
+      />
 
       {/* Telinga Kiri Besar Ikonik Semi-3D (Khas Foto 2) */}
       <path
@@ -143,15 +149,24 @@ export function TeksieSittingPortrait({ isHovered, size = 96 }) {
       <polygon points="76,82 84,82 80,87" fill="#0f172a" />
       <circle cx="79" cy="82.5" r="0.8" fill="#ffffff" />
 
-      {/* Mulut Senyum Terbuka Ceria (^w^) */}
-      <path
-        d="M75 88C77 93 83 93 85 88Z"
-        fill="#881337"
-      />
-      <path
-        d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z"
-        fill="#fb7185"
-      />
+      {/* Mulut: Imut Terbuka Bulat saat Diangkat (O) atau Senyum Ceria (^w^) */}
+      {isLifted ? (
+        <g>
+          <ellipse cx="80" cy="89" rx="4.5" ry="5.5" fill="#881337" />
+          <ellipse cx="80" cy="90.5" rx="3" ry="3" fill="#fb7185" />
+        </g>
+      ) : (
+        <g>
+          <path
+            d="M75 88C77 93 83 93 85 88Z"
+            fill="#881337"
+          />
+          <path
+            d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z"
+            fill="#fb7185"
+          />
+        </g>
+      )}
 
       {/* Kacamata Cerdas Cyan 3D Tebal */}
       <circle cx="62" cy="68" r="16" stroke="url(#tsGlasses)" strokeWidth="4" fill="rgba(56, 189, 248, 0.16)" />
@@ -160,19 +175,52 @@ export function TeksieSittingPortrait({ isHovered, size = 96 }) {
       <path d="M54 58C58 55 66 55 70 60" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
       <path d="M90 58C94 55 102 55 106 60" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
 
-      {/* Mata Berkilau Cerdas Penuh Semangat (Duolingo Style Eyes) */}
-      <circle cx="62" cy="68" r="8" fill="#0f172a" />
-      <circle cx="98" cy="68" r="8" fill="#0f172a" />
-      <circle cx="60" cy="65" r="3.2" fill="#ffffff" />
-      <circle cx="96" cy="65" r="3.2" fill="#ffffff" />
-      <circle cx="65" cy="71" r="1.6" fill="#ffffff" />
-      <circle cx="101" cy="71" r="1.6" fill="#ffffff" />
+      {/* Mata Berkilau Cerdas Penuh Semangat (Membulat Lebar saat Diangkat) */}
+      {isLifted ? (
+        <g>
+          <circle cx="62" cy="68" r="9.2" fill="#0f172a" />
+          <circle cx="98" cy="68" r="9.2" fill="#0f172a" />
+          <circle cx="59.8" cy="64.2" r="3.8" fill="#ffffff" />
+          <circle cx="95.8" cy="64.2" r="3.8" fill="#ffffff" />
+          <circle cx="65.5" cy="71.5" r="1.8" fill="#ffffff" />
+          <circle cx="101.5" cy="71.5" r="1.8" fill="#ffffff" />
+        </g>
+      ) : (
+        <g>
+          <circle cx="62" cy="68" r="8" fill="#0f172a" />
+          <circle cx="98" cy="68" r="8" fill="#0f172a" />
+          <circle cx="60" cy="65" r="3.2" fill="#ffffff" />
+          <circle cx="96" cy="65" r="3.2" fill="#ffffff" />
+          <circle cx="65" cy="71" r="1.6" fill="#ffffff" />
+          <circle cx="101" cy="71" r="1.6" fill="#ffffff" />
+        </g>
+      )}
 
-      {/* Kaki Depan Gembul Halus di Bawah */}
-      <ellipse cx="64" cy="144" rx="12" ry="8" fill="url(#tsFurBody)" />
-      <ellipse cx="64" cy="143" rx="8" ry="5" fill="#ffedd5" />
-      <ellipse cx="96" cy="144" rx="12" ry="8" fill="url(#tsFurBody)" />
-      <ellipse cx="96" cy="143" rx="8" ry="5" fill="#ffedd5" />
+      {/* Kaki Depan Gembul Halus (Menggantung Lucu saat Diangkat dengan Bantalan Pink) */}
+      {isLifted ? (
+        <g className="teksie-lifted-feet">
+          {/* Kaki Kiri Menggantung */}
+          <ellipse cx="64" cy="147" rx="10.5" ry="12" fill="url(#tsFurBody)" />
+          <ellipse cx="64" cy="148" rx="7.5" ry="8" fill="#ffedd5" />
+          <circle cx="61.5" cy="145.5" r="1.8" fill="#f472b6" opacity="0.85" />
+          <circle cx="66.5" cy="145.5" r="1.8" fill="#f472b6" opacity="0.85" />
+          <ellipse cx="64" cy="150.5" rx="3.2" ry="2.2" fill="#f472b6" opacity="0.85" />
+
+          {/* Kaki Kanan Menggantung */}
+          <ellipse cx="96" cy="147" rx="10.5" ry="12" fill="url(#tsFurBody)" />
+          <ellipse cx="96" cy="148" rx="7.5" ry="8" fill="#ffedd5" />
+          <circle cx="93.5" cy="145.5" r="1.8" fill="#f472b6" opacity="0.85" />
+          <circle cx="98.5" cy="145.5" r="1.8" fill="#f472b6" opacity="0.85" />
+          <ellipse cx="96" cy="150.5" rx="3.2" ry="2.2" fill="#f472b6" opacity="0.85" />
+        </g>
+      ) : (
+        <g>
+          <ellipse cx="64" cy="144" rx="12" ry="8" fill="url(#tsFurBody)" />
+          <ellipse cx="64" cy="143" rx="8" ry="5" fill="#ffedd5" />
+          <ellipse cx="96" cy="144" rx="12" ry="8" fill="url(#tsFurBody)" />
+          <ellipse cx="96" cy="143" rx="8" ry="5" fill="#ffedd5" />
+        </g>
+      )}
     </svg>
   );
 }
@@ -326,12 +374,54 @@ function TeksieSleepingPose() {
 export default function TeksieMascotCompanion({ activeTab, currentLang }) {
   const [isSleeping, setIsSleeping] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isLanding, setIsLanding] = useState(false);
   const [speech, setSpeech] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
 
+  // Koordinat posisi kustom Teksie (tersimpan di localStorage)
+  const [coords, setCoords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pahamteks_teksie_pos');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
+          return parsed;
+        }
+      }
+    } catch (err) {}
+    return null; // null = posisi default pojok kiri bawah
+  });
+
+  const mascotBoxRef = useRef(null);
   const idleTimerRef = useRef(null);
   const isSleepingRef = useRef(false);
   isSleepingRef.current = isSleeping;
+
+  const dragStartRef = useRef({
+    startX: 0,
+    startY: 0,
+    initialElemX: 0,
+    initialElemY: 0,
+    hasMoved: false
+  });
+
+  // Clamp posisi saat ukuran window browser berubah
+  useEffect(() => {
+    const handleResize = () => {
+      setCoords((prev) => {
+        if (!prev) return null;
+        const clampedX = Math.max(10, Math.min(window.innerWidth - 115, prev.x));
+        const clampedY = Math.max(10, Math.min(window.innerHeight - 125, prev.y));
+        if (clampedX !== prev.x || clampedY !== prev.y) {
+          return { x: clampedX, y: clampedY };
+        }
+        return prev;
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 1. Pesan kontekstual saat pengguna berpindah halaman
   useEffect(() => {
@@ -364,6 +454,8 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
 
   // 2. Deteksi Aktivitas Pengguna: Jika diam 5 detik -> Teksie Tertidur!
   useEffect(() => {
+    if (isDragging) return; // jangan tertidur saat sedang diangkat
+
     const IDLE_TIME_MS = 5000; // 5 detik tanpa aktivitas pengguna
 
     const handleUserActivity = () => {
@@ -381,7 +473,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
 
       idleTimerRef.current = setTimeout(() => {
-        if (!isMinimized) {
+        if (!isMinimized && !isDragging) {
           setIsSleeping(true);
           setSpeech('');
         }
@@ -393,7 +485,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
 
     // Pasang timer idle awal
     idleTimerRef.current = setTimeout(() => {
-      if (!isMinimized) {
+      if (!isMinimized && !isDragging) {
         setIsSleeping(true);
       }
     }, IDLE_TIME_MS);
@@ -402,11 +494,119 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       events.forEach((ev) => window.removeEventListener(ev, handleUserActivity));
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
-  }, [currentLang, isMinimized]);
+  }, [currentLang, isMinimized, isDragging]);
 
-  // 3. Klik Teksie untuk tips belajar
+  // 3. Pointer Handlers: Mengangkat Teksie dengan Menahan Klik Mouse (Hold & Drag)
+  const handlePointerDown = (e) => {
+    if (e.target.closest('.mascot-minimize-btn') || e.target.closest('.teksie-bubble-close')) {
+      return;
+    }
+    if (e.button !== undefined && e.button !== 0) return; // hanya tombol kiri mouse
+
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    const rect = mascotBoxRef.current
+      ? mascotBoxRef.current.getBoundingClientRect()
+      : { left: 28, top: window.innerHeight - 130 };
+
+    dragStartRef.current = {
+      startX: clientX,
+      startY: clientY,
+      initialElemX: rect.left,
+      initialElemY: rect.top,
+      hasMoved: false
+    };
+
+    setIsDragging(true);
+    setIsSleeping(false); // Bangun seketika saat diangkat!
+
+    const liftQuotes = currentLang === 'en' ? [
+      'Waaa! I’m being carried! 🐾',
+      'Wheee! Where are we moving? 🚀',
+      'Hold on tight! ✨',
+      'Finding a cozy new spot! 🎒'
+    ] : [
+      'Waaa! Aku diangkat! 🐾',
+      'Wheee! Mau dipindahin ke mana nih? 🚀',
+      'Pegang yang erat ya! ✨',
+      'Cari spot belajar baru yang asik! 🎒'
+    ];
+    setSpeech(liftQuotes[Math.floor(Math.random() * liftQuotes.length)]);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const onPointerMove = (e) => {
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      const dx = clientX - dragStartRef.current.startX;
+      const dy = clientY - dragStartRef.current.startY;
+
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        dragStartRef.current.hasMoved = true;
+      }
+
+      const newX = Math.max(10, Math.min(window.innerWidth - 115, dragStartRef.current.initialElemX + dx));
+      const newY = Math.max(10, Math.min(window.innerHeight - 125, dragStartRef.current.initialElemY + dy));
+
+      setCoords({ x: newX, y: newY });
+    };
+
+    const onPointerUp = (e) => {
+      setIsDragging(false);
+
+      if (dragStartRef.current.hasMoved) {
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        const dx = clientX - dragStartRef.current.startX;
+        const dy = clientY - dragStartRef.current.startY;
+        const finalX = Math.max(10, Math.min(window.innerWidth - 115, dragStartRef.current.initialElemX + dx));
+        const finalY = Math.max(10, Math.min(window.innerHeight - 125, dragStartRef.current.initialElemY + dy));
+
+        const finalPos = { x: finalX, y: finalY };
+        setCoords(finalPos);
+        try {
+          localStorage.setItem('pahamteks_teksie_pos', JSON.stringify(finalPos));
+        } catch (err) {}
+
+        // Efek mendarat lembut (plop bounce)
+        setIsLanding(true);
+        setTimeout(() => setIsLanding(false), 500);
+
+        const landQuotes = currentLang === 'en' ? [
+          'Hap! Landed safely. Comfy spot! 🐾',
+          'Nice view here! Let’s keep learning! ✨',
+          'Plop! I love this new position! 🌟'
+        ] : [
+          'Hap! Mendarat mulus. Nyaman di sini! 🐾',
+          'Pemandangan bagus! Lanjut belajar yuk! ✨',
+          'Plop! Suka banget posisi baru ini! 🌟'
+        ];
+        setSpeech(landQuotes[Math.floor(Math.random() * landQuotes.length)]);
+        setTimeout(() => setSpeech(''), 3500);
+      }
+    };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [isDragging, currentLang]);
+
+  // 4. Klik Teksie untuk tips belajar (hanya terpicu jika tidak sedang di-drag)
   const handleMascotClick = (e) => {
     e.stopPropagation();
+
+    if (dragStartRef.current && dragStartRef.current.hasMoved) {
+      return;
+    }
 
     // Jika sedang tidur, bangunkan terlebih dahulu
     if (isSleeping) {
@@ -418,19 +618,54 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       'Pahami pola logika dan struktur kalimat, bukan sekadar menghafal kata!',
       'Jangan takut salah saat kuis! Dari koreksi itulah otakmu berkembang pesat.',
       'Kombinasi bahasa manusia dan bahasa koding membuat pikiranmu semakin tajam!',
-      'Teksie selalu siap menemanimu belajar di PahamTeks!'
+      'Teksie selalu siap menemanimu belajar di PahamTeks!',
+      'Tip: Tahan klik mouse untuk mengangkat dan memindahkan aku ke mana saja! 🐾',
+      'Tip: Klik 2x pada Teksie untuk mengembalikanku ke pojok awal.'
     ];
     const tipsEn = [
       '5 minutes of daily practice beats 2 hours once a week!',
       'Understand sentence structures and code patterns, not just raw words!',
       'Mistakes are proof you are learning. Review the explanations!',
       'Combining world languages and code logic supercharges your mind!',
-      'Teksie is always here cheering for your success!'
+      'Teksie is always here cheering for your success!',
+      'Tip: Hold mouse down to lift and move me anywhere on screen! 🐾',
+      'Tip: Double-click Teksie to reset back to the cozy corner.'
     ];
 
     const pool = currentLang === 'en' ? tipsEn : tipsId;
     const randomTip = pool[Math.floor(Math.random() * pool.length)];
     setSpeech(randomTip);
+  };
+
+  // 5. Double Click untuk reset ke pojok kiri bawah
+  const handleDoubleClick = (e) => {
+    e.stopPropagation();
+    setCoords(null);
+    try {
+      localStorage.removeItem('pahamteks_teksie_pos');
+    } catch (err) {}
+    const resetMsg = currentLang === 'en'
+      ? 'Back home to my cozy corner! 🐾'
+      : 'Kembali ke pojok santai kesukaanku! 🐾';
+    setSpeech(resetMsg);
+    setTimeout(() => setSpeech(''), 3000);
+  };
+
+  // Tentukan arah posisi balon kata secara cerdas agar tidak keluar layar
+  const isNearTop = coords && coords.y < 120;
+  const isNearRight = coords && coords.x > (window.innerWidth - 240);
+
+  const bubbleStyle = {
+    position: 'absolute',
+    top: isNearTop ? '102px' : 'auto',
+    bottom: isNearTop ? 'auto' : '96px',
+    left: isNearRight ? 'auto' : '0',
+    right: isNearRight ? '0' : 'auto',
+    whiteSpace: 'normal',
+    pointerEvents: 'auto',
+    borderRadius: isNearTop
+      ? (isNearRight ? '18px 4px 18px 18px' : '4px 18px 18px 18px')
+      : (isNearRight ? '18px 18px 18px 4px' : '18px 18px 4px 18px')
   };
 
   if (isMinimized) {
@@ -440,7 +675,13 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
         className="mascot-companion-minimized"
         onClick={() => setIsMinimized(false)}
         title="Panggil Teksie si Musang Cerdas"
-        style={{ position: 'fixed', bottom: '24px', left: '24px', zIndex: 990 }}
+        style={{
+          position: 'fixed',
+          left: coords ? `${coords.x}px` : '24px',
+          top: coords ? `${coords.y}px` : 'auto',
+          bottom: coords ? 'auto' : '24px',
+          zIndex: 990
+        }}
       >
         <span className="minimized-avatar">🦡</span>
         <span className="minimized-label">Panggil Teksie</span>
@@ -453,14 +694,16 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       className="teksie-interactive-world"
       style={{
         position: 'fixed',
-        left: '28px',
-        bottom: '24px',
+        left: coords ? `${coords.x}px` : '28px',
+        top: coords ? `${coords.y}px` : 'auto',
+        bottom: coords ? 'auto' : '24px',
         zIndex: 980,
         pointerEvents: 'none'
       }}
     >
       <div
-        className={`teksie-companion-box ${isSleeping ? 'is-sleeping' : 'is-awake'} ${isHovered ? 'is-hovered' : ''}`}
+        ref={mascotBoxRef}
+        className={`teksie-companion-box ${isSleeping ? 'is-sleeping' : 'is-awake'} ${isHovered ? 'is-hovered' : ''} ${isDragging ? 'is-lifted' : ''} ${isLanding ? 'is-landing' : ''}`}
         style={{
           pointerEvents: 'auto',
           position: 'relative',
@@ -470,7 +713,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
         }}
         onMouseEnter={() => {
           setIsHovered(true);
-          if (isSleeping) {
+          if (isSleeping && !isDragging) {
             setIsSleeping(false);
             setSpeech(currentLang === 'en' ? 'Hmm? Did you call me? 🐾' : 'Hmm? Kamu manggil aku ya? 🐾');
           }
@@ -484,13 +727,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
           <div
             className="teksie-speech-bubble"
             onClick={handleMascotClick}
-            style={{
-              position: 'absolute',
-              bottom: '96px',
-              left: '0',
-              whiteSpace: 'normal',
-              pointerEvents: 'auto'
-            }}
+            style={bubbleStyle}
           >
             <span>{speech}</span>
             <button
@@ -508,7 +745,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
         )}
 
         {/* Huruf Zzz Melayang Saat Tertidur */}
-        {isSleeping && (
+        {isSleeping && !isDragging && (
           <div className="teksie-sleep-zzz-container" title="Teksie sedang tidur pulas (Zzz...)">
             <span className="teksie-zzz z1">Z</span>
             <span className="teksie-zzz z2">z</span>
@@ -516,20 +753,24 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
           </div>
         )}
 
-        {/* Karakter Teksie: Diam di Tempat, Berpose Duduk saat Terjaga & Tidur saat Idle */}
+        {/* Karakter Teksie: Bisa diangkat dan dipindahkan dengan menahan mouse */}
         <div
           className="teksie-figure-wrapper"
+          onPointerDown={handlePointerDown}
           onClick={handleMascotClick}
+          onDoubleClick={handleDoubleClick}
           title={
-            isSleeping
-              ? (currentLang === 'en' ? 'Teksie is sleeping... (Move mouse or click to wake him!)' : 'Teksie sedang tidur pulas... (Gerakkan mouse atau klik untuk membangunkannya!)')
-              : (currentLang === 'en' ? 'Teksie the Smart Civet (Click for tips)' : 'Teksie si Musang Cerdas (Klik untuk tips belajar)')
+            isDragging
+              ? (currentLang === 'en' ? 'Teksie is in your hands! Release to place.' : 'Teksie sedang diangkat! Lepaskan mouse untuk meletakkan.')
+              : isSleeping
+                ? (currentLang === 'en' ? 'Teksie is sleeping... (Click or lift to wake him!)' : 'Teksie sedang tidur pulas... (Klik atau tahan untuk mengangkatnya!)')
+                : (currentLang === 'en' ? 'Teksie (Click for tips, hold & drag to move, double-click to reset)' : 'Teksie (Klik untuk tips, tahan mouse untuk angkat & pindahkan, klik 2x untuk kembali ke pojok)')
           }
         >
-          {isSleeping ? (
+          {isSleeping && !isDragging ? (
             <TeksieSleepingPose />
           ) : (
-            <TeksieSittingPortrait isHovered={isHovered} />
+            <TeksieSittingPortrait isHovered={isHovered} isLifted={isDragging} />
           )}
 
           {/* Tombol Minimize Kecil */}
