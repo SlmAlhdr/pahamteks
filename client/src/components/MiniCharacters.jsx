@@ -958,10 +958,6 @@ const BUBBLE_FACTS = {
     id: '🇫🇷 "Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
     en: '🇫🇷 "Bonjour" is a French greeting meaning "Hello / Good Morning"!'
   },
-  es: {
-    id: '🇪🇸 "¡Hola! ¿Cómo estás?" adalah sapaan ramah bahasa Spanyol yang dituturkan lebih dari 500 juta orang di dunia!',
-    en: '🇪🇸 "¡Hola! ¿Cómo estás?" is a warm Spanish greeting spoken by over 500 million people worldwide!'
-  },
   code: {
     id: '💻 logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
     en: '💻 logic.solve("Paham!") is a logic programming call that successfully returns true!'
@@ -1099,13 +1095,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk info bahasa Prancis!"
       >
         <span className="bubble-flag">FR</span> Bonjour!
-      </div>
-      <div
-        className="floating-bubble bubble-es"
-        onClick={() => handleBubbleClick('es')}
-        title="Klik untuk info bahasa Spanyol!"
-      >
-        <span className="bubble-flag">ES</span> ¡Hola!
       </div>
       <div
         className="floating-bubble bubble-code"
