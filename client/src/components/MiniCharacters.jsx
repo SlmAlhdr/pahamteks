@@ -954,6 +954,14 @@ const BUBBLE_FACTS = {
     id: '🇯🇵 "Konnichiwa" adalah sapaan ramah dalam bahasa Jepang yang berarti "Halo / Selamat Siang"!',
     en: '🇯🇵 "Konnichiwa" is a warm Japanese greeting meaning "Hello / Good Day"!'
   },
+  fr: {
+    id: '🇫🇷 "Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
+    en: '🇫🇷 "Bonjour" is a French greeting meaning "Hello / Good Morning"!'
+  },
+  es: {
+    id: '🇪🇸 "¡Hola! ¿Cómo estás?" adalah sapaan ramah bahasa Spanyol yang dituturkan lebih dari 500 juta orang di dunia!',
+    en: '🇪🇸 "¡Hola! ¿Cómo estás?" is a warm Spanish greeting spoken by over 500 million people worldwide!'
+  },
   code: {
     id: '💻 logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
     en: '💻 logic.solve("Paham!") is a logic programming call that successfully returns true!'
@@ -1090,6 +1098,20 @@ export function CharacterCluster({ currentLang = 'id' }) {
         <span className="bubble-flag">JP</span> Konnichiwa!
       </div>
       <div
+        className="floating-bubble bubble-bonjour"
+        onClick={() => handleBubbleClick('fr')}
+        title="Klik untuk info bahasa Prancis!"
+      >
+        <span className="bubble-flag">FR</span> Bonjour!
+      </div>
+      <div
+        className="floating-bubble bubble-es"
+        onClick={() => handleBubbleClick('es')}
+        title="Klik untuk info bahasa Spanyol!"
+      >
+        <span className="bubble-flag">ES</span> ¡Hola!
+      </div>
+      <div
         className="floating-bubble bubble-code"
         onClick={() => handleBubbleClick('code')}
         title="Klik untuk info logika koding!"
@@ -1118,6 +1140,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk sapa Aki si Kucing Penjelajah!"
       >
         <AkiCat size={100} />
+        <AkiCat size={108} />
         <span className="cluster-hover-badge badge-aki">
           🐱 {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
         </span>
@@ -1130,6 +1153,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik meja belajar & laptop koding Teksie!"
       >
         <TeksieDeskKit size={88} />
+        <TeksieDeskKit size={100} />
         <span className="cluster-hover-badge badge-desk">
           💻 {currentLang === 'en' ? 'Teksie’s Study Kit' : 'Meja Belajar Teksie'}
         </span>
@@ -1142,6 +1166,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk sapa Teksie si Musang Cerdas!"
       >
         <TeksieFox size={155} />
+        <TeksieFox size={140} />
         <span className="cluster-hover-badge badge-teksie">
           🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
         </span>
@@ -1154,6 +1179,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik bola dunia eksplorasi bahasa!"
       >
         <HoloGlobeDesk size={78} />
+        <HoloGlobeDesk size={86} />
         <span className="cluster-hover-badge badge-globe">
           🌐 {currentLang === 'en' ? '50+ World Languages' : '50+ Bahasa Dunia'}
         </span>
@@ -1166,6 +1192,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk sapa Luki si Mentor Bijak!"
       >
         <LukiCivet size={106} />
+        <LukiCivet size={112} />
         <span className="cluster-hover-badge badge-luki">
           🦡 {currentLang === 'en' ? 'Luki Mentor 🏆' : 'Luki Mentor 🏆'}
         </span>
@@ -1178,6 +1205,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         title="Klik untuk sapa Bitto Robot Koding!"
       >
         <BittoBot size={96} />
+        <BittoBot size={94} />
         <span className="cluster-hover-badge badge-bitto">
           🤖 {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}
         </span>
