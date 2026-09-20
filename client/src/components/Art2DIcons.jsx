@@ -168,34 +168,57 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`teksie-nav-mascot ${className}`}
-      style={{ verticalAlign: 'middle', flexShrink: 0, cursor: 'pointer' }}
+      style={{ verticalAlign: 'middle', flexShrink: 0, cursor: 'pointer', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}
     >
-      {/* Telinga Musang Cerdas */}
+      <defs>
+        <radialGradient id="navTeksieFur" cx="40%" cy="30%" r="65%">
+          <stop offset="0%" stopColor="#ffb96a" />
+          <stop offset="60%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#b43a06" />
+        </radialGradient>
+        <linearGradient id="navTeksieGlasses" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="60%" stopColor="#0284c7" />
+          <stop offset="100%" stopColor="#0369a1" />
+        </linearGradient>
+      </defs>
+
+      {/* Telinga Musang Cerdas Semi-3D */}
       <polygon points="12,18 4,4 18,12" fill="#ea580c" />
-      <polygon points="11,16 6,7 16,12" fill="#fed7aa" />
+      <polygon points="11,16 6,7 16,12" fill="#f472b6" opacity="0.8" />
       <polygon points="28,18 36,4 22,12" fill="#ea580c" />
-      <polygon points="29,16 34,7 24,12" fill="#fed7aa" />
+      <polygon points="29,16 34,7 24,12" fill="#f472b6" opacity="0.8" />
 
-      {/* Kepala Bulat Musang */}
-      <circle cx="20" cy="24" r="14" fill="#f97316" />
+      {/* Kepala Bulat Musang Semi-3D */}
+      <circle cx="20" cy="24" r="14" fill="url(#navTeksieFur)" />
+      <path d="M14 13C17 11 23 11 26 13" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.45" />
 
-      {/* Pipi Putih Halus Khas Musang */}
+      {/* Pipi Putih Halus Gembul */}
       <path d="M8 25C8 31 13 35 20 35C27 35 32 31 32 25C32 21 28 20 20 20C12 20 8 21 8 25Z" fill="#ffffff" />
+      <ellipse cx="11" cy="27" rx="2" ry="1.2" fill="#fb7185" opacity="0.65" />
+      <ellipse cx="29" cy="27" rx="2" ry="1.2" fill="#fb7185" opacity="0.65" />
 
-      {/* Kacamata Pintar Cyan PahamTeks */}
-      <circle cx="15" cy="22" r="4.5" stroke="#1cb0f6" strokeWidth="1.8" fill="rgba(28, 176, 246, 0.2)" />
-      <circle cx="25" cy="22" r="4.5" stroke="#1cb0f6" strokeWidth="1.8" fill="rgba(28, 176, 246, 0.2)" />
-      <line x1="19.5" y1="22" x2="20.5" y2="22" stroke="#1cb0f6" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Kacamata Pintar Cyan 3D */}
+      <circle cx="15" cy="22" r="4.8" stroke="url(#navTeksieGlasses)" strokeWidth="1.8" fill="rgba(56, 189, 248, 0.18)" />
+      <circle cx="25" cy="22" r="4.8" stroke="url(#navTeksieGlasses)" strokeWidth="1.8" fill="rgba(56, 189, 248, 0.18)" />
+      <line x1="19.5" y1="22" x2="20.5" y2="22" stroke="url(#navTeksieGlasses)" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M13 19C14 18 16 18 17 19.5" stroke="#ffffff" strokeWidth="0.8" strokeLinecap="round" opacity="0.75" />
+      <path d="M23 19C24 18 26 18 27 19.5" stroke="#ffffff" strokeWidth="0.8" strokeLinecap="round" opacity="0.75" />
 
-      {/* Mata Cerdas Berbinar */}
-      <circle cx="15" cy="22" r="2" fill="#0f172a" />
-      <circle cx="25" cy="22" r="2" fill="#0f172a" />
-      <circle cx="14.2" cy="21.2" r="0.8" fill="#ffffff" />
-      <circle cx="24.2" cy="21.2" r="0.8" fill="#ffffff" />
+      {/* Mata Cerdas Berbinar (Duolingo Style Eyes) */}
+      <circle cx="15" cy="22" r="2.4" fill="#0f172a" />
+      <circle cx="25" cy="22" r="2.4" fill="#0f172a" />
+      <circle cx="14.2" cy="21.2" r="0.9" fill="#ffffff" />
+      <circle cx="24.2" cy="21.2" r="0.9" fill="#ffffff" />
+      <circle cx="15.6" cy="22.8" r="0.4" fill="#ffffff" />
+      <circle cx="25.6" cy="22.8" r="0.4" fill="#ffffff" />
 
-      {/* Hidung Hitam Imut & Senyum */}
-      <polygon points="19,27 21,27 20,28.5" fill="#0f172a" />
-      <path d="M18.5 29.5C19.2 30.5 20.8 30.5 21.5 29.5" stroke="#0f172a" strokeWidth="1" strokeLinecap="round" />
+      {/* Hidung Hitam Imut 3D */}
+      <polygon points="19,26.5 21,26.5 20,28" fill="#0f172a" />
+
+      {/* Senyum Terbuka Ceria dengan Lidah Pink */}
+      <path d="M18 28.8C18.5 30.8 21.5 30.8 22 28.8Z" fill="#881337" />
+      <path d="M18.8 29.5C19.4 30.4 20.6 30.4 21.2 29.5Z" fill="#fb7185" />
     </svg>
   );
 }

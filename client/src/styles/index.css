@@ -2706,45 +2706,57 @@ textarea {
    ANIMASI BERJALAN MUSANG 4 KAKI (QUADRUPED 4-LEG WALK CYCLE)
    ======================================================== */
 @keyframes quadrupedSwingA {
-    0% { transform: rotate(20deg); }
-    100% { transform: rotate(-20deg); }
+    0% { transform: rotate(24deg); }
+    100% { transform: rotate(-24deg); }
 }
 
 @keyframes quadrupedSwingB {
-    0% { transform: rotate(-20deg); }
-    100% { transform: rotate(20deg); }
+    0% { transform: rotate(-24deg); }
+    100% { transform: rotate(24deg); }
 }
 
-/* Kaki berpasangan diagonal (trot cycle alami) */
+/* Kaki berpasangan diagonal (trot cycle alami & montok) */
 .is-walking .leg-front-right {
-    animation: quadrupedSwingA 0.24s ease-in-out infinite alternate;
+    animation: quadrupedSwingA 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
     transform-origin: 92px 50px;
 }
 
 .is-walking .leg-hind-left {
-    animation: quadrupedSwingA 0.24s ease-in-out infinite alternate;
-    transform-origin: 38px 48px;
+    animation: quadrupedSwingA 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+    transform-origin: 34px 52px;
 }
 
 .is-walking .leg-front-left {
-    animation: quadrupedSwingB 0.24s ease-in-out infinite alternate;
-    transform-origin: 84px 50px;
+    animation: quadrupedSwingB 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+    transform-origin: 82px 54px;
 }
 
 .is-walking .leg-hind-right {
-    animation: quadrupedSwingB 0.24s ease-in-out infinite alternate;
-    transform-origin: 42px 48px;
+    animation: quadrupedSwingB 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+    transform-origin: 44px 48px;
 }
 
-/* Badan musang lentur memanjang saat melangkah */
+/* Pantulan badan musang gembul yang membal ceria ala Duolingo */
 @keyframes civetBodyWalkBob {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(-3px) rotate(1deg); }
+    0% { transform: translateY(0) scale(1, 1); }
+    50% { transform: translateY(-4px) scale(0.98, 1.02); }
+    100% { transform: translateY(0) scale(1, 1); }
 }
 
 .is-walking .civet-torso,
 .is-walking .civet-head-side {
-    animation: civetBodyWalkBob 0.24s ease-in-out infinite alternate;
+    animation: civetBodyWalkBob 0.22s ease-in-out infinite alternate;
+}
+
+/* Bayangan lantai yang merenggang & merapat dinamis */
+@keyframes civetShadowSquash {
+    0%, 100% { transform: scale(1); opacity: 0.28; }
+    50% { transform: scale(0.85); opacity: 0.16; }
+}
+
+.is-walking .civet-ground-shadow {
+    animation: civetShadowSquash 0.22s ease-in-out infinite alternate;
+    transform-origin: 68px 94px;
 }
 
 /* Ekor musang bergoyang alami */
@@ -2754,8 +2766,8 @@ textarea {
 }
 
 .civet-tail-sway {
-    animation: civetTailSwayAnim 0.5s ease-in-out infinite alternate;
-    transform-origin: 28px 42px;
+    animation: civetTailSwayAnim 0.45s ease-in-out infinite alternate;
+    transform-origin: 28px 48px;
 }
 
 /* Animasi saat memainkan kursor (is-playing) */

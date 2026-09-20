@@ -17,165 +17,443 @@ import React, { useState, useEffect, useRef } from 'react';
  * =================================================================
  */
 
-// POSE 1: Tampak Samping Musang 4 Kaki (Side-Profile Quadruped Walk)
+// POSE 1: Tampak Samping Musang 4 Kaki Semi-3D Bergaya Duolingo (Volumetric Quadruped Trot)
 function TeksieQuadrupedWalk({ isWalking }) {
   return (
     <svg
-      width="105"
-      height="72"
-      viewBox="0 0 130 85"
+      width="124"
+      height="88"
+      viewBox="0 0 140 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="teksie-quadruped-svg"
-      style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.35))' }}
+      style={{ filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.4))' }}
     >
-      {/* Kaki Belakang Kiri (Hind Leg Left - layer belakang) */}
+      <defs>
+        {/* Gradien 3D Tanah / Ambient */}
+        <radialGradient id="tqFurBody" cx="42%" cy="28%" r="68%">
+          <stop offset="0%" stopColor="#ffab54" />
+          <stop offset="55%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#b43a06" />
+        </radialGradient>
+        <radialGradient id="tqFurDark" cx="35%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#ea580c" />
+          <stop offset="70%" stopColor="#9a3412" />
+          <stop offset="100%" stopColor="#7c2d12" />
+        </radialGradient>
+        <radialGradient id="tqFurHead" cx="35%" cy="28%" r="65%">
+          <stop offset="0%" stopColor="#ffb96a" />
+          <stop offset="60%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#b43a06" />
+        </radialGradient>
+        <linearGradient id="tqBelly" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fffbeb" />
+          <stop offset="60%" stopColor="#ffedd5" />
+          <stop offset="100%" stopColor="#fed7aa" />
+        </linearGradient>
+        <radialGradient id="tqPaws" cx="38%" cy="26%" r="68%">
+          <stop offset="0%" stopColor="#ffab54" />
+          <stop offset="65%" stopColor="#ea580c" />
+          <stop offset="100%" stopColor="#9a3412" />
+        </radialGradient>
+        <linearGradient id="tqGlasses" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#0284c7" />
+          <stop offset="100%" stopColor="#0369a1" />
+        </linearGradient>
+        <linearGradient id="tqScarf" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#4ade80" />
+          <stop offset="60%" stopColor="#16a34a" />
+          <stop offset="100%" stopColor="#14532d" />
+        </linearGradient>
+        <radialGradient id="tqTailTip" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="65%" stopColor="#f1f5f9" />
+          <stop offset="100%" stopColor="#cbd5e1" />
+        </radialGradient>
+        <radialGradient id="tqSnout" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="70%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#fdba74" />
+        </radialGradient>
+      </defs>
+
+      {/* Bayangan Kontak Tanah Halus 3D */}
+      <ellipse cx="68" cy="94" rx="44" ry="5" fill="rgba(15, 23, 42, 0.28)" className="civet-ground-shadow" />
+
+      {/* LAYER BELAKANG: Kaki Belakang Kiri & Kaki Depan Kiri (Chubby 3D Limbs with Darker Shade) */}
       <g className="leg-hind-left">
-        <path d="M38 46C34 54 30 68 28 78H36C38 70 42 58 46 50Z" fill="#d97706" />
-      </g>
-      {/* Kaki Depan Kiri (Front Leg Left - layer belakang) */}
-      <g className="leg-front-left">
-        <path d="M84 48C82 56 78 68 76 78H84C86 70 88 58 90 50Z" fill="#d97706" />
+        <path
+          d="M34 52C28 58 24 72 26 88C26 91 33 92 36 90C38 85 40 74 44 60C41 55 37 52 34 52Z"
+          fill="url(#tqFurDark)"
+        />
+        <ellipse cx="30" cy="89" rx="6.5" ry="4" fill="#9a3412" />
+        <ellipse cx="30" cy="88" rx="4.5" ry="2.5" fill="#fdba74" />
       </g>
 
-      {/* Ekor Musang Panjang Melengkung Khas Luwak/Musang Pandan */}
+      <g className="leg-front-left">
+        <path
+          d="M82 54C78 62 76 74 74 88C74 91 80 92 83 90C85 82 88 72 90 60C87 56 84 54 82 54Z"
+          fill="url(#tqFurDark)"
+        />
+        <ellipse cx="78" cy="89" rx="6.5" ry="4" fill="#9a3412" />
+        <ellipse cx="78" cy="88" rx="4.5" ry="2.5" fill="#fdba74" />
+      </g>
+
+      {/* Ekor Luwak/Musang Plump Melengkung Semi-3D (Chubby Fluffy Civet Tail) */}
       <g className="civet-tail-sway">
         <path
-          d="M26 44C10 38 -2 26 2 14C6 4 18 8 16 20C14 26 22 36 28 42Z"
-          fill="#ea580c"
+          d="M28 52C16 46 6 32 10 18C13 6 27 8 26 22C24 30 32 40 38 48C34 51 30 52 28 52Z"
+          fill="url(#tqFurBody)"
         />
-        {/* Ujung Ekor Putih Khas Musang */}
         <path
-          d="M3 14C2 8 9 7 13 12C15 16 9 20 4 16Z"
+          d="M28 52C18 47 10 36 12 24C14 16 23 16 25 24C23 30 31 40 38 48C34 51 30 52 28 52Z"
+          fill="#c2410c"
+          opacity="0.3"
+        />
+        {/* Ujung ekor putih bulat semi-3D */}
+        <path
+          d="M10 18C8 10 16 6 22 11C26 16 23 24 16 22C12 21 10 20 10 18Z"
+          fill="url(#tqTailTip)"
+        />
+        <path d="M12 14C14 9 19 8 22 11" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+      </g>
+
+      {/* Badan Musang Gembul Semi-3D Duolingo Style (Plump Volumetric Civet Torso) */}
+      <g className="civet-torso">
+        <path
+          d="M32 50C30 38 44 32 64 33C84 34 100 42 102 54C104 68 88 75 66 75C42 75 34 64 32 50Z"
+          fill="url(#tqFurBody)"
+        />
+        {/* Kilau Volumetrik Clay/3D di Punggung */}
+        <path
+          d="M40 37C54 34 76 35 94 42C86 38 60 36 44 38C42 38 40 37 40 37Z"
           fill="#ffffff"
+          opacity="0.4"
+        />
+        {/* Perut Krem Gembul Menggemaskan */}
+        <path
+          d="M42 56C52 64 74 65 92 56C88 68 70 73 54 71C45 70 41 64 42 56Z"
+          fill="url(#tqBelly)"
+        />
+        <path
+          d="M46 68C58 72 74 72 84 66C76 71 60 72 46 68Z"
+          fill="#c2410c"
+          opacity="0.35"
         />
       </g>
 
-      {/* Badan Musang Panjang Horizontal (Sleek Horizontal Civet Body) */}
-      <g className="civet-torso">
-        <ellipse cx="58" cy="44" rx="36" ry="18" fill="#f97316" />
-        {/* Garis Punggung Khas Musang */}
-        <path d="M36 34C48 30 72 30 84 36C78 33 50 33 36 34Z" fill="#c2410c" />
-        {/* Perut Krem Terang */}
-        <path d="M40 52C52 56 70 56 80 50C72 54 50 54 40 52Z" fill="#fed7aa" />
-      </g>
-
-      {/* Kaki Belakang Kanan (Hind Leg Right - layer depan) */}
+      {/* LAYER DEPAN: Kaki Belakang Kanan & Kaki Depan Kanan (Chubby Bright 3D Paws) */}
       <g className="leg-hind-right">
-        <path d="M42 46C38 56 34 68 32 78H40C43 70 47 58 52 50Z" fill="#f97316" />
-        <ellipse cx="36" cy="78" rx="4" ry="2" fill="#fed7aa" />
+        <path
+          d="M44 48C36 56 32 70 34 88C34 92 41 93 45 90C48 84 52 72 58 58C54 52 48 48 44 48Z"
+          fill="url(#tqPaws)"
+        />
+        <path d="M41 54C38 62 36 74 38 82" stroke="#ffab54" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+        <ellipse cx="39" cy="89" rx="7.5" ry="4.5" fill="url(#tqPaws)" />
+        <ellipse cx="39" cy="88" rx="5" ry="2.8" fill="#ffedd5" />
+        <circle cx="35" cy="89" r="1.5" fill="#f97316" />
+        <circle cx="39" cy="90" r="1.5" fill="#f97316" />
+        <circle cx="43" cy="89" r="1.5" fill="#f97316" />
       </g>
 
-      {/* Kaki Depan Kanan (Front Leg Right - layer depan) */}
       <g className="leg-front-right">
-        <path d="M92 48C90 56 86 68 84 78H92C94 70 96 58 98 50Z" fill="#f97316" />
-        <ellipse cx="88" cy="78" rx="4" ry="2" fill="#fed7aa" />
+        <path
+          d="M92 50C88 58 86 70 85 88C85 92 92 93 96 90C98 82 101 70 104 58C100 53 96 50 92 50Z"
+          fill="url(#tqPaws)"
+        />
+        <path d="M91 56C89 64 88 74 89 82" stroke="#ffab54" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+        <ellipse cx="90" cy="89" rx="7.5" ry="4.5" fill="url(#tqPaws)" />
+        <ellipse cx="90" cy="88" rx="5" ry="2.8" fill="#ffedd5" />
+        <circle cx="86" cy="89" r="1.5" fill="#f97316" />
+        <circle cx="90" cy="90" r="1.5" fill="#f97316" />
+        <circle cx="94" cy="89" r="1.5" fill="#f97316" />
       </g>
 
-      {/* Syal Hijau Zamrud PahamTeks di Leher */}
-      <path d="M88 34C86 44 94 48 98 42L94 36Z" fill="#58cc02" />
+      {/* Syal Hijau Zamrud PahamTeks dengan Lipatan 3D & Ujung Berkibar */}
+      <g className="civet-scarf">
+        <path
+          d="M90 38C88 48 97 54 104 48L102 40C98 38 94 37 90 38Z"
+          fill="url(#tqScarf)"
+        />
+        <path
+          d="M92 46C86 52 82 60 84 64C86 64 90 60 94 54C96 50 95 47 92 46Z"
+          fill="#16a34a"
+        />
+        <path
+          d="M92 46C88 54 86 62 88 66C89 66 93 61 96 55Z"
+          fill="#22c55e"
+        />
+      </g>
 
-      {/* Kepala Musang Tampak Samping (Side-Profile Snout & Glasses) */}
+      {/* KEPALA MUSANG 3D & WAJAH CERIA DUOLINGO STYLE */}
       <g className="civet-head-side">
-        {/* Lingkar Kepala */}
-        <ellipse cx="98" cy="32" rx="16" ry="14" fill="#f97316" />
-        {/* Moncong Musang Runcing Khas (Snout) */}
-        <path d="M106 28L120 34L106 40Z" fill="#f97316" />
-        <path d="M106 35L120 34L108 40Z" fill="#fed7aa" />
-        {/* Hidung Hitam */}
-        <circle cx="120" cy="34" r="2.5" fill="#0f172a" />
+        {/* Lingkar Kepala Bulat 3D */}
+        <circle cx="106" cy="36" r="21" fill="url(#tqFurHead)" />
+        <path
+          d="M95 24C102 18 114 18 120 25C114 21 104 21 95 24Z"
+          fill="#ffffff"
+          opacity="0.45"
+        />
 
-        {/* Telinga Musang Cerdas (Menghadap Depan Atas) */}
-        <polygon points="90,22 80,4 98,16" fill="#ea580c" />
-        <polygon points="90,20 84,8 96,16" fill="#fed7aa" />
+        {/* Telinga Musang Cerdas (Outer & Inner 3D) */}
+        <path
+          d="M96 22L88 2C84 10 88 22 96 28Z"
+          fill="url(#tqFurDark)"
+        />
+        <path
+          d="M94 20L89 6C87 11 90 20 95 24Z"
+          fill="#fed7aa"
+        />
+        <path
+          d="M104 18L108 3C114 8 114 18 110 24Z"
+          fill="url(#tqFurBody)"
+        />
+        <path
+          d="M105 17L108 7C112 11 112 17 109 21Z"
+          fill="#f472b6"
+          opacity="0.8"
+        />
 
-        {/* Kacamata Pintar Cyan PahamTeks Tampak Samping */}
-        <ellipse cx="104" cy="30" rx="6.5" ry="7" stroke="#1cb0f6" strokeWidth="2.5" fill="rgba(28, 176, 246, 0.2)" />
-        <line x1="97.5" y1="29" x2="94" y2="28" stroke="#1cb0f6" strokeWidth="2" strokeLinecap="round" />
+        {/* Moncong Montok ala Kartun (Plump Cartoon Snout) */}
+        <path
+          d="M116 33C124 33 135 37 136 41C136 46 124 49 114 47C112 42 113 36 116 33Z"
+          fill="url(#tqSnout)"
+        />
+        {/* Rona pipi pink manis (Blush Cheek) */}
+        <ellipse cx="106" cy="45" rx="6.5" ry="4" fill="#fb7185" opacity="0.65" />
 
-        {/* Mata Hitam Berbinar */}
-        <circle cx="105" cy="30" r="3" fill="#0f172a" />
-        <circle cx="104" cy="29" r="1.2" fill="#ffffff" />
+        {/* Mulut Terbuka Bahagia dengan Lidah Pink (Happy Open Mouth like Duo!) */}
+        <path
+          d="M120 42C124 42 128 44 126 48C124 51 118 50 117 46C117 44 118 42 120 42Z"
+          fill="#881337"
+        />
+        <path
+          d="M120 45C122 45 125 46 124 48C123 49 120 49 119 47C119 46 119 45 120 45Z"
+          fill="#fb7185"
+        />
 
-        {/* Kumis Musang Halus */}
-        <line x1="112" y1="36" x2="124" y2="39" stroke="#cbd5e1" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="112" y1="34" x2="125" y2="34" stroke="#cbd5e1" strokeWidth="1.2" strokeLinecap="round" />
+        {/* Hidung Hitam 3D Kancing dengan Kilau Specular */}
+        <ellipse cx="134" cy="40" rx="3.2" ry="2.5" fill="#0f172a" />
+        <circle cx="133.2" cy="39.2" r="0.9" fill="#ffffff" />
+
+        {/* Kacamata Pintar Cyan Tebal & Berkilau (3D Glossy Glasses) */}
+        <ellipse
+          cx="114"
+          cy="34"
+          rx="9"
+          ry="9.5"
+          fill="rgba(56, 189, 248, 0.22)"
+          stroke="url(#tqGlasses)"
+          strokeWidth="3.2"
+        />
+        <path
+          d="M110 28C114 26 119 28 121 31"
+          stroke="#ffffff"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          opacity="0.8"
+        />
+        <path
+          d="M105 34C101 33 98 32 96 32"
+          stroke="url(#tqGlasses)"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+        />
+
+        {/* Mata Hitam Besar Berbinar Cerdas (Expressive 3D Duo Eye) */}
+        <ellipse cx="115" cy="34" rx="5" ry="5.5" fill="#0f172a" />
+        <circle cx="113.5" cy="32" r="2.2" fill="#ffffff" />
+        <circle cx="117" cy="36.5" r="1.1" fill="#ffffff" />
+
+        {/* Alis Ceria */}
+        <path
+          d="M110 23C114 21 119 23 121 25"
+          stroke="#c2410c"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+
+        {/* Kumis Musang Putih Lembut */}
+        <path d="M125 41C130 42 135 44 138 46" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
+        <path d="M125 43C130 46 134 49 137 53" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
       </g>
     </svg>
   );
 }
 
-// POSE 2: Tampak Depan Duduk Tegak (Portrait Sit Pose) Saat Berhenti/Menyapa
+// POSE 2: Tampak Depan Duduk Tegak Semi-3D Bergaya Duolingo (Volumetric Portrait Sit Pose)
 function TeksieSittingPortrait({ isPlaying, isHovered }) {
   return (
     <svg
-      width="82"
-      height="82"
-      viewBox="0 0 120 120"
+      width="96"
+      height="96"
+      viewBox="0 0 130 130"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="teksie-animated-svg"
-      style={{ filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.35))' }}
+      style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.4))' }}
     >
+      <defs>
+        <radialGradient id="tsFurBody" cx="45%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffab54" />
+          <stop offset="55%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#b43a06" />
+        </radialGradient>
+        <radialGradient id="tsFurHead" cx="40%" cy="28%" r="65%">
+          <stop offset="0%" stopColor="#ffb96a" />
+          <stop offset="60%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#b43a06" />
+        </radialGradient>
+        <linearGradient id="tsBelly" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fffbeb" />
+          <stop offset="60%" stopColor="#ffedd5" />
+          <stop offset="100%" stopColor="#fed7aa" />
+        </linearGradient>
+        <radialGradient id="tsPaws" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffab54" />
+          <stop offset="65%" stopColor="#ea580c" />
+          <stop offset="100%" stopColor="#9a3412" />
+        </radialGradient>
+        <linearGradient id="tsGlasses" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#0284c7" />
+          <stop offset="100%" stopColor="#0369a1" />
+        </linearGradient>
+        <linearGradient id="tsScarf" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#4ade80" />
+          <stop offset="60%" stopColor="#16a34a" />
+          <stop offset="100%" stopColor="#14532d" />
+        </linearGradient>
+        <radialGradient id="tsTailTip" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="65%" stopColor="#f1f5f9" />
+          <stop offset="100%" stopColor="#cbd5e1" />
+        </radialGradient>
+      </defs>
+
+      {/* Bayangan Lantai Halus 3D */}
+      <ellipse cx="65" cy="122" rx="42" ry="7" fill="rgba(15, 23, 42, 0.3)" />
+
       {/* Ekor Mengibas di Belakang */}
       <g className="teksie-tail-anim">
         <path
-          d="M32 94C16 88 4 102 8 114C12 124 30 120 38 108"
-          fill="#ea580c"
+          d="M34 100C14 94 4 108 8 120C12 130 32 126 40 114"
+          fill="url(#tsFurBody)"
         />
         <path
-          d="M10 112C6 116 12 120 18 116C22 112 16 108 10 112Z"
-          fill="#ffffff"
+          d="M10 118C7 122 13 126 19 122C24 118 18 114 10 118Z"
+          fill="url(#tsTailTip)"
         />
+        <path d="M12 116C15 112 20 112 23 115" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
       </g>
 
-      {/* Kaki Belakang Duduk Manis di Lantai */}
-      <ellipse cx="44" cy="110" rx="10" ry="7" fill="#f97316" />
-      <ellipse cx="76" cy="110" rx="10" ry="7" fill="#f97316" />
+      {/* Kaki Belakang Duduk Manis di Lantai (Montok dengan Jari Bulat) */}
+      <g>
+        {/* Kaki Kiri */}
+        <ellipse cx="44" cy="116" rx="14" ry="9" fill="url(#tsPaws)" />
+        <ellipse cx="44" cy="115" rx="9" ry="5.5" fill="#ffedd5" />
+        <circle cx="37" cy="116" r="2.2" fill="#ea580c" />
+        <circle cx="44" cy="117" r="2.2" fill="#ea580c" />
+        <circle cx="51" cy="116" r="2.2" fill="#ea580c" />
 
-      {/* Telinga Musang Besar */}
-      <polygon points="40,42 16,10 46,30" fill="#ea580c" />
-      <polygon points="38,40 22,18 42,32" fill="#fed7aa" />
-      <polygon points="80,42 104,10 74,30" fill="#ea580c" />
-      <polygon points="82,40 98,18 78,32" fill="#fed7aa" />
+        {/* Kaki Kanan */}
+        <ellipse cx="86" cy="116" rx="14" ry="9" fill="url(#tsPaws)" />
+        <ellipse cx="86" cy="115" rx="9" ry="5.5" fill="#ffedd5" />
+        <circle cx="79" cy="116" r="2.2" fill="#ea580c" />
+        <circle cx="86" cy="117" r="2.2" fill="#ea580c" />
+        <circle cx="93" cy="116" r="2.2" fill="#ea580c" />
+      </g>
 
-      {/* Badan Duduk Hangat */}
-      <ellipse cx="60" cy="90" rx="28" ry="22" fill="#f97316" />
+      {/* Badan Duduk Hangat Gembul (Chubby 3D Seated Torso) */}
+      <ellipse cx="65" cy="94" rx="34" ry="26" fill="url(#tsFurBody)" />
+      <path d="M46 80C56 75 74 75 84 80" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
 
-      {/* Syal Hijau Zamrud PahamTeks */}
+      {/* Perut Krem Bulat Montok */}
+      <ellipse cx="65" cy="98" rx="22" ry="18" fill="url(#tsBelly)" />
+
+      {/* Syal Hijau Zamrud PahamTeks dengan Simpul 3D */}
+      <g>
+        <path
+          d="M38 74C48 84 82 84 92 74C98 83 90 92 65 92C40 92 32 83 38 74Z"
+          fill="url(#tsScarf)"
+        />
+        <ellipse cx="65" cy="85" rx="7" ry="5" fill="#15803d" />
+        <ellipse cx="65" cy="84" rx="5" ry="3.5" fill="#4ade80" />
+      </g>
+
+      {/* Telinga Musang Cerdas Besar 3D */}
+      <g>
+        <path d="M44 42L16 6C10 26 22 56 46 64Z" fill="url(#tsFurBody)" />
+        <path d="M42 40L22 14C18 28 26 50 42 56Z" fill="#f472b6" opacity="0.8" />
+        <path d="M86 42L114 6C120 26 108 56 84 64Z" fill="url(#tsFurBody)" />
+        <path d="M88 40L108 14C112 28 104 50 88 56Z" fill="#f472b6" opacity="0.8" />
+      </g>
+
+      {/* Kepala Bulat Menggemaskan 3D */}
+      <circle cx="65" cy="54" r="34" fill="url(#tsFurHead)" />
       <path
-        d="M38 78C46 86 74 86 82 78L78 86C68 90 52 90 42 86Z"
-        fill="#58cc02"
+        d="M48 30C58 24 72 24 82 30C74 26 56 26 48 30Z"
+        fill="#ffffff"
+        opacity="0.45"
       />
 
-      {/* Kepala Musang */}
-      <circle cx="60" cy="56" r="30" fill="#f97316" />
-
-      {/* Pola Pipi Putih Halus */}
+      {/* Pipi Putih Halus & Mengembang (Chubby White Cheeks) */}
       <path
-        d="M34 60C34 74 44 80 60 80C76 80 86 74 86 60C86 52 80 50 72 52C64 54 62 56 60 56C58 56 56 54 48 52C40 50 34 52 34 60Z"
+        d="M32 58C32 76 46 84 65 84C84 84 98 76 98 58C98 50 90 46 80 49C72 52 68 55 65 55C62 55 58 52 50 49C40 46 32 50 32 58Z"
         fill="#ffffff"
       />
 
-      {/* Kacamata Pintar Cyan PahamTeks */}
-      <circle cx="48" cy="52" r="10" stroke="#1cb0f6" strokeWidth="2.8" fill="rgba(28, 176, 246, 0.15)" />
-      <circle cx="72" cy="52" r="10" stroke="#1cb0f6" strokeWidth="2.8" fill="rgba(28, 176, 246, 0.15)" />
-      <line x1="58" y1="52" x2="62" y2="52" stroke="#1cb0f6" strokeWidth="2.8" strokeLinecap="round" />
+      {/* Rona Pipi Lucu (Soft Pink Blush) */}
+      <ellipse cx="40" cy="67" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.6" />
+      <ellipse cx="90" cy="67" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.6" />
 
-      {/* Mata Hitam Berbinar */}
-      <circle cx="49" cy="52" r="4.5" fill="#0f172a" />
-      <circle cx="71" cy="52" r="4.5" fill="#0f172a" />
-      <circle cx="47.5" cy="50.5" r="1.8" fill="#ffffff" />
-      <circle cx="69.5" cy="50.5" r="1.8" fill="#ffffff" />
+      {/* Kacamata Cerdas Cyan 3D Tebal & Mengkilap */}
+      <g>
+        <circle cx="49" cy="52" r="14" stroke="url(#tsGlasses)" strokeWidth="3.8" fill="rgba(56, 189, 248, 0.16)" />
+        <circle cx="81" cy="52" r="14" stroke="url(#tsGlasses)" strokeWidth="3.8" fill="rgba(56, 189, 248, 0.16)" />
+        <path d="M63 52H67" stroke="url(#tsGlasses)" strokeWidth="3.8" strokeLinecap="round" />
+        <path d="M43 43C47 40 54 40 57 44" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+        <path d="M75 43C79 40 86 40 89 44" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      </g>
 
-      {/* Hidung Hitam & Senyum */}
-      <polygon points="58,63 62,63 60,66" fill="#0f172a" />
-      <path d="M56 67C58 70 62 70 64 67" stroke="#0f172a" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Mata Hitam Besar Berbinar Cerdas (Duolingo Style Eyes) */}
+      <g>
+        <ellipse cx="49" cy="52" rx="6.5" ry="7" fill="#0f172a" />
+        <ellipse cx="81" cy="52" rx="6.5" ry="7" fill="#0f172a" />
+        <circle cx="47" cy="49" r="2.8" fill="#ffffff" />
+        <circle cx="79" cy="49" r="2.8" fill="#ffffff" />
+        <circle cx="51.5" cy="55.5" r="1.4" fill="#ffffff" />
+        <circle cx="83.5" cy="55.5" r="1.4" fill="#ffffff" />
+      </g>
 
-      {/* Tangan Cakar: Melambai Menyapa / Memainkan Mouse */}
+      {/* Hidung Hitam Imut 3D */}
+      <polygon points="62,64 68,64 65,68" fill="#0f172a" />
+      <circle cx="64" cy="64.5" r="0.8" fill="#ffffff" />
+
+      {/* Senyum Terbuka Ceria dengan Lidah Pink (Duo Happy Open Smile) */}
+      <path
+        d="M59 69C61 74 69 74 71 69Z"
+        fill="#881337"
+      />
+      <path
+        d="M61 71C63 73 67 73 69 71C68 73 62 73 61 71Z"
+        fill="#fb7185"
+      />
+
+      {/* Tangan Kiri Duduk di Perut */}
+      <g>
+        <ellipse cx="50" cy="94" rx="8" ry="6" fill="url(#tsPaws)" />
+        <ellipse cx="50" cy="94" rx="5" ry="3.5" fill="#ffedd5" />
+      </g>
+
+      {/* Tangan Kanan: Melambai Menyapa / Memainkan Kursor */}
       <g className={isPlaying ? 'teksie-play-paw' : 'teksie-waving-paw'}>
-        <ellipse cx="88" cy="74" rx="7" ry="9" fill="#fed7aa" transform="rotate(25 88 74)" />
-        {isPlaying && <circle cx="92" cy="68" r="2.5" fill="#ea580c" />}
+        <ellipse cx="86" cy="88" rx="8.5" ry="11" fill="url(#tsPaws)" transform="rotate(25 86 88)" />
+        <ellipse cx="86" cy="88" rx="5.5" ry="7" fill="#ffedd5" transform="rotate(25 86 88)" />
+        <circle cx="89" cy="81" r="2.2" fill="#ea580c" />
+        <circle cx="93" cy="86" r="2.2" fill="#ea580c" />
+        <circle cx="85" cy="80" r="2" fill="#ea580c" />
       </g>
     </svg>
   );
