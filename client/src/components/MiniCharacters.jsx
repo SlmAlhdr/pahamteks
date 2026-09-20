@@ -966,10 +966,6 @@ const BUBBLE_FACTS = {
     id: '💻 logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
     en: '💻 logic.solve("Paham!") is a logic programming call that successfully returns true!'
   },
-  fr: {
-    id: '🇫🇷 "Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
-    en: '🇫🇷 "Bonjour" is a French greeting meaning "Hello / Good Morning"!'
-  },
   ar: {
     id: '🇸🇦 "Marhaban" (مرحباً) adalah sapaan bahasa Arab yang ramah bermakna "Selamat Datang"!',
     en: '🇸🇦 "Marhaban" (مرحباً) is an Arabic greeting meaning "Welcome"!'
@@ -1119,13 +1115,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         <CodeTag2DIcon size={15} color="#58cc02" /> logic.solve(&quot;Paham!&quot;)
       </div>
       <div
-        className="floating-bubble bubble-bonjour"
-        onClick={() => handleBubbleClick('fr')}
-        title="Klik untuk info bahasa Prancis!"
-      >
-        <span className="bubble-flag">FR</span> Bonjour!
-      </div>
-      <div
         className="floating-bubble bubble-arabic"
         onClick={() => handleBubbleClick('ar')}
         title="Klik untuk info bahasa Arab!"
@@ -1139,7 +1128,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('aki')}
         title="Klik untuk sapa Aki si Kucing Penjelajah!"
       >
-        <AkiCat size={100} />
         <AkiCat size={108} />
         <span className="cluster-hover-badge badge-aki">
           🐱 {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
@@ -1152,7 +1140,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('desk')}
         title="Klik meja belajar & laptop koding Teksie!"
       >
-        <TeksieDeskKit size={88} />
         <TeksieDeskKit size={100} />
         <span className="cluster-hover-badge badge-desk">
           💻 {currentLang === 'en' ? 'Teksie’s Study Kit' : 'Meja Belajar Teksie'}
@@ -1165,7 +1152,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('teksie')}
         title="Klik untuk sapa Teksie si Musang Cerdas!"
       >
-        <TeksieFox size={155} />
         <TeksieFox size={140} />
         <span className="cluster-hover-badge badge-teksie">
           🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
@@ -1178,7 +1164,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('globe')}
         title="Klik bola dunia eksplorasi bahasa!"
       >
-        <HoloGlobeDesk size={78} />
         <HoloGlobeDesk size={86} />
         <span className="cluster-hover-badge badge-globe">
           🌐 {currentLang === 'en' ? '50+ World Languages' : '50+ Bahasa Dunia'}
@@ -1191,7 +1176,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('luki')}
         title="Klik untuk sapa Luki si Mentor Bijak!"
       >
-        <LukiCivet size={106} />
         <LukiCivet size={112} />
         <span className="cluster-hover-badge badge-luki">
           🦡 {currentLang === 'en' ? 'Luki Mentor 🏆' : 'Luki Mentor 🏆'}
@@ -1204,7 +1188,6 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('bitto')}
         title="Klik untuk sapa Bitto Robot Koding!"
       >
-        <BittoBot size={96} />
         <BittoBot size={94} />
         <span className="cluster-hover-badge badge-bitto">
           🤖 {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}

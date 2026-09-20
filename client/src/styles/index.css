@@ -1104,45 +1104,34 @@ textarea {
     .cluster-char-teksie {
         left: 50% !important;
         transform: translateX(-50%) !important;
-        bottom: 14px !important;
         bottom: 12px !important;
     }
     .cluster-char-teksie svg {
-        width: 120px !important;
-        height: 120px !important;
         width: 110px !important;
         height: 110px !important;
     }
     .cluster-char-aki {
         left: 6px !important;
-        bottom: 16px !important;
         bottom: 14px !important;
     }
     .cluster-char-luki {
-        right: 74px !important;
-        bottom: 14px !important;
         right: 70px !important;
         bottom: 12px !important;
     }
     .cluster-char-bitto {
         right: 6px !important;
-        bottom: 36px !important;
         bottom: 34px !important;
     }
     .cluster-prop-desk, .cluster-prop-globe {
         display: none !important;
     }
     .cluster-char-aki svg, .cluster-char-bitto svg, .cluster-char-luki svg {
-        width: 74px !important;
-        height: 74px !important;
         width: 72px !important;
         height: 72px !important;
     }
     .bubble-hello {
         top: 6px !important;
         left: 4px !important;
-        font-size: 0.72rem !important;
-        padding: 4px 8px !important;
         font-size: 0.7rem !important;
         padding: 3px 8px !important;
     }
@@ -1163,23 +1152,12 @@ textarea {
     .bubble-code {
         top: 6px !important;
         right: 4px !important;
-        font-size: 0.72rem !important;
-        padding: 4px 8px !important;
         font-size: 0.68rem !important;
         padding: 3px 8px !important;
     }
-    .bubble-bonjour {
-        bottom: 4px !important;
-        left: 4px !important;
-        font-size: 0.72rem !important;
-        padding: 4px 8px !important;
-    }
     .bubble-arabic {
-        bottom: 4px !important;
         top: 30px !important;
         right: 4px !important;
-        font-size: 0.72rem !important;
-        padding: 4px 8px !important;
         bottom: auto !important;
         font-size: 0.68rem !important;
         padding: 3px 7px !important;
@@ -1610,7 +1588,6 @@ textarea {
     position: relative;
     width: 100%;
     max-width: 580px;
-    height: 260px;
     height: 265px;
     margin: 15px 0 10px;
     display: flex;
@@ -1649,18 +1626,14 @@ textarea {
 /* Penempatan Karakter & Properti: Duduk & Berdiri Nyata di Atas Panggung */
 .cluster-char-teksie {
     left: 50%;
-    bottom: 20px;
     bottom: 18px;
     transform: translateX(-50%);
     transform-origin: bottom center;
-    z-index: 7;
     z-index: 8;
     animation: gentleGroundedBreatheCenter 3.6s ease-in-out infinite alternate;
 }
 
 .cluster-char-aki {
-    left: 16px;
-    bottom: 22px;
     left: 20px;
     bottom: 18px;
     transform-origin: bottom center;
@@ -1670,8 +1643,6 @@ textarea {
 
 /* 1b. Perlengkapan Belajar & Laptop Koding Teksie (Di Samping Kiri Teksie) */
 .cluster-prop-desk {
-    left: 124px;
-    bottom: 12px;
     left: 126px;
     bottom: 16px;
     z-index: 6;
@@ -1680,26 +1651,19 @@ textarea {
 /* 2b. HoloGlobe 50+ Bahasa Dunia (Di Samping Kanan Teksie) */
 .cluster-prop-globe {
     right: 172px;
-    bottom: 20px;
     bottom: 18px;
     z-index: 6;
 }
 
 .cluster-char-luki {
-    right: 88px;
-    bottom: 16px;
     right: 82px;
     bottom: 18px;
     transform-origin: bottom center;
-    z-index: 6;
     z-index: 5;
     animation: gentleGroundedBreathe 3.8s ease-in-out 0.8s infinite alternate;
 }
 
 .cluster-char-bitto {
-    right: 6px;
-    bottom: 54px;
-    z-index: 5;
     right: 10px;
     bottom: 58px;
     z-index: 7;
@@ -1973,7 +1937,6 @@ textarea {
     box-shadow: 0 12px 28px rgba(56, 189, 248, 0.45);
 }
 
-/* 2. Gelembung Logika Koding (Kanan Atas) */
 /* 2. Gelembung Prancis (Kiri-Tengah Atas) */
 .bubble-bonjour {
     top: 24px;
@@ -2004,16 +1967,12 @@ textarea {
 
 /* 4. Gelembung Logika Koding (Kanan-Tengah Atas) */
 .bubble-code {
-    top: 10px;
-    right: 14px;
-    transform: rotate(-2deg);
     top: 18px;
     right: 124px;
     transform: rotate(1.5deg);
     border-color: var(--btn-green);
     color: var(--btn-green);
     font-family: monospace;
-    animation: bubbleFloat3 4s ease-in-out 1.2s infinite alternate;
     animation: bubbleFloat4 4s ease-in-out 1.1s infinite alternate;
 }
 .bubble-code:hover {
@@ -2021,34 +1980,13 @@ textarea {
     box-shadow: 0 12px 28px rgba(88, 204, 2, 0.45);
 }
 
-/* 4. Gelembung Prancis (Kiri Bawah) */
-.bubble-bonjour {
-    bottom: -2px;
-    left: 8px;
-    z-index: 10;
-    transform: rotate(2deg);
-    border-color: #facc15;
-    color: #fef08a;
-    animation: bubbleFloat4 4.5s ease-in-out 0.3s infinite alternate;
-}
-.bubble-bonjour:hover {
-    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
-    box-shadow: 0 12px 28px rgba(250, 204, 21, 0.45);
-}
-
-/* 5. Gelembung Arab (Kanan Bawah) */
 /* 5. Gelembung Arab (Kanan Atas) */
 .bubble-arabic {
-    bottom: -2px;
-    right: 18px;
-    z-index: 10;
-    transform: rotate(-1.5deg);
     top: 32px;
     right: 12px;
     transform: rotate(-2deg);
     border-color: #38bdf8;
     color: #ffffff;
-    animation: bubbleFloat5 3.9s ease-in-out 0.9s infinite alternate;
     animation: bubbleFloat5 4.1s ease-in-out 0.5s infinite alternate;
 }
 .bubble-arabic:hover {
@@ -2063,25 +2001,17 @@ textarea {
 }
 @keyframes bubbleFloat2 {
     0% { transform: translateY(0px) rotate(1.8deg); }
-    100% { transform: translateY(-8px) rotate(3deg); }
     100% { transform: translateY(-7px) rotate(3deg); }
 }
-@keyframes bubbleFloat3 {
-    0% { transform: translateY(0px) rotate(-2deg); }
-    100% { transform: translateY(-7px) rotate(-0.5deg); }
 @keyframes bubbleFloatCenter {
     0% { transform: translateX(-50%) translateY(0px) rotate(-1deg); }
     100% { transform: translateX(-50%) translateY(-6px) rotate(1deg); }
 }
 @keyframes bubbleFloat4 {
-    0% { transform: translateY(0px) rotate(2deg); }
-    100% { transform: translateY(-6px) rotate(0.5deg); }
     0% { transform: translateY(0px) rotate(1.5deg); }
     100% { transform: translateY(-6px) rotate(0deg); }
 }
 @keyframes bubbleFloat5 {
-    0% { transform: translateY(0px) rotate(-1.5deg); }
-    100% { transform: translateY(-6px) rotate(-3deg); }
     0% { transform: translateY(0px) rotate(-2deg); }
     100% { transform: translateY(-6px) rotate(-3.5deg); }
 }

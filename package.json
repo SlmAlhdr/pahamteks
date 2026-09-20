@@ -9,6 +9,7 @@
     "server"
   ],
   "scripts": {
+    "build": "npm --prefix client run build",
     "init:db": "npm --prefix server run init-db",
     "server": "npm --prefix server start",
     "server:dev": "npm --prefix server run dev",
