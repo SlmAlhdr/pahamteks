@@ -172,9 +172,9 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
     >
       <defs>
         <radialGradient id="navTeksieFur" cx="40%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#ffb96a" />
-          <stop offset="60%" stopColor="#f97316" />
-          <stop offset="100%" stopColor="#b43a06" />
+          <stop offset="0%" stopColor="#ffc078" />
+          <stop offset="55%" stopColor="#fb923c" />
+          <stop offset="100%" stopColor="#ea580c" />
         </radialGradient>
         <linearGradient id="navTeksieGlasses" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#38bdf8" />
@@ -183,16 +183,13 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
         </linearGradient>
       </defs>
 
-      {/* Telinga Musang Cerdas (Compact Rounded Civet Ears) */}
-      <path d="M14 15L8 6C5 11 8 18 15 20Z" fill="#ea580c" />
-      <path d="M13 14L9 8C7 12 9 16 14 18Z" fill="#fed7aa" />
-      <path d="M13 14L10 10C9 13 11 16 14 17Z" fill="#f472b6" opacity="0.75" />
+      {/* Telinga Bulat Imut Bergaya Duolingo */}
+      <circle cx="11" cy="14" r="5.5" fill="#ea580c" />
+      <circle cx="11.5" cy="14" r="3.2" fill="#f472b6" opacity="0.8" />
+      <circle cx="29" cy="14" r="5.5" fill="#ea580c" />
+      <circle cx="28.5" cy="14" r="3.2" fill="#f472b6" opacity="0.8" />
 
-      <path d="M26 15L32 6C35 11 32 18 25 20Z" fill="#ea580c" />
-      <path d="M27 14L31 8C33 12 31 16 26 18Z" fill="#fed7aa" />
-      <path d="M27 14L30 10C31 13 29 16 26 17Z" fill="#f472b6" opacity="0.75" />
-
-      {/* Kepala Bulat Musang Semi-3D */}
+      {/* Kepala Bulat Menggemaskan Semi-3D */}
       <circle cx="20" cy="24" r="14" fill="url(#navTeksieFur)" />
       <path d="M14 13C17 11 23 11 26 13" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.45" />
 
@@ -216,8 +213,8 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
       <circle cx="15.6" cy="22.8" r="0.4" fill="#ffffff" />
       <circle cx="25.6" cy="22.8" r="0.4" fill="#ffffff" />
 
-      {/* Hidung Hitam Imut 3D */}
-      <polygon points="19,26.5 21,26.5 20,28" fill="#0f172a" />
+      {/* Hidung Hitam Bulat Imut */}
+      <ellipse cx="20" cy="27" rx="1.4" ry="1" fill="#0f172a" />
 
       {/* Senyum Terbuka Ceria dengan Lidah Pink */}
       <path d="M18 28.8C18.5 30.8 21.5 30.8 22 28.8Z" fill="#881337" />
