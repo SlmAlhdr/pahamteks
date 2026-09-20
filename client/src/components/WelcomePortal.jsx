@@ -7,6 +7,14 @@ import {
   REQUEST_PASSWORD_RESET_MUTATION,
   RESET_PASSWORD_MUTATION
 } from '../graphql/mutations';
+import {
+  CharacterCluster,
+  PeekingPointer,
+  NikoExplorer,
+  TaraCoder,
+  BaronMentor,
+  PamiOwl
+} from './MiniCharacters';
 
 export default function WelcomePortal({
   onAuthSuccess,
@@ -140,17 +148,44 @@ export default function WelcomePortal({
 
   return (
     <div className="welcome-portal">
-      {/* Welcome Hero Greeting */}
-      <div className="welcome-hero">
-        <div className="welcome-badge-pill">
-          {t('welcome_badge')}
-        </div>
-        <h1>{t('welcome_title')}</h1>
-        <p>{t('welcome_subtitle')}</p>
-      </div>
+      {/* SECTION 1: HERO SPLIT DENGAN MASKOT & KARTU LOGIN */}
+      <div className="welcome-hero-split">
+        {/* Kolom Kiri: Visual Karakter Ceria & Tagline Menarik */}
+        <div className="welcome-hero-left">
+          <div className="welcome-badge-pill">
+            ✨ {t('welcome_badge')}
+          </div>
+          <h1 className="welcome-hero-title">
+            {t('welcome_hero_tag')}
+          </h1>
+          <p className="welcome-hero-desc">
+            {t('welcome_hero_sub')}
+          </p>
 
-      {/* Main Authentication & Guest Entry Card */}
-      <div className="welcome-card-wrapper">
+          {/* Kluster Karakter Mini */}
+          <CharacterCluster />
+
+          {/* Highlights Mini Pills */}
+          <div className="welcome-perks-pills">
+            <span className="perk-pill">🎮 100% Interaktif</span>
+            <span className="perk-pill">⚡ Kuis Cepat & Adaptif</span>
+            <span className="perk-pill">📈 Pelacakan Akurat</span>
+          </div>
+        </div>
+
+        {/* Kolom Kanan: Karakter Nongol Menunjuk Tombol + Kartu Autentikasi */}
+        <div className="welcome-hero-right">
+          <PeekingPointer
+            activeTab={activeTab}
+            onPointerClick={() => {
+              setActiveTab('register');
+              setStatusMsg({ text: '', isError: false });
+            }}
+            t={t}
+            currentLang={currentLang}
+          />
+
+          <div className="welcome-card-wrapper">
         {/* Tab Switcher */}
         {activeTab === 'forgot' ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
@@ -470,14 +505,205 @@ export default function WelcomePortal({
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      {/* Feature Highlights Footer (Dipertahankan seperti Foto ke-5) */}
-      <div className="welcome-features-mini">
-        <div className="mini-feature-chip">🌐 50+ Bahasa Asing</div>
-        <div className="mini-feature-chip">💻 Pemrograman & Logika</div>
-        <div className="mini-feature-chip">🤖 AI Smart Dictionary</div>
-        <div className="mini-feature-chip">📊 Riwayat & Pelacakan</div>
+  {/* SEKSI SHOWCASE FITUR (TERINSPIRASI DARI GAMBAR 2 DUOLINGO) */}
+  <div className="welcome-showcase-container">
+      <div className="showcase-header-center">
+        <h2 className="showcase-main-title">
+          {currentLang === 'en' ? 'Why Learning with PahamTeks is Extraordinary' : 'Kenapa Belajar di PahamTeks Lebih Menyenangkan?'}
+        </h2>
+        <p className="showcase-main-sub">
+          {currentLang === 'en' ? 'Explore our premier learning features designed to help you succeed.' : 'Jelajahi fitur unggulan yang dirancang khusus untuk mempercepat pemahamanmu.'}
+        </p>
+      </div>
+
+      {/* SHOWCASE 1: 50+ BAHASA DUNIA */}
+      <div className="showcase-row">
+        <div className="showcase-text-col">
+          <span className="showcase-badge badge-green">{t('showcase_1_badge')}</span>
+          <h3 className="showcase-title text-green">{t('showcase_1_title')}</h3>
+          <p className="showcase-desc">{t('showcase_1_desc')}</p>
+          <ul className="showcase-perk-list">
+            <li><span>✓</span> {t('showcase_1_p1')}</li>
+            <li><span>✓</span> {t('showcase_1_p2')}</li>
+            <li><span>✓</span> {t('showcase_1_p3')}</li>
+          </ul>
+        </div>
+        <div className="showcase-visual-col">
+          <div className="showcase-card visual-card-flags">
+            <div className="visual-card-header">
+              <span className="visual-pill">🌍 Multilingual Cards</span>
+              <span className="visual-badge-audio">🔊 Audio Native</span>
+            </div>
+            <div className="flashcards-mockup">
+              <div className="mock-card card-jp">
+                <span className="mock-flag">🇯🇵</span>
+                <div className="mock-text">
+                  <strong>ありがとう (Arigatou)</strong>
+                  <span>Terima kasih / Thank you</span>
+                </div>
+              </div>
+              <div className="mock-card card-es">
+                <span className="mock-flag">🇪🇸</span>
+                <div className="mock-text">
+                  <strong>¡Hola, amigo!</strong>
+                  <span>Halo teman! / Hello friend!</span>
+                </div>
+              </div>
+              <div className="mock-card card-ar">
+                <span className="mock-flag">🇸🇦</span>
+                <div className="mock-text">
+                  <strong>صباح الخير (Sabah al-khair)</strong>
+                  <span>Selamat pagi / Good morning</span>
+                </div>
+              </div>
+            </div>
+            <div className="showcase-character-corner">
+              <NikoExplorer size={95} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SHOWCASE 2: PEMROGRAMAN & LOGIKA (REVERSE / ALTERNATING LAYOUT) */}
+      <div className="showcase-row showcase-reverse">
+        <div className="showcase-text-col">
+          <span className="showcase-badge badge-cyan">{t('showcase_2_badge')}</span>
+          <h3 className="showcase-title text-cyan">{t('showcase_2_title')}</h3>
+          <p className="showcase-desc">{t('showcase_2_desc')}</p>
+          <ul className="showcase-perk-list">
+            <li><span>✓</span> {t('showcase_2_p1')}</li>
+            <li><span>✓</span> {t('showcase_2_p2')}</li>
+            <li><span>✓</span> {t('showcase_2_p3')}</li>
+          </ul>
+        </div>
+        <div className="showcase-visual-col">
+          <div className="showcase-card visual-card-code">
+            <div className="code-window-topbar">
+              <div className="code-dots">
+                <span className="dot-red" />
+                <span className="dot-yellow" />
+                <span className="dot-green" />
+              </div>
+              <span className="code-filename">solution.py</span>
+              <span className="code-lang-pill">Python 3</span>
+            </div>
+            <pre className="code-snippet-box">
+              <code>{`def cek_logika(pemahaman):\n    if pemahaman == "PahamTeks":\n        return "Level Up! 🚀"\n    return "Lanjut Belajar!"\n\n# Output: "Level Up! 🚀"`}</code>
+            </pre>
+            <div className="code-test-result">
+              <span className="test-check">✓</span> 3/3 Test Cases Passed! (+15 Poin)
+            </div>
+            <div className="showcase-character-corner">
+              <TaraCoder size={95} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SHOWCASE 3: KAMUS PINTAR & GLOSARIUM */}
+      <div className="showcase-row">
+        <div className="showcase-text-col">
+          <span className="showcase-badge badge-yellow">{t('showcase_3_badge')}</span>
+          <h3 className="showcase-title text-yellow">{t('showcase_3_title')}</h3>
+          <p className="showcase-desc">{t('showcase_3_desc')}</p>
+          <ul className="showcase-perk-list">
+            <li><span>✓</span> {t('showcase_3_p1')}</li>
+            <li><span>✓</span> {t('showcase_3_p2')}</li>
+            <li><span>✓</span> {t('showcase_3_p3')}</li>
+          </ul>
+        </div>
+        <div className="showcase-visual-col">
+          <div className="showcase-card visual-card-dict">
+            <div className="dict-mock-searchbar">
+              <span>🔍</span>
+              <input type="text" readOnly value="Serendipity / Asynchronous" />
+              <button type="button">CARI</button>
+            </div>
+            <div className="dict-mock-result">
+              <div className="dict-mock-word">
+                <h4>Serendipity</h4>
+                <span className="dict-type-pill">Noun • Idiom</span>
+              </div>
+              <p className="dict-mock-meaning">
+                &quot;Menemukan sesuatu yang berharga dan membahagiakan secara tidak sengaja.&quot;
+              </p>
+              <div className="dict-mock-synonyms">
+                <span>💡 Penjelasan ramah manusia</span>
+                <span>⚡ Contoh kontekstual</span>
+              </div>
+            </div>
+            <div className="showcase-character-corner">
+              <PamiOwl size={95} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SHOWCASE 4: PELACAKAN & PRESTASI (PODIUM SEPERTI FOTO 2 DUOLINGO) */}
+      <div className="showcase-row showcase-reverse">
+        <div className="showcase-text-col">
+          <span className="showcase-badge badge-green">{t('showcase_4_badge')}</span>
+          <h3 className="showcase-title text-green">{t('showcase_4_title')}</h3>
+          <p className="showcase-desc">{t('showcase_4_desc')}</p>
+          <ul className="showcase-perk-list">
+            <li><span>✓</span> {t('showcase_4_p1')}</li>
+            <li><span>✓</span> {t('showcase_4_p2')}</li>
+            <li><span>✓</span> {t('showcase_4_p3')}</li>
+          </ul>
+        </div>
+        <div className="showcase-visual-col">
+          <div className="showcase-card visual-card-podium">
+            {/* Mockup Card Podium Prestasi persis Foto 2 Duolingo */}
+            <div className="leaderboard-card-mockup">
+              <div className="leaderboard-progress-bar">
+                <div className="progress-fill" style={{ width: '85%' }} />
+              </div>
+              <div className="leaderboard-avatars-grid">
+                <div className="avatar-chip chip-cat">🐱</div>
+                <div className="avatar-chip chip-owl">🦉</div>
+                <div className="avatar-chip chip-girl">👧</div>
+                <div className="avatar-chip chip-man">👨</div>
+              </div>
+              <div className="podium-banner-gold">
+                <span className="podium-number">#1</span>
+                <span className="podium-label">Akurasi 95% • Peringkat Teratas</span>
+              </div>
+            </div>
+            <div className="showcase-character-corner mentor-corner">
+              <BaronMentor size={115} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FINAL CALL TO ACTION BANNER */}
+      <div className="welcome-cta-banner">
+        <h3>{t('welcome_cta_title')}</h3>
+        <p>{t('welcome_cta_desc')}</p>
+        <div className="cta-buttons-row">
+          <button
+            type="button"
+            className="btn-huge btn-green"
+            onClick={() => {
+              setActiveTab('register');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          >
+            🚀 {t('welcome_cta_btn')}
+          </button>
+          <button
+            type="button"
+            className="btn-huge btn-cyan"
+            onClick={onGuestLogin}
+          >
+            👤 {t('welcome_cta_guest')}
+          </button>
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
