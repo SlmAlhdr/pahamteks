@@ -65,7 +65,14 @@ export const typeDefs = `#graphql
         serverStatus: ServerStatus!
         languages: [Language!]!
         dictionary(keyword: String!, lang: String): DictionaryResult!
-        generateQuiz(categories: [String!]!, level: String!, lang: String): [QuizItem!]!
+        generateQuiz(
+            categories: [String!]!
+            level: String!
+            lang: String
+            unit: Int
+            topicDetail: String
+            refresh: Boolean
+        ): [QuizItem!]!
         generateChallenge(category: String!, lang: String): [QuizItem!]!
         me(email: String): User
         userLogs(limit: Int): [UserActivityLog!]!

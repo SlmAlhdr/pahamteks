@@ -111,8 +111,15 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
                 }}
               >
                 <div>
-                  <strong style={{ color: 'var(--btn-cyan)' }}>{h.topic}</strong>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{h.date}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <strong style={{ color: 'var(--btn-cyan)' }}>{h.topic}</strong>
+                    {h.unitTitle && (
+                      <span style={{ fontSize: '0.78rem', background: 'rgba(255, 215, 0, 0.15)', color: '#ffd700', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                        {h.unitTitle}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '3px' }}>{h.date}</div>
                 </div>
                 <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--btn-green)' }}>
                   {h.score} / {h.total} ({Math.round((h.score / h.total) * 100)}%)

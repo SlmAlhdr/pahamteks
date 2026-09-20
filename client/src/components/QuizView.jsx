@@ -41,6 +41,102 @@ export function isOptionCorrect(opt, index, q) {
   return false;
 }
 
+export const LANGUAGE_UNITS = [
+  {
+    unit: 1,
+    icon: '🌱',
+    level: 'Pemula',
+    titleId: 'Bab 1: Fondasi & Kosakata Esensial',
+    titleEn: 'Unit 1: Foundations & Essential Vocab',
+    descId: 'Salam perkenalan, kata ganti, angka, dan kosakata benda penting sehari-hari.',
+    descEn: 'Greetings, introductions, pronouns, numbers, and core daily nouns.'
+  },
+  {
+    unit: 2,
+    icon: '🧱',
+    level: 'Pemula',
+    titleId: 'Bab 2: Struktur Kalimat & Tata Bahasa Inti',
+    titleEn: 'Unit 2: Sentence Structure & Core Grammar',
+    descId: 'Pola kalimat dasar, konjugasi waktu (tenses), preposisi, dan kalimat tanya.',
+    descEn: 'Basic syntax, verb tenses, prepositions, and question formulation.'
+  },
+  {
+    unit: 3,
+    icon: '💬',
+    level: 'Menengah',
+    titleId: 'Bab 3: Situasi Nyata & Percakapan Tematik',
+    titleEn: 'Unit 3: Real Situations & Everyday Dialogue',
+    descId: 'Percakapan di kafe, belanja, transportasi harian, dan interaksi sosial.',
+    descEn: 'Conversations at restaurants, shopping, commute, and daily interactions.'
+  },
+  {
+    unit: 4,
+    icon: '🎭',
+    level: 'Menengah',
+    titleId: 'Bab 4: Idiom, Slang & Nuansa Budaya',
+    titleEn: 'Unit 4: Idioms, Slang & Cultural Nuance',
+    descId: 'Ungkapan kiasan, bahasa gaul santai, dan ekspresi lokal alami.',
+    descEn: 'Idiomatic expressions, casual slang, and natural colloquial phrases.'
+  },
+  {
+    unit: 5,
+    icon: '👑',
+    level: 'Mahir',
+    titleId: 'Bab 5: Penguasaan Mahir & Analisis Teks',
+    titleEn: 'Unit 5: Advanced Mastery & Complex Nuance',
+    descId: 'Nuansa makna halus, pemahaman teks formal, dan argumen berbobot.',
+    descEn: 'Subtle word nuances, formal comprehension, and advanced fluency.'
+  }
+];
+
+export const CODING_UNITS = [
+  {
+    unit: 1,
+    icon: '⚡',
+    level: 'Pemula',
+    titleId: 'Bab 1: Sintaksis, Variabel & Tipe Data',
+    titleEn: 'Unit 1: Syntax, Variables & Data Types',
+    descId: 'Deklarasi variabel, tipe data primitif, operator aritmatika & logika.',
+    descEn: 'Variable declarations, primitive types, arithmetic & logical operators.'
+  },
+  {
+    unit: 2,
+    icon: '🔄',
+    level: 'Pemula',
+    titleId: 'Bab 2: Kontrol Alur & Logika Perulangan',
+    titleEn: 'Unit 2: Control Flow & Looping Logic',
+    descId: 'Percabangan if/else, perulangan for/while, switch case, break/continue.',
+    descEn: 'Branching if/else, loops for/while, switch cases, break/continue.'
+  },
+  {
+    unit: 3,
+    icon: '📦',
+    level: 'Menengah',
+    titleId: 'Bab 3: Fungsi, Koleksi Data & Modularitas',
+    titleEn: 'Unit 3: Functions, Collections & Modularity',
+    descId: 'Parameter & return, array methods (map, filter), objek/dictionary data.',
+    descEn: 'Parameters & returns, array methods (map, filter), dictionaries/objects.'
+  },
+  {
+    unit: 4,
+    icon: '🔍',
+    level: 'Menengah',
+    titleId: 'Bab 4: Logika Algoritma & Debugging Nyata',
+    titleEn: 'Unit 4: Algorithm Logic & Code Debugging',
+    descId: 'Pelacakan output kode, manipulasi data kompleks, penanganan bug nyata.',
+    descEn: 'Code output tracing, complex data handling, real-world bug fixing.'
+  },
+  {
+    unit: 5,
+    icon: '🚀',
+    level: 'Mahir',
+    titleId: 'Bab 5: Arsitektur, Best Practice & Optimasi',
+    titleEn: 'Unit 5: Architecture, Patterns & Optimization',
+    descId: 'Kompleksitas algoritma, asynchronous workflow, clean code & performa tinggi.',
+    descEn: 'Time complexity, asynchronous patterns, clean code & performance.'
+  }
+];
+
 const LEARN_CATEGORIES_ID = [
   { name: 'Populer (Indo & Inggris)', items: ['Indonesia (Baku)', 'Indonesia (Gaul)', 'Inggris (Grammar)', 'Inggris (Slang)'] },
   { name: 'Bahasa Nusantara', items: ['Jawa', 'Sunda', 'Minang', 'Bali'] },
@@ -71,10 +167,49 @@ const CODING_CATEGORIES_EN = [
   { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
+// Helper penyimpanan progres per topik
+function getSavedProgress(topic) {
+  try {
+    const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed[topic]) return parsed[topic];
+    }
+  } catch (e) {}
+  return { currentUnit: 1, completedUnits: [] };
+}
+
+function saveProgress(topic, unitDone, nextUnit) {
+  try {
+    const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress') || '{}';
+    const parsed = JSON.parse(raw);
+    const currentData = parsed[topic] || { currentUnit: 1, completedUnits: [] };
+
+    const completed = new Set(currentData.completedUnits || []);
+    if (unitDone) completed.add(unitDone);
+
+    parsed[topic] = {
+      currentUnit: nextUnit || currentData.currentUnit || 1,
+      completedUnits: Array.from(completed)
+    };
+
+    localStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
+    sessionStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
+  } catch (e) {}
+}
+
 export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz }) {
+  const defaultTopic = mode === 'learn'
+    ? (currentLang === 'en' ? 'English (Grammar)' : 'Inggris (Grammar)')
+    : 'JavaScript / TypeScript';
+
+  const [selectedTopic, setSelectedTopic] = useState(defaultTopic);
   const [level, setLevel] = useState('Pemula');
-  const [selectedTopic, setSelectedTopic] = useState(mode === 'learn' ? 'Inggris (Grammar)' : 'JavaScript / TypeScript');
   const [openGroup, setOpenGroup] = useState(0);
+
+  // Progres Bab Pembelajaran
+  const [currentUnit, setCurrentUnit] = useState(1);
+  const [completedUnits, setCompletedUnits] = useState([]);
 
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -84,9 +219,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   const [userAnswersLog, setUserAnswersLog] = useState([]);
   const [explanation, setExplanation] = useState('');
   const [explaining, setExplaining] = useState(false);
-  const [timerPercent, setTimerPercent] = useState(100);
-
-  const timerRef = useRef(null);
 
   const [fetchQuiz, { loading: quizLoading }] = useLazyQuery(GENERATE_QUIZ, { fetchPolicy: 'network-only' });
   const [fetchChallenge, { loading: challengeLoading }] = useLazyQuery(GENERATE_CHALLENGE, { fetchPolicy: 'network-only' });
@@ -95,19 +227,29 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   const learnCategories = currentLang === 'en' ? LEARN_CATEGORIES_EN : LEARN_CATEGORIES_ID;
   const codingCategories = currentLang === 'en' ? CODING_CATEGORIES_EN : CODING_CATEGORIES_ID;
   const categoriesData = mode === 'learn' ? learnCategories : codingCategories;
+  const unitsList = mode === 'learn' ? LANGUAGE_UNITS : CODING_UNITS;
+
+  // Sinkronisasi progres saat topik berganti
+  useEffect(() => {
+    const saved = getSavedProgress(selectedTopic);
+    setCurrentUnit(saved.currentUnit || 1);
+    setCompletedUnits(saved.completedUnits || []);
+  }, [selectedTopic]);
 
   // Reset state saat mode atau bahasa berganti
   useEffect(() => {
     setQuestions([]);
     setIsFinished(false);
     setSelectedAnswerIndex(null);
-    const defaultTopic = mode === 'learn' 
+    const newDefault = mode === 'learn'
       ? (currentLang === 'en' ? 'English (Grammar)' : 'Inggris (Grammar)')
       : 'JavaScript / TypeScript';
-    setSelectedTopic(defaultTopic);
+    setSelectedTopic(newDefault);
   }, [mode, currentLang]);
 
-  const handleStart = async (isChallengeMode = false) => {
+  const activeUnitObj = unitsList.find(u => u.unit === currentUnit) || unitsList[0];
+
+  const handleStart = async ({ isChallengeMode = false, unitToLoad = currentUnit, forceRefresh = false } = {}) => {
     setCurrentIndex(0);
     setSelectedAnswerIndex(null);
     setScore(0);
@@ -115,17 +257,34 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     setUserAnswersLog([]);
     setExplanation('');
 
+    const targetUnitObj = unitsList.find(u => u.unit === unitToLoad) || activeUnitObj;
+    setCurrentUnit(targetUnitObj.unit);
+
     try {
       if (isChallengeMode) {
         const res = await fetchChallenge({ variables: { category: selectedTopic, lang: currentLang } });
         if (res.data?.generateChallenge) setQuestions(res.data.generateChallenge);
       } else {
-        const res = await fetchQuiz({ variables: { categories: [selectedTopic], level, lang: currentLang } });
+        const res = await fetchQuiz({
+          variables: {
+            categories: [selectedTopic],
+            level: targetUnitObj.level || level,
+            lang: currentLang,
+            unit: targetUnitObj.unit,
+            topicDetail: currentLang === 'en' ? targetUnitObj.titleEn : targetUnitObj.titleId,
+            refresh: forceRefresh
+          }
+        });
         if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
       }
     } catch (err) {
       alert(currentLang === 'en' ? ('Failed to load questions: ' + err.message) : ('Gagal memuat soal: ' + err.message));
     }
+  };
+
+  const handleContinueNextUnit = () => {
+    const nextUnitNum = currentUnit < 5 ? currentUnit + 1 : 1;
+    handleStart({ unitToLoad: nextUnitNum, forceRefresh: true });
   };
 
   const currentQ = questions[currentIndex];
@@ -161,9 +320,16 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
       setCurrentIndex(prev => prev + 1);
     } else {
       setIsFinished(true);
+      // Simpan progres kelulusan bab
+      const nextU = currentUnit < 5 ? currentUnit + 1 : currentUnit;
+      saveProgress(selectedTopic, currentUnit, nextU);
+      setCompletedUnits(prev => Array.from(new Set([...prev, currentUnit])));
+
       if (onFinishQuiz) {
         onFinishQuiz({
           topic: selectedTopic,
+          unit: currentUnit,
+          unitTitle: currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId,
           score,
           total: questions.length,
           date: new Date().toLocaleDateString()
@@ -212,27 +378,13 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     window.speechSynthesis.speak(utterance);
   };
 
+  const nextUnitObj = unitsList.find(u => u.unit === currentUnit + 1);
+
   return (
-    <div className="page" style={{ width: '100%', maxWidth: '850px' }}>
+    <div className="page" style={{ width: '100%', maxWidth: '880px' }}>
       {/* 1. SETUP VIEW */}
       {questions.length === 0 && (
         <div className="setup-container">
-          {/* Level Selector */}
-          <div className="input-group">
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.15rem' }}>
-              {mode === 'learn' ? t('setup_level') : t('setup_code_level')}
-            </h3>
-            <select
-              className="styled-select"
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-            >
-              <option value="Pemula">{t('opt_level_1')}</option>
-              <option value="Menengah">{t('opt_level_2')}</option>
-              <option value="Mahir">{t('opt_level_3')}</option>
-            </select>
-          </div>
-
           {/* Topic / Category Selector */}
           <div className="input-group">
             <h3 style={{ margin: '0 0 5px 0', fontSize: '1.15rem' }}>
@@ -271,21 +423,92 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
             ))}
           </div>
 
+          {/* Unit / Chapter Roadmap (Alur Bab Pembelajaran) */}
+          <div className="unit-roadmap-section">
+            <div className="unit-roadmap-header">
+              <h4>
+                <span>🗺️</span>
+                <span>{t('roadmap_title')}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--btn-cyan)', fontWeight: 700, marginLeft: 'auto' }}>
+                  {selectedTopic}
+                </span>
+              </h4>
+              <p>{t('roadmap_subtitle')}</p>
+            </div>
+
+            <div className="unit-roadmap-grid">
+              {unitsList.map((u) => {
+                const isCurrent = currentUnit === u.unit;
+                const isDone = completedUnits.includes(u.unit);
+
+                let cardClass = 'unit-card';
+                if (isCurrent) cardClass += ' active';
+                if (isDone) cardClass += ' completed';
+
+                return (
+                  <div
+                    key={u.unit}
+                    className={cardClass}
+                    onClick={() => {
+                      setCurrentUnit(u.unit);
+                      setLevel(u.level);
+                    }}
+                  >
+                    <div>
+                      <div className="unit-card-header">
+                        <span className="unit-card-icon">{u.icon}</span>
+                        <span className={`unit-pill-badge ${isDone ? 'completed' : isCurrent ? 'active' : 'locked'}`}>
+                          {isDone ? `✓ ${t('unit_badge_completed')}` : isCurrent ? `⭐ ${t('unit_badge_current')}` : u.level}
+                        </span>
+                      </div>
+                      <h5 className="unit-card-title">
+                        {currentLang === 'en' ? u.titleEn : u.titleId}
+                      </h5>
+                    </div>
+                    <p className="unit-card-desc">
+                      {currentLang === 'en' ? u.descEn : u.descId}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Level Selector */}
+          <div className="input-group">
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.05rem', color: 'var(--text-muted)' }}>
+              {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
+            </h3>
+            <select
+              className="styled-select"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+            >
+              <option value="Pemula">{t('opt_level_1')}</option>
+              <option value="Menengah">{t('opt_level_2')}</option>
+              <option value="Mahir">{t('opt_level_3')}</option>
+            </select>
+          </div>
+
           {/* Start Buttons */}
           <div className="action-row">
             <button
               className="btn-huge btn-green"
-              onClick={() => handleStart(false)}
+              onClick={() => handleStart({ unitToLoad: currentUnit, forceRefresh: false })}
               disabled={quizLoading || challengeLoading}
             >
-              {quizLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : (mode === 'learn' ? t('btn_start_learn') : t('btn_start_code'))}
+              {quizLoading
+                ? (currentLang === 'en' ? 'Preparing Questions...' : 'Menyiapkan Soal AI...')
+                : `🚀 ${currentLang === 'en' ? 'START' : 'MULAI'} ${activeUnitObj.icon} ${currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId}`}
             </button>
             <button
               className="btn-huge btn-cyan"
-              onClick={() => handleStart(true)}
+              onClick={() => handleStart({ isChallengeMode: true })}
               disabled={quizLoading || challengeLoading}
             >
-              {challengeLoading ? (currentLang === 'en' ? 'Preparing...' : 'Menyiapkan...') : t('btn_challenge')}
+              {challengeLoading
+                ? (currentLang === 'en' ? 'Preparing Challenge...' : 'Menyiapkan...')
+                : t('btn_challenge')}
             </button>
           </div>
         </div>
@@ -295,22 +518,28 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
       {questions.length > 0 && !isFinished && currentQ && (
         <div className="quiz-container">
           <div className="quiz-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-                {t('quiz_header')} • {selectedTopic} ({currentIndex + 1}/{questions.length})
-              </span>
-              <span style={{ color: 'var(--btn-green)', fontWeight: 800 }}>
+            {/* Header with Unit Info & Score */}
+            <div className="quiz-header-badge-row">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span className="unit-indicator-pill">
+                  {activeUnitObj.icon} {currentLang === 'en' ? `Chapter ${currentUnit}` : `Bab ${currentUnit}`}: {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId}
+                </span>
+                <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                  • {selectedTopic} ({currentIndex + 1}/{questions.length})
+                </span>
+              </div>
+              <span style={{ color: 'var(--btn-green)', fontWeight: 800, fontSize: '1rem' }}>
                 {currentLang === 'en' ? 'Score' : 'Skor'}: {score}
               </span>
             </div>
 
-            {/* Timer Bar */}
+            {/* Timer / Progress Bar */}
             <div className="timer-bar-container">
               <div className="timer-bar" style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }} />
             </div>
 
             {/* Question Text */}
-            <h3 style={{ fontSize: '1.3rem', margin: '20px 0 25px 0', lineHeight: 1.5 }}>
+            <h3 style={{ fontSize: '1.25rem', margin: '20px 0 25px 0', lineHeight: 1.5 }}>
               {currentQ.instruction && (
                 <div style={{ color: 'var(--btn-cyan)', fontSize: '0.9rem', marginBottom: '8px', fontWeight: 800 }}>
                   [{currentQ.instruction}]
@@ -320,7 +549,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
             </h3>
 
             {/* Multiple Choice Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {currentQ.options.map((opt, i) => {
                 const letter = LETTERS[i] || '•';
                 const text = cleanOptionText(opt);
@@ -395,23 +624,91 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
         </div>
       )}
 
-      {/* 3. RESULT VIEW */}
+      {/* 3. RESULT VIEW - CONTINUOUS LEARNING HUB */}
       {isFinished && (
         <div className="quiz-container">
           <div className="result-box">
-            <h2 style={{ fontSize: '1.8rem', marginBottom: '15px' }}>{t('result_title')}</h2>
-            <div className="score-circle">
-              {Math.round((score / questions.length) * 100)}
+            {/* Mascot Celebration Row */}
+            <div className="result-mascot-row">
+              <span style={{ fontSize: '2.5rem' }}>{activeUnitObj.icon}</span>
+              <span style={{ fontSize: '2.5rem' }}>🎉</span>
             </div>
-            <p style={{ fontSize: '1.2rem', marginBottom: '25px', fontWeight: 700 }}>
+
+            <h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
+              {currentLang === 'en' ? 'Chapter Complete!' : 'Bab Selesai!'}
+            </h2>
+            <p style={{ color: 'var(--btn-cyan)', fontWeight: 800, fontSize: '1.1rem', marginBottom: '18px' }}>
+              {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId} • {selectedTopic}
+            </p>
+
+            <div className="score-circle">
+              {Math.round((score / questions.length) * 100)}%
+            </div>
+
+            <p style={{ fontSize: '1.2rem', marginBottom: '10px', fontWeight: 700 }}>
               {currentLang === 'en' ? 'Correct ' : 'Benar '}
               <span style={{ color: 'var(--btn-green)' }}>{score}</span>
               {currentLang === 'en' ? ` out of ${questions.length} Questions` : ` dari ${questions.length} Soal`}
             </p>
 
-            <button className="btn-huge btn-green" onClick={() => setQuestions([])}>
-              {t('btn_retry')}
-            </button>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '500px', margin: '0 auto 25px' }}>
+              {score >= Math.ceil(questions.length * 0.8)
+                ? (currentLang === 'en' ? 'Outstanding! You have mastered this chapter.' : 'Luar biasa! Pemahamanmu pada bab ini sangat mantap.')
+                : score >= Math.ceil(questions.length * 0.5)
+                  ? (currentLang === 'en' ? 'Good job! You are ready to advance to the next chapter.' : 'Bagus sekali! Kamu sudah siap melangkah ke bab berikutnya.')
+                  : (currentLang === 'en' ? 'Great effort! Try fresh practice questions to sharpen your foundation.' : 'Usaha yang bagus! Coba latih soal baru lagi untuk memperkuat pemahamanmu.')}
+            </p>
+
+            {/* Continuous Learning Progression Action Stack */}
+            <div className="result-actions-stack">
+              {/* 1. Primary Action: Continue to Next Chapter */}
+              {nextUnitObj ? (
+                <button
+                  className="btn-continue-unit-hero"
+                  onClick={handleContinueNextUnit}
+                  disabled={quizLoading}
+                >
+                  <span>
+                    {quizLoading
+                      ? (currentLang === 'en' ? 'Preparing Next Chapter...' : 'Menyiapkan Bab Selanjutnya...')
+                      : `🚀 ${t('btn_continue_unit')} ${nextUnitObj.unit}: ${currentLang === 'en' ? nextUnitObj.titleEn : nextUnitObj.titleId}`}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  className="btn-continue-unit-hero"
+                  onClick={() => handleStart({ unitToLoad: 1, forceRefresh: true })}
+                  disabled={quizLoading}
+                >
+                  <span>
+                    {quizLoading
+                      ? (currentLang === 'en' ? 'Preparing Review...' : 'Menyiapkan Ulasan...')
+                      : (currentLang === 'en' ? '🏆 Review Full Track (Fresh AI Questions)' : '🏆 Ulas Seluruh Bab (Variasi AI Segar)')}
+                  </span>
+                </button>
+              )}
+
+              {/* 2. Secondary Action: Practice Fresh AI Questions on Current Chapter (Anti-Repetisi) */}
+              <button
+                className="btn-fresh-practice"
+                onClick={() => handleStart({ unitToLoad: currentUnit, forceRefresh: true })}
+                disabled={quizLoading}
+              >
+                <span>
+                  {quizLoading
+                    ? (currentLang === 'en' ? 'Generating Fresh Set...' : 'Membuat Soal Baru...')
+                    : `🔄 ${t('btn_fresh_questions')}`}
+                </span>
+              </button>
+
+              {/* 3. Tertiary Action: Return to Roadmap / Change Topic */}
+              <button
+                className="btn-return-roadmap"
+                onClick={() => setQuestions([])}
+              >
+                <span>🗺️ {t('btn_choose_chapter')}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

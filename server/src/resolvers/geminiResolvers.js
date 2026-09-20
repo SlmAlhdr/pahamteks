@@ -81,55 +81,93 @@ Pedoman Penulisan:
             }
         },
 
-        generateQuiz: async (_, { categories, level, lang = 'id' }) => {
+        generateQuiz: async (_, { categories, level, lang = 'id', unit = 1, topicDetail = '', refresh = false }) => {
             const isEn = lang === 'en';
-            const cacheKey = `${lang}_${level}_${categories.sort().join('_')}`;
-            if (quizCache.has(cacheKey)) {
+            const cleanCategories = Array.isArray(categories) ? categories : [categories || 'General'];
+            const topicStr = cleanCategories.sort().join('_');
+            const cacheKey = `${lang}_${level}_${topicStr}_u${unit}_${topicDetail || ''}`;
+
+            if (refresh && quizCache.has(cacheKey)) {
+                quizCache.delete(cacheKey);
+            } else if (!refresh && quizCache.has(cacheKey)) {
                 const cached = [...quizCache.get(cacheKey)];
                 return cached.sort(() => Math.random() - 0.5);
             }
 
+            const unitFocusMap = {
+                1: isEn ? "Unit 1 (Core Foundations, Key Vocabulary, Basic Syntax)" : "Bab 1 (Fondasi Dasar, Kosakata Esensial, Sintaksis Awal)",
+                2: isEn ? "Unit 2 (Sentence Structure, Core Grammar, Loops & Logic Flow)" : "Bab 2 (Struktur Kalimat, Tata Bahasa Inti, Perulangan & Alur Logika)",
+                3: isEn ? "Unit 3 (Practical Real-world Dialogue, Everyday Situations, Functions & Collections)" : "Bab 3 (Percakapan Sehari-hari, Situasi Nyata, Fungsi & Pengolahan Data)",
+                4: isEn ? "Unit 4 (Idiomatic Expressions, Slang & Nuances, Algorithm Debugging)" : "Bab 4 (Idiom, Bahasa Gaul, Nuansa Kontekstual, Debugging & Studi Kasus)",
+                5: isEn ? "Unit 5 (Advanced Mastery, Complex Text Comprehension, Architecture & Best Practices)" : "Bab 5 (Penguasaan Mahir, Pemahaman Kalimat Kompleks, Pola Desain & Optimasi)"
+            };
+
+            const selectedFocus = topicDetail || unitFocusMap[unit] || `Unit ${unit}`;
+            const seed = Math.floor(Math.random() * 9000) + 1000;
+
             const prompt = isEn
-                ? `Create 5 educational multiple-choice quiz questions for ${level || 'Beginner'} level on the topics: ${categories.join(', ')}.\n` +
+                ? `You are an expert curriculum designer. Create 5 FRESH, ENGAGING, and UNIQUE multiple-choice questions for ${level || 'Beginner'} level on: ${cleanCategories.join(', ')}.\n` +
+                  `Focus specifically on ${selectedFocus}.\n` +
+                  `Question Variety Seed #${seed}: Make sure questions are practical, varied, and not repetitive clichés. For coding, include real short code snippets. For languages, test realistic contextual usage.\n\n` +
                   `Format as exact JSON Array:\n` +
                   `[\n` +
                   `  {\n` +
-                  `    "instruction": "Short prompt instruction (e.g., Choose the correct answer)",\n` +
-                  `    "question": "Complete question text in English",\n` +
-                  `    "options": ["First option", "Second option", "Third option", "Fourth option"],\n` +
+                  `    "instruction": "Short context instruction (e.g. Choose the correct phrase / What is the output of this code?)",\n` +
+                  `    "question": "Question text in English",\n` +
+                  `    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],\n` +
                   `    "answer": "A"\n` +
                   `  }\n` +
                   `]\n` +
-                  `IMPORTANT:\n` +
-                  `- In the 'options' array, write ONLY clean option text without 'A.', 'B.', etc.\n` +
-                  `- The 'answer' value MUST be a single capital letter ('A', 'B', 'C', or 'D') corresponding to the correct option index.\n` +
-                  `- Replace double quotes (") inside questions/options with single quotes ('). Return ONLY a valid JSON array.`
-                : `Buat 5 soal kuis edukatif tingkat ${level || 'Pemula'} materi: ${categories.join(', ')}.\n` +
+                  `CRITICAL RULES:\n` +
+                  `- In 'options', provide ONLY pure option text without 'A.', 'B.', '1.', etc.\n` +
+                  `- 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') matching the correct option index.\n` +
+                  `- Replace double quotes (") inside questions/options with single quotes ('). Output ONLY valid JSON.`
+                : `Kamu adalah kurator materi edukasi profesional. Buat 5 soal kuis pilihan ganda yang SEGAR, MENARIK, dan TIDAK MONOTON (Anti-Repetisi) tingkat ${level || 'Pemula'} materi: ${cleanCategories.join(', ')}.\n` +
+                  `Fokus khusus materi: ${selectedFocus}.\n` +
+                  `Variasi Soal #${seed}: Buat soal yang aplikatif dan kaya konteks (bukan pertanyaan hafalan klise yang membosankan). Untuk koding, sertakan potongan kode nyata atau tebak alur. Untuk bahasa dunia, uji pemahaman konteks percakapan nyata.\n\n` +
                   `Format JSON Array persis ini:\n` +
                   `[\n` +
                   `  {\n` +
-                  `    "instruction": "Perintah singkat (contoh: Pilihlah jawaban yang paling tepat)",\n` +
+                  `    "instruction": "Instruksi singkat (contoh: Pilihlah kalimat yang paling tepat / Apa keluaran kode berikut?)",\n` +
                   `    "question": "Kalimat soal lengkap",\n` +
                   `    "options": ["Opsi pertama", "Opsi kedua", "Opsi ketiga", "Opsi keempat"],\n` +
                   `    "answer": "A"\n` +
                   `  }\n` +
                   `]\n` +
-                  `PENTING:\n` +
-                  `- Di array "options", tulis teks pilihannya saja secara murni. JANGAN menambahkan awalan huruf seperti "A.", "B.", "C.", "D." di awal teks.\n` +
+                  `ATURAN PENTING:\n` +
+                  `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.", "1." dsb.\n` +
                   `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
                   `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
                 const raw = await generateSafeContent(prompt);
                 const quizList = parseSafeJson(raw);
-                quizCache.set(cacheKey, quizList);
-                return quizList;
+                if (Array.isArray(quizList) && quizList.length > 0) {
+                    quizCache.set(cacheKey, quizList);
+                    return quizList;
+                }
+                throw new Error("Format daftar soal tidak valid");
             } catch (err) {
+                // Return dynamic fallback questions for the specific unit & topic
                 return [
                     {
-                        instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
-                        question: `Detail: ${err.message}`,
-                        options: isEn ? ["Check API Key", "Wait", "Refresh", "Ok"] : ["Cek API Key", "Tunggu", "Refresh", "Ok"],
+                        instruction: isEn ? `Review Exercise - ${selectedFocus}` : `Latihan Mandiri - ${selectedFocus}`,
+                        question: isEn
+                            ? `Which statement represents the core principle of ${cleanCategories[0]} in ${selectedFocus}?`
+                            : `Manakah konsep yang paling tepat merepresentasikan materi ${cleanCategories[0]} pada ${selectedFocus}?`,
+                        options: isEn
+                            ? ["Understanding structured core fundamentals", "Random unverified assumptions", "Skipping syntax logic", "Ignoring execution contexts"]
+                            : ["Memahami fondasi struktur dan konteks dengan tepat", "Asumsi acak tanpa verifikasi", "Mengabaikan logika sintaksis", "Melewatkan konteks penggunaan"],
+                        answer: "A"
+                    },
+                    {
+                        instruction: isEn ? "Concept Check" : "Pemahaman Konsep",
+                        question: isEn
+                            ? `In ${cleanCategories[0]}, how is continuous mastery best achieved across learning units?`
+                            : `Dalam ${cleanCategories[0]}, bagaimana cara terbaik meningkatkan penguasaan materi secara bertahap?`,
+                        options: isEn
+                            ? ["Step-by-step progressive practice & real application", "Cramming without context", "Only memorizing static questions", "Never reviewing mistakes"]
+                            : ["Latihan bertahap, variasi soal, dan penerapan kontekstual", "Menghafal tanpa konteks", "Hanya mengulang soal yang sama", "Tidak mengevaluasi kesalahan"],
                         answer: "A"
                     }
                 ];
