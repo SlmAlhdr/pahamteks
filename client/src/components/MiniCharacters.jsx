@@ -654,6 +654,127 @@ export function HoloGlobeDesk({ size = 84, className = '' }) {
 }
 
 /**
+ * Panggung Podium Karakter (ClusterStagePlatform):
+ * Platform 3D semi-isometrik yang kokoh, mewah, dan beraksen cyber/emas
+ * sehingga seluruh karakter dan perlengkapan memiliki tumpuan duduk/berdiri yang nyata
+ */
+export function ClusterStagePlatform({ className = '' }) {
+  return (
+    <div className={`cluster-stage-platform ${className}`}>
+      <svg
+        viewBox="0 0 580 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      >
+        <defs>
+          {/* Bayangan Lantai Luar */}
+          <radialGradient id="stageGroundShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(0, 0, 0, 0.65)" />
+            <stop offset="60%" stopColor="rgba(0, 0, 0, 0.25)" />
+            <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+          </radialGradient>
+
+          {/* Ketebalan Sisi Depan Panggung (3D Bevel) */}
+          <linearGradient id="stageBevel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#082820" />
+            <stop offset="40%" stopColor="#041813" />
+            <stop offset="100%" stopColor="#020d0a" />
+          </linearGradient>
+
+          {/* Permukaan Atas Panggung (Top Deck Surface) */}
+          <radialGradient id="stageTopDeck" cx="50%" cy="30%" r="65%">
+            <stop offset="0%" stopColor="#1a4d40" />
+            <stop offset="50%" stopColor="#0e352b" />
+            <stop offset="100%" stopColor="#061e18" />
+          </radialGradient>
+
+          {/* Lis Lampu Neon Berkilau */}
+          <linearGradient id="stageNeonRim" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="25%" stopColor="#4ade80" />
+            <stop offset="50%" stopColor="#ffd700" />
+            <stop offset="75%" stopColor="#4ade80" />
+            <stop offset="100%" stopColor="#38bdf8" />
+          </linearGradient>
+
+          {/* Spotlight Tengah Bawah Teksie */}
+          <radialGradient id="stageSpotlight" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stopColor="rgba(56, 189, 248, 0.35)" />
+            <stop offset="60%" stopColor="rgba(74, 222, 128, 0.15)" />
+            <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+          </radialGradient>
+        </defs>
+
+        {/* 1. Bayangan Panggung di Lantai Dasar */}
+        <ellipse cx="290" cy="58" rx="275" ry="16" fill="url(#stageGroundShadow)" />
+
+        {/* 2. Ketebalan 3D Bagian Bawah / Depan Podium */}
+        <path
+          d="M 20 30 C 20 54, 560 54, 560 30 L 560 48 C 560 72, 20 72, 20 48 Z"
+          fill="url(#stageBevel)"
+        />
+
+        {/* Lis Bawah Emas Tipis */}
+        <path
+          d="M 30 48 C 110 68, 470 68, 550 48"
+          stroke="rgba(255, 215, 0, 0.4)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+
+        {/* Garis Aksen Vertikal Modern pada Tebal Panggung */}
+        <line x1="140" y1="44" x2="140" y2="58" stroke="rgba(56, 189, 248, 0.3)" strokeWidth="2" strokeLinecap="round" />
+        <line x1="290" y1="48" x2="290" y2="64" stroke="rgba(255, 215, 0, 0.5)" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="290" cy="67" r="3" fill="#ffd700" />
+        <line x1="440" y1="44" x2="440" y2="58" stroke="rgba(56, 189, 248, 0.3)" strokeWidth="2" strokeLinecap="round" />
+
+        {/* 3. Permukaan Atas Podium (Tempat Karakter Duduk & Berdiri) */}
+        <ellipse
+          cx="290"
+          cy="30"
+          rx="270"
+          ry="22"
+          fill="url(#stageTopDeck)"
+          stroke="url(#stageNeonRim)"
+          strokeWidth="3.5"
+        />
+
+        {/* Lis Dalam Halus */}
+        <ellipse
+          cx="290"
+          cy="29"
+          rx="252"
+          ry="17"
+          fill="none"
+          stroke="rgba(126, 242, 224, 0.35)"
+          strokeWidth="1.5"
+          strokeDasharray="8 6"
+        />
+
+        {/* 4. Efek Cahaya Pijar di Tengah (Spotlight Teksie) */}
+        <ellipse cx="290" cy="28" rx="95" ry="13" fill="url(#stageSpotlight)" />
+
+        {/* 5. Bayangan Kontak Karakter pada Permukaan Podium */}
+        {/* Bayangan Aki (Kucing) */}
+        <ellipse cx="80" cy="35" rx="34" ry="7" fill="rgba(0, 0, 0, 0.45)" />
+        {/* Bayangan Meja Belajar Laptop */}
+        <ellipse cx="178" cy="33" rx="36" ry="6.5" fill="rgba(0, 0, 0, 0.45)" />
+        {/* Bayangan Teksie (Musang Cerdas) */}
+        <ellipse cx="290" cy="35" rx="60" ry="11" fill="rgba(0, 0, 0, 0.55)" />
+        {/* Bayangan HoloGlobe */}
+        <ellipse cx="388" cy="34" rx="26" ry="6" fill="rgba(0, 0, 0, 0.4)" />
+        {/* Bayangan Luki (Luwak Mentor) */}
+        <ellipse cx="468" cy="35" rx="34" ry="7.5" fill="rgba(0, 0, 0, 0.45)" />
+        {/* Pijar Jet Robot Bitto */}
+        <ellipse cx="538" cy="38" rx="22" ry="5.5" fill="rgba(56, 189, 248, 0.3)" />
+        <ellipse cx="538" cy="38" rx="12" ry="3" fill="rgba(126, 242, 224, 0.5)" />
+      </svg>
+    </div>
+  );
+}
+
+/**
  * Suara Sintesis Interaktif Menggunakan Web Audio API (Zero Dependency)
  */
 function playCharacterSound(type) {
@@ -922,6 +1043,9 @@ export function CharacterCluster({ currentLang = 'id' }) {
 
   return (
     <div className="character-cluster-wrapper">
+      {/* Panggung Podium 3D Tempat Karakter Duduk & Berdiri */}
+      <ClusterStagePlatform />
+
       {/* Popover Balon Percakapan Interaktif Karakter yang Sedang Bicara */}
       {activeSpeaker && currentSpeakerData && (
         <div

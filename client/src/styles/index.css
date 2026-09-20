@@ -1578,11 +1578,30 @@ textarea {
     position: relative;
     width: 100%;
     max-width: 580px;
-    height: 255px;
+    height: 272px;
     margin: 20px 0 15px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
+}
+
+/* Panggung Podium 3D Tempat Karakter Duduk & Berdiri */
+.cluster-stage-platform {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 580px;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+    animation: gentleStageGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes gentleStageGlow {
+    0% { filter: drop-shadow(0 6px 16px rgba(56, 189, 248, 0.2)); }
+    100% { filter: drop-shadow(0 10px 28px rgba(74, 222, 128, 0.35)); }
 }
 
 .cluster-interactive-char {
@@ -1593,58 +1612,52 @@ textarea {
     transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
 }
 
-/* Penempatan 4 Karakter: Teksie Menonjol di Tengah */
+/* Penempatan Karakter & Properti: Duduk & Berdiri Nyata di Atas Panggung */
 .cluster-char-teksie {
     left: 50%;
-    bottom: 0px;
+    bottom: 14px;
     transform: translateX(-50%);
-    z-index: 6;
+    z-index: 7;
     animation: gentleFloatCenter 3.6s ease-in-out infinite alternate;
 }
 
 .cluster-char-aki {
-    left: 18px;
     left: 14px;
-    bottom: 8px;
-    z-index: 3;
+    bottom: 20px;
+    z-index: 5;
     animation: gentleFloat 4s ease-in-out 0.4s infinite alternate;
 }
 
 /* 1b. Perlengkapan Belajar & Laptop Koding Teksie (Di Samping Kiri Teksie) */
 .cluster-prop-desk {
     left: 122px;
-    bottom: 4px;
-    z-index: 5;
+    bottom: 16px;
+    z-index: 6;
     animation: gentleFloatDesk 3.8s ease-in-out 0.2s infinite alternate;
 }
 
 /* 2b. HoloGlobe 50+ Bahasa Dunia (Di Samping Kanan Teksie) */
 .cluster-prop-globe {
     right: 174px;
-    bottom: 12px;
-    z-index: 5;
+    bottom: 20px;
+    z-index: 6;
     animation: gentleFloatDesk 4.1s ease-in-out 0.7s infinite alternate;
 }
 
 .cluster-char-luki {
-    right: 112px;
     right: 88px;
-    bottom: 6px;
-    z-index: 4;
+    bottom: 18px;
     z-index: 6;
     animation: gentleFloat 3.8s ease-in-out 0.8s infinite alternate;
 }
 
 .cluster-char-bitto {
-    right: 12px;
     right: 6px;
-    bottom: 30px;
-    z-index: 3;
-    z-index: 4;
+    bottom: 42px;
+    z-index: 5;
     animation: gentleFloat 4.2s ease-in-out 1.2s infinite alternate;
 }
 
-/* Hover Effects untuk Tiap Karakter */
 @keyframes gentleFloatDesk {
     0% { transform: translateY(0px); }
     100% { transform: translateY(-6px); }
@@ -1943,8 +1956,9 @@ textarea {
 
 /* 4. Gelembung Prancis (Kiri Bawah) */
 .bubble-bonjour {
-    bottom: 8px;
+    bottom: -2px;
     left: 8px;
+    z-index: 10;
     transform: rotate(2deg);
     border-color: #facc15;
     color: #fef08a;
@@ -1957,8 +1971,9 @@ textarea {
 
 /* 5. Gelembung Arab (Kanan Bawah) */
 .bubble-arabic {
-    bottom: 8px;
+    bottom: -2px;
     right: 18px;
+    z-index: 10;
     transform: rotate(-1.5deg);
     border-color: #38bdf8;
     color: #ffffff;
