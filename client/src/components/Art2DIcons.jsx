@@ -183,11 +183,14 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
         </linearGradient>
       </defs>
 
-      {/* Telinga Bulat Imut Bergaya Duolingo */}
-      <circle cx="11" cy="14" r="5.5" fill="#ea580c" />
-      <circle cx="11.5" cy="14" r="3.2" fill="#f472b6" opacity="0.8" />
-      <circle cx="29" cy="14" r="5.5" fill="#ea580c" />
-      <circle cx="28.5" cy="14" r="3.2" fill="#f472b6" opacity="0.8" />
+      {/* Telinga Musang Ikonik Semi-3D (Konsisten dengan Foto 2, Bergaris Cyan & Pink) */}
+      <path d="M13 15L4 3C2.5 8.5 4.5 17 10.5 20.5L13 15Z" fill="#ea580c" />
+      <path d="M12 14.5L5.5 5.5C4.5 9.5 6 15.5 10 18L12 14.5Z" fill="#f472b6" opacity="0.85" />
+      <path d="M7 9.5L9.5 12" stroke="#38bdf8" strokeWidth="1" strokeLinecap="round" />
+
+      <path d="M27 15L36 3C37.5 8.5 35.5 17 29.5 20.5L27 15Z" fill="#ea580c" />
+      <path d="M28 14.5L34.5 5.5C35.5 9.5 34 15.5 30 18L28 14.5Z" fill="#f472b6" opacity="0.85" />
+      <path d="M33 9.5L30.5 12" stroke="#38bdf8" strokeWidth="1" strokeLinecap="round" />
 
       {/* Kepala Bulat Menggemaskan Semi-3D */}
       <circle cx="20" cy="24" r="14" fill="url(#navTeksieFur)" />
