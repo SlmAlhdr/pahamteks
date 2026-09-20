@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+  DownPointer2DIcon,
+  CodeTag2DIcon,
+  Sparkle2DIcon,
+  Rocket2DIcon
+} from './Art2DIcons';
 
 /**
  * =================================================================
@@ -131,17 +137,19 @@ export function PeekingPointer({
 
   return (
     <div className="peeking-pointer-container">
-      {/* Balon Kata Interaktif */}
+      {/* Balon Kata Interaktif Menunjuk ke Bawah */}
       <div className="peeking-speech-bubble" onClick={onPointerClick} title="Klik untuk beralih">
-        <span className="speech-icon">👉</span>
+        <span className="speech-icon">
+          <DownPointer2DIcon size={18} />
+        </span>
         <span className="speech-text">
           {isRegister
-            ? (currentLang === 'en' ? 'Choose your username & join free! ✨' : 'Pilih username unik & buat akun gratis! ✨')
-            : (currentLang === 'en' ? 'Don’t have an account? Click Register here!' : 'Belum punya akun? Klik Daftar di sini!')}
+            ? (currentLang === 'en' ? 'Choose your username & join free!' : 'Pilih username unik & buat akun gratis!')
+            : (currentLang === 'en' ? 'Don’t have an account? Click Register Account below!' : 'Belum punya akun? Klik Daftar Akun di bawah ini!')}
         </span>
       </div>
 
-      {/* Teksie Mengintip dan Menunjuk */}
+      {/* Teksie Mengintip dan Menunjuk ke Bawah (Ke Tab Daftar Akun) */}
       <div className="peeking-character-wrapper" onClick={onPointerClick}>
         <svg
           width="140"
@@ -151,15 +159,15 @@ export function PeekingPointer({
           xmlns="http://www.w3.org/2000/svg"
           className="peeking-character-svg"
         >
-          {/* Telinga Fennec Kiri Nongol */}
+          {/* Telinga Musang Kiri Nongol */}
           <path d="M42 45L12 8C8 28 18 56 36 68L42 45Z" fill="#ff9800" />
           <path d="M38 43L18 16C16 30 24 50 36 60L38 43Z" fill="#fed7aa" />
 
-          {/* Telinga Fennec Kanan Nongol */}
+          {/* Telinga Musang Kanan Nongol */}
           <path d="M92 45L122 8C126 28 116 56 98 68L92 45Z" fill="#ff9800" />
           <path d="M96 43L116 16C118 30 110 50 98 60L96 43Z" fill="#fed7aa" />
 
-          {/* Kepala Rubah Fennec Mengintip */}
+          {/* Kepala Musang Mengintip */}
           <path d="M25 105C25 58 44 42 67 42C90 42 109 58 109 105H25Z" fill="#f97316" />
 
           {/* Pipi Putih Mengintip */}
@@ -168,37 +176,39 @@ export function PeekingPointer({
           {/* Hidung Hitam */}
           <polygon points="64,90 70,90 67,95" fill="#1e293b" />
 
-          {/* Mata Melirik Antusias ke Arah Tombol */}
+          {/* Mata Melirik ke Bawah ke Arah Tab Tombol */}
           <circle cx="50" cy="74" r="10" fill="#ffffff" />
           <circle cx="84" cy="74" r="10" fill="#ffffff" />
-          <circle cx="53" cy="74" r="5.5" fill="#0f172a" />
-          <circle cx="87" cy="74" r="5.5" fill="#0f172a" />
-          <circle cx="51" cy="72" r="2.2" fill="#ffffff" />
-          <circle cx="85" cy="72" r="2.2" fill="#ffffff" />
+          <circle cx="53" cy="77" r="5.5" fill="#0f172a" />
+          <circle cx="87" cy="77" r="5.5" fill="#0f172a" />
+          <circle cx="51" cy="75.5" r="2" fill="#ffffff" />
+          <circle cx="85" cy="75.5" r="2" fill="#ffffff" />
 
           {/* Kacamata Pintar Mengintip */}
           <circle cx="50" cy="74" r="12" stroke="#1cb0f6" strokeWidth="3" fill="none" />
           <circle cx="84" cy="74" r="12" stroke="#1cb0f6" strokeWidth="3" fill="none" />
           <path d="M62 74H72" stroke="#1cb0f6" strokeWidth="3" strokeLinecap="round" />
 
-          {/* Cakar Rubah Berbulu yang Bergerak Menunjuk ke Tombol */}
-          <g className="pointing-hand-animated">
-            <ellipse cx="116" cy="70" rx="13" ry="11" fill="#f97316" />
-            <ellipse cx="116" cy="70" rx="10" ry="8" fill="#fed7aa" />
-            {/* Jari menunjuk ke tombol */}
+          {/* Cakar Musang Berbulu yang Bergerak Menunjuk ke Bawah (Arah Tab Tombol) */}
+          <g className="pointing-hand-down-animated">
+            <ellipse cx="106" cy="70" rx="13" ry="11" fill="#f97316" />
+            <ellipse cx="106" cy="70" rx="9" ry="8" fill="#fed7aa" />
+            {/* Jari menunjuk ke bawah langsung ke arah tab Daftar Akun */}
             <path
-              d="M116 66L135 73L116 80"
+              d="M106 72V98"
               stroke="#f97316"
-              strokeWidth="7.5"
+              strokeWidth="8"
               strokeLinecap="round"
-              strokeLinejoin="round"
             />
             <path
-              d="M118 73H134"
-              stroke="#ea580c"
-              strokeWidth="2.8"
+              d="M106 74V95"
+              stroke="#fed7aa"
+              strokeWidth="4"
               strokeLinecap="round"
             />
+            <circle cx="106" cy="98" r="2.5" fill="#ea580c" />
+            {/* Jempol mungil di samping */}
+            <ellipse cx="117" cy="74" rx="5" ry="7" fill="#f97316" transform="rotate(20 117 74)" />
           </g>
         </svg>
       </div>
@@ -393,19 +403,19 @@ export function CharacterCluster() {
     <div className="character-cluster-wrapper">
       {/* Gelembung Sapaan Multibahasa Mengambang */}
       <div className="floating-bubble bubble-hello">
-        <span className="bubble-flag">🇯🇵</span> Konnichiwa!
+        <span className="bubble-flag">JP</span> Konnichiwa!
       </div>
       <div className="floating-bubble bubble-code">
-        <span className="bubble-flag">⚡</span> logic.solve(&quot;Paham!&quot;)
+        <CodeTag2DIcon size={15} color="#58cc02" /> logic.solve(&quot;Paham!&quot;)
       </div>
       <div className="floating-bubble bubble-bonjour">
-        <span className="bubble-flag">🇫🇷</span> Bonjour!
+        <span className="bubble-flag">FR</span> Bonjour!
       </div>
       <div className="floating-bubble bubble-arabic">
-        <span className="bubble-flag">🇸🇦</span> Marhaban! (مرحباً)
+        <span className="bubble-flag">AR</span> Marhaban! (مرحباً)
       </div>
 
-      {/* Karakter Tengah Utama: Teksie Si Rubah Fennec Cerdas */}
+      {/* Karakter Tengah Utama: Teksie Si Musang Cerdas */}
       <div className="cluster-main-pami">
         <TeksieFox size={145} />
       </div>
@@ -420,10 +430,16 @@ export function CharacterCluster() {
         <BittoBot size={105} />
       </div>
 
-      {/* Partikel Berkilau Emas & Cyan */}
-      <div className="gold-coin coin-1">⭐</div>
-      <div className="gold-coin coin-2">💎</div>
-      <div className="gold-coin coin-3">🚀</div>
+      {/* Partikel Berkilau 2D Art Emas & Cyan */}
+      <div className="gold-coin coin-1">
+        <Sparkle2DIcon size={18} color="#ffd700" />
+      </div>
+      <div className="gold-coin coin-2">
+        <Sparkle2DIcon size={18} color="#38bdf8" />
+      </div>
+      <div className="gold-coin coin-3">
+        <Rocket2DIcon size={18} color="#58cc02" />
+      </div>
     </div>
   );
 }

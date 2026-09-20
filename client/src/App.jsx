@@ -8,6 +8,8 @@ import DashboardView from './components/DashboardView';
 import KamusFloating from './components/KamusFloating';
 import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
+import TeksieMascotCompanion from './components/TeksieMascotCompanion';
+import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 
 export default function App() {
@@ -145,11 +147,12 @@ export default function App() {
           <div className="guest-top-banner-actions">
             <span
               className="guest-top-badge"
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               onClick={() => setActiveTab('account')}
               title="Klik untuk membuka Data Akun & Pelacakan Belajar"
             >
-              📊 {t('guest_badge')}
+              <Analytics2DIcon size={14} color="#ffd700" />
+              <span>{t('guest_badge')}</span>
             </span>
             <button
               className="btn-banner-upgrade"
@@ -252,6 +255,14 @@ export default function App() {
 
       {/* Floating Kamus AI HANYA muncul jika sudah login atau masuk sebagai guest */}
       {user && <KamusFloating t={t} currentLang={currentLang} />}
+
+      {/* Maskot Teman Belajar Interaktif Teksie di Setiap Halaman */}
+      {user && (
+        <TeksieMascotCompanion
+          activeTab={activeTab}
+          currentLang={currentLang}
+        />
+      )}
 
       {/* Modal Autentikasi Pop-up */}
       <AuthModal

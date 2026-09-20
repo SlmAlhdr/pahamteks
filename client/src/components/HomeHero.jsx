@@ -1,4 +1,5 @@
 import React from 'react';
+import { Book2DIcon, Search2DIcon, Analytics2DIcon } from './Art2DIcons';
 
 export default function HomeHero({ onNavigate, t, currentLang }) {
   return (
@@ -11,7 +12,10 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
       <div className="cards-container">
         {/* Card 1: Pembelajaran Bahasa (Bahasa Dunia & Pemrograman) */}
         <div className="feature-card">
-          <h2>📚 {t('nav_learning')}</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Book2DIcon size={24} color="#58cc02" />
+            <span>{t('nav_learning')}</span>
+          </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
             {t('card_2_desc')} {currentLang === 'en' ? 'Sharpen your coding logic and algorithms in one integrated learning module.' : 'Asah juga logika pemrograman algoritma dalam satu modul belajar terintegrasi.'}
           </p>
@@ -26,7 +30,10 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
 
         {/* Card 2: Kamus & Penerjemah AI */}
         <div className="feature-card">
-          <h2>📖 {t('nav_dict_trans')}</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Search2DIcon size={24} color="#38bdf8" />
+            <span>{t('nav_dict_trans')}</span>
+          </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
             {t('card_1_desc')} {currentLang === 'en' ? 'Equipped with a comprehensive A - Z glossary and language insights comparison.' : 'Dilengkapi glosarium kosakata lengkap A - Z dan fitur komparasi wawasan bahasa.'}
           </p>
@@ -41,7 +48,10 @@ export default function HomeHero({ onNavigate, t, currentLang }) {
 
         {/* Card 3: Data Akun & Pelacakan Belajar */}
         <div className="feature-card">
-          <h2>📊 {t('account_title')}</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Analytics2DIcon size={24} color="#ffd700" />
+            <span>{t('account_title')}</span>
+          </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
             {t('account_subtitle')} {currentLang === 'en' ? 'Monitor your learning accuracy rate and complete quiz session history.' : 'Pantau tingkat akurasi dan riwayat pengerjaan kuis Anda.'}
           </p>

@@ -1495,16 +1495,17 @@ textarea {
 .welcome-badge-pill {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(126, 242, 224, 0.15);
-    border: 1px solid var(--btn-cyan);
-    color: var(--btn-cyan);
-    padding: 6px 18px;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    color: #f1f5f9;
+    padding: 7px 18px;
     border-radius: 30px;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 0.88rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 0 20px rgba(126, 242, 224, 0.2);
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
 }
 
 .welcome-hero-title {
@@ -1715,14 +1716,15 @@ textarea {
     transform: translateY(-4px);
 }
 
-.pointing-hand-animated {
-    animation: handPoint 1.2s ease-in-out infinite alternate;
-    transform-origin: 112px 62px;
+.pointing-hand-animated,
+.pointing-hand-down-animated {
+    animation: handPointDown 0.9s ease-in-out infinite alternate;
+    transform-origin: 106px 70px;
 }
 
-@keyframes handPoint {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(4px, 5px); }
+@keyframes handPointDown {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(6px); }
 }
 
 .welcome-card-wrapper {
@@ -2648,6 +2650,186 @@ textarea {
     margin: 0;
     font-size: 0.86rem;
     color: var(--text-muted);
+}
+
+/* ========================================================
+   TEKSIE MASCOT COMPANION & NAVBAR LOGO STYLES
+   ======================================================== */
+.teksie-nav-mascot {
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo:hover .teksie-nav-mascot {
+    transform: rotate(-10deg) scale(1.18);
+}
+
+.teksie-companion-container {
+    position: fixed;
+    bottom: 24px;
+    right: 28px;
+    z-index: 990;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.teksie-speech-bubble {
+    background: #ffffff;
+    color: #0f172a;
+    padding: 10px 16px;
+    border-radius: 18px 18px 4px 18px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.45;
+    max-width: 260px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    position: relative;
+    animation: bubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border: 1.5px solid rgba(88, 204, 2, 0.4);
+}
+
+.teksie-bubble-close {
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+
+.teksie-bubble-close:hover {
+    color: #ef4444;
+}
+
+.teksie-figure-wrapper {
+    position: relative;
+    cursor: pointer;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.45));
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.teksie-figure-wrapper:hover {
+    transform: translateY(-5px) scale(1.06);
+}
+
+.mascot-minimize-btn {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.75rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.teksie-figure-wrapper:hover .mascot-minimize-btn {
+    opacity: 1;
+}
+
+.mascot-companion-minimized {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 990;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    background: rgba(10, 36, 28, 0.9);
+    border: 1.5px solid rgba(88, 204, 2, 0.4);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.mascot-companion-minimized:hover {
+    transform: scale(1.05);
+    border-color: var(--btn-cyan);
+}
+
+/* Animasi ekor mengibas & lari gembira */
+@keyframes tailWag {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(18deg); }
+}
+
+.teksie-tail-anim {
+    animation: tailWag 1s ease-in-out infinite alternate;
+    transform-origin: 35px 98px;
+}
+
+@keyframes pawRun {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.running-active .teksie-paws-anim {
+    animation: pawRun 0.4s ease-in-out infinite alternate;
+}
+
+.running-active .teksie-figure-wrapper {
+    animation: companionHop 0.5s ease-in-out 3;
+}
+
+@keyframes companionHop {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes pawWave {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(25deg); }
+}
+
+.teksie-waving-paw {
+    animation: pawWave 0.8s ease-in-out infinite alternate;
+    transform-origin: 85px 74px;
+}
+
+@keyframes bubblePop {
+    from { opacity: 0; transform: scale(0.85) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .teksie-companion-container {
+        bottom: 80px;
+        right: 16px;
+    }
+    .teksie-speech-bubble {
+        max-width: 200px;
+        font-size: 0.78rem;
+    }
+    .teksie-figure-wrapper svg {
+        width: 65px;
+        height: 65px;
+    }
 }
 
 

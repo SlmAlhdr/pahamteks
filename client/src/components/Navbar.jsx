@@ -1,4 +1,11 @@
 import React from 'react';
+import {
+  TeksieNavMascot,
+  Book2DIcon,
+  Search2DIcon,
+  Globe2DIcon,
+  Analytics2DIcon
+} from './Art2DIcons';
 
 export default function Navbar({
   activeTab,
@@ -12,10 +19,16 @@ export default function Navbar({
 }) {
   return (
     <div className="navbar">
-      {/* Sisi Kiri: Logo PahamTeks di pojok kiri */}
+      {/* Sisi Kiri: Maskot Teksie si Musang Cerdas + Logo PahamTeks */}
       <div className="nav-left">
-        <div className="logo" onClick={() => setActiveTab('home')}>
-          Paham<span style={{ color: 'var(--btn-cyan)' }}>Teks</span>
+        <div
+          className="logo"
+          onClick={() => setActiveTab('home')}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+          title="PahamTeks - Maskot: Teksie si Musang Cerdas"
+        >
+          <TeksieNavMascot size={32} />
+          <span>Paham<span style={{ color: 'var(--btn-cyan)' }}>Teks</span></span>
         </div>
       </div>
 
@@ -32,17 +45,27 @@ export default function Navbar({
             <button
               className={`btn-nav ${activeTab === 'learning' ? 'active' : ''}`}
               onClick={() => setActiveTab('learning')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              📚 {t('nav_learning')}
+              <Book2DIcon size={16} />
+              <span>{t('nav_learning')}</span>
             </button>
             <button
               className={`btn-nav ${activeTab === 'dict_trans' ? 'active' : ''}`}
               onClick={() => setActiveTab('dict_trans')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              📖 {t('nav_dict_trans')}
+              <Search2DIcon size={16} />
+              <span>{t('nav_dict_trans')}</span>
             </button>
-            <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
-              🌐 {currentLang.toUpperCase()}
+            <button
+              className="lang-toggle"
+              onClick={onToggleLang}
+              title="Ubah Bahasa / Switch Language"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Globe2DIcon size={16} />
+              <span>{currentLang.toUpperCase()}</span>
             </button>
           </div>
         </div>
@@ -56,16 +79,24 @@ export default function Navbar({
               className={`user-profile ${activeTab === 'account' ? 'active' : ''}`}
               onClick={() => setActiveTab('account')}
               title="Buka Data Akun & Pelacakan Belajar"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              📊 {user?.username ? `@${user.username}` : user?.name}
+              <Analytics2DIcon size={16} />
+              <span>{user?.username ? `@${user.username}` : user?.name}</span>
             </button>
             <button className="btn-logout" onClick={onLogout}>
               {t('btn_logout')}
             </button>
           </div>
         ) : !user ? (
-          <button className="lang-toggle" onClick={onToggleLang} title="Ubah Bahasa / Switch Language">
-            🌐 {currentLang.toUpperCase()}
+          <button
+            className="lang-toggle"
+            onClick={onToggleLang}
+            title="Ubah Bahasa / Switch Language"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Globe2DIcon size={16} />
+            <span>{currentLang.toUpperCase()}</span>
           </button>
         ) : null}
       </div>

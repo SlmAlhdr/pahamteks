@@ -15,6 +15,21 @@ import {
   TeksieFox,
   LukiCivet
 } from './MiniCharacters';
+import {
+  Book2DIcon,
+  Interactive2DIcon,
+  Lightning2DIcon,
+  Analytics2DIcon,
+  Globe2DIcon,
+  AudioSpeaker2DIcon,
+  Search2DIcon,
+  Lightbulb2DIcon,
+  Sparkle2DIcon,
+  Rocket2DIcon,
+  User2DIcon,
+  Trophy2DIcon,
+  CodeTag2DIcon
+} from './Art2DIcons';
 
 export default function WelcomePortal({
   onAuthSuccess,
@@ -153,7 +168,8 @@ export default function WelcomePortal({
         {/* Kolom Kiri: Visual Karakter Ceria & Tagline Menarik */}
         <div className="welcome-hero-left">
           <div className="welcome-badge-pill">
-            ✨ {t('welcome_badge')}
+            <Book2DIcon size={18} color="#38bdf8" />
+            <span>{t('welcome_badge')}</span>
           </div>
           <h1 className="welcome-hero-title">
             {t('welcome_hero_tag')}
@@ -165,11 +181,20 @@ export default function WelcomePortal({
           {/* Kluster Karakter Mini */}
           <CharacterCluster />
 
-          {/* Highlights Mini Pills */}
+          {/* Highlights Mini Pills (2D Vector Art Icons) */}
           <div className="welcome-perks-pills">
-            <span className="perk-pill">🎮 100% Interaktif</span>
-            <span className="perk-pill">⚡ Kuis Cepat & Adaptif</span>
-            <span className="perk-pill">📈 Pelacakan Akurat</span>
+            <span className="perk-pill">
+              <Interactive2DIcon size={16} />
+              <span>100% Interaktif</span>
+            </span>
+            <span className="perk-pill">
+              <Lightning2DIcon size={16} />
+              <span>Kuis Cepat & Adaptif</span>
+            </span>
+            <span className="perk-pill">
+              <Analytics2DIcon size={16} />
+              <span>Pelacakan Akurat</span>
+            </span>
           </div>
         </div>
 
@@ -534,8 +559,12 @@ export default function WelcomePortal({
         <div className="showcase-visual-col">
           <div className="showcase-card visual-card-flags">
             <div className="visual-card-header">
-              <span className="visual-pill">🌍 Multilingual Cards</span>
-              <span className="visual-badge-audio">🔊 Audio Native</span>
+              <span className="visual-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Globe2DIcon size={15} /> Multilingual Cards
+              </span>
+              <span className="visual-badge-audio" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <AudioSpeaker2DIcon size={15} /> Audio Native
+              </span>
             </div>
             <div className="flashcards-mockup">
               <div className="mock-card card-jp">
@@ -567,11 +596,11 @@ export default function WelcomePortal({
         </div>
       </div>
 
-      {/* GARIS PEMBATAS ANTAR FITUR 1 & 2 */}
+      {/* GARIS PEMBATAS ANTAR FITUR 1 & 2 (2D Vector Art) */}
       <div className="showcase-divider">
         <div className="showcase-divider-line" />
         <div className="showcase-divider-badge">
-          <span className="divider-icon">⚡</span>
+          <CodeTag2DIcon size={16} color="#58cc02" />
           <span>{currentLang === 'en' ? 'Logic & Programming' : 'Logika & Koding'}</span>
         </div>
         <div className="showcase-divider-line" />
@@ -601,7 +630,7 @@ export default function WelcomePortal({
               <span className="code-lang-pill">Python 3</span>
             </div>
             <pre className="code-snippet-box">
-              <code>{`def cek_logika(pemahaman):\n    if pemahaman == "PahamTeks":\n        return "Level Up! 🚀"\n    return "Lanjut Belajar!"\n\n# Output: "Level Up! 🚀"`}</code>
+              <code>{`def cek_logika(pemahaman):\n    if pemahaman == "PahamTeks":\n        return "Level Up! ⚡"\n    return "Lanjut Belajar!"\n\n# Output: "Level Up! ⚡"`}</code>
             </pre>
             <div className="code-test-result">
               <span className="test-check">✓</span> 3/3 Test Cases Passed! (+15 Poin)
@@ -613,11 +642,11 @@ export default function WelcomePortal({
         </div>
       </div>
 
-      {/* GARIS PEMBATAS ANTAR FITUR 2 & 3 */}
+      {/* GARIS PEMBATAS ANTAR FITUR 2 & 3 (2D Vector Art) */}
       <div className="showcase-divider">
         <div className="showcase-divider-line" />
         <div className="showcase-divider-badge">
-          <span className="divider-icon">📖</span>
+          <Book2DIcon size={16} color="#ffd700" />
           <span>{currentLang === 'en' ? 'Smart Dictionary' : 'Kamus Pintar & Glosarium'}</span>
         </div>
         <div className="showcase-divider-line" />
@@ -637,8 +666,8 @@ export default function WelcomePortal({
         </div>
         <div className="showcase-visual-col">
           <div className="showcase-card visual-card-dict">
-            <div className="dict-mock-searchbar">
-              <span>🔍</span>
+            <div className="dict-mock-searchbar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Search2DIcon size={16} color="#38bdf8" />
               <input type="text" readOnly value="Serendipity / Asynchronous" />
               <button type="button">CARI</button>
             </div>
@@ -651,8 +680,12 @@ export default function WelcomePortal({
                 &quot;Menemukan sesuatu yang berharga dan membahagiakan secara tidak sengaja.&quot;
               </p>
               <div className="dict-mock-synonyms">
-                <span>💡 Penjelasan ramah manusia</span>
-                <span>⚡ Contoh kontekstual</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Lightbulb2DIcon size={14} color="#ffd700" /> Penjelasan ramah manusia
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkle2DIcon size={14} color="#38bdf8" /> Contoh kontekstual
+                </span>
               </div>
             </div>
             <div className="showcase-character-corner">
@@ -662,11 +695,11 @@ export default function WelcomePortal({
         </div>
       </div>
 
-      {/* GARIS PEMBATAS ANTAR FITUR 3 & 4 */}
+      {/* GARIS PEMBATAS ANTAR FITUR 3 & 4 (2D Vector Art) */}
       <div className="showcase-divider">
         <div className="showcase-divider-line" />
         <div className="showcase-divider-badge">
-          <span className="divider-icon">🏆</span>
+          <Trophy2DIcon size={16} color="#ffd700" />
           <span>{currentLang === 'en' ? 'Tracking & Podium' : 'Pelacakan & Prestasi'}</span>
         </div>
         <div className="showcase-divider-line" />
@@ -709,17 +742,17 @@ export default function WelcomePortal({
         </div>
       </div>
 
-      {/* GARIS PEMBATAS MENUJU CALL TO ACTION */}
+      {/* GARIS PEMBATAS MENUJU CALL TO ACTION (2D Vector Art) */}
       <div className="showcase-divider">
         <div className="showcase-divider-line" />
         <div className="showcase-divider-badge">
-          <span className="divider-icon">🚀</span>
+          <Rocket2DIcon size={16} color="#58cc02" />
           <span>{currentLang === 'en' ? 'Start Your Journey' : 'Mulai Petualangan Belajarmu'}</span>
         </div>
         <div className="showcase-divider-line" />
       </div>
 
-      {/* FINAL CALL TO ACTION BANNER */}
+      {/* FINAL CALL TO ACTION BANNER (2D Vector Art Buttons) */}
       <div className="welcome-cta-banner">
         <h3>{t('welcome_cta_title')}</h3>
         <p>{t('welcome_cta_desc')}</p>
@@ -727,19 +760,23 @@ export default function WelcomePortal({
           <button
             type="button"
             className="btn-huge btn-green"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             onClick={() => {
               setActiveTab('register');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
-            🚀 {t('welcome_cta_btn')}
+            <Rocket2DIcon size={20} color="#ffffff" />
+            <span>{t('welcome_cta_btn')}</span>
           </button>
           <button
             type="button"
             className="btn-huge btn-cyan"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             onClick={onGuestLogin}
           >
-            👤 {t('welcome_cta_guest')}
+            <User2DIcon size={20} color="#ffffff" />
+            <span>{t('welcome_cta_guest')}</span>
           </button>
         </div>
       </div>
