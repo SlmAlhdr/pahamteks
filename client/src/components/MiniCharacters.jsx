@@ -796,19 +796,19 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('aki')}
         title="Klik untuk sapa Aki si Kucing Penjelajah!"
       >
-        <AkiCat size={105} />
+        <AkiCat size={100} />
         <span className="cluster-hover-badge badge-aki">
           🐱 {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
         </span>
       </div>
 
-      {/* 2. Karakter 2: Teksie Si Musang Cerdas (Tengah Utama) */}
+      {/* 2. Karakter 2: Teksie Si Musang Cerdas (Tengah Utama & Menonjol) */}
       <div
         className={`cluster-interactive-char cluster-char-teksie ${bouncingChar === 'teksie' ? 'is-bouncing' : ''}`}
         onClick={() => handleCharacterClick('teksie')}
         title="Klik untuk sapa Teksie si Musang Cerdas!"
       >
-        <TeksieFox size={135} />
+        <TeksieFox size={155} />
         <span className="cluster-hover-badge badge-teksie">
           🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
         </span>
@@ -820,7 +820,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('luki')}
         title="Klik untuk sapa Luki si Mentor Bijak!"
       >
-        <LukiCivet size={110} />
+        <LukiCivet size={106} />
         <span className="cluster-hover-badge badge-luki">
           🦡 {currentLang === 'en' ? 'Luki Mentor 🏆' : 'Luki Mentor 🏆'}
         </span>
@@ -832,7 +832,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
         onClick={() => handleCharacterClick('bitto')}
         title="Klik untuk sapa Bitto Robot Koding!"
       >
-        <BittoBot size={105} />
+        <BittoBot size={96} />
         <span className="cluster-hover-badge badge-bitto">
           🤖 {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}
         </span>

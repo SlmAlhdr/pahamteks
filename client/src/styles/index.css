@@ -1094,22 +1094,64 @@ textarea {
         font-size: 0.95rem !important;
     }
     .character-cluster-wrapper {
-        max-width: 360px !important;
-        height: 200px !important;
+        max-width: 100% !important;
+        height: 220px !important;
+    }
+    .cluster-char-teksie {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        bottom: 0px !important;
     }
     .cluster-char-teksie svg {
-        width: 105px !important;
-        height: 105px !important;
+        width: 120px !important;
+        height: 120px !important;
+    }
+    .cluster-char-aki {
+        left: 6px !important;
+        bottom: 4px !important;
+    }
+    .cluster-char-luki {
+        right: 74px !important;
+        bottom: 4px !important;
+    }
+    .cluster-char-bitto {
+        right: 6px !important;
+        bottom: 22px !important;
     }
     .cluster-char-aki svg, .cluster-char-bitto svg, .cluster-char-luki svg {
-        width: 78px !important;
-        height: 78px !important;
+        width: 74px !important;
+        height: 74px !important;
     }
-    .cluster-char-aki { left: 0px !important; }
-    .cluster-char-teksie { left: 65px !important; }
-    .cluster-char-luki { right: 65px !important; }
-    .cluster-char-bitto { right: 0px !important; }
-    .bubble-podium { display: none !important; }
+    .bubble-hello {
+        top: 6px !important;
+        left: 4px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
+    .bubble-podium {
+        top: 4px !important;
+        left: 130px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
+    .bubble-code {
+        top: 6px !important;
+        right: 4px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
+    .bubble-bonjour {
+        bottom: 4px !important;
+        left: 4px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
+    .bubble-arabic {
+        bottom: 4px !important;
+        right: 4px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
     .welcome-card-wrapper {
         padding: 22px 16px;
         border-radius: 20px;
@@ -1535,8 +1577,8 @@ textarea {
 .character-cluster-wrapper {
     position: relative;
     width: 100%;
-    max-width: 550px;
-    height: 240px;
+    max-width: 580px;
+    height: 255px;
     margin: 20px 0 15px;
     display: flex;
     justify-content: center;
@@ -1551,52 +1593,59 @@ textarea {
     transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
 }
 
-/* Penempatan 4 Karakter */
+/* Penempatan 4 Karakter: Teksie Menonjol di Tengah */
+.cluster-char-teksie {
+    left: 50%;
+    bottom: 0px;
+    transform: translateX(-50%);
+    z-index: 6;
+    animation: gentleFloatCenter 3.6s ease-in-out infinite alternate;
+}
+
 .cluster-char-aki {
-    left: 6px;
-    bottom: 4px;
+    left: 18px;
+    bottom: 8px;
     z-index: 3;
     animation: gentleFloat 4s ease-in-out 0.4s infinite alternate;
 }
 
-.cluster-char-teksie {
-    left: 125px;
-    bottom: 0px;
-    z-index: 5;
-    animation: gentleFloat 3.6s ease-in-out infinite alternate;
-}
-
 .cluster-char-luki {
-    right: 118px;
-    bottom: 2px;
+    right: 112px;
+    bottom: 6px;
     z-index: 4;
     animation: gentleFloat 3.8s ease-in-out 0.8s infinite alternate;
 }
 
 .cluster-char-bitto {
-    right: 6px;
-    bottom: 12px;
+    right: 12px;
+    bottom: 30px;
     z-index: 3;
     animation: gentleFloat 4.2s ease-in-out 1.2s infinite alternate;
 }
 
 /* Hover Effects untuk Tiap Karakter */
-.cluster-interactive-char:hover {
-    transform: translateY(-12px) scale(1.12);
-    z-index: 15 !important;
+.cluster-char-teksie:hover {
+    transform: translateX(-50%) translateY(-12px) scale(1.08);
+    filter: drop-shadow(0 16px 32px rgba(249, 115, 22, 0.65));
+    z-index: 16 !important;
 }
 
 .cluster-char-aki:hover {
+    transform: translateY(-10px) scale(1.1);
     filter: drop-shadow(0 14px 26px rgba(16, 185, 129, 0.55));
+    z-index: 15 !important;
 }
-.cluster-char-teksie:hover {
-    filter: drop-shadow(0 14px 28px rgba(249, 115, 22, 0.6));
-}
+
 .cluster-char-luki:hover {
+    transform: translateY(-10px) scale(1.1);
     filter: drop-shadow(0 14px 26px rgba(234, 179, 8, 0.55));
+    z-index: 15 !important;
 }
+
 .cluster-char-bitto:hover {
+    transform: translateY(-10px) scale(1.1);
     filter: drop-shadow(0 14px 26px rgba(56, 189, 248, 0.6));
+    z-index: 15 !important;
 }
 
 /* Floating Hover Badge */
@@ -1625,17 +1674,35 @@ textarea {
 }
 
 /* Animasi Lompat Ceria saat Diklik */
-.cluster-interactive-char.is-bouncing {
+.cluster-char-teksie.is-bouncing {
+    animation: clusterTeksieJump 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    z-index: 25 !important;
+}
+
+.cluster-interactive-char:not(.cluster-char-teksie).is-bouncing {
     animation: clusterCharJump 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     z-index: 25 !important;
 }
 
+@keyframes clusterTeksieJump {
+    0% { transform: translateX(-50%) translateY(0) scale(1); }
+    30% { transform: translateX(-50%) translateY(-26px) scale(1.15) rotate(-3deg); }
+    55% { transform: translateX(-50%) translateY(3px) scale(1.1, 0.9) rotate(2deg); }
+    80% { transform: translateX(-50%) translateY(-6px) scale(1.04); }
+    100% { transform: translateX(-50%) translateY(0) scale(1); }
+}
+
 @keyframes clusterCharJump {
     0% { transform: translateY(0) scale(1); }
-    30% { transform: translateY(-26px) scale(1.18) rotate(-4deg); }
+    30% { transform: translateY(-24px) scale(1.18) rotate(-4deg); }
     55% { transform: translateY(3px) scale(1.12, 0.88) rotate(3deg); }
     80% { transform: translateY(-6px) scale(1.04); }
     100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes gentleFloatCenter {
+    0% { transform: translateX(-50%) translateY(0px); }
+    100% { transform: translateX(-50%) translateY(-8px); }
 }
 
 /* Popover Balon Bicara Karakter Aktif */
@@ -1763,10 +1830,10 @@ textarea {
     100% { transform: translateY(-8px); }
 }
 
-/* Floating Greeting Bubbles */
+/* Floating Greeting Bubbles: Tersebar Rapi, Tidak Meniban, Dinamis & Tidak Monoton */
 .floating-bubble {
     position: absolute;
-    background: rgba(10, 35, 28, 0.92);
+    background: rgba(10, 35, 28, 0.94);
     border: 1.5px solid var(--btn-cyan);
     color: #ffffff;
     padding: 6px 14px;
@@ -1779,48 +1846,100 @@ textarea {
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
     z-index: 8;
     white-space: nowrap;
-    animation: bubbleDrift 4s ease-in-out infinite alternate;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
 }
 
-.floating-bubble:hover {
-    transform: scale(1.08) translateY(-3px) !important;
-    box-shadow: 0 12px 26px rgba(0,0,0,0.5);
-}
-
+/* 1. Gelembung Jepang (Kiri Atas) */
 .bubble-hello {
-    top: 5px;
-    left: 15px;
+    top: 14px;
+    left: 12px;
+    transform: rotate(-2.5deg);
+    animation: bubbleFloat1 4.2s ease-in-out infinite alternate;
 }
+.bubble-hello:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
+    box-shadow: 0 12px 28px rgba(56, 189, 248, 0.45);
+}
+
+/* 2. Gelembung Podium Prestasi (Tengah-Kiri Atas, Luas & Bebas Tabrakan) */
+.bubble-podium {
+    top: 8px;
+    left: 175px;
+    transform: rotate(1.8deg);
+    border-color: #ffd700;
+    color: #ffd700;
+    background: rgba(40, 25, 5, 0.94);
+    animation: bubbleFloat2 3.8s ease-in-out 0.6s infinite alternate;
+}
+.bubble-podium:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
+    box-shadow: 0 12px 28px rgba(255, 215, 0, 0.45);
+}
+
+/* 3. Gelembung Logika Koding (Kanan Atas) */
 .bubble-code {
-    top: -8px;
-    right: 25px;
+    top: 10px;
+    right: 14px;
+    transform: rotate(-2deg);
     border-color: var(--btn-green);
     color: var(--btn-green);
     font-family: monospace;
+    animation: bubbleFloat3 4s ease-in-out 1.2s infinite alternate;
 }
-.bubble-bonjour {
-    bottom: -8px;
-    left: 45px;
-    border-color: #ffd700;
-}
-.bubble-arabic {
-    bottom: -8px;
-    right: 45px;
-}
-.bubble-podium {
-    top: -2px;
-    left: 48%;
-    transform: translateX(-50%);
-    border-color: #ffd700;
-    color: #ffd700;
-    background: rgba(40, 25, 5, 0.92);
+.bubble-code:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
+    box-shadow: 0 12px 28px rgba(88, 204, 2, 0.45);
 }
 
-@keyframes bubbleDrift {
-    0% { transform: translateY(0px) scale(1); }
-    100% { transform: translateY(-6px) scale(1.03); }
+/* 4. Gelembung Prancis (Kiri Bawah) */
+.bubble-bonjour {
+    bottom: 8px;
+    left: 8px;
+    transform: rotate(2deg);
+    border-color: #facc15;
+    color: #fef08a;
+    animation: bubbleFloat4 4.5s ease-in-out 0.3s infinite alternate;
+}
+.bubble-bonjour:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
+    box-shadow: 0 12px 28px rgba(250, 204, 21, 0.45);
+}
+
+/* 5. Gelembung Arab (Kanan Bawah) */
+.bubble-arabic {
+    bottom: 8px;
+    right: 18px;
+    transform: rotate(-1.5deg);
+    border-color: #38bdf8;
+    color: #ffffff;
+    animation: bubbleFloat5 3.9s ease-in-out 0.9s infinite alternate;
+}
+.bubble-arabic:hover {
+    transform: rotate(0deg) scale(1.08) translateY(-4px) !important;
+    box-shadow: 0 12px 28px rgba(56, 189, 248, 0.45);
+}
+
+/* Animasi Melayang Alami (Organik & Tidak Kaku) */
+@keyframes bubbleFloat1 {
+    0% { transform: translateY(0px) rotate(-2.5deg); }
+    100% { transform: translateY(-7px) rotate(-1deg); }
+}
+@keyframes bubbleFloat2 {
+    0% { transform: translateY(0px) rotate(1.8deg); }
+    100% { transform: translateY(-8px) rotate(3deg); }
+}
+@keyframes bubbleFloat3 {
+    0% { transform: translateY(0px) rotate(-2deg); }
+    100% { transform: translateY(-7px) rotate(-0.5deg); }
+}
+@keyframes bubbleFloat4 {
+    0% { transform: translateY(0px) rotate(2deg); }
+    100% { transform: translateY(-6px) rotate(0.5deg); }
+}
+@keyframes bubbleFloat5 {
+    0% { transform: translateY(0px) rotate(-1.5deg); }
+    100% { transform: translateY(-6px) rotate(-3deg); }
 }
 
 .gold-coin {
