@@ -1,10 +1,24 @@
 import React from 'react';
 
 /**
- * Maskot Burung Hantu Cerdas "Pami" (Khas PahamTeks)
- * Dengan nuansa hijau segar, kacamata pintar, dan mata bulat ceria
+ * =================================================================
+ * ORIGINAL PAHAMTEKS CHARACTER ROSTER (100% PURE CUSTOM DESIGN)
+ * =================================================================
+ * 1. "Teksie" - Si Rubah Fennec Cerdas (Maskot Utama PahamTeks)
+ *    Ciri: Telinga fennec besar ekspresif, kacamata pintar, bulu emas-oranye
+ * 2. "Bitto" - Si Robot Logika & Koding (The Quantum Logic Bot)
+ *    Ciri: Robot bulat mengambang, wajah layar LED senyum, antena titik-koma (;)
+ * 3. "Aki" - Si Kucing Penjelajah Bahasa Dunia (The Polyglot Explorer Cat)
+ *    Ciri: Kucing petualang memakai baret dan syal penjelajah bendera dunia
+ * 4. "Luki" - Si Luwak Mentor Berprestasi (The Wise Civet Mentor)
+ *    Ciri: Luwak ramah khas Nusantara dengan sweter hangat, piala emas & jempol
+ * =================================================================
  */
-export function PamiOwl({ size = 120, className = '' }) {
+
+/**
+ * Maskot Utama: "Teksie" Si Rubah Fennec Cerdas
+ */
+export function TeksieFox({ size = 120, className = '' }) {
   return (
     <svg
       width={size}
@@ -13,71 +27,99 @@ export function PamiOwl({ size = 120, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.25))' }}
+      style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }}
     >
-      {/* Kaki Owl */}
-      <ellipse cx="62" cy="148" rx="14" ry="7" fill="#f59e0b" />
-      <ellipse cx="98" cy="148" rx="14" ry="7" fill="#f59e0b" />
-
-      {/* Badan & Kepala (Bentuk Telur Gemuk ala Maskot Duolingo) */}
+      {/* Telinga Fennec Kiri Besar Ikonik */}
       <path
-        d="M80 18C44 18 28 46 28 88C28 130 48 146 80 146C112 146 132 130 132 88C132 46 116 18 80 18Z"
+        d="M52 50L18 6C12 28 20 62 44 76L52 50Z"
+        fill="#ff9800"
+      />
+      <path
+        d="M48 48L24 14C20 30 26 56 42 68L48 48Z"
+        fill="#fed7aa"
+      />
+      {/* Aksen Cyber di Telinga Kiri */}
+      <path d="M28 28L36 38" stroke="#1cb0f6" strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* Telinga Fennec Kanan Besar Ikonik */}
+      <path
+        d="M108 50L142 6C148 28 140 62 116 76L108 50Z"
+        fill="#ff9800"
+      />
+      <path
+        d="M112 48L136 14C140 30 134 56 118 68L112 48Z"
+        fill="#fed7aa"
+      />
+      {/* Aksen Cyber di Telinga Kanan */}
+      <path d="M132 28L124 38" stroke="#1cb0f6" strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* Ekor Berbulu Lebat dengan Ujung Berbentuk Titik Koma / Kurung Kurawal */}
+      <path
+        d="M118 110C140 102 152 118 146 136C140 152 116 150 105 138"
+        fill="#ea580c"
+      />
+      <path
+        d="M136 128C146 132 144 142 136 146C128 148 122 142 126 136Z"
+        fill="#ffffff"
+      />
+
+      {/* Badan Rubah Mungil */}
+      <ellipse cx="80" cy="120" rx="34" ry="28" fill="#f97316" />
+
+      {/* Syal / Kerah Cerdas Hijau PahamTeks */}
+      <path
+        d="M52 104C62 114 98 114 108 104C112 112 104 122 80 122C56 122 48 112 52 104Z"
         fill="#58cc02"
       />
 
-      {/* Sayap Kiri & Kanan */}
+      {/* Kepala Bulat Menggemaskan */}
+      <ellipse cx="80" cy="74" rx="42" ry="36" fill="#f97316" />
+
+      {/* Pipi Putih Halus Rubah (Cheek Fur) */}
       <path
-        d="M28 85C20 92 18 106 24 116C30 126 40 124 44 116C40 102 36 92 28 85Z"
-        fill="#46a302"
+        d="M38 78C38 96 56 104 80 104C104 104 122 96 122 78C122 70 114 66 102 70C92 74 86 78 80 78C74 78 68 74 58 70C46 66 38 70 38 78Z"
+        fill="#ffffff"
       />
+
+      {/* Rona Pipi Lucu (Blush) */}
+      <ellipse cx="48" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity="0.6" />
+      <ellipse cx="112" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity="0.6" />
+
+      {/* Hidung Hitam Segitiga Kecil */}
+      <polygon points="76,82 84,82 80,88" fill="#1e293b" />
+
+      {/* Mulut Senyum Kucing/Rubah (^w^) */}
       <path
-        d="M132 85C140 92 142 106 136 116C130 126 120 124 116 116C120 102 124 92 132 85Z"
-        fill="#46a302"
+        d="M74 88C76 91 79 91 80 89C81 91 84 91 86 88"
+        stroke="#1e293b"
+        strokeWidth="2.5"
+        strokeLinecap="round"
       />
 
-      {/* Bulu Dada Lembut */}
-      <ellipse cx="80" cy="112" rx="30" ry="24" fill="#89e219" />
-      <path d="M72 104C74 107 78 107 80 104" stroke="#46a302" strokeWidth="3" strokeLinecap="round" />
-      <path d="M80 104C82 107 86 107 88 104" stroke="#46a302" strokeWidth="3" strokeLinecap="round" />
-      <path d="M76 114C78 117 82 117 84 114" stroke="#46a302" strokeWidth="3" strokeLinecap="round" />
+      {/* Kacamata Cerdas Biru Cyan PahamTeks */}
+      <circle cx="62" cy="68" r="16" stroke="#1cb0f6" strokeWidth="4" fill="rgba(28, 176, 246, 0.12)" />
+      <circle cx="98" cy="68" r="16" stroke="#1cb0f6" strokeWidth="4" fill="rgba(28, 176, 246, 0.12)" />
+      <path d="M78 68H82" stroke="#1cb0f6" strokeWidth="4" strokeLinecap="round" />
 
-      {/* Lingkaran Mata Putih Besar */}
-      <circle cx="58" cy="68" r="22" fill="#ffffff" />
-      <circle cx="102" cy="68" r="22" fill="#ffffff" />
+      {/* Mata Berkilau Cerdas Penuh Semangat */}
+      <circle cx="64" cy="68" r="7.5" fill="#0f172a" />
+      <circle cx="96" cy="68" r="7.5" fill="#0f172a" />
+      <circle cx="62" cy="65" r="3" fill="#ffffff" />
+      <circle cx="94" cy="65" r="3" fill="#ffffff" />
+      <circle cx="66" cy="70" r="1.5" fill="#ffffff" />
+      <circle cx="98" cy="70" r="1.5" fill="#ffffff" />
 
-      {/* Bola Mata Hitam Bersinar */}
-      <circle cx="62" cy="68" r="11" fill="#1b381e" />
-      <circle cx="98" cy="68" r="11" fill="#1b381e" />
-
-      {/* Kilau Mata (Catchlight) */}
-      <circle cx="60" cy="64" r="4.5" fill="#ffffff" />
-      <circle cx="96" cy="64" r="4.5" fill="#ffffff" />
-      <circle cx="65" cy="71" r="2" fill="#ffffff" />
-      <circle cx="101" cy="71" r="2" fill="#ffffff" />
-
-      {/* Kacamata Pintar Biru Cyan */}
-      <circle cx="58" cy="68" r="23" stroke="#1cb0f6" strokeWidth="4.5" fill="none" />
-      <circle cx="102" cy="68" r="23" stroke="#1cb0f6" strokeWidth="4.5" fill="none" />
-      <path d="M81 68H79" stroke="#1cb0f6" strokeWidth="4.5" strokeLinecap="round" />
-
-      {/* Paruh Lucu Berwarna Oranye */}
-      <polygon points="74,80 86,80 80,94" fill="#f59e0b" />
-      <polygon points="76,80 84,80 80,88" fill="#fbbf24" />
-
-      {/* Rona Pipi Merah Muda (Blush) */}
-      <ellipse cx="40" cy="84" rx="7" ry="4" fill="#f472b6" opacity="0.6" />
-      <ellipse cx="120" cy="84" rx="7" ry="4" fill="#f472b6" opacity="0.6" />
-
-      {/* Alis Ekspresif */}
-      <path d="M46 44C52 40 64 42 68 46" stroke="#46a302" strokeWidth="4" strokeLinecap="round" />
-      <path d="M114 44C108 40 96 42 92 46" stroke="#46a302" strokeWidth="4" strokeLinecap="round" />
+      {/* Tangan / Kaki Depan Putih */}
+      <ellipse cx="64" cy="142" rx="10" ry="7" fill="#fed7aa" />
+      <ellipse cx="96" cy="142" rx="10" ry="7" fill="#fed7aa" />
     </svg>
   );
 }
 
 /**
- * Karakter Mini Penunjuk Tombol (PeekingPointer)
- * Karakter menggemaskan yang nongol dari atas kartu dan tangannya beranimasi menunjuk ke tombol pendaftaran akun!
+ * Karakter Penunjuk Tombol Asli PahamTeks (PeekingPointer):
+ * Teksie Si Rubah Fennec mengintip dari atas kartu login
+ * dengan telinga besar khasnya dan cakar berbulu yang menunjuk tombol!
  */
 export function PeekingPointer({
   activeTab,
@@ -89,69 +131,75 @@ export function PeekingPointer({
 
   return (
     <div className="peeking-pointer-container">
-      {/* Balon Kata Interaktif (Speech Bubble) */}
-      <div className="peeking-speech-bubble" onClick={onPointerClick} title="Klik untuk mendaftar">
+      {/* Balon Kata Interaktif */}
+      <div className="peeking-speech-bubble" onClick={onPointerClick} title="Klik untuk beralih">
         <span className="speech-icon">👉</span>
         <span className="speech-text">
           {isRegister
-            ? (currentLang === 'en' ? 'Pick a username & start free! 🎉' : 'Isi username unikmu & buat akun gratis! 🎉')
+            ? (currentLang === 'en' ? 'Choose your username & join free! ✨' : 'Pilih username unik & buat akun gratis! ✨')
             : (currentLang === 'en' ? 'Don’t have an account? Click Register here!' : 'Belum punya akun? Klik Daftar di sini!')}
         </span>
       </div>
 
-      {/* Karakter Mini Nongol dengan Tangan Menunjuk */}
+      {/* Teksie Mengintip dan Menunjuk */}
       <div className="peeking-character-wrapper" onClick={onPointerClick}>
         <svg
-          width="130"
-          height="95"
-          viewBox="0 0 130 95"
+          width="140"
+          height="105"
+          viewBox="0 0 140 105"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="peeking-character-svg"
         >
-          {/* Kepala Maskot Hijau Mengintip dari Bawah */}
-          <path
-            d="M20 95C20 48 38 22 65 22C92 22 110 48 110 95H20Z"
-            fill="#58cc02"
-          />
+          {/* Telinga Fennec Kiri Nongol */}
+          <path d="M42 45L12 8C8 28 18 56 36 68L42 45Z" fill="#ff9800" />
+          <path d="M38 43L18 16C16 30 24 50 36 60L38 43Z" fill="#fed7aa" />
 
-          {/* Rona Wajah */}
-          <ellipse cx="38" cy="72" rx="6" ry="3.5" fill="#f472b6" opacity="0.6" />
-          <ellipse cx="92" cy="72" rx="6" ry="3.5" fill="#f472b6" opacity="0.6" />
+          {/* Telinga Fennec Kanan Nongol */}
+          <path d="M92 45L122 8C126 28 116 56 98 68L92 45Z" fill="#ff9800" />
+          <path d="M96 43L116 16C118 30 110 50 98 60L96 43Z" fill="#fed7aa" />
 
-          {/* Mata Melirik Antusias */}
-          <circle cx="48" cy="56" r="14" fill="#ffffff" />
-          <circle cx="82" cy="56" r="14" fill="#ffffff" />
-          <circle cx="52" cy="56" r="7" fill="#1a381e" />
-          <circle cx="86" cy="56" r="7" fill="#1a381e" />
-          <circle cx="50" cy="53" r="3" fill="#ffffff" />
-          <circle cx="84" cy="53" r="3" fill="#ffffff" />
+          {/* Kepala Rubah Fennec Mengintip */}
+          <path d="M25 105C25 58 44 42 67 42C90 42 109 58 109 105H25Z" fill="#f97316" />
 
-          {/* Paruh Kecil Ceria */}
-          <polygon points="61,64 69,64 65,74" fill="#f59e0b" />
+          {/* Pipi Putih Mengintip */}
+          <path d="M32 90C32 102 46 105 67 105C88 105 102 102 102 90C102 82 92 78 84 80C75 83 72 85 67 85C62 85 59 83 50 80C42 78 32 82 32 90Z" fill="#ffffff" />
 
-          {/* Tangan Kanan Beranimasi Menunjuk ke Bawah/Samping */}
+          {/* Hidung Hitam */}
+          <polygon points="64,90 70,90 67,95" fill="#1e293b" />
+
+          {/* Mata Melirik Antusias ke Arah Tombol */}
+          <circle cx="50" cy="74" r="10" fill="#ffffff" />
+          <circle cx="84" cy="74" r="10" fill="#ffffff" />
+          <circle cx="53" cy="74" r="5.5" fill="#0f172a" />
+          <circle cx="87" cy="74" r="5.5" fill="#0f172a" />
+          <circle cx="51" cy="72" r="2.2" fill="#ffffff" />
+          <circle cx="85" cy="72" r="2.2" fill="#ffffff" />
+
+          {/* Kacamata Pintar Mengintip */}
+          <circle cx="50" cy="74" r="12" stroke="#1cb0f6" strokeWidth="3" fill="none" />
+          <circle cx="84" cy="74" r="12" stroke="#1cb0f6" strokeWidth="3" fill="none" />
+          <path d="M62 74H72" stroke="#1cb0f6" strokeWidth="3" strokeLinecap="round" />
+
+          {/* Cakar Rubah Berbulu yang Bergerak Menunjuk ke Tombol */}
           <g className="pointing-hand-animated">
-            <ellipse cx="112" cy="62" rx="14" ry="12" fill="#58cc02" />
+            <ellipse cx="116" cy="70" rx="13" ry="11" fill="#f97316" />
+            <ellipse cx="116" cy="70" rx="10" ry="8" fill="#fed7aa" />
+            {/* Jari menunjuk ke tombol */}
             <path
-              d="M112 55L128 62L112 69"
-              stroke="#58cc02"
-              strokeWidth="9"
+              d="M116 66L135 73L116 80"
+              stroke="#f97316"
+              strokeWidth="7.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Jari telunjuk mengarah ke tombol */}
             <path
-              d="M114 62H128"
-              stroke="#46a302"
-              strokeWidth="3.5"
+              d="M118 73H134"
+              stroke="#ea580c"
+              strokeWidth="2.8"
               strokeLinecap="round"
             />
           </g>
-
-          {/* Topi Wisuda Mini / Earphone Keren */}
-          <rect x="52" y="10" width="26" height="12" rx="4" fill="#1cb0f6" />
-          <circle cx="65" cy="8" r="4" fill="#ffd700" />
         </svg>
       </div>
     </div>
@@ -159,10 +207,10 @@ export function PeekingPointer({
 }
 
 /**
- * Karakter Penjelajah Bahasa "Niko"
- * Anak kecil menggemaskan dengan ransel dan bendera bahasa
+ * Karakter 2: "Bitto" Si Robot Logika & Koding (The Quantum Logic Bot)
+ * Robot imut mengambang berbentuk kubus halus dengan layar wajah LED senyum
  */
-export function NikoExplorer({ size = 110, className = '' }) {
+export function BittoBot({ size = 110, className = '' }) {
   return (
     <svg
       width={size}
@@ -171,45 +219,43 @@ export function NikoExplorer({ size = 110, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.2))' }}
+      style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' }}
     >
-      {/* Badan & Jaket Oranye Ceria */}
-      <path d="M42 90C42 78 54 70 70 70C86 70 98 78 98 90V130H42V90Z" fill="#ff9600" />
-      <rect x="62" y="80" width="16" height="50" rx="3" fill="#ffffff" />
+      {/* Antena Titik-Koma (;) dengan Lampu Hijau Berkedip */}
+      <line x1="70" y1="28" x2="70" y2="40" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="70" cy="22" r="6" fill="#58cc02" />
+      <circle cx="70" cy="22" r="2.5" fill="#ffffff" />
 
-      {/* Kepala Bulat Ceria */}
-      <circle cx="70" cy="48" r="30" fill="#fcd34d" />
+      {/* Badan / Kepala Robot (Rounded Chassis Warna Slate Gelap) */}
+      <rect x="30" y="40" width="80" height="74" rx="24" fill="#0f172a" stroke="#1cb0f6" strokeWidth="3" />
 
-      {/* Topi Beanie Keren Warna Cyan */}
-      <path d="M40 44C40 24 53 14 70 14C87 14 100 24 100 44H40Z" fill="#1cb0f6" />
-      <circle cx="70" cy="12" r="7" fill="#ffffff" />
+      {/* Layar Kaca Wajah Digital */}
+      <rect x="40" y="52" width="60" height="42" rx="14" fill="#021d17" stroke="#059669" strokeWidth="2" />
 
-      {/* Rambut Cokelat Lucu */}
-      <path d="M43 44C47 50 51 52 56 46" stroke="#78350f" strokeWidth="4" strokeLinecap="round" />
-      <path d="M84 46C89 52 93 50 97 44" stroke="#78350f" strokeWidth="4" strokeLinecap="round" />
+      {/* Mata LED Hijau Senyum (^  ^) */}
+      <path d="M48 72C50 67 56 67 58 72" stroke="#58cc02" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M82 72C84 67 90 67 92 72" stroke="#58cc02" strokeWidth="3.5" strokeLinecap="round" />
 
-      {/* Wajah Senyum Lebar */}
-      <circle cx="58" cy="48" r="5" fill="#1e293b" />
-      <circle cx="82" cy="48" r="5" fill="#1e293b" />
-      <circle cx="57" cy="46" r="1.8" fill="#ffffff" />
-      <circle cx="81" cy="46" r="1.8" fill="#ffffff" />
-      <ellipse cx="50" cy="55" rx="5" ry="3" fill="#f43f5e" opacity="0.4" />
-      <ellipse cx="90" cy="55" rx="5" ry="3" fill="#f43f5e" opacity="0.4" />
-      <path d="M63 56C65 62 75 62 77 56" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
+      {/* Mulut Digital Senyum Lebar */}
+      <path d="M64 80C67 84 73 84 76 80" stroke="#58cc02" strokeWidth="2.5" strokeLinecap="round" />
 
-      {/* Tangan Memegang Tongkat Bendera */}
-      <path d="M96 86L116 70" stroke="#ff9600" strokeWidth="8" strokeLinecap="round" />
-      <line x1="116" y1="40" x2="116" y2="105" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
-      <path d="M116 42L138 52L116 62V42Z" fill="#58cc02" />
+      {/* Telinga / Baut Speaker Kiri & Kanan */}
+      <rect x="22" y="65" width="8" height="18" rx="4" fill="#1cb0f6" />
+      <rect x="110" y="65" width="8" height="18" rx="4" fill="#1cb0f6" />
+
+      {/* Jet Pengapung Cyan di Bawah */}
+      <ellipse cx="70" cy="116" rx="16" ry="6" fill="#0284c7" />
+      <ellipse cx="70" cy="120" rx="9" ry="4" fill="#38bdf8" />
+      <path d="M64 122L70 134L76 122" fill="#7ef2e0" opacity="0.8" />
     </svg>
   );
 }
 
 /**
- * Karakter Programmer Cilik "Tara"
- * Dengan rambut ungu modern dan laptop bercahaya kode
+ * Karakter 3: "Aki" Si Kucing Penjelajah Bahasa (The Polyglot Explorer Cat)
+ * Kucing calico ceria dengan topi baret petualang dan syal bendera
  */
-export function TaraCoder({ size = 110, className = '' }) {
+export function AkiCat({ size = 110, className = '' }) {
   return (
     <svg
       width={size}
@@ -218,46 +264,61 @@ export function TaraCoder({ size = 110, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.2))' }}
+      style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.25))' }}
     >
-      {/* Rambut Ungu Elegan ala Duolingo Lily */}
-      <path d="M35 55C35 24 50 16 70 16C90 16 105 24 105 55C105 85 96 95 96 95L44 95C44 95 35 85 35 55Z" fill="#a855f7" />
+      {/* Telinga Kucing Kiri & Kanan */}
+      <polygon points="40,56 30,28 60,44" fill="#f59e0b" />
+      <polygon points="42,52 35,34 54,45" fill="#fecdd3" />
 
-      {/* Wajah Manis */}
-      <circle cx="70" cy="54" r="26" fill="#fde047" />
+      <polygon points="100,56 110,28 80,44" fill="#334155" />
+      <polygon points="98,52 105,34 86,45" fill="#fecdd3" />
 
-      {/* Poni Rambut */}
-      <path d="M44 40C52 48 64 36 74 44C84 38 92 46 96 42" stroke="#9333ea" strokeWidth="6" strokeLinecap="round" />
+      {/* Topi Baret Petualang Tosca */}
+      <ellipse cx="68" cy="38" rx="28" ry="12" fill="#0d9488" />
+      <circle cx="68" cy="26" r="3.5" fill="#ffd700" />
 
-      {/* Mata Senyum Matahari */}
-      <path d="M56 54C58 51 63 51 65 54" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
-      <path d="M75 54C77 51 82 51 84 54" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
-      <ellipse cx="52" cy="60" rx="4" ry="2.5" fill="#ec4899" opacity="0.5" />
-      <ellipse cx="88" cy="60" rx="4" ry="2.5" fill="#ec4899" opacity="0.5" />
+      {/* Kepala Kucing Bulat */}
+      <ellipse cx="70" cy="68" rx="38" ry="32" fill="#fef3c7" />
 
-      {/* Headphone Musik/Koding */}
-      <path d="M40 50C40 32 52 24 70 24C88 24 100 32 100 50" stroke="#1cb0f6" strokeWidth="5" fill="none" />
-      <rect x="36" y="44" width="8" height="18" rx="4" fill="#0284c7" />
-      <rect x="96" y="44" width="8" height="18" rx="4" fill="#0284c7" />
+      {/* Belang Kucing di Mata Kanan */}
+      <path d="M82 48C94 50 104 60 102 78C94 78 84 72 82 58Z" fill="#f59e0b" opacity="0.8" />
 
-      {/* Baju Hoodie Hitam Koding */}
-      <path d="M45 88C45 80 55 76 70 76C85 76 95 80 95 88V130H45V88Z" fill="#1e293b" />
+      {/* Mata Bulat Ceria Penuh Keingintahuan */}
+      <circle cx="54" cy="66" r="6" fill="#1e293b" />
+      <circle cx="86" cy="66" r="6" fill="#1e293b" />
+      <circle cx="52" cy="64" r="2.2" fill="#ffffff" />
+      <circle cx="84" cy="64" r="2.2" fill="#ffffff" />
 
-      {/* Laptop Bercahaya */}
-      <polygon points="48,110 92,110 84,124 56,124" fill="#64748b" />
-      <rect x="52" y="92" width="36" height="20" rx="3" fill="#1cb0f6" />
-      <text x="56" y="106" fill="#ffffff" fontSize="9" fontWeight="900" fontFamily="monospace">
-        &lt;/&gt;
-      </text>
+      {/* Hidung Merah Muda Kecil */}
+      <polygon points="68,74 72,74 70,77" fill="#f43f5e" />
+      <path d="M66 78C68 81 70 81 70 78C70 81 72 81 74 78" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
+
+      {/* Kumis Kucing Kiri & Kanan */}
+      <line x1="34" y1="74" x2="48" y2="76" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+      <line x1="34" y1="80" x2="48" y2="79" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+      <line x1="106" y1="74" x2="92" y2="76" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+      <line x1="106" y1="80" x2="92" y2="79" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+
+      {/* Syal Merah Petualang */}
+      <path d="M48 94C56 102 84 102 92 94L88 108C78 112 62 112 52 108Z" fill="#ef4444" />
+      <rect x="74" y="100" width="12" height="24" rx="4" fill="#dc2626" />
+
+      {/* Badan Berbaju Jaket Hijau */}
+      <path d="M46 104C46 98 56 94 70 94C84 94 94 98 94 104V135H46V104Z" fill="#047857" />
+
+      {/* Bendera Dunia Kecil yang Dipegang */}
+      <line x1="104" y1="70" x2="104" y2="135" stroke="#64748b" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M104 72L126 82L104 92V72Z" fill="#3b82f6" />
     </svg>
   );
 }
 
 /**
- * Karakter Mentor Ramah Berkumis "Baron" (Inspirasi Foto ke-2 Duolingo)
- * Sosok mentor ramah berkumis rapi dengan kemeja pink dan jempol bangga di samping podium!
+ * Karakter 4: "Luki" Si Luwak Mentor Bijak (The Wise Civet Mentor)
+ * Luwak ceria khas Indonesia dengan tanda garis mata khas,
+ * sweter hangat, jempol bangga, dan memegang piala prestasi!
  */
-export function BaronMentor({ size = 125, className = '' }) {
+export function LukiCivet({ size = 125, className = '' }) {
   return (
     <svg
       width={size}
@@ -266,78 +327,100 @@ export function BaronMentor({ size = 125, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.25))' }}
+      style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }}
     >
-      {/* Celana Hijau Emerald */}
-      <path d="M50 115C50 105 100 105 100 115V145H50V115Z" fill="#059669" />
+      {/* Telinga Luwak Kiri & Kanan */}
+      <ellipse cx="50" cy="38" rx="12" ry="14" fill="#334155" />
+      <ellipse cx="50" cy="38" rx="7" ry="9" fill="#fed7aa" />
+      <ellipse cx="100" cy="38" rx="12" ry="14" fill="#334155" />
+      <ellipse cx="100" cy="38" rx="7" ry="9" fill="#fed7aa" />
 
-      {/* Kemeja Pink Ceria khas Karakter Duolingo */}
-      <path d="M40 76C40 68 54 62 75 62C96 62 110 68 110 76V118H40V76Z" fill="#f472b6" />
+      {/* Badan / Sweter Rajut Hijau Zamrud */}
+      <path d="M45 84C45 74 60 68 75 68C90 68 105 74 105 84V135H45V84Z" fill="#065f46" stroke="#047857" strokeWidth="2" />
+      <rect x="68" y="76" width="14" height="60" fill="#047857" />
 
-      {/* Kepala Bulat Hangat */}
-      <circle cx="75" cy="44" r="25" fill="#f59e0b" opacity="0.85" />
-      {/* Rambut Cokelat Bergaya Klasik */}
-      <path d="M52 40C52 24 62 20 75 20C88 20 98 24 98 40C98 32 90 28 75 28C60 28 52 32 52 40Z" fill="#451a03" />
+      {/* Kepala Bulat Luwak dengan Bulu Abu-abu Hangat */}
+      <ellipse cx="75" cy="54" rx="34" ry="28" fill="#64748b" />
 
-      {/* Mata Hangat Tersenyum */}
-      <circle cx="65" cy="42" r="3.5" fill="#1e293b" />
-      <circle cx="85" cy="42" r="3.5" fill="#1e293b" />
-
-      {/* Kumis Lebat Ikonik Lucu */}
+      {/* Topeng Wajah / Garis Mata Khas Luwak (Black Mask Pattern) */}
       <path
-        d="M60 54C68 50 74 54 75 56C76 54 82 50 90 54C93 56 93 60 88 61C78 63 76 58 75 58C74 58 72 63 62 61C57 60 57 56 60 54Z"
-        fill="#451a03"
+        d="M44 54C48 48 58 48 64 54C68 58 64 64 56 64C48 64 42 60 44 54Z"
+        fill="#1e293b"
+      />
+      <path
+        d="M106 54C102 48 92 48 86 54C82 58 86 64 94 64C102 64 108 60 106 54Z"
+        fill="#1e293b"
       />
 
-      {/* Tangan Kiri Mengacungkan Jempol (Thumbs Up) */}
-      <path d="M40 82L24 72" stroke="#f472b6" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="20" cy="68" r="6" fill="#f59e0b" />
-      <path d="M20 66V60" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+      {/* Garis Putih di Dahi Luwak */}
+      <path d="M72 32C72 44 78 44 78 32Z" fill="#ffffff" />
+      <ellipse cx="75" cy="62" rx="14" ry="10" fill="#f8fafc" />
 
-      {/* Tangan Kanan Menunjuk ke Podium */}
-      <path d="M110 82L132 92" stroke="#f472b6" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="134" cy="94" r="6" fill="#f59e0b" />
+      {/* Mata Hangat Bijaksana */}
+      <circle cx="54" cy="56" r="4.5" fill="#f8fafc" />
+      <circle cx="96" cy="56" r="4.5" fill="#f8fafc" />
+      <circle cx="55" cy="56" r="2.8" fill="#0f172a" />
+      <circle cx="95" cy="56" r="2.8" fill="#0f172a" />
+      <circle cx="54" cy="55" r="1" fill="#ffffff" />
+      <circle cx="94" cy="55" r="1" fill="#ffffff" />
+
+      {/* Hidung Hitam & Senyum Hangat */}
+      <ellipse cx="75" cy="60" rx="3.5" ry="2.5" fill="#0f172a" />
+      <path d="M71 64C73 67 77 67 79 64" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
+
+      {/* Tangan Kiri Mengacungkan Jempol Bangga */}
+      <path d="M45 88L26 80" stroke="#64748b" strokeWidth="9" strokeLinecap="round" />
+      <circle cx="24" cy="76" r="7" fill="#64748b" />
+      <path d="M24 73V66" stroke="#64748b" strokeWidth="5" strokeLinecap="round" />
+
+      {/* Tangan Kanan Memegang Piala Emas Prestasi */}
+      <path d="M105 88L124 96" stroke="#64748b" strokeWidth="9" strokeLinecap="round" />
+      <circle cx="126" cy="98" r="6" fill="#64748b" />
+      <polygon points="120,78 136,78 132,92 124,92" fill="#ffd700" />
+      <rect x="126" y="92" width="4" height="6" fill="#f59e0b" />
+      <rect x="122" y="98" width="12" height="4" rx="2" fill="#b45309" />
+      <circle cx="128" cy="85" r="2" fill="#ffffff" />
     </svg>
   );
 }
 
 /**
- * Kluster Karakter Komposisi Hero (Seperti Foto 1 Duolingo)
- * Gabungan Pami Owl, Niko, dan Tara dengan koin emas & lencana berkilau
+ * Kluster Karakter Komposisi Hero Baru (100% Karakter Asli PahamTeks)
+ * Menyatukan Teksie (Rubah Fennec), Bitto (Robot Koding), dan Aki (Kucing Penjelajah)
  */
 export function CharacterCluster() {
   return (
     <div className="character-cluster-wrapper">
-      {/* Koin & Partikel Mengambang Berkilau */}
+      {/* Gelembung Sapaan Multibahasa Mengambang */}
       <div className="floating-bubble bubble-hello">
         <span className="bubble-flag">🇯🇵</span> Konnichiwa!
       </div>
       <div className="floating-bubble bubble-code">
-        <span className="bubble-flag">🐍</span> print(&quot;Paham!&quot;)
+        <span className="bubble-flag">⚡</span> logic.solve(&quot;Paham!&quot;)
       </div>
       <div className="floating-bubble bubble-bonjour">
         <span className="bubble-flag">🇫🇷</span> Bonjour!
       </div>
       <div className="floating-bubble bubble-arabic">
-        <span className="bubble-flag">🇸🇦</span> Ahlan! (أهلاً)
+        <span className="bubble-flag">🇸🇦</span> Marhaban! (مرحباً)
       </div>
 
-      {/* Karakter Utama Tengah: Pami Owl */}
+      {/* Karakter Tengah Utama: Teksie Si Rubah Fennec Cerdas */}
       <div className="cluster-main-pami">
-        <PamiOwl size={150} />
+        <TeksieFox size={145} />
       </div>
 
-      {/* Karakter Samping Kiri: Niko Explorer */}
+      {/* Karakter Samping Kiri: Aki Kucing Penjelajah Bahasa */}
       <div className="cluster-side-niko">
-        <NikoExplorer size={110} />
+        <AkiCat size={105} />
       </div>
 
-      {/* Karakter Samping Kanan: Tara Coder */}
+      {/* Karakter Samping Kanan: Bitto Robot Logika */}
       <div className="cluster-side-tara">
-        <TaraCoder size={110} />
+        <BittoBot size={105} />
       </div>
 
-      {/* Bintang & Koin Mengambang */}
+      {/* Partikel Berkilau Emas & Cyan */}
       <div className="gold-coin coin-1">⭐</div>
       <div className="gold-coin coin-2">💎</div>
       <div className="gold-coin coin-3">🚀</div>

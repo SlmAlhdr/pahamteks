@@ -10,10 +10,10 @@ import {
 import {
   CharacterCluster,
   PeekingPointer,
-  NikoExplorer,
-  TaraCoder,
-  BaronMentor,
-  PamiOwl
+  AkiCat,
+  BittoBot,
+  TeksieFox,
+  LukiCivet
 } from './MiniCharacters';
 
 export default function WelcomePortal({
@@ -561,10 +561,20 @@ export default function WelcomePortal({
               </div>
             </div>
             <div className="showcase-character-corner">
-              <NikoExplorer size={95} />
+              <AkiCat size={95} />
             </div>
           </div>
         </div>
+      </div>
+
+      {/* GARIS PEMBATAS ANTAR FITUR 1 & 2 */}
+      <div className="showcase-divider">
+        <div className="showcase-divider-line" />
+        <div className="showcase-divider-badge">
+          <span className="divider-icon">⚡</span>
+          <span>{currentLang === 'en' ? 'Logic & Programming' : 'Logika & Koding'}</span>
+        </div>
+        <div className="showcase-divider-line" />
       </div>
 
       {/* SHOWCASE 2: PEMROGRAMAN & LOGIKA (REVERSE / ALTERNATING LAYOUT) */}
@@ -597,10 +607,20 @@ export default function WelcomePortal({
               <span className="test-check">✓</span> 3/3 Test Cases Passed! (+15 Poin)
             </div>
             <div className="showcase-character-corner">
-              <TaraCoder size={95} />
+              <BittoBot size={95} />
             </div>
           </div>
         </div>
+      </div>
+
+      {/* GARIS PEMBATAS ANTAR FITUR 2 & 3 */}
+      <div className="showcase-divider">
+        <div className="showcase-divider-line" />
+        <div className="showcase-divider-badge">
+          <span className="divider-icon">📖</span>
+          <span>{currentLang === 'en' ? 'Smart Dictionary' : 'Kamus Pintar & Glosarium'}</span>
+        </div>
+        <div className="showcase-divider-line" />
       </div>
 
       {/* SHOWCASE 3: KAMUS PINTAR & GLOSARIUM */}
@@ -636,10 +656,20 @@ export default function WelcomePortal({
               </div>
             </div>
             <div className="showcase-character-corner">
-              <PamiOwl size={95} />
+              <TeksieFox size={95} />
             </div>
           </div>
         </div>
+      </div>
+
+      {/* GARIS PEMBATAS ANTAR FITUR 3 & 4 */}
+      <div className="showcase-divider">
+        <div className="showcase-divider-line" />
+        <div className="showcase-divider-badge">
+          <span className="divider-icon">🏆</span>
+          <span>{currentLang === 'en' ? 'Tracking & Podium' : 'Pelacakan & Prestasi'}</span>
+        </div>
+        <div className="showcase-divider-line" />
       </div>
 
       {/* SHOWCASE 4: PELACAKAN & PRESTASI (PODIUM SEPERTI FOTO 2 DUOLINGO) */}
@@ -656,16 +686,16 @@ export default function WelcomePortal({
         </div>
         <div className="showcase-visual-col">
           <div className="showcase-card visual-card-podium">
-            {/* Mockup Card Podium Prestasi persis Foto 2 Duolingo */}
+            {/* Mockup Card Podium Prestasi */}
             <div className="leaderboard-card-mockup">
               <div className="leaderboard-progress-bar">
                 <div className="progress-fill" style={{ width: '85%' }} />
               </div>
               <div className="leaderboard-avatars-grid">
-                <div className="avatar-chip chip-cat">🐱</div>
-                <div className="avatar-chip chip-owl">🦉</div>
-                <div className="avatar-chip chip-girl">👧</div>
-                <div className="avatar-chip chip-man">👨</div>
+                <div className="avatar-chip chip-fox" title="Teksie">🦊</div>
+                <div className="avatar-chip chip-bot" title="Bitto">🤖</div>
+                <div className="avatar-chip chip-cat" title="Aki">🐱</div>
+                <div className="avatar-chip chip-mentor" title="Luki">🦡</div>
               </div>
               <div className="podium-banner-gold">
                 <span className="podium-number">#1</span>
@@ -673,10 +703,20 @@ export default function WelcomePortal({
               </div>
             </div>
             <div className="showcase-character-corner mentor-corner">
-              <BaronMentor size={115} />
+              <LukiCivet size={115} />
             </div>
           </div>
         </div>
+      </div>
+
+      {/* GARIS PEMBATAS MENUJU CALL TO ACTION */}
+      <div className="showcase-divider">
+        <div className="showcase-divider-line" />
+        <div className="showcase-divider-badge">
+          <span className="divider-icon">🚀</span>
+          <span>{currentLang === 'en' ? 'Start Your Journey' : 'Mulai Petualangan Belajarmu'}</span>
+        </div>
+        <div className="showcase-divider-line" />
       </div>
 
       {/* FINAL CALL TO ACTION BANNER */}

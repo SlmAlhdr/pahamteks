@@ -1134,6 +1134,15 @@ textarea {
     .showcase-character-corner {
         opacity: 0.3 !important;
     }
+    .showcase-divider {
+        gap: 10px !important;
+        padding: 6px 0 !important;
+    }
+    .showcase-divider-badge {
+        font-size: 0.72rem !important;
+        padding: 6px 14px !important;
+        letter-spacing: 0.8px !important;
+    }
     .welcome-cta-banner {
         padding: 28px 16px !important;
     }
@@ -1763,16 +1772,61 @@ textarea {
 /* 3. SHOWCASE SECTIONS (DUOLINGO FOTO 2 STYLE) */
 .welcome-showcase-container {
     width: 100%;
-    margin-top: 40px;
+    margin-top: 65px;
+    margin-bottom: 50px;
     display: flex;
     flex-direction: column;
-    gap: 45px;
+    gap: 36px;
+}
+
+/* ELEGANT SHOWCASE DIVIDERS */
+.showcase-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.showcase-divider-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(88, 204, 2, 0.45), rgba(28, 176, 246, 0.45), transparent);
+    border-radius: 2px;
+}
+
+.showcase-divider-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 22px;
+    background: rgba(10, 36, 28, 0.92);
+    border: 1.5px solid rgba(88, 204, 2, 0.4);
+    border-radius: 30px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(88, 204, 2, 0.15);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.showcase-divider-badge:hover {
+    transform: scale(1.03);
+    border-color: rgba(28, 176, 246, 0.6);
+}
+
+.showcase-divider-badge .divider-icon {
+    font-size: 1.05rem;
 }
 
 .showcase-header-center {
     text-align: center;
     max-width: 760px;
-    margin: 0 auto 10px;
+    margin: 0 auto 15px;
 }
 
 .showcase-main-title {
@@ -1792,20 +1846,21 @@ textarea {
 .showcase-row {
     display: grid;
     grid-template-columns: 1.05fr 0.95fr;
-    gap: 40px;
+    gap: 48px;
     align-items: center;
     background: rgba(10, 36, 28, 0.7);
     border: 1.5px solid rgba(255, 255, 255, 0.1);
     border-radius: 28px;
-    padding: 36px 40px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    padding: 44px 44px;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(14px);
-    transition: 0.25s transform, 0.25s border-color;
+    transition: 0.25s transform, 0.25s border-color, 0.25s box-shadow;
 }
 
 .showcase-row:hover {
-    transform: translateY(-3px);
-    border-color: rgba(88, 204, 2, 0.35);
+    transform: translateY(-4px);
+    border-color: rgba(88, 204, 2, 0.45);
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45), 0 0 25px rgba(88, 204, 2, 0.15);
 }
 
 .showcase-reverse {
