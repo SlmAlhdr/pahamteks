@@ -178,8 +178,8 @@ export default function WelcomePortal({
             {t('welcome_hero_sub')}
           </p>
 
-          {/* Kluster Karakter Mini */}
-          <CharacterCluster />
+          {/* Kluster Karakter Mini Lengkap (4 Karakter Interaktif) */}
+          <CharacterCluster currentLang={currentLang} />
 
           {/* Highlights Mini Pills (2D Vector Art Icons) */}
           <div className="welcome-perks-pills">

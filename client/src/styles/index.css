@@ -1094,17 +1094,22 @@ textarea {
         font-size: 0.95rem !important;
     }
     .character-cluster-wrapper {
-        max-width: 320px !important;
-        height: 180px !important;
+        max-width: 360px !important;
+        height: 200px !important;
     }
-    .cluster-main-pami svg {
-        width: 110px !important;
-        height: 110px !important;
+    .cluster-char-teksie svg {
+        width: 105px !important;
+        height: 105px !important;
     }
-    .cluster-side-niko svg, .cluster-side-tara svg {
-        width: 80px !important;
-        height: 80px !important;
+    .cluster-char-aki svg, .cluster-char-bitto svg, .cluster-char-luki svg {
+        width: 78px !important;
+        height: 78px !important;
     }
+    .cluster-char-aki { left: 0px !important; }
+    .cluster-char-teksie { left: 65px !important; }
+    .cluster-char-luki { right: 65px !important; }
+    .cluster-char-bitto { right: 0px !important; }
+    .bubble-podium { display: none !important; }
     .welcome-card-wrapper {
         padding: 22px 16px;
         border-radius: 20px;
@@ -1526,38 +1531,231 @@ textarea {
     max-width: 580px;
 }
 
-/* Character Cluster (Hero Left) */
+/* Character Cluster (Hero Left) - 4 Karakter Asli PahamTeks */
 .character-cluster-wrapper {
     position: relative;
     width: 100%;
-    max-width: 480px;
-    height: 220px;
-    margin: 20px 0 10px;
+    max-width: 550px;
+    height: 240px;
+    margin: 20px 0 15px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
 }
 
-.cluster-main-pami {
-    position: relative;
+.cluster-interactive-char {
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
+}
+
+/* Penempatan 4 Karakter */
+.cluster-char-aki {
+    left: 6px;
+    bottom: 4px;
     z-index: 3;
-    animation: gentleFloat 3.5s ease-in-out infinite alternate;
+    animation: gentleFloat 4s ease-in-out 0.4s infinite alternate;
 }
 
-.cluster-side-niko {
-    position: absolute;
-    left: 10px;
-    bottom: 5px;
-    z-index: 2;
-    animation: gentleFloat 4s ease-in-out 0.5s infinite alternate;
+.cluster-char-teksie {
+    left: 125px;
+    bottom: 0px;
+    z-index: 5;
+    animation: gentleFloat 3.6s ease-in-out infinite alternate;
 }
 
-.cluster-side-tara {
+.cluster-char-luki {
+    right: 118px;
+    bottom: 2px;
+    z-index: 4;
+    animation: gentleFloat 3.8s ease-in-out 0.8s infinite alternate;
+}
+
+.cluster-char-bitto {
+    right: 6px;
+    bottom: 12px;
+    z-index: 3;
+    animation: gentleFloat 4.2s ease-in-out 1.2s infinite alternate;
+}
+
+/* Hover Effects untuk Tiap Karakter */
+.cluster-interactive-char:hover {
+    transform: translateY(-12px) scale(1.12);
+    z-index: 15 !important;
+}
+
+.cluster-char-aki:hover {
+    filter: drop-shadow(0 14px 26px rgba(16, 185, 129, 0.55));
+}
+.cluster-char-teksie:hover {
+    filter: drop-shadow(0 14px 28px rgba(249, 115, 22, 0.6));
+}
+.cluster-char-luki:hover {
+    filter: drop-shadow(0 14px 26px rgba(234, 179, 8, 0.55));
+}
+.cluster-char-bitto:hover {
+    filter: drop-shadow(0 14px 26px rgba(56, 189, 248, 0.6));
+}
+
+/* Floating Hover Badge */
+.cluster-hover-badge {
     position: absolute;
-    right: 10px;
-    bottom: 5px;
-    z-index: 2;
-    animation: gentleFloat 3.8s ease-in-out 1s infinite alternate;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: rgba(15, 23, 42, 0.95);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.cluster-interactive-char:hover .cluster-hover-badge {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Animasi Lompat Ceria saat Diklik */
+.cluster-interactive-char.is-bouncing {
+    animation: clusterCharJump 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    z-index: 25 !important;
+}
+
+@keyframes clusterCharJump {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-26px) scale(1.18) rotate(-4deg); }
+    55% { transform: translateY(3px) scale(1.12, 0.88) rotate(3deg); }
+    80% { transform: translateY(-6px) scale(1.04); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Popover Balon Bicara Karakter Aktif */
+.cluster-speaker-bubble {
+    position: absolute;
+    top: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 450px;
+    background: #0f172a;
+    border: 2px solid var(--btn-cyan);
+    border-radius: 18px;
+    padding: 12px 16px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+    z-index: 30;
+    animation: clusterBubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: #ffffff;
+}
+
+@keyframes clusterBubblePop {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.speaker-bubble-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.speaker-avatar {
+    font-size: 1.3rem;
+}
+.speaker-identity {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.speaker-identity strong {
+    font-size: 0.95rem;
+    font-weight: 900;
+}
+.speaker-identity small {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+.speaker-bubble-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px;
+}
+.speaker-bubble-close:hover {
+    color: #ef4444;
+}
+.speaker-bubble-body {
+    margin: 0 0 8px 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #f8fafc;
+}
+.speaker-bubble-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 6px;
+}
+.speaker-cycle-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.speaker-cycle-btn:hover {
+    background: var(--btn-green);
+    color: #0f172a;
+    border-color: var(--btn-green);
+}
+.speaker-hint {
+    font-size: 0.72rem;
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+/* Bubble Fact Popover */
+.cluster-fact-bubble {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    max-width: 400px;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1.5px solid #ffd700;
+    border-radius: 16px;
+    padding: 10px 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+    z-index: 30;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    animation: clusterBubblePop 0.25s ease-out;
+}
+.cluster-fact-bubble p {
+    margin: 0;
 }
 
 @keyframes gentleFloat {
@@ -1579,30 +1777,45 @@ textarea {
     align-items: center;
     gap: 6px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-    z-index: 4;
+    z-index: 8;
     white-space: nowrap;
     animation: bubbleDrift 4s ease-in-out infinite alternate;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.floating-bubble:hover {
+    transform: scale(1.08) translateY(-3px) !important;
+    box-shadow: 0 12px 26px rgba(0,0,0,0.5);
 }
 
 .bubble-hello {
     top: 5px;
-    left: 20px;
+    left: 15px;
 }
 .bubble-code {
-    top: -5px;
-    right: 35px;
+    top: -8px;
+    right: 25px;
     border-color: var(--btn-green);
     color: var(--btn-green);
     font-family: monospace;
 }
 .bubble-bonjour {
     bottom: -8px;
-    left: 70px;
+    left: 45px;
     border-color: #ffd700;
 }
 .bubble-arabic {
-    bottom: 15px;
-    right: 25px;
+    bottom: -8px;
+    right: 45px;
+}
+.bubble-podium {
+    top: -2px;
+    left: 48%;
+    transform: translateX(-50%);
+    border-color: #ffd700;
+    color: #ffd700;
+    background: rgba(40, 25, 5, 0.92);
 }
 
 @keyframes bubbleDrift {

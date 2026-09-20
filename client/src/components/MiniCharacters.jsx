@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   DownPointer2DIcon,
   CodeTag2DIcon,
   Sparkle2DIcon,
-  Rocket2DIcon
+  Rocket2DIcon,
+  Trophy2DIcon
 } from './Art2DIcons';
 
 /**
@@ -483,39 +484,358 @@ export function LukiCivet({ size = 125, className = '' }) {
 }
 
 /**
- * Kluster Karakter Komposisi Hero Baru (100% Karakter Asli PahamTeks)
- * Menyatukan Teksie (Musang Cerdas), Bitto (Robot Koding), dan Aki (Kucing Penjelajah)
+ * Suara Sintesis Interaktif Menggunakan Web Audio API (Zero Dependency)
  */
-export function CharacterCluster() {
+function playCharacterSound(type) {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'teksie') {
+      // Melodi ceria musang (440Hz -> 880Hz)
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.18);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } else if (type === 'bitto') {
+      // 8-bit retro robot bleep-bloop
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.setValueAtTime(780, now + 0.08);
+      osc.frequency.setValueAtTime(1040, now + 0.16);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    } else if (type === 'aki') {
+      // Kicauan ceria kucing (587Hz -> 987Hz)
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587, now);
+      osc.frequency.exponentialRampToValueAtTime(987, now + 0.2);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } else if (type === 'luki') {
+      // Fanfare piala emas (C5 -> E5 -> G5 -> C6)
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.08);
+      osc.frequency.setValueAtTime(783.99, now + 0.16);
+      osc.frequency.setValueAtTime(1046.50, now + 0.24);
+      gain.gain.setValueAtTime(0.13, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      osc.start(now);
+      osc.stop(now + 0.38);
+    }
+  } catch (e) {
+    // Audio diabaikan jika diblokir browser
+  }
+}
+
+const CHARACTER_INFO = {
+  teksie: {
+    name: 'Teksie',
+    titleId: 'Si Musang Cerdas (Maskot Utama)',
+    titleEn: 'The Smart Civet (Main Mascot)',
+    avatar: '🦊',
+    color: '#ea580c',
+    glowColor: 'rgba(234, 88, 12, 0.45)',
+    quotesId: [
+      'Halo! Aku Teksie si Musang Cerdas! Siap asah otak & belajar bareng hari ini? 🐾',
+      'Di PahamTeks, belajar bahasa dan koding dibuat 100% interaktif & seru! ✨',
+      'Tahu nggak? Kamu bisa tahan klik mouse padaku untuk mengangkat dan memindahkanku ke mana saja! 🚀'
+    ],
+    quotesEn: [
+      'Hi! I’m Teksie the Smart Civet! Ready to boost your brain with me today? 🐾',
+      'At PahamTeks, learning languages and coding is 100% interactive & fun! ✨',
+      'Fun tip: Hold your mouse down on me to pick me up and carry me anywhere! 🚀'
+    ]
+  },
+  aki: {
+    name: 'Aki',
+    titleId: 'Kucing Penjelajah Bahasa',
+    titleEn: 'Polyglot Explorer Cat',
+    avatar: '🐱',
+    color: '#059669',
+    glowColor: 'rgba(5, 150, 105, 0.45)',
+    quotesId: [
+      'Nyaa~ Bonjour! Aku Aki, siap menemanimu menjelajahi 50+ bahasa dunia! 🐱🌍',
+      'Konnichiwa! Kuasai kosakata baru setiap hari dan raih skor akurasi tinggi! 🎌',
+      'Setiap bahasa baru membuka pintu pertemanan baru di seluruh dunia! ✨'
+    ],
+    quotesEn: [
+      'Nyaa~ Bonjour! I’m Aki, ready to explore 50+ world languages with you! 🐱🌍',
+      'Konnichiwa! Master new vocabulary daily and hit top accuracy scores! 🎌',
+      'Every new language opens a brand new door to the world! ✨'
+    ]
+  },
+  luki: {
+    name: 'Luki',
+    titleId: 'Luwak Mentor Berprestasi',
+    titleEn: 'Wise Civet Mentor',
+    avatar: '🦡',
+    color: '#d97706',
+    glowColor: 'rgba(217, 119, 6, 0.45)',
+    quotesId: [
+      'Luar biasa! 🏆 Aku Luki si mentor bijak. Konsisten 5 menit sehari, kamu pasti juara! 👍',
+      'Piala emas ini untukmu! Terus kumpulkan poin dan puncaki podium prestasi! 🌟',
+      'Jangan takut salah saat kuis! Dari koreksi itulah pemahamanmu semakin matang! 🏅'
+    ],
+    quotesEn: [
+      'Awesome! 🏆 I’m Luki the mentor. Practice 5 minutes daily and claim the podium! 👍',
+      'This golden trophy is waiting for you! Keep earning points and reach #1! 🌟',
+      'Never fear mistakes in quizzes! Review the explanations to level up fast! 🏅'
+    ]
+  },
+  bitto: {
+    name: 'Bitto',
+    titleId: 'Robot Logika & Koding',
+    titleEn: 'Quantum Logic Bot',
+    avatar: '🤖',
+    color: '#0284c7',
+    glowColor: 'rgba(2, 132, 199, 0.45)',
+    quotesId: [
+      'BEEP BOOP! 🤖 Aku Bitto! Mari pecahkan logika algoritma koding bersama! 💻⚡',
+      'logic.solve("Kamu Pasti Paham") == True! Koding itu asik dan mudah dipelajari! 🚀',
+      'Sintaks koding adalah bahasa masa depan. Ayo kita tulis kode pertamamu! 💡'
+    ],
+    quotesEn: [
+      'BEEP BOOP! 🤖 I’m Bitto! Let’s solve algorithms and coding logic together! 💻⚡',
+      'logic.solve("You Got This") == True! Coding is fun and easy to master! 🚀',
+      'Code syntax is the language of the future. Let’s build your first script! 💡'
+    ]
+  }
+};
+
+const BUBBLE_FACTS = {
+  jp: {
+    id: '🇯🇵 "Konnichiwa" adalah sapaan ramah dalam bahasa Jepang yang berarti "Halo / Selamat Siang"!',
+    en: '🇯🇵 "Konnichiwa" is a warm Japanese greeting meaning "Hello / Good Day"!'
+  },
+  code: {
+    id: '💻 logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
+    en: '💻 logic.solve("Paham!") is a logic programming call that successfully returns true!'
+  },
+  fr: {
+    id: '🇫🇷 "Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
+    en: '🇫🇷 "Bonjour" is a French greeting meaning "Hello / Good Morning"!'
+  },
+  ar: {
+    id: '🇸🇦 "Marhaban" (مرحباً) adalah sapaan bahasa Arab yang ramah bermakna "Selamat Datang"!',
+    en: '🇸🇦 "Marhaban" (مرحباً) is an Arabic greeting meaning "Welcome"!'
+  },
+  rank: {
+    id: '🏆 Podium Prestasi melacak akurasi kuis dan riwayat belajar harianmu!',
+    en: '🏆 The Podium tracks your quiz accuracy and daily learning streaks!'
+  }
+};
+
+/**
+ * Kluster Karakter Komposisi Hero Lengkap & 100% Interaktif (4 Karakter Asli PahamTeks)
+ * Menyatukan:
+ * 1. Aki (Kucing Penjelajah Bahasa)
+ * 2. Teksie (Musang Cerdas - Maskot Utama)
+ * 3. Luki (Luwak Mentor Prestasi & Piala Emas)
+ * 4. Bitto (Robot Logika & Koding)
+ */
+export function CharacterCluster({ currentLang = 'id' }) {
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [bouncingChar, setBouncingChar] = useState(null);
+  const [bubbleFact, setBubbleFact] = useState(null);
+  const autoCloseTimerRef = useRef(null);
+
+  const handleCharacterClick = (charKey) => {
+    playCharacterSound(charKey);
+    setBouncingChar(charKey);
+    setTimeout(() => setBouncingChar(null), 650);
+
+    if (activeSpeaker === charKey) {
+      setQuoteIndex((prev) => (prev + 1) % 3);
+    } else {
+      setActiveSpeaker(charKey);
+      setQuoteIndex(0);
+    }
+    setBubbleFact(null);
+
+    if (autoCloseTimerRef.current) clearTimeout(autoCloseTimerRef.current);
+    autoCloseTimerRef.current = setTimeout(() => {
+      setActiveSpeaker(null);
+    }, 7000);
+  };
+
+  const handleBubbleClick = (bubbleKey) => {
+    playCharacterSound('teksie');
+    const fact = BUBBLE_FACTS[bubbleKey];
+    if (fact) {
+      setBubbleFact(currentLang === 'en' ? fact.en : fact.id);
+      setActiveSpeaker(null);
+      if (autoCloseTimerRef.current) clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = setTimeout(() => {
+        setBubbleFact(null);
+      }, 5000);
+    }
+  };
+
+  const currentSpeakerData = activeSpeaker ? CHARACTER_INFO[activeSpeaker] : null;
+  const currentQuotes = currentSpeakerData
+    ? (currentLang === 'en' ? currentSpeakerData.quotesEn : currentSpeakerData.quotesId)
+    : [];
+  const currentQuote = currentQuotes[quoteIndex % (currentQuotes.length || 1)];
+
   return (
     <div className="character-cluster-wrapper">
-      {/* Gelembung Sapaan Multibahasa Mengambang */}
-      <div className="floating-bubble bubble-hello">
+      {/* Popover Balon Percakapan Interaktif Karakter yang Sedang Bicara */}
+      {activeSpeaker && currentSpeakerData && (
+        <div
+          className="cluster-speaker-bubble"
+          style={{ borderColor: currentSpeakerData.color }}
+        >
+          <div className="speaker-bubble-header">
+            <span className="speaker-avatar">{currentSpeakerData.avatar}</span>
+            <div className="speaker-identity">
+              <strong style={{ color: currentSpeakerData.color }}>{currentSpeakerData.name}</strong>
+              <small>{currentLang === 'en' ? currentSpeakerData.titleEn : currentSpeakerData.titleId}</small>
+            </div>
+            <button
+              type="button"
+              className="speaker-bubble-close"
+              onClick={() => setActiveSpeaker(null)}
+              title="Tutup Balon"
+            >
+              ×
+            </button>
+          </div>
+          <p className="speaker-bubble-body">&quot;{currentQuote}&quot;</p>
+          <div className="speaker-bubble-footer">
+            <button
+              type="button"
+              className="speaker-cycle-btn"
+              onClick={() => {
+                playCharacterSound(activeSpeaker);
+                setQuoteIndex((prev) => (prev + 1) % currentQuotes.length);
+              }}
+            >
+              💬 {currentLang === 'en' ? 'Next Quote' : 'Kata Lainnya'}
+            </button>
+            <span className="speaker-hint">
+              {currentLang === 'en' ? 'Click character again for reaction!' : 'Klik karakter lagi untuk reaksi! ✨'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Popover Fakta Saat Gelembung Bahasa / Kode Diklik */}
+      {bubbleFact && (
+        <div className="cluster-fact-bubble">
+          <p>{bubbleFact}</p>
+          <button
+            type="button"
+            className="speaker-bubble-close"
+            onClick={() => setBubbleFact(null)}
+            title="Tutup"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Gelembung Sapaan Multibahasa Mengambang (Bisa Diklik!) */}
+      <div
+        className="floating-bubble bubble-hello"
+        onClick={() => handleBubbleClick('jp')}
+        title="Klik untuk info bahasa Jepang!"
+      >
         <span className="bubble-flag">JP</span> Konnichiwa!
       </div>
-      <div className="floating-bubble bubble-code">
+      <div
+        className="floating-bubble bubble-code"
+        onClick={() => handleBubbleClick('code')}
+        title="Klik untuk info logika koding!"
+      >
         <CodeTag2DIcon size={15} color="#58cc02" /> logic.solve(&quot;Paham!&quot;)
       </div>
-      <div className="floating-bubble bubble-bonjour">
+      <div
+        className="floating-bubble bubble-bonjour"
+        onClick={() => handleBubbleClick('fr')}
+        title="Klik untuk info bahasa Prancis!"
+      >
         <span className="bubble-flag">FR</span> Bonjour!
       </div>
-      <div className="floating-bubble bubble-arabic">
+      <div
+        className="floating-bubble bubble-arabic"
+        onClick={() => handleBubbleClick('ar')}
+        title="Klik untuk info bahasa Arab!"
+      >
         <span className="bubble-flag">AR</span> Marhaban! (مرحباً)
       </div>
-
-      {/* Karakter Tengah Utama: Teksie Si Musang Cerdas */}
-      <div className="cluster-main-pami">
-        <TeksieFox size={145} />
+      <div
+        className="floating-bubble bubble-podium"
+        onClick={() => handleBubbleClick('rank')}
+        title="Klik untuk info podium prestasi!"
+      >
+        <Trophy2DIcon size={14} color="#ffd700" /> Rank #1 Podium
       </div>
 
-      {/* Karakter Samping Kiri: Aki Kucing Penjelajah Bahasa */}
-      <div className="cluster-side-niko">
+      {/* 1. Karakter 1: Aki Si Kucing Penjelajah Bahasa (Kiri) */}
+      <div
+        className={`cluster-interactive-char cluster-char-aki ${bouncingChar === 'aki' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('aki')}
+        title="Klik untuk sapa Aki si Kucing Penjelajah!"
+      >
         <AkiCat size={105} />
+        <span className="cluster-hover-badge badge-aki">
+          🐱 {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
+        </span>
       </div>
 
-      {/* Karakter Samping Kanan: Bitto Robot Logika */}
-      <div className="cluster-side-tara">
+      {/* 2. Karakter 2: Teksie Si Musang Cerdas (Tengah Utama) */}
+      <div
+        className={`cluster-interactive-char cluster-char-teksie ${bouncingChar === 'teksie' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('teksie')}
+        title="Klik untuk sapa Teksie si Musang Cerdas!"
+      >
+        <TeksieFox size={135} />
+        <span className="cluster-hover-badge badge-teksie">
+          🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
+        </span>
+      </div>
+
+      {/* 3. Karakter 3: Luki Si Luwak Mentor Berprestasi (Tengah-Kanan) */}
+      <div
+        className={`cluster-interactive-char cluster-char-luki ${bouncingChar === 'luki' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('luki')}
+        title="Klik untuk sapa Luki si Mentor Bijak!"
+      >
+        <LukiCivet size={110} />
+        <span className="cluster-hover-badge badge-luki">
+          🦡 {currentLang === 'en' ? 'Luki Mentor 🏆' : 'Luki Mentor 🏆'}
+        </span>
+      </div>
+
+      {/* 4. Karakter 4: Bitto Si Robot Logika & Koding (Kanan) */}
+      <div
+        className={`cluster-interactive-char cluster-char-bitto ${bouncingChar === 'bitto' ? 'is-bouncing' : ''}`}
+        onClick={() => handleCharacterClick('bitto')}
+        title="Klik untuk sapa Bitto Robot Koding!"
+      >
         <BittoBot size={105} />
+        <span className="cluster-hover-badge badge-bitto">
+          🤖 {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}
+        </span>
       </div>
 
       {/* Partikel Berkilau 2D Art Emas & Cyan */}
