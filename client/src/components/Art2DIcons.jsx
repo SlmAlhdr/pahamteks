@@ -199,3 +199,4 @@ export function TeksieNavMascot({ size = 32, className = '' }) {
     </svg>
   );
 }
+

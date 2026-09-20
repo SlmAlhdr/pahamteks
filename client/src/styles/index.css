@@ -2664,16 +2664,73 @@ textarea {
     transform: rotate(-10deg) scale(1.18);
 }
 
-.teksie-companion-container {
-    position: fixed;
-    bottom: 24px;
-    right: 28px;
-    z-index: 990;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    pointer-events: auto;
+.teksie-interactive-world {
+    z-index: 980;
+    user-select: none;
+}
+
+.teksie-companion-box {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Animasi saat berjalan (walking) */
+@keyframes pawStepFront {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes pawStepBack {
+    0%, 100% { transform: translateY(-6px); }
+    50% { transform: translateY(0); }
+}
+
+@keyframes walkingBob {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}
+
+.is-walking .paw-front {
+    animation: pawStepFront 0.28s ease-in-out infinite alternate;
+}
+
+.is-walking .paw-back {
+    animation: pawStepBack 0.28s ease-in-out infinite alternate;
+}
+
+.is-walking .teksie-animated-svg {
+    animation: walkingBob 0.28s ease-in-out infinite alternate;
+}
+
+/* Animasi saat memainkan kursor (is-playing) */
+@keyframes playBatPaw {
+    0%, 100% { transform: rotate(15deg) translateY(0); }
+    50% { transform: rotate(50deg) translateY(-10px); }
+}
+
+.is-playing .teksie-play-paw {
+    animation: playBatPaw 0.35s ease-in-out infinite alternate;
+    transform-origin: 85px 74px;
+}
+
+@keyframes happyWiggle {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(4deg) scale(1.05); }
+}
+
+.is-playing .teksie-figure-wrapper {
+    animation: happyWiggle 0.6s ease-in-out infinite alternate;
+}
+
+/* Animasi saat mouse diarahkan ke Teksie (HOVER) -> DIA BERHENTI */
+.is-hovered .paw-front,
+.is-hovered .paw-back,
+.is-hovered .teksie-animated-svg {
+    animation-play-state: paused !important;
+}
+
+.is-hovered .teksie-figure-wrapper {
+    transform: translateY(-4px) scale(1.08);
 }
 
 .teksie-speech-bubble {
@@ -2684,15 +2741,15 @@ textarea {
     font-size: 0.86rem;
     font-weight: 700;
     line-height: 1.45;
-    max-width: 260px;
+    max-width: 250px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     cursor: pointer;
-    position: relative;
     animation: bubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     align-items: flex-start;
     gap: 8px;
     border: 1.5px solid rgba(88, 204, 2, 0.4);
+    z-index: 999;
 }
 
 .teksie-bubble-close {
@@ -2716,11 +2773,7 @@ textarea {
     position: relative;
     cursor: pointer;
     filter: drop-shadow(0 8px 20px rgba(0,0,0,0.45));
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.teksie-figure-wrapper:hover {
-    transform: translateY(-5px) scale(1.06);
+    transition: filter 0.2s;
 }
 
 .mascot-minimize-btn {
@@ -2750,7 +2803,7 @@ textarea {
 .mascot-companion-minimized {
     position: fixed;
     bottom: 24px;
-    right: 24px;
+    left: 24px;
     z-index: 990;
     display: flex;
     align-items: center;
@@ -2773,7 +2826,7 @@ textarea {
     border-color: var(--btn-cyan);
 }
 
-/* Animasi ekor mengibas & lari gembira */
+/* Animasi ekor mengibas ceria */
 @keyframes tailWag {
     0%, 100% { transform: rotate(0deg); }
     50% { transform: rotate(18deg); }
@@ -2784,47 +2837,15 @@ textarea {
     transform-origin: 35px 98px;
 }
 
-@keyframes pawRun {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
-.running-active .teksie-paws-anim {
-    animation: pawRun 0.4s ease-in-out infinite alternate;
-}
-
-.running-active .teksie-figure-wrapper {
-    animation: companionHop 0.5s ease-in-out 3;
-}
-
-@keyframes companionHop {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-@keyframes pawWave {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(25deg); }
-}
-
-.teksie-waving-paw {
-    animation: pawWave 0.8s ease-in-out infinite alternate;
-    transform-origin: 85px 74px;
-}
-
 @keyframes bubblePop {
     from { opacity: 0; transform: scale(0.85) translateY(10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @media (max-width: 768px) {
-    .teksie-companion-container {
-        bottom: 80px;
-        right: 16px;
-    }
     .teksie-speech-bubble {
-        max-width: 200px;
-        font-size: 0.78rem;
+        max-width: 190px;
+        font-size: 0.76rem;
     }
     .teksie-figure-wrapper svg {
         width: 65px;
