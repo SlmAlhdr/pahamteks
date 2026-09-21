@@ -1,6 +1,28 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { getDb, isDbConnected } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
+import {
+    checkLoginBruteForce,
+    recordLoginFailure,
+    recordLoginSuccess,
+    checkOtpRateLimit,
+    logSecurityEvent
+} from '../utils/securityLogger.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'pahamteks_jwt_super_secure_key_2026';
+
+function createJwtToken(user) {
+    return jwt.sign(
+        {
+            id: String(user.id),
+            email: user.email,
+            username: user.username
+        },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+}
 
 // Fallback in-memory database jika MySQL belum dikonfigurasi password-nya
 const memUsers = new Map();
@@ -60,11 +82,18 @@ export const authResolvers = {
     },
 
     Mutation: {
-        sendOtp: async (_, { email }) => {
+        sendOtp: async (_, { email }, context) => {
             if (!email || !email.trim()) {
                 return { success: false, message: 'Alamat email wajib diisi!' };
             }
             const cleanEmail = email.trim().toLowerCase();
+            const clientIp = context?.clientIp || 'unknown';
+
+            // 0. Cek pembatasan frekuensi (Rate Limiting) per email/IP
+            const otpCheck = checkOtpRateLimit(cleanEmail, clientIp);
+            if (!otpCheck.allowed) {
+                return { success: false, message: otpCheck.message };
+            }
 
             // 1. Cek apakah email sudah terdaftar
             if (isDbConnected()) {
@@ -110,7 +139,7 @@ export const authResolvers = {
             };
         },
 
-        register: async (_, { email, password, username, fname, lname, otp }) => {
+        register: async (_, { email, password, username, fname, lname, otp }, context) => {
             const finalUsername = (username || fname || '').trim();
 
             if (!email || !password || !finalUsername || !otp) {
@@ -178,14 +207,26 @@ export const authResolvers = {
                     // Hapus OTP setelah berhasil digunakan
                     await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
 
+                    const token = createJwtToken({ id: res.insertId, email: cleanEmail, username: finalUsername });
+                    logSecurityEvent({
+                        eventType: 'USER_REGISTERED',
+                        severity: 'INFO',
+                        identifier: cleanEmail,
+                        ip: context?.clientIp,
+                        details: `Pengguna baru @${finalUsername} berhasil didaftarkan.`,
+                        userId: res.insertId
+                    });
+
                     return {
                         success: true,
                         message: `Pendaftaran akun @${finalUsername} berhasil! Selamat datang di PahamTeks.`,
+                        token,
                         user: {
                             id: String(res.insertId),
                             email: cleanEmail,
                             username: finalUsername,
                             name: finalUsername,
+                            token,
                             createdAt: new Date().toISOString()
                         }
                     };
@@ -234,24 +275,34 @@ export const authResolvers = {
             });
             memOtp.delete(cleanEmail);
 
+            const token = createJwtToken({ id: 'mem-' + cleanEmail, email: cleanEmail, username: finalUsername });
             return {
                 success: true,
                 message: `Pendaftaran akun @${finalUsername} berhasil!`,
+                token,
                 user: {
                     id: 'mem-' + cleanEmail,
                     email: cleanEmail,
                     username: finalUsername,
                     name: finalUsername,
+                    token,
                     createdAt: new Date().toISOString()
                 }
             };
         },
 
-        login: async (_, { email, password }) => {
+        login: async (_, { email, password }, context) => {
             if (!email || !password) {
                 return { success: false, message: 'Email/Username dan kata sandi wajib diisi!' };
             }
             const cleanIdentifier = email.trim();
+            const clientIp = context?.clientIp || 'unknown';
+
+            // 1. Cek proteksi Brute Force (Security Monitoring)
+            const bruteCheck = checkLoginBruteForce(cleanIdentifier, clientIp);
+            if (bruteCheck.isBlocked) {
+                return { success: false, message: bruteCheck.message };
+            }
 
             if (isDbConnected()) {
                 const db = getDb();
@@ -263,6 +314,7 @@ export const authResolvers = {
                     );
 
                     if (rows.length === 0) {
+                        recordLoginFailure(cleanIdentifier, clientIp);
                         return { success: false, message: 'Akun dengan email atau username ini belum terdaftar!' };
                     }
 
@@ -275,19 +327,24 @@ export const authResolvers = {
                     }
 
                     if (!isMatch) {
+                        recordLoginFailure(cleanIdentifier, clientIp);
                         return { success: false, message: 'Kata sandi salah!' };
                     }
 
                     const displayName = user.username || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0];
+                    const token = createJwtToken({ id: user.id, email: user.email, username: user.username });
+                    recordLoginSuccess(cleanIdentifier, clientIp, user.id);
 
                     return {
                         success: true,
                         message: 'Login berhasil!',
+                        token,
                         user: {
                             id: String(user.id),
                             email: user.email,
                             username: user.username || user.email.split('@')[0],
-                            name: displayName
+                            name: displayName,
+                            token
                         }
                     };
                 } catch (err) {
@@ -305,6 +362,7 @@ export const authResolvers = {
             }
 
             if (!foundUser) {
+                recordLoginFailure(cleanIdentifier, clientIp);
                 return { success: false, message: 'Akun tidak ditemukan!' };
             }
 
@@ -316,26 +374,40 @@ export const authResolvers = {
             }
 
             if (!isMatch) {
+                recordLoginFailure(cleanIdentifier, clientIp);
                 return { success: false, message: 'Kata sandi salah!' };
             }
+
+            const token = createJwtToken({ id: 'mem-' + foundUser.email, email: foundUser.email, username: foundUser.username });
+            recordLoginSuccess(cleanIdentifier, clientIp);
 
             return {
                 success: true,
                 message: 'Login berhasil!',
+                token,
                 user: {
                     id: 'mem-' + foundUser.email,
                     email: foundUser.email,
                     username: foundUser.username || foundUser.email.split('@')[0],
-                    name: foundUser.username || foundUser.name
+                    name: foundUser.username || foundUser.name,
+                    token
                 }
             };
         },
 
-        requestPasswordReset: async (_, { email }) => {
+        requestPasswordReset: async (_, { email }, context) => {
             if (!email || !email.trim()) {
                 return { success: false, message: 'Alamat email atau username wajib diisi!' };
             }
             const cleanIdentifier = email.trim();
+            const clientIp = context?.clientIp || 'unknown';
+
+            // Cek pembatasan frekuensi pengiriman OTP reset
+            const rateCheck = checkOtpRateLimit(cleanIdentifier, clientIp);
+            if (!rateCheck.allowed) {
+                return { success: false, message: rateCheck.message };
+            }
+
             let targetEmail = '';
 
             // Cari target user
