@@ -9,6 +9,7 @@ import KamusFloating from './components/KamusFloating';
 import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
 import TeksieMascotCompanion from './components/TeksieMascotCompanion';
+import CenterNotificationModal from './components/CenterNotificationModal';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 
@@ -19,6 +20,7 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [quizHistory, setQuizHistory] = useState([]);
+  const [centerNotice, setCenterNotice] = useState(null);
 
   // Muat status user & riwayat dari localStorage (akun permanen) atau sessionStorage (guest)
   useEffect(() => {
@@ -113,11 +115,17 @@ export default function App() {
     setQuizHistory([]);
     setActiveTab('home');
 
-    alert(
-      wasGuest
+    setCenterNotice({
+      isOpen: true,
+      title: wasGuest
+        ? (currentLang === 'id' ? 'Sesi Tamu Diakhiri' : 'Guest Session Ended')
+        : (currentLang === 'id' ? 'Sampai Jumpa!' : 'See You Soon!'),
+      message: wasGuest
         ? (currentLang === 'id' ? 'Sesi tamu telah diakhiri. Data sementara telah dibersihkan.' : 'Guest session ended. Temporary data cleared.')
-        : (currentLang === 'id' ? 'Anda berhasil keluar.' : 'Successfully logged out.')
-    );
+        : (currentLang === 'id' ? 'Anda berhasil keluar dari akun.' : 'Successfully logged out.'),
+      icon: wasGuest ? '👋' : '✨',
+      buttonText: currentLang === 'id' ? 'OK, Mengerti' : 'OK, Got It'
+    });
   };
 
   const handleFinishQuiz = (newLog) => {
@@ -273,6 +281,18 @@ export default function App() {
         onGuestLogin={handleGuestLogin}
         t={t}
       />
+
+      {/* Modal Notifikasi di Tengah Layar (Pengganti alert pop-up atas) */}
+      {centerNotice?.isOpen && (
+        <CenterNotificationModal
+          isOpen={centerNotice.isOpen}
+          onClose={() => setCenterNotice(null)}
+          title={centerNotice.title}
+          message={centerNotice.message}
+          icon={centerNotice.icon}
+          buttonText={centerNotice.buttonText}
+        />
+      )}
 
       {/* Watermark Footer */}
       <footer className="watermark-footer">
