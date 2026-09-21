@@ -166,3 +166,4 @@ export function getFallbackSqlDb() {
 export function getFallbackDbFilePath() {
     return DB_FILE_PATH;
 }
+
