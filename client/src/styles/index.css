@@ -695,7 +695,7 @@ textarea {
     position: fixed; 
     bottom: 60px; 
     right: 30px; 
-    background: rgba(15, 23, 42, 0.65); 
+    background: rgba(15, 23, 42, 0.7); 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     color: white; 
@@ -707,18 +707,18 @@ textarea {
     padding: 0 25px; 
     gap: 10px; 
     cursor: pointer; 
-    border: 1px solid rgba(56, 189, 248, 0.55); 
+    border: 1px solid rgba(255, 255, 255, 0.14); 
     z-index: 100; 
     transition: all 0.25s ease; 
     font-weight: 800; 
     font-size: 1.1rem; 
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 15px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 .floating-kamus-btn:hover { 
-    background: rgba(15, 23, 42, 0.85); 
-    border-color: var(--btn-cyan);
+    background: rgba(15, 23, 42, 0.9); 
+    border-color: rgba(255, 255, 255, 0.28);
     transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.5), 0 0 25px rgba(56, 189, 248, 0.35);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
 }
 .kamus-text { display: inline; }
 
@@ -729,16 +729,16 @@ textarea {
     width: 360px; 
     max-width: calc(100vw - 40px); 
     max-height: calc(100vh - 160px); 
-    background: rgba(15, 23, 42, 0.9); 
+    background: rgba(15, 23, 42, 0.95); 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 20px; 
-    border: 1px solid rgba(56, 189, 248, 0.5); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
     z-index: 101; 
     display: flex;
     flex-direction: column; 
     overflow: hidden; 
-    box-shadow: 0 10px 35px rgba(0,0,0,0.8), 0 0 25px rgba(56, 189, 248, 0.15); 
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7); 
     animation: slideUp 0.3s ease-out;
 }
 @keyframes slideUp { 
