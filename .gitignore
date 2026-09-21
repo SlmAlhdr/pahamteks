@@ -22,6 +22,12 @@ __pycache__/
 api/__pycache__/
 *.pyc
 
+# Local databases and backups
+server/data/*.sqlite
+server/data/*.sqlite-journal
+server/data/*.db
+server/backups/*.sql
+
 # IDE & OS files
 .DS_Store
 Thumbs.db

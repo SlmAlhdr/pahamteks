@@ -8,7 +8,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs } from './schema/typeDefs.js';
 import { resolvers } from './resolvers/index.js';
 import { getApiKeyPoolStatus } from './config/gemini.js';
-import { isDbConnected } from './config/db.js';
+import { isDbConnected, getDbStatus } from './config/db.js';
 
 dotenv.config();
 
@@ -89,11 +89,18 @@ app.get('/health', (req, res) => {
     const keyStatus = getApiKeyPoolStatus();
     const memory = process.memoryUsage();
     
+    const dbInfo = getDbStatus();
+    
     res.json({
         status: 'OK',
         service: 'PahamTeks GraphQL & Gemini Server',
         uptimeSeconds: Math.floor(process.uptime()),
-        databaseConnected: isDbConnected(),
+        database: {
+            connected: isDbConnected(),
+            primary: dbInfo.primary,
+            backup: dbInfo.backup,
+            activeEngine: dbInfo.activeEngine
+        },
         geminiKeysRegistered: keyStatus.totalKeys,
         security: {
             rateLimiter: 'ACTIVE',
