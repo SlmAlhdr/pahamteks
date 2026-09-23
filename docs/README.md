@@ -16,6 +16,7 @@ Untuk membaca aspek tertentu dari proyek PahamTeks, silakan buka dokumen terkait
 | 📋 [`TODO.md`](./TODO.md) | **Roadmap & Daftar Rencana**: Rincian pencapaian yang sudah selesai, prioritas sprint berikutnya, dan backlog ide tim. | Seluruh Tim (Sprint Planning & Brainstorming) |
 | 🧠 [`SKILL.md`](./SKILL.md) | **Matriks Kemampuan Domain**: Pemetaan materi bahasa pemrograman, linguistik 50+ bahasa dunia, dan standar keamanan sistem. | Content Curator, Educator, Developer |
 | ⚙️ [`WORKFLOW.md`](./WORKFLOW.md) | **Alur Kerja & SOP**: Panduan setup lokal, aturan otomatisasi Git & Vercel, pencadangan database, dan penanganan insiden. | Developer, QA / Tester, DevOps / SRE |
+| 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | **AI Code Quality Gate**: Panduan pencegahan AI slop, konfigurasi gate CI (`scanaislop/aislop`), dan aturan kebersihan kode. | Developer, AI Engineer, Code Reviewer |
 
 ---
 
@@ -76,3 +77,4 @@ npm --prefix client run dev
   ```
 * **Dilarang keras menyertakan berkas `.env` atau database SQLite lokal ke Git**.
 * Gunakan pesan commit yang deskriptif dan jelas.
+

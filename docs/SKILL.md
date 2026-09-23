@@ -53,3 +53,4 @@ Sistem dirancang dengan keahlian rekayasa sistem modern:
   * *Denial of Service (DoS) Prevention*: Pembatasan frekuensi request 200 req / 15 menit.
   * *Email Bombing Protection*: Pembatasan permintaan OTP 3x per 10 menit.
 * **Integrasi Pemantauan (*Uptime & Telemetry*)**: Menyediakan endpoint `/health` terstandarisasi untuk integrasi monitoring pihak ketiga (UptimeRobot/BetterStack).
+

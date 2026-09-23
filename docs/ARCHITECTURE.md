@@ -148,3 +148,4 @@ PahamTeks menerapkan prinsip **Dual-Persistence & Zero-Downtime SQL**:
    * Otomatis mengambil alih query jika MySQL offline, memastikan pengguna tetap dapat login, mendaftar, dan menyimpan progres.
 3. **Pencadangan Snapshot SQL ([`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js))**:
    * Skrip otomatis untuk mengekspor seluruh data aktif ke berkas `.sql` kapan saja via perintah `npm --prefix server run backup-db`.
+

@@ -105,3 +105,4 @@ Berikut poin-poin yang dirancang untuk dibahas bersama tim:
 * [ ] **Toko / Kustomisasi Maskot Teksie**: Pemelajar bisa mengganti kostum atau ekspresi Teksie menggunakan poin belajar.
 * [ ] **Ekstensi Browser (PahamTeks Chrome Extension)**: Sorot kata di halaman web mana saja dan dapatkan terjemahan/penjelasan instan dari PahamTeks.
 * [ ] **Mode PWA (Progressive Web App)**: Pengguna dapat menginstall PahamTeks ke layar utama HP seperti aplikasi native.
+

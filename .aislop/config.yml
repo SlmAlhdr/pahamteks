@@ -1,0 +1,30 @@
+# .aislop/config.yml
+# Konfigurasi AI Code Quality Gate untuk PahamTeks
+# Dokumentasi lengkap: docs/AI_SLOP.md
+
+version: 1
+
+ci:
+  failBelow: 80
+  maxWarnings: 15
+
+exclude:
+  - '**/node_modules/**'
+  - '**/client/dist/**'
+  - '**/client/build/**'
+  - '**/server/data/**'
+  - '**/server/backups/**'
+  - '**/*.min.js'
+  - '**/*.bundle.js'
+  - '**/coverage/**'
+  - '**/.git/**'
+
+rules:
+  swallowed-exceptions: error
+  hallucinated-imports: error
+  hidden-fallbacks: error
+  narrative-comments: warning
+  duplicate-helpers: warning
+  todo-stubs: warning
+  as-any: warning
+  monster-functions: warning

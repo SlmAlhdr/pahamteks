@@ -29,6 +29,7 @@ Seluruh dokumen teknis dan panduan tim telah disusun secara rapi di dalam folder
 * 📋 **[Roadmap & Daftar Rencana (TODO)](./docs/TODO.md)**: Milestone yang sudah selesai, sprint berikutnya, dan backlog ide tim.
 * 🧠 **[Matriks Kemampuan (SKILL)](./docs/SKILL.md)**: Pengetahuan domain bahasa pemrograman, linguistik, dan keamanan.
 * ⚙️ **[Alur Kerja & SOP (WORKFLOW)](./docs/WORKFLOW.md)**: Alur development lokal, CI/CD, backup database, dan penanganan insiden.
+* 🛡️ **[AI Quality Gate (AI_SLOP)](./docs/AI_SLOP.md)**: Konfigurasi pendeteksi AI slop & quality gate CI (`scanaislop/aislop`).
 * 📖 **[Panduan Memulai Tim (docs/README)](./docs/README.md)**: Onboarding komprehensif bagi anggota tim baru.
 
 ---
@@ -57,3 +58,4 @@ npm --prefix client run dev    # Frontend di port 5173
 
 ## 📜 Lisensi
 Dikembangkan dengan penuh dedikasi untuk pemelajar di Indonesia. © 2026 PahamTeks.
+

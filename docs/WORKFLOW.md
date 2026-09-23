@@ -109,3 +109,4 @@ flowchart TD
    * `⚠️ [SECURITY WARN] OTP_RATE_LIMIT_EXCEEDED`: Indikasi ada pihak yang mencoba membombardir pengiriman email OTP.
 3. **Pemulihan MySQL Utama**:
    Setelah server MySQL utama normal kembali, restart server backend. Unified DB Manager akan otomatis mendeteksi koneksi MySQL dan kembali menggunakannya sebagai database primer.
+

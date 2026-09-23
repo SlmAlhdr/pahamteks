@@ -64,3 +64,4 @@ Setiap kali menyelesaikan penambahan fitur, perbaikan bug antarmuka/backend, ata
 * 🛑 **JANGAN PERNAH** menambahkan atau mem-push berkas `.env`, `server/.env`, atau `client/.env.local` ke repositori publik.
 * 🛑 **JANGAN PERNAH** mem-push berkas database lokal binary (`*.sqlite`, `*.db`) atau berkas dump SQL yang berisi data nyata pengguna.
 * ✅ Selalu perbarui berkas template aman [`.env.example`](file:///c:/Salim/Kerjaan/pahamteks/.env.example) jika ada variabel environment baru.
+

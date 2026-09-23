@@ -73,3 +73,4 @@ Ide-ide potensial untuk ekspansi produk:
   * Poin belajar yang dikumpulkan pengguna dapat ditukar untuk mendandani Teksie dengan aksesoris lucu (kacamata koding, topi wisuda, dll).
 - [ ] **Fitur Ekspor Sertifikat Pembelajaran**:
   * Pemelajar yang menyelesaikan seluruh Unit 1–5 pada kategori tertentu dapat mengunduh sertifikat digital kelulusan materi dalam format PDF.
+
