@@ -17,3 +17,4 @@ Welcome to **PahamTeks**. As an AI Coding Assistant working on this codebase, yo
 3. **No Browser Alerts**: Avoid native `alert()`. Use responsive UI status or `CenterNotificationModal`.
 4. **Build Verification**: Always run `npm --prefix client run build` to verify frontend build passes before finishing tasks.
 5. **Zero Leak Policy**: NEVER commit or stage `.env` files or local SQLite databases.
+

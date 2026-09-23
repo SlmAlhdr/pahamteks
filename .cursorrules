@@ -10,3 +10,4 @@ Key guidelines:
 5. Always test build: `npm --prefix client run build`.
 6. Keep `.env` and `server/.env` completely private.
 7. Read `docs/AGENT_ADAPTATION.md` for in-depth architecture details.
+

@@ -15,3 +15,4 @@
   - `client/src/utils/quizUtils.js` for quiz normalization and option validation
 - **Documentation**: Kept locally in `docs/` (refer to `docs/AGENT_ADAPTATION.md`).
 - **Security**: Never expose `.env` credentials or commit local `.sqlite` databases.
+
