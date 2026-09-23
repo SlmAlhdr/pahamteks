@@ -15,3 +15,4 @@ export function speakText(text, lang = 'id') {
     console.warn('[SpeechSynthesis] Failed to play audio:', err.message);
   }
 }
+

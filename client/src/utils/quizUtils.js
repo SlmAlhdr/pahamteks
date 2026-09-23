@@ -32,3 +32,4 @@ export function isOptionCorrect(opt, index, q) {
 
   return false;
 }
+

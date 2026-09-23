@@ -1,14 +1,9 @@
 # Aturan & Standar Otomatisasi Proyek PahamTeks
 
-## Otomatisasi Git Push
-Setiap kali asisten AI menyelesaikan:
-1. Penambahan fitur baru
-2. Perbaikan bug antarmuka / backend
-3. Modifikasi styling atau kode
-
-**WAJIB SECARA OTOMATIS**:
-- Memverifikasi build frontend (`npm --prefix client run build`).
-- Melakukan staging berkas terkait (`git add`).
-- Membuat commit dengan pesan deskriptif bahasa Indonesia atau Inggris yang jelas (`git commit -m "..."`).
-- Langsung melakukan push ke GitHub (`git push origin main`) tanpa perlu menunggu konfirmasi atau instruksi terpisah dari pengguna.
-
+## Pedoman Adaptasi AI Agent
+Asisten AI yang bekerja di repositori PahamTeks wajib mengadopsi standar arsitektur dan kebersihan kode berikut:
+- **Konteks & Arsitektur Lengkap**: Baca [`docs/AGENT_ADAPTATION.md`](./docs/AGENT_ADAPTATION.md) dan [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
+- **Standar Koding Human-Grade**: Dilarang keras membuat catch kosong (*swallowed exceptions*), selalu gunakan utilitas bersama di `client/src/utils/` (`speechUtils.js` dan `quizUtils.js`).
+- **Verifikasi Build**: Setiap selesai mengubah kode, wajib memverifikasi build frontend (`npm --prefix client run build`).
+- **Zero Leak Policy**: Dilarang keras men-stage atau membocorkan berkas `.env`, kredensial, atau database binary lokal (`*.sqlite`).
+- **Penyimpanan Lokal**: Folder `docs/` dan `.aislop/` disimpan secara lokal di mesin pengembang dan tidak dipush ke repositori publik GitHub.
