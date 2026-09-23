@@ -1,112 +1,96 @@
-# Prosedur Operasional & Alur Kerja (WORKFLOW.md)
+# Alur Kerja & SOP Tim (WORKFLOW.md)
 
-Dokumen ini berisi panduan alur kerja (*workflows*) pengembangan, pengujian, pencadangan basis data, integrasi berkelanjutan (*CI/CD*), dan penanganan insiden operasional di **PahamTeks**.
+Dokumen ini adalah panduan kerja harian (*Standard Operating Procedure*) untuk developer dan kontributor di PahamTeks: dari cara setup lokal, aturan main Git, backup database, sampai langkah yang harus diambil kalau ada masalah di server.
 
 ---
 
-## 1. Alur Kerja Pengembangan Lokal (Local Development)
+## 1. Alur Ngoding di Laptop Lokal
 
 ```mermaid
 flowchart LR
-    Setup[Clone & Setup .env] --> Install[npm install di root/client/server]
-    Install --> InitDB[npm --prefix server run init-db]
-    InitDB --> RunDev[Jalankan Dev Server Client & Server]
-    RunDev --> TestLocal[Uji Fitur di localhost]
+    Clone[Clone Repo] --> Env[Salin .env.example]
+    Env --> Install[npm install di server & client]
+    Install --> Run[npm run dev]
+    Run --> Test[Tes di browser & build]
 ```
 
-### Langkah-langkah:
-1. **Pemasangan Dependensi**:
+### Langkah Cepat:
+1. **Pasang Dependencies**:
    ```bash
-   # Pasang dependensi di server dan client
    npm --prefix server install
    npm --prefix client install
    ```
-2. **Konfigurasi Environment**:
-   Salin file template [`.env.example`](file:///c:/Salim/Kerjaan/pahamteks/.env.example) ke `server/.env` dan isi kunci API Gemini serta kredensial MySQL.
-3. **Inisialisasi Database**:
+2. **Setup File Environment**:
+   Salin template [`.env.example`](file:///c:/Salim/Kerjaan/pahamteks/.env.example) ke `server/.env`. Masukkan Gemini API Key kamu.
+3. **Inisialisasi Database (Opsional)**:
    ```bash
    npm --prefix server run init-db
    ```
-   *(Catatan: Jika MySQL lokal belum menyala, sistem akan otomatis beralih menggunakan Database Cadangan SQLite secara transparan).*
-4. **Menjalankan Server Lokal**:
-   * Terminal 1 (Backend): `npm --prefix server run dev` (berjalan di port `4000`)
-   * Terminal 2 (Frontend): `npm --prefix client run dev` (berjalan di port `5173`)
+   *Catatan: Kalau di laptopmu belum ada MySQL, santai saja. Backend otomatis memakai SQLite cadangan tanpa kamu perlu setting apa pun.*
+4. **Jalankan Aplikasi**:
+   * Terminal 1 (Backend): `npm --prefix server run dev` (port 4000)
+   * Terminal 2 (Frontend): `npm --prefix client run dev` (port 5173)
 
 ---
 
-## 2. Alur Otomatisasi Git & Deployment (CI/CD Pipeline)
+## 2. Aturan Wajib Git & Push ke GitHub
 
-Sesuai aturan operasional [`GEMINI.md`](file:///c:/Salim/Kerjaan/pahamteks/GEMINI.md), setiap perubahan kode wajib melalui alur otomatisasi berikut:
+Setiap kali kamu (atau AI asistenmu) selesai membuat fitur baru atau memperbaiki bug, jalankan urutan ini:
 
 ```
-[Modifikasi Kode / Fitur Baru]
-              |
-              v
-[1. Verifikasi Build Frontend]  ---> (npm --prefix client run build)
-              |
-       (Jika Sukses)
-              v
-[2. Staging Berkas Aman]        ---> (git add <file-aman>)
-              |
-              v
-[3. Commit Deskriptif]          ---> (git commit -m "feat/fix: ...")
-              |
-              v
-[4. Push ke GitHub Main]        ---> (git push origin main)
-              |
-              v
-[5. Auto-Deploy Vercel]         ---> (Vercel otomatis build & live)
+1. Verifikasi Build Frontend
+   npm --prefix client run build
+   (Wajib lulus 100%! Jangan pernah push jika build masih merah/gagal)
+               │
+               ▼
+2. Cek Berkas yang Berubah
+   git status
+   (Pastikan TIDAK ADA file .env atau file database yang ikut terbawa)
+               │
+               ▼
+3. Stage & Commit
+   git add <nama-berkas>
+   git commit -m "feat/fix: penjelasan perubahan yang manusiawi"
+               │
+               ▼
+4. Push Langsung
+   git push origin main
+               │
+               ▼
+5. Vercel Otomatis Deploy
+   Periksa https://pahamteks.vercel.app untuk verifikasi hasil live
 ```
 
-### 🛑 Aturan Keamanan Staging (Zero Leak Policy):
-Sebelum menjalankan `git add`, pastikan:
-* File kredensial (`server/.env`, `client/.env.local`, `.env`) **TIDAK PERNAH DI-STAGE**.
-* File database lokal (`server/data/*.sqlite`) dan dump SQL (`server/backups/*.sql`) **TIDAK BOLEH IKUT DI-STAGE**.
-* Selalu verifikasi status dengan:
-  ```bash
-  git status
-  ```
+### 🛑 Pantangan Keras (Zero Leak Policy):
+* **JANGAN PERNAH** menambahkan atau mem-push berkas `.env`, `server/.env`, atau `client/.env.local`.
+* **JANGAN PERNAH** mem-push database lokal (`server/data/*.sqlite`) atau file dump database yang berisi data nyata pengguna.
 
 ---
 
-## 3. Alur Pencadangan Basis Data (Backup & Recovery Workflow)
+## 3. Cara Backup Data Manual
 
-### 3.1 Membuat Snapshot SQL Kapan Saja
-Untuk mencadangkan seluruh data aktif (akun pengguna, OTP, riwayat kuis, kamus, log aktivitas) menjadi berkas SQL snapshot:
+Kapan pun kamu ingin membuat cadangan data utuh (akun, riwayat kuis, kamus, log) ke dalam file SQL:
 ```bash
 npm --prefix server run backup-db
 ```
-* **Hasil Berkas**: Tersimpan di folder [`server/backups/`](file:///c:/Salim/Kerjaan/pahamteks/server/backups/) dengan format nama: `pahamteks_backup_YYYY-MM-DD_HH-mm-ss.sql`.
-* **Karakteristik**: Berkas snapshot ini dapat diimpor kembali ke server MySQL baru kapan saja menggunakan perintah standar:
+* File cadangan akan disimpan di folder [`server/backups/`](file:///c:/Salim/Kerjaan/pahamteks/server/backups/) dengan nama `pahamteks_backup_YYYY-MM-DD_HH-mm-ss.sql`.
+* File SQL ini bisa di-restore ke MySQL server mana pun dengan perintah:
   ```bash
   mysql -u root -p pahamteks_db < server/backups/pahamteks_backup_*.sql
   ```
 
 ---
 
-## 4. Alur Penanganan Insiden (Incident Response Workflow)
+## 4. Langkah Darurat Kalau Terjadi Masalah (Incident Response)
 
-```mermaid
-flowchart TD
-    Incident[Insiden Terdeteksi: Server Lambat / Gagal Login / Down] --> CheckHealth[1. Buka https://domain-backend/health]
-    CheckHealth --> CheckStatus{Status Telemetri?}
-    
-    CheckStatus -->|MySQL Down| AutoFailover[Sistem Otomatis Menggunakan SQLite Cadangan]
-    CheckStatus -->|Rate Limit / Brute Force| CheckSecLog[Periksa Log Security Alert]
-    CheckStatus -->|Memory Tinggi| RestartServer[Restart Server Node.js]
-    
-    AutoFailover --> FixMySQL[Perbaiki Host/Koneksi MySQL Utama]
-    FixMySQL --> Recover[Sistem Otomatis Kembali ke MySQL saat Pulih]
-```
+Jika tiba-tiba web lambat, ada laporan kuis gagal dimuat, atau server down:
 
-### Langkah Pemeriksaan Insiden:
-1. **Cek Kesehatan Sistem Melalui Peramban / Uptime Monitor**:
-   Buka URL `https://<domain-backend>/health`.
-   * Periksa field `"database"`. Jika `"primary": "MYSQL_OFFLINE"` dan `"activeEngine": "SQLite (Cadangan Otomatis)"`, berarti server utama sedang down, namun sistem tetap aman berkat database cadangan SQL.
-2. **Cek Upaya Peretasan di Konsol Server**:
-   Cari baris log bertanda:
-   * `🚨 [SECURITY ALERT] BRUTE_FORCE_TRIGGERED`: Indikasi ada bot yang mencoba menebak kata sandi pengguna secara beruntun.
-   * `⚠️ [SECURITY WARN] OTP_RATE_LIMIT_EXCEEDED`: Indikasi ada pihak yang mencoba membombardir pengiriman email OTP.
-3. **Pemulihan MySQL Utama**:
-   Setelah server MySQL utama normal kembali, restart server backend. Unified DB Manager akan otomatis mendeteksi koneksi MySQL dan kembali menggunakannya sebagai database primer.
-
+1. **Buka Endpoint Kesehatan Server**:
+   Akses `https://<domain-backend>/health` di browser.
+2. **Periksa Status Komponen**:
+   * **Jika status database MySQL `connected: false`**:
+     Tidak perlu panik, cek bagian `activeEngine`. Sistem kita otomatis beralih ke SQLite cadangan sehingga pengguna tetap bisa belajar normal. Kamu tinggal menyalakan kembali service MySQL.
+   * **Jika kuota Gemini limit (429)**:
+     Cek `geminiKeysRegistered`. Tambahkan satu API key gratis cadangan di `server/.env` (`GEMINI_API_KEY_2=...`).
+   * **Jika RAM server melonjak tinggi**:
+     Cek `memoryUsageMB`. Lakukan restart service backend.

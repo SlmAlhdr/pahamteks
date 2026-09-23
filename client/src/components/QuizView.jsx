@@ -3,43 +3,10 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { GENERATE_QUIZ, GENERATE_CHALLENGE } from '../graphql/queries';
 import { EXPLAIN_ANSWER_MUTATION } from '../graphql/mutations';
 import HumanFormattedText from './HumanFormattedText';
+import { LETTERS, cleanOptionText, isOptionCorrect } from '../utils/quizUtils';
+import { speakText } from '../utils/speechUtils';
 
-const LETTERS = ['A', 'B', 'C', 'D', 'E'];
-
-export function cleanOptionText(raw) {
-  if (raw == null) return '';
-  const str = String(raw).trim();
-  // Bersihkan awalan huruf 'A.', 'B.', 'A)', 'A:', '[A]', '1.', dll jika ada
-  return str.replace(/^[A-Ea-e1-5][.)\:\-\s]\s*/, '').trim();
-}
-
-export function isOptionCorrect(opt, index, q) {
-  if (!q || !q.answer) return false;
-  const targetLetter = LETTERS[index] || '';
-  const rawAns = String(q.answer).trim();
-  const cleanAns = rawAns.toUpperCase();
-  const cleanOpt = cleanOptionText(opt).toUpperCase();
-  const rawOpt = String(opt).trim().toUpperCase();
-
-  // 1. Jika kunci jawaban berupa huruf indeks 'A', 'B', 'C', 'D'
-  if (cleanAns === targetLetter) return true;
-
-  // 2. Jika kunci jawaban berawalan 'A.' atau 'A)' atau 'A '
-  if (cleanAns.startsWith(targetLetter + '.') || cleanAns.startsWith(targetLetter + ')') || cleanAns.startsWith(targetLetter + ' ')) {
-    return true;
-  }
-
-  // 3. Jika cocok dengan teks opsi (baik yang sudah dibersihkan maupun teks mentah)
-  if (cleanAns === cleanOpt || cleanAns === rawOpt) return true;
-
-  // 4. Jika cocok setelah tanda kutip dihilangkan ('const' vs const)
-  const stripQuotes = (s) => s.replace(/['"`]/g, '').trim();
-  if (stripQuotes(cleanAns) === stripQuotes(cleanOpt) || stripQuotes(cleanAns) === stripQuotes(rawOpt)) {
-    return true;
-  }
-
-  return false;
-}
+export { LETTERS, cleanOptionText, isOptionCorrect };
 
 export const LANGUAGE_UNITS = [
   {
@@ -167,7 +134,6 @@ const CODING_CATEGORIES_EN = [
   { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
-// Helper penyimpanan progres per topik
 function getSavedProgress(topic) {
   try {
     const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress');
@@ -175,7 +141,9 @@ function getSavedProgress(topic) {
       const parsed = JSON.parse(raw);
       if (parsed[topic]) return parsed[topic];
     }
-  } catch (e) {}
+  } catch (err) {
+    console.warn('[QuizProgress] Failed to read saved progress:', err.message);
+  }
   return { currentUnit: 1, completedUnits: [] };
 }
 
@@ -195,7 +163,9 @@ function saveProgress(topic, unitDone, nextUnit) {
 
     localStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
     sessionStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
-  } catch (e) {}
+  } catch (err) {
+    console.warn('[QuizProgress] Failed to save progress:', err.message);
+  }
 }
 
 export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz }) {
@@ -368,14 +338,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     } finally {
       setExplaining(false);
     }
-  };
-
-  const speakText = (text) => {
-    if (!('speechSynthesis' in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = currentLang === 'id' ? 'id-ID' : 'en-US';
-    window.speechSynthesis.speak(utterance);
   };
 
   const nextUnitObj = unitsList.find(u => u.unit === currentUnit + 1);
@@ -598,7 +560,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
                       <button
                         className="btn-speak"
                         style={{ width: '32px', height: '32px', position: 'static' }}
-                        onClick={() => speakText(explanation)}
+                        onClick={() => speakText(explanation, currentLang)}
                         title={currentLang === 'en' ? 'Listen to Explanation' : 'Dengarkan Penjelasan'}
                       >
                         🔊

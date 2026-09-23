@@ -833,8 +833,8 @@ function playCharacterSound(type) {
       osc.start(now);
       osc.stop(now + 0.3);
     }
-  } catch (e) {
-    // Audio diabaikan jika diblokir browser
+  } catch (err) {
+    console.warn('[MiniCharactersAudio] Audio playback suspended or unsupported:', err.message);
   }
 }
 

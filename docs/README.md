@@ -1,80 +1,75 @@
-# Pusat Dokumentasi & Panduan Tim — PahamTeks
+# Catatan & Dokumentasi Tim PahamTeks
 
-Selamat datang di repositori dokumentasi resmi **PahamTeks**. Dokumen ini disiapkan khusus agar seluruh anggota tim dapat dengan cepat memahami sistem yang sudah berjalan, arsitektur teknisnya, serta roadmap ide-ide yang siap didiskusikan dan dikembangkan bersama.
+Halo tim, ini adalah pusat dokumentasi untuk proyek **PahamTeks**. Dokumen-dokumen di sini saya siapkan agar teman-teman di tim bisa langsung paham apa yang sudah kita bangun, bagaimana sistemnya bekerja di balik layar, dan apa saja ide-ide yang ingin kita diskusikan bareng di sprint berikutnya.
+
+Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 
 ---
 
-## 🧭 Peta & Indeks Berkas Dokumentasi
+## 🧭 Panduan Membaca Dokumen
 
-Untuk membaca aspek tertentu dari proyek PahamTeks, silakan buka dokumen terkait di dalam folder `docs/`:
-
-| Nama Berkas | Fokus Utama Dokumen | Cocok Dibaca Oleh |
+| Berkas | Isinya Tentang Apa? | Kapan Harus Dibaca? |
 | :--- | :--- | :--- |
-| 📄 [`PRD.md`](./PRD.md) | **Product Requirement Document**: Visi produk, profil pengguna, rincian fitur utama, dan rencana diskusi masa depan. | Product Manager, UI/UX Designer, Stakeholder |
-| 🏗️ [`ARCHITECTURE.md`](./ARCHITECTURE.md) | **Arsitektur Sistem**: Diagram aliran data, lapisan React, Apollo GraphQL, integrasi Gemini AI, dan sistem failover database ganda. | Software Architect, Backend & Frontend Dev |
-| 🤖 [`AGENT.md`](./AGENT.md) | **Pedoman AI Agent**: Persona maskot Teksie, aturan prompt AI mentor, serta aturan operasional otomatisasi git bagi AI dev assistant. | AI Engineer, Prompt Designer, Dev Assistant |
-| 📋 [`TODO.md`](./TODO.md) | **Roadmap & Daftar Rencana**: Rincian pencapaian yang sudah selesai, prioritas sprint berikutnya, dan backlog ide tim. | Seluruh Tim (Sprint Planning & Brainstorming) |
-| 🧠 [`SKILL.md`](./SKILL.md) | **Matriks Kemampuan Domain**: Pemetaan materi bahasa pemrograman, linguistik 50+ bahasa dunia, dan standar keamanan sistem. | Content Curator, Educator, Developer |
-| ⚙️ [`WORKFLOW.md`](./WORKFLOW.md) | **Alur Kerja & SOP**: Panduan setup lokal, aturan otomatisasi Git & Vercel, pencadangan database, dan penanganan insiden. | Developer, QA / Tester, DevOps / SRE |
-| 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | **AI Code Quality Gate**: Panduan pencegahan AI slop, konfigurasi gate CI (`scanaislop/aislop`), dan aturan kebersihan kode. | Developer, AI Engineer, Code Reviewer |
+| 📄 [`PRD.md`](./PRD.md) | Visi produk, kenapa kita buat fitur kuis/kamus begini, profil pemelajar, dan ide yang masih perlu kita obrolkan. | Saat butuh gambaran arah produk atau sebelum mulai bikin fitur baru. |
+| 🏗️ [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Blueprint teknis: alur data React, GraphQL Apollo, integrasi Gemini, dan kenapa kita pakai dua database (MySQL & SQLite). | Saat modifikasi backend, nambah skema GraphQL, atau utak-atik database. |
+| 🤖 [`AGENT.md`](./AGENT.md) | Persona karakter maskot Teksie, cara prompt AI merespon pemelajar, dan aturan otomatisasi development. | Saat ngurus AI prompt, copy percakapan, atau nambah respon maskot. |
+| 📋 [`TODO.md`](./TODO.md) | Catatan pekerjaan: yang udah selesai, prioritas sprint minggu ini, dan tumpukan ide liar tim. | Saat meeting sprint planning, evaluasi progress, atau cari tugas berikutnya. |
+| 🧠 [`SKILL.md`](./SKILL.md) | Pemetaan materi yang diajarkan (bahasa pemrograman & bahasa asing) plus standar keamanan yang kita terapkan. | Saat kurasi materi kuis, kamus, atau validasi standar security sistem. |
+| ⚙️ [`WORKFLOW.md`](./WORKFLOW.md) | Alur kerja harian: setup lokal, aturan branching Git, backup data, dan langkah darurat saat server error. | Wajib dibaca pas onboarding pertama kali dan sebelum push ke repo. |
+| 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | Standar kebersihan kode agar tidak ada kode sampah AI, cara cek lokal, dan aturan CI GitHub Actions. | Wajib dicek saat nulis kode pakai AI assistant (Cursor, Antigravity, dll). |
 
 ---
 
-## 🚀 Panduan Memulai Cepat (Quick Start for Developers)
+## 💻 Panduan Menjalankan di Laptop Developer
 
-### 1. Prasyarat Sistem
-* Node.js v18.0.0 atau lebih baru (Disarankan Node.js v20 / v24).
-* Git terpasang di komputer.
-* (Opsional) Server MySQL lokal seperti XAMPP / MariaDB / Docker. Jika tidak ada MySQL, sistem otomatis menggunakan SQLite cadangan tanpa konfigurasi tambahan!
+### 1. Kebutuhan Dasar
+* Node.js v18 atau yang lebih baru (disarankan v20 LTS).
+* Git.
+* (Opsional) MySQL lokal seperti XAMPP / MariaDB. Kalau malas install MySQL, tenang saja: backend kita otomatis pakai SQLite cadangan tanpa setup apa pun!
 
-### 2. Pemasangan & Menjalankan Proyek
+### 2. Langkah Setup Cepat
 ```bash
-# 1. Clone repositori
+# 1. Clone repo
 git clone https://github.com/slmalhadar-lab/pahamteks.git
 cd pahamteks
 
-# 2. Salin berkas konfigurasi environment
+# 2. Salin env example
 cp .env.example server/.env
 
-# 3. Buka server/.env lalu masukkan Gemini API Key Anda:
+# 3. Masukkan Gemini API Key kamu di server/.env:
 # GEMINI_API_KEY=AIzaSy...
 
-# 4. Pasang seluruh pustaka dependensi
+# 4. Install semua dependencies
 npm --prefix server install
 npm --prefix client install
 
-# 5. Jalankan server backend (Terminal 1)
+# 5. Jalankan backend (Terminal 1)
 npm --prefix server run dev
-# Server aktif di http://localhost:4000/graphql dan http://localhost:4000/health
+# Aktif di: http://localhost:4000/graphql dan http://localhost:4000/health
 
-# 6. Jalankan client frontend (Terminal 2)
+# 6. Jalankan frontend (Terminal 2)
 npm --prefix client run dev
-# Frontend aktif di http://localhost:5173
+# Aktif di: http://localhost:5173
 ```
 
 ---
 
-## 💡 Status Saat Ini vs Ide yang Akan Didiskusikan
+## 💡 Ringkasan: Yang Sudah Jadi vs Ide Diskusi
 
-### Yang Sudah Aktif di Produksi:
-* **Frontend**: Antarmuka React 18 responsif, navigasi terpusat, teks latar belakang dinamis, tombol Kamus Pintar mengambang semi-transparan, modal notifikasi tengah layar, dan maskot interaktif Teksie.
-* **Backend & AI**: Apollo Server GraphQL, rotasi multi-kunci Gemini API (*Round-Robin*), kuis adaptif anti-repetisi Unit 1–5, kamus instan, dan transkripsi suara.
-* **Keamanan & Ketahanan**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, token sesi JWT, serta **Dual Database Failover** (MySQL otomatis beralih ke SQLite jika down).
+### Sudah Siap & Aktif di Produksi:
+* **Frontend**: Antarmuka React 18 responsif, navigasi tab terpusat, balon Kamus Pintar mengambang, modal notifikasi tengah layar, dan maskot interaktif Teksie yang reaktif (tidur saat idle, respon saat disentuh).
+* **Backend & AI**: Apollo Server GraphQL, rotasi multi-kunci Gemini API (*Round-Robin*) agar kuota tidak jebol, kuis adaptif Unit 1–5, kamus instan, dan transkripsi audio.
+* **Keamanan & Kehandalan**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, dan failover ganda otomatis (MySQL ke SQLite).
 
-### Ide Menarik yang Siap Dibahas Bersama Tim (Lihat [`TODO.md`](./TODO.md)):
-1. **Audio Pelafalan (Text-to-Speech)** untuk kamus dan kuis bahasa asing.
-2. **Gamifikasi Daily Streak** dan lencana pencapaian belajar.
-3. **Ekstensi Browser Chrome** PahamTeks untuk terjemahan instan di web apa saja.
-4. **Mode PWA** agar web bisa diinstall di home screen smartphone pengguna.
-5. **Duel Kuis Antar-Pemelajar** secara realtime (*multiplayer battle*).
+### Ide Diskusi Lanjutan (Cek detailnya di [`TODO.md`](./TODO.md)):
+1. **Audio Pengucapan Asli** untuk kosakata bahasa asing dan penjelasan kuis.
+2. **Gamifikasi Streak Belajar & EXP**: Menjaga motivasi belajar setiap hari.
+3. **PWA (Progressive Web App)**: Supaya PahamTeks bisa di-install langsung di layar HP pengguna tanpa repot masuk app store.
+4. **Ekstensi Browser Chrome**: Memungkinkan pemelajar klik kanan teks di situs mana pun untuk dijelaskan maknanya oleh PahamTeks.
 
 ---
 
-## 🤝 Aturan Kontribusi Tim
-* Selalu pastikan build frontend berhasil sebelum melakukan commit:
-  ```bash
-  npm --prefix client run build
-  ```
-* **Dilarang keras menyertakan berkas `.env` atau database SQLite lokal ke Git**.
-* Gunakan pesan commit yang deskriptif dan jelas.
-
+## 🤝 Aturan Sederhana Sebelum Push
+1. **Tes build frontend dulu**: `npm --prefix client run build`. Jangan push kalau build masih error.
+2. **Zero Leak**: Jangan pernah push file `.env` atau kredensial apa pun.
+3. **Commit jelas**: Tulis pesan commit yang menjelaskan apa yang kamu ubah dalam bahasa Indonesia atau Inggris yang wajar.

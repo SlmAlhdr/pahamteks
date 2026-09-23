@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { GET_DICTIONARY } from '../graphql/queries';
 import HumanFormattedText from './HumanFormattedText';
+import { speakText } from '../utils/speechUtils';
 
 const RANDOM_WORDS = [
   'Algorithm', 'Asynchronous', 'Polymorphism', 'Encapsulation', 'Database',
@@ -35,14 +36,6 @@ export default function KamusFloating({ t, currentLang }) {
     const randomWord = RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
     setKeyword(randomWord);
     handleSearch(randomWord);
-  };
-
-  const speakText = (text) => {
-    if (!('speechSynthesis' in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = currentLang === 'id' ? 'id-ID' : 'en-US';
-    window.speechSynthesis.speak(utterance);
   };
 
   return (
@@ -128,7 +121,7 @@ export default function KamusFloating({ t, currentLang }) {
                     fontSize: '0.95rem',
                     zIndex: 2
                   }}
-                  onClick={() => speakText(result)}
+                  onClick={() => speakText(result, currentLang)}
                   title={currentLang === 'en' ? 'Listen to definition' : 'Baca Hasil'}
                 >
                   🔊

@@ -1,151 +1,126 @@
-# Arsitektur Sistem PahamTeks (ARCHITECTURE.md)
+# Arsitektur Sistem PahamTeks
 
-Dokumen ini menjelaskan rancangan arsitektur teknologi, aliran data, komponen keamanan, dan strategi *high-availability* sistem **PahamTeks**.
+Dokumen ini adalah cetak biru teknis sistem **PahamTeks**. Ditulis untuk para engineer dan developer di tim agar memahami bagaimana komponen-komponen di aplikasi ini saling terhubung, dari antarmuka React sampai lapisan database ganda.
 
 ---
 
-## 1. Diagram Arsitektur Tingkat Tinggi
+## 1. Gambaran Aliran Sistem (System Flow)
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["Frontend Client (React 18 + Vite)"]
-        Browser["Peramban Pengguna (Desktop / Mobile)"]
-        ApolloClient["Apollo GraphQL Client (Cache & State)"]
-        UIComp["Komponen UI (Hero, LearningHub, Kamus, Modal)"]
-        CenterModal["CenterNotificationModal"]
-        TeksieMascot["Teksie Mascot Companion"]
+    subgraph Client ["Frontend (React 18 + Vite)"]
+        UI["Antarmuka Belajar (Kuis, Kamus, Terjemahan)"]
+        Apollo["Apollo Client (GraphQL Cache)"]
+        Mascot["Maskot Teksie (2D Interactive State)"]
+        UI --> Apollo
+        UI --> Mascot
+    end
+
+    subgraph Security ["Keamanan Masuk (Middleware Express)"]
+        Helmet["Helmet (HTTP Security Headers)"]
+        CORS["CORS Protection"]
+        RateLimit["Rate Limiter (200 req / 15m)"]
+        BruteGuard["Brute-Force Guard (5x limit)"]
+    end
+
+    subgraph Backend ["Backend Engine (Node.js ESM)"]
+        Express["Express.js Server"]
+        GraphQL["Apollo Server v4 (/graphql)"]
+        HealthEndpoint["Endpoint Monitoring (/health)"]
+        Resolvers["Resolvers (Auth, Gemini, History)"]
         
-        Browser --> UIComp
-        UIComp --> ApolloClient
-        UIComp --> CenterModal
-        UIComp --> TeksieMascot
+        Express --> GraphQL
+        Express --> HealthEndpoint
+        GraphQL --> Resolvers
     end
 
-    subgraph EdgeLayer ["Hosting & Edge Protection (Vercel)"]
-        VercelCDN["Vercel Global Edge Network"]
-        VercelAnalytics["Vercel Web Analytics"]
+    subgraph AI ["AI Engine (Google Gemini)"]
+        KeyPool["Pool Multi-Key Gemini (Round-Robin)"]
+        GeminiAPI["Gemini 2.5 Flash / 1.5"]
+        KeyPool --> GeminiAPI
     end
 
-    subgraph SecurityLayer ["Backend Security & Middleware (Express)"]
-        HelmetMW["Helmet HTTP Headers Security"]
-        CORSMW["CORS Domain Whitelist"]
-        RateLimiter["Rate Limiter (200 req / 15m)"]
-        SecLogger["Security Logger & Brute Force Guard"]
-    end
-
-    subgraph BackendLayer ["Backend Services (Node.js ESM)"]
-        ExpressApp["Express.js Server Engine"]
-        ApolloServer["Apollo GraphQL Server v4 (/graphql)"]
-        HealthProbe["REST Health & Telemetry Probe (/health)"]
+    subgraph DataLayer ["Penyimpanan Data Resilien"]
+        DBManager["Unified Database Manager (db.js)"]
+        MySQL[("MySQL Utama (Lokal / Cloud)")]
+        SQLite[("SQLite Cadangan (Otomatis Aktif Saat MySQL Down)")]
         
-        Resolvers["GraphQL Resolvers (Auth, Gemini, History)"]
+        DBManager -->|Prioritas Utama| MySQL
+        DBManager -->|Auto-Failover / Cadangan| SQLite
     end
 
-    subgraph AIEngine ["AI Pedagogical Engine (Google Gemini)"]
-        KeyPool["Gemini API Key Pool (Round-Robin)"]
-        GeminiAPI["Google Gemini 2.5 Flash / 1.5"]
-    end
-
-    subgraph DatabaseLayer ["Dual-Engine Database & Failover"]
-        UnifiedDB["Unified DB Manager (server/src/config/db.js)"]
-        PrimaryMySQL[("MySQL Database (Utama)")]
-        BackupSQLite[("SQLite SQL Database (Cadangan Otomatis)")]
-        BackupDump["SQL Snapshot Dumper (server/backups/)"]
-    end
-
-    ApolloClient -->|HTTPS / GraphQL| VercelCDN
-    VercelCDN --> SecurityLayer
-    
-    SecurityLayer --> ExpressApp
-    ExpressApp --> ApolloServer
-    ExpressApp --> HealthProbe
-    
-    ApolloServer --> Resolvers
-    Resolvers --> KeyPool --> GeminiAPI
-    Resolvers --> UnifiedDB
-    
-    UnifiedDB -->|Kondisi Normal| PrimaryMySQL
-    UnifiedDB -.->|Replikasi di Background| BackupSQLite
-    UnifiedDB -->|Jika MySQL Down / Auto-Failover| BackupSQLite
-    UnifiedDB --> BackupDump
+    Apollo -->|Permintaan GraphQL| Security
+    Security --> Express
+    Resolvers --> KeyPool
+    Resolvers --> DBManager
 ```
 
 ---
 
-## 2. Lapisan Frontend (Client Layer)
+## 2. Frontend: Ringan, Cepat, Tanpa Framework CSS Kembung
 
-* **Framework**: React 18.3 didukung oleh bundler **Vite 6** (*lightning-fast hot reload* dan *minified production builds*).
-* **Data Fetching**: `@apollo/client` untuk melakukan komunikasi data deklaratif (Queries & Mutations) dengan Apollo Server.
-* **Gaya & Desain Visual**:
-  * Sistem *Design Token* CSS kustom murni ([`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css)) dengan tema *Dark Cyberpunk Glassmorphism*.
-  * Efek *Backdrop Filter Blur* untuk modal dan tombol mengambang.
-  * Komponen notifikasi kustom [`CenterNotificationModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/CenterNotificationModal.jsx) untuk menggantikan pop-up bawaan browser yang kaku.
-  * Pustaka ikon: `lucide-react` dan ikon seni 2D kustom [`Art2DIcons.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Art2DIcons.jsx).
-  * Pustaka utilitas: `jquery` (^4.0.0).
+Di sisi client, kita sengaja tidak menggunakan library UI berat (seperti MUI atau Bootstrap) agar bundle size tetap kecil dan kontrol styling 100% di tangan kita:
 
----
-
-## 3. Lapisan Backend & API (Server Layer)
-
-* **Runtime**: Node.js v18+ / v24 dengan arsitektur *ECMAScript Modules (ESM)* murni (`"type": "module"`).
-* **Server Web**: Express.js 4.21.
-* **API Endpoints**:
-  1. **GraphQL API (`POST /graphql`)**: Titik temu utama untuk kuis, autentikasi, kamus, progres belajar, dan terjemahan.
-  2. **Health Check (`GET /health`)**: Endpoint REST untuk telemetri sistem, uptime, status database utama & cadangan, pemakaian RAM, dan status API keys.
+1. **React 18 & Vite**:
+   - Build secepat kilat dengan Vite bundler.
+   - Output produksi terkompresi secara optimal sehingga aplikasi terbuka instan di browser ponsel.
+2. **Apollo Client**:
+   - Menghubungkan komponen React dengan backend lewat GraphQL queries dan mutations.
+   - Menggunakan in-memory caching untuk mengurangi request berulang.
+3. **CSS Murni & Design Tokens**:
+   - Seluruh styling diatur di [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) menggunakan CSS Custom Properties (`--bg-dark`, `--btn-cyan`, `--btn-green`).
+   - Tampilan mengusung tema gelap modern (*Cyberpunk Glassmorphism*) dengan *backdrop blur*.
+4. **Utilitas Bersama**:
+   - Audio dan pembacaan teks dipusatkan di [`client/src/utils/speechUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/speechUtils.js).
+   - Logika normalisasi opsi kuis dipusatkan di [`client/src/utils/quizUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/quizUtils.js).
 
 ---
 
-## 4. Lapisan Keamanan (Security Hardening)
+## 3. Backend: GraphQL + REST Monitoring
 
-Sistem PahamTeks dilengkapi dengan proteksi berlapis:
-1. **HTTP Headers (`helmet`)**: Menyuntikkan header keamanan untuk mencegah XSS, Clickjacking, dan MIME-sniffing.
-2. **CORS Whitelist**: Membatasi origin yang diizinkan hanya pada domain Vercel (`pahamteks.vercel.app`, `*.vercel.app`) dan `localhost` saat development.
-3. **Pembatas Laju (*Rate Limiting*)**: Membatasi maksimal 200 request per 15 menit per IP untuk mencegah serangan *Denial of Service (DoS)* dan pembajakan bot scraper.
-4. **Brute Force Guard ([`server/src/utils/securityLogger.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/securityLogger.js))**:
-   * Memantau upaya login gagal.
-   * Jika terjadi 5 kali kegagalan berturut-turut pada akun/IP yang sama, akun dikunci otomatis selama 15 menit.
-5. **Anti-Email Bombing OTP**: Membatasi permintaan OTP maksimal 3 kali per 10 menit untuk mencegah penyalahgunaan kuota email SMTP.
-6. **Autentikasi Bertanda Tangan JWT (`jsonwebtoken`)**: Mengeluarkan token sesi dengan masa berlaku 7 hari yang tahan pemalsuan.
+Backend kita bangun dengan **Node.js (ES Modules)**:
 
----
-
-## 5. Integrasi AI & Pengelolaan Kunci (AI Layer)
-
-* **Penyedia AI**: Google Gemini API via SDK `@google/genai`.
-* **Mekanisme Round-Robin Key Pool ([`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js))**:
-  * Mendukung pendaftaran banyak kunci API sekaligus (`GEMINI_API_KEY`, `GEMINI_API_KEY_1`, ..., `GEMINI_API_KEY_9`).
-  * Sistem memutar kunci secara bergantian untuk setiap request, sehingga beban kuota terdistribusi dan kebal terhadap *rate-limit* kuota gratis Google.
+1. **Apollo Server v4 (`POST /graphql`)**:
+   - Skema terpusat di `server/src/schema/typeDefs.js`.
+   - Resolvers dibagi per domain tanggung jawab:
+     - `authResolvers.js`: Registrasi, login, reset password, OTP email.
+     - `geminiResolvers.js`: Pembuatan soal kuis dinamis, evaluasi "Kenapa Salah?", kamus AI, dan terjemahan suara.
+     - `historyResolvers.js`: Pencatatan log aktivitas dan skor kuis pemelajar.
+2. **Monitoring Endpoint (`GET /health`)**:
+   - Endpoint REST yang mengecek kesehatan sistem: status database utama, status database cadangan, jumlah API key Gemini yang aktif, pemakaian RAM, dan uptime server.
+   - Siap dipantau oleh UptimeRobot atau BetterStack.
 
 ---
 
-## 6. Arsitektur Basis Data & Auto-Failover (Database Layer)
+## 4. Kenapa Kita Pakai Dua Database? (Dual Database Strategy)
 
-PahamTeks menerapkan prinsip **Dual-Persistence & Zero-Downtime SQL**:
+Salah satu masalah paling umum saat aplikasi web dikembangkan adalah: *bagaimana kalau database MySQL lokal belum dinyalakan, passwordnya salah, atau servernya mendadak mati?*
 
-```
-+-------------------------------------------------------+
-|              Unified Database Manager                 |
-|             (server/src/config/db.js)                 |
-+-------------------------------------------------------+
-                           |
-            +--------------+--------------+
-            |                             |
-      (MySQL Normal)               (MySQL Gagal/Down)
-            v                             v
-+-----------------------+     +-----------------------+
-|  Primary MySQL Pool   |     | Fallback SQLite Engine|
-|  (pahamteks_db)       |     | (pahamteks_backup.db) |
-+-----------------------+     +-----------------------+
-            |                             ^
-            | (Replikasi Background)      |
-            +-----------------------------+
-```
+Alih-alih membiarkan backend crash dan menampilkan error ke pengguna, kita membangun sistem **Dual Database Auto-Failover** di `server/src/config/db.js`:
 
-1. **MySQL (Database Utama)**: Menggunakan driver `mysql2/promise` dengan *connection pool* untuk performa tinggi pada lingkungan produksi.
-2. **SQLite (Database Cadangan Otomatis)**:
-   * Menggunakan modul SQL bawaan Node.js (`node:sqlite`).
-   * Tersimpan persisten di berkas [`server/data/pahamteks_backup.sqlite`](file:///c:/Salim/Kerjaan/pahamteks/server/data/pahamteks_backup.sqlite).
-   * Otomatis mengambil alih query jika MySQL offline, memastikan pengguna tetap dapat login, mendaftar, dan menyimpan progres.
-3. **Pencadangan Snapshot SQL ([`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js))**:
-   * Skrip otomatis untuk mengekspor seluruh data aktif ke berkas `.sql` kapan saja via perintah `npm --prefix server run backup-db`.
+1. **Kondisi Normal (MySQL Aktif)**:
+   - Backend membaca dan menulis ke MySQL utama.
+   - Setiap ada perubahan data baru (`INSERT`, `UPDATE`), data juga direplikasi ke SQLite lokal di background.
+2. **Kondisi Darurat (MySQL Offline/Down)**:
+   - Sistem langsung mengalihkan semua query ke SQLite (`node:sqlite` bawaan Node.js).
+   - Pengguna tetap bisa login, mengerjakan kuis, dan menyimpan progres tanpa menyadari ada masalah di server MySQL.
+   - Saat MySQL menyala kembali, sistem siap kembali ke mode utama.
 
+---
+
+## 5. Rotasi Kunci AI (Gemini Round-Robin)
+
+Untuk mencegah kuota gratisan Google Gemini habis di tengah jalan saat banyak pemelajar mengakses kuis bersamaan:
+- Sistem mendukung multi-key: `GEMINI_API_KEY`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, dst.
+- Backend memutar pemakaian kunci secara bergantian (*Round-Robin*).
+- Jika ada satu kunci yang terkena limit (HTTP 429), sistem otomatis melompati kunci tersebut dan mengambil kunci berikutnya di dalam pool.
+
+---
+
+## 6. Standar Keamanan Sistem
+
+- **Helmet**: Mengamankan header HTTP terhadap clickjacking, MIME sniffing, dan XSS.
+- **CORS Whitelist**: Membatasi akses API hanya untuk domain frontend yang sah (`localhost`, `127.0.0.1`, dan domain `*.vercel.app`).
+- **Global Rate Limiter**: Maksimal 200 request per 15 menit per alamat IP untuk mencegah penyerangan DoS.
+- **Anti-Brute Force**: Jika terjadi kegagalan login berturut-turut hingga 5 kali pada email/username yang sama, akun/IP tersebut dibekukan selama 15 menit.
+- **Anti-Email Bombing**: Permintaan OTP registrasi dan reset kata sandi dibatasi maksimal 3 kali per 10 menit untuk menjaga kuota SMTP dan menghindari spam.

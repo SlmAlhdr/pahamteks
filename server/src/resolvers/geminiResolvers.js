@@ -146,9 +146,8 @@ Pedoman Penulisan:
                     quizCache.set(cacheKey, quizList);
                     return quizList;
                 }
-                throw new Error("Format daftar soal tidak valid");
             } catch (err) {
-                // Return dynamic fallback questions for the specific unit & topic
+                console.warn(`⚠️ [Gemini Quiz Fallback] Gagal memuat soal AI (${err.message}). Menggunakan bank soal darurat.`);
                 return [
                     {
                         instruction: isEn ? `Review Exercise - ${selectedFocus}` : `Latihan Mandiri - ${selectedFocus}`,

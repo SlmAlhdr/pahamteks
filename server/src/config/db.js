@@ -46,7 +46,9 @@ export async function testDbConnection() {
                 console.log('✅ [MySQL] Kolom `username` berhasil ditambahkan ke tabel users.');
             }
         } catch (mErr) {
-            // Abaikan jika tabel users belum ada
+            if (mErr.code !== 'ER_NO_SUCH_TABLE') {
+                console.warn('⚠️ [MySQL Migration] Cek skema kolom username:', mErr.message);
+            }
         }
 
         connection.release();

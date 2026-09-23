@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_LANGUAGES } from '../graphql/queries';
 import { TRANSLATE_MUTATION, TRANSCRIBE_AUDIO_MUTATION } from '../graphql/mutations';
+import { speakText } from '../utils/speechUtils';
 
 export default function Translator({ t, currentLang }) {
   const [sourceText, setSourceText] = useState('');
@@ -10,6 +11,7 @@ export default function Translator({ t, currentLang }) {
   const [targetLang, setTargetLang] = useState('en');
   const [isRecording, setIsRecording] = useState(false);
   const [micStatus, setMicStatus] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -113,11 +115,10 @@ export default function Translator({ t, currentLang }) {
               setSourceText(text);
               handleTranslate(text);
             } else if (res.data?.transcribeAudio?.error) {
-              alert(res.data.transcribeAudio.error);
+              setMicStatus('⚠️ ' + res.data.transcribeAudio.error);
             }
           } catch (err) {
-            setMicStatus('');
-            alert((currentLang === 'en' ? 'Voice transcription failed: ' : 'Gagal transkripsi suara: ') + err.message);
+            setMicStatus((currentLang === 'en' ? '⚠️ Voice transcription failed: ' : '⚠️ Gagal transkripsi suara: ') + err.message);
           }
         };
       };
@@ -126,23 +127,15 @@ export default function Translator({ t, currentLang }) {
       setIsRecording(true);
       setMicStatus(currentLang === 'id' ? '🎙️ Sedang mendengarkan suara Anda...' : '🎙️ Listening to your voice...');
     } catch (err) {
-      alert((currentLang === 'en' ? 'Unable to access microphone: ' : 'Tidak dapat mengakses mikrofon: ') + err.message);
+      setMicStatus((currentLang === 'en' ? '⚠️ Unable to access microphone: ' : '⚠️ Tidak dapat mengakses mikrofon: ') + err.message);
     }
-  };
-
-  const speakText = (text, langCode) => {
-    if (!('speechSynthesis' in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = langCode === 'id' ? 'id-ID' : 'en-US';
-    utterance.rate = 1.0;
-    window.speechSynthesis.speak(utterance);
   };
 
   const copyToClipboard = () => {
     if (!targetText) return;
-    navigator.clipboard.writeText(targetText);
-    alert(currentLang === 'id' ? 'Teks berhasil disalin!' : 'Text copied to clipboard!');
+    navigator.clipboard?.writeText(targetText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -226,10 +219,10 @@ export default function Translator({ t, currentLang }) {
                 <button
                   className="btn-copy"
                   onClick={copyToClipboard}
-                  title={currentLang === 'en' ? 'Copy Text' : 'Salin Teks'}
+                  title={copied ? (currentLang === 'en' ? 'Copied!' : 'Tersalin!') : (currentLang === 'en' ? 'Copy Text' : 'Salin Teks')}
                   type="button"
                 >
-                  📋
+                  {copied ? '✓' : '📋'}
                 </button>
                 <button
                   className="btn-speak"

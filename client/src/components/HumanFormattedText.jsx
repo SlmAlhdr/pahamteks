@@ -77,14 +77,11 @@ function CodeSnippet({ code, lang }) {
 export default function HumanFormattedText({ content }) {
   if (!content) return null;
 
-  // 1. Bersihkan header kaku robotik dan garis pemisah markdown kasar
   let cleanText = content
     .replace(/^(\*{0,3}\s*)?Kamus\s+(Pintar\s+)?AI\s*(\*{0,3})?:?/gim, '')
-    .replace(/^\s*[-*_]{3,}\s*$/gm, '') // hapus garis horizontal ---
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
     .trim();
 
-  // 2. Pisahkan blok kode ```lang ... ```
-  // Menggunakan regex untuk split blok kode
   const tokenRegex = /(```[\s\S]*?```)/g;
   const tokens = cleanText.split(tokenRegex);
 
@@ -93,7 +90,6 @@ export default function HumanFormattedText({ content }) {
 
   tokens.forEach((token, tIdx) => {
     if (token.startsWith('```') && token.endsWith('```')) {
-      // Ini blok kode
       const lines = token.slice(3, -3).trim().split('\n');
       let lang = 'code';
       let codeLines = lines;
@@ -105,7 +101,6 @@ export default function HumanFormattedText({ content }) {
         <CodeSnippet key={`code-${tIdx}`} code={codeLines.join('\n')} lang={lang} />
       );
     } else {
-      // Ini teks biasa
       const lines = token.split('\n');
 
       let currentList = [];
@@ -132,7 +127,6 @@ export default function HumanFormattedText({ content }) {
           return;
         }
 
-        // Cek metadata chip (Kata Kunci / Kategori)
         const metaMatch = line.match(/^\*{0,2}(Kata Kunci|Kategori|Keyword|Category):\*{0,2}\s*(.+)$/i);
         if (metaMatch) {
           flushList();
@@ -143,7 +137,6 @@ export default function HumanFormattedText({ content }) {
           return;
         }
 
-        // Cek heading (### ... atau ## ... atau **Fungsi:** dsb)
         const headingMatch = line.match(/^(?:#{1,4}\s+|\*{2})([^:*]+)(?:\*{2}|:)?\s*$/);
         if (headingMatch && !line.startsWith('-') && !line.startsWith('*') && line.length < 60) {
           flushList();
@@ -156,7 +149,6 @@ export default function HumanFormattedText({ content }) {
           return;
         }
 
-        // Cek list item (- ... atau * ... atau 1. ...)
         const listMatch = line.match(/^[-*•]\s+(.+)$/) || line.match(/^(\d+[\.\)])\s+(.+)$/);
         if (listMatch) {
           const listText = listMatch[2] ? `${listMatch[1]} ${listMatch[2]}` : listMatch[1];
@@ -164,7 +156,6 @@ export default function HumanFormattedText({ content }) {
           return;
         }
 
-        // Paragraf biasa
         flushList();
         elements.push(
           <p key={`p-${elements.length}`} className="human-paragraph">

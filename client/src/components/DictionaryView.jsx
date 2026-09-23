@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { GET_DICTIONARY } from '../graphql/queries';
 import HumanFormattedText from './HumanFormattedText';
+import { speakText } from '../utils/speechUtils';
 
 // Istilah Populer
 const QUICK_WORDS = [
@@ -194,14 +195,6 @@ export default function DictionaryView({ t, currentLang }) {
     handleSearch(randomWord);
   };
 
-  const speakText = (text) => {
-    if (!('speechSynthesis' in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = currentLang === 'id' ? 'id-ID' : 'en-US';
-    window.speechSynthesis.speak(utterance);
-  };
-
   const handleSelectWord = (word) => {
     setKeyword(word);
     handleSearch(word);
@@ -264,7 +257,7 @@ export default function DictionaryView({ t, currentLang }) {
             <button
               className="btn-speak"
               style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px' }}
-              onClick={() => speakText(result)}
+              onClick={() => speakText(result, currentLang)}
               title={currentLang === 'en' ? 'Listen to Definition' : 'Dengarkan Arti'}
             >
               🔊

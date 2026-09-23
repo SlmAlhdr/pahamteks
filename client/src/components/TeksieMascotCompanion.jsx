@@ -389,7 +389,9 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
           return parsed;
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      console.warn('[TeksieCompanion] Failed to read stored position:', err.message);
+    }
     return null; // null = posisi default pojok kiri bawah
   });
 
@@ -569,7 +571,9 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
         setCoords(finalPos);
         try {
           localStorage.setItem('pahamteks_teksie_pos', JSON.stringify(finalPos));
-        } catch (err) {}
+        } catch (err) {
+          console.warn('[TeksieCompanion] Failed to persist position:', err.message);
+        }
 
         // Efek mendarat lembut (plop bounce)
         setIsLanding(true);
@@ -643,7 +647,9 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
     setCoords(null);
     try {
       localStorage.removeItem('pahamteks_teksie_pos');
-    } catch (err) {}
+    } catch (err) {
+      console.warn('[TeksieCompanion] Failed to remove stored position:', err.message);
+    }
     const resetMsg = currentLang === 'en'
       ? 'Back home to my cozy corner! 🐾'
       : 'Kembali ke pojok santai kesukaanku! 🐾';

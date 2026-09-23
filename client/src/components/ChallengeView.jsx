@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { Award, Zap, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { GENERATE_CHALLENGE } from '../graphql/queries';
-import { cleanOptionText, isOptionCorrect } from './QuizView';
-
-const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+import { LETTERS, cleanOptionText, isOptionCorrect } from '../utils/quizUtils';
 
 export default function ChallengeView() {
   const [category, setCategory] = useState('English Idioms & Grammar');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const [fetchChallenge, { loading }] = useLazyQuery(GENERATE_CHALLENGE, {
     fetchPolicy: 'network-only'
@@ -19,6 +18,7 @@ export default function ChallengeView() {
   const handleStart = async () => {
     setSubmitted(false);
     setAnswers({});
+    setErrorMsg('');
     try {
       const res = await fetchChallenge({
         variables: { category }
@@ -27,7 +27,7 @@ export default function ChallengeView() {
         setQuestions(res.data.generateChallenge);
       }
     } catch (err) {
-      alert('Gagal memuat tantangan: ' + err.message);
+      setErrorMsg('Gagal memuat tantangan: ' + err.message);
     }
   };
 
@@ -74,6 +74,12 @@ export default function ChallengeView() {
           Mulai Ujian
         </button>
       </div>
+
+      {errorMsg && (
+        <div style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', color: '#fca5a5', marginBottom: '20px', fontSize: '0.9rem' }}>
+          ⚠️ {errorMsg}
+        </div>
+      )}
 
       {questions.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

@@ -1,61 +1,67 @@
-# PahamTeks 🚀
+# PahamTeks
 
-> **Platform Pembelajaran Terpadu Bahasa Dunia & Bahasa Pemrograman Berbasis AI**  
-> Web live: [pahamteks.vercel.app](https://pahamteks.vercel.app)
-
----
-
-## 🌟 Tentang PahamTeks
-**PahamTeks** adalah platform edukasi inovatif yang menjembatani pembelajaran bahasa asing (50+ bahasa dunia) dan logika bahasa pemrograman (Python, JavaScript, Web, Algoritma, Database, OOP) dalam satu pengalaman belajar yang menyenangkan, interaktif, dan bebas friksi.
-
-### ✨ Fitur Unggulan
-* 🧠 **Kuis Adaptif Bertingkat (Unit 1–5)**: Didukung AI Google Gemini dengan umpan balik ramah saat jawaban salah.
-* 📖 **Kamus Pintar & Glosarium Terpadu**: Definisi terstruktur, contoh nyata, dan widget mengambang (*floating bubble*).
-* 🌐 **Penerjemah Multibahasa & Transkripsi Suara**: Terjemahan teks dan suara (*voice-to-text*) instan.
-* 📊 **Wawasan Komparasi Bahasa**: Matriks perbandingan karakteristik bahasa dunia dan bahasa pemrograman.
-* 🛡️ **Dual-Database Auto-Failover**: Menggunakan MySQL sebagai basis data utama dengan cadangan otomatis ke SQLite saat MySQL offline.
-* 🔒 **Sistem Keamanan Berlapis**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, dan token sesi JWT.
-* 🎭 **Maskot Teman Belajar (Teksie)**: Sahabat belajar interaktif 2D di layar.
+> Platform belajar interaktif yang menggabungkan bahasa manusia dan logika pemrograman dalam satu tempat, ditenagai AI.  
+> Aplikasi langsung: [pahamteks.vercel.app](https://pahamteks.vercel.app)
 
 ---
 
-## 📚 Dokumentasi Lengkap Proyek (Folder `docs/`)
+## Kenapa PahamTeks Dibuat?
 
-Seluruh dokumen teknis dan panduan tim telah disusun secara rapi di dalam folder [`docs/`](./docs/):
+Kebanyakan orang belajar bahasa asing di satu aplikasi (seperti Duolingo) dan belajar koding di platform terpisah yang kaku (seperti tutorial teks biasa). Saya membangun **PahamTeks** dengan satu ide sederhana: **bahasa manusia dan bahasa pemrograman sama-sama punya tata bahasa, logika, dan struktur**.
 
-* 📄 **[Product Requirement Document (PRD)](./docs/PRD.md)**: Visi, target pengguna, dan rincian kebutuhan fitur.
-* 🏗️ **[Arsitektur Sistem (ARCHITECTURE)](./docs/ARCHITECTURE.md)**: Diagram arsitektur, lapisan frontend, backend, keamanan, dan failover basis data.
-* 🤖 **[Pedoman AI Agent (AGENT)](./docs/AGENT.md)**: Persona maskot Teksie, prompt kurator materi, dan aturan AI dev assistant.
-* 📋 **[Roadmap & Daftar Rencana (TODO)](./docs/TODO.md)**: Milestone yang sudah selesai, sprint berikutnya, dan backlog ide tim.
-* 🧠 **[Matriks Kemampuan (SKILL)](./docs/SKILL.md)**: Pengetahuan domain bahasa pemrograman, linguistik, dan keamanan.
-* ⚙️ **[Alur Kerja & SOP (WORKFLOW)](./docs/WORKFLOW.md)**: Alur development lokal, CI/CD, backup database, dan penanganan insiden.
-* 🛡️ **[AI Quality Gate (AI_SLOP)](./docs/AI_SLOP.md)**: Konfigurasi pendeteksi AI slop & quality gate CI (`scanaislop/aislop`).
-* 📖 **[Panduan Memulai Tim (docs/README)](./docs/README.md)**: Onboarding komprehensif bagi anggota tim baru.
+Di PahamTeks, pemelajar di Indonesia bisa mengasah keduanya sekaligus:
+1. **Bahasa Dunia**: Mulai dari kosakata sehari-hari, grammar, sampai percakapan di puluhan bahasa dunia.
+2. **Bahasa Pemrograman**: Memahami konsep algoritma, JavaScript, Python, Web, SQL, dan struktur data tanpa intimidasi teknis.
+3. **Didampingi Teman Belajar (Teksie)**: Maskot musang 2D interaktif yang menemani, memberi semangat, dan reaktif saat kita sedang idle atau salah menjawab.
 
 ---
 
-## 🚀 Memulai Cepat (Quick Start)
+## Fitur yang Sudah Aktif di Sistem
+
+- **Kuis Bertingkat (Unit 1–5)**: Soal adaptif dengan evaluasi AI Gemini. Saat salah menjawab, ada tombol penjelas "Kenapa Salah?" yang menguraikan letak kekeliruan konsep secara manusiawi.
+- **Kamus Pintar & Glosarium A–Z**: Penjelasan istilah teknologi dan bahasa yang diformat ramah pemula, lengkap dengan pelafalan suara (Audio Web Speech).
+- **Penerjemah Teks & Suara**: Terjemahan multibahasa instan dengan input audio mikrofon langsung dari browser.
+- **Wawasan Komparasi**: Matriks perbandingan logika bahasa (misal: membandingkan cara kerja loop di Python vs JavaScript, atau struktur kalimat bahasa Indonesia vs Jepang).
+- **Dual-Database Resilien**: Backend otomatis memakai MySQL jika server database aktif, dan otomatis beralih ke SQLite lokal saat MySQL offline sehingga aplikasi tidak pernah crash.
+- **Sistem Akun & Tamu**: Mendukung sesi tamu instan (*one-click guest*) maupun akun resmi permanen dengan verifikasi OTP email asli dan perlindungan brute-force.
+
+---
+
+## Panduan Tim & Dokumentasi Lengkap (`docs/`)
+
+Semua catatan perencanaan, arsitektur, dan SOP teknis tersimpan di folder [`docs/`](./docs/):
+
+- 📄 **[PRD (Product Requirement)](./docs/PRD.md)**: Visi produk, persona pengguna, dan ide fitur yang siap didiskusikan bersama tim.
+- 🏗️ **[Arsitektur Sistem](./docs/ARCHITECTURE.md)**: Diagram aliran data React 18, Apollo GraphQL, Gemini AI, dan mekanisme failover database.
+- 🤖 **[Pedoman Karakter & AI Agent](./docs/AGENT.md)**: Persona maskot Teksie, gaya bahasa mentor, dan aturan otomatisasi development.
+- 📋 **[Roadmap & Backlog Tim](./docs/TODO.md)**: Apa yang sudah selesai, prioritas sprint saat ini, dan ide-ide masa depan.
+- 🧠 **[Matriks Domain Materi](./docs/SKILL.md)**: Silabus bahasa pemrograman dan linguistik yang diajarkan di PahamTeks.
+- ⚙️ **[Alur Kerja & SOP](./docs/WORKFLOW.md)**: Standar setup lokal, backup database berkala, dan penanganan insiden.
+- 🛡️ **[AI Quality Gate](./docs/AI_SLOP.md)**: Standar kebersihan kode, aturan anti-AI-slop, dan pipeline CI GitHub Actions.
+- 📖 **[Panduan Memulai Tim](./docs/README.md)**: Titik awal orientasi untuk rekan developer atau kontributor baru.
+
+---
+
+## Menjalankan di Komputer Lokal
 
 ```bash
 # 1. Clone repositori
 git clone https://github.com/slmalhadar-lab/pahamteks.git
 cd pahamteks
 
-# 2. Setup environment
+# 2. Setup konfigurasi environment
 cp .env.example server/.env
-# Isi kunci GEMINI_API_KEY di server/.env
+# Isi minimal GEMINI_API_KEY di dalam server/.env
 
-# 3. Install dependencies
+# 3. Pasang pustaka dependensi
 npm --prefix server install
 npm --prefix client install
 
-# 4. Jalankan aplikasi
-npm --prefix server run dev    # Backend di port 4000
-npm --prefix client run dev    # Frontend di port 5173
+# 4. Jalankan aplikasi (buka dua terminal terpisah)
+npm --prefix server run dev    # Backend berjalan di http://localhost:4000
+npm --prefix client run dev    # Frontend berjalan di http://localhost:5173
 ```
 
 ---
 
-## 📜 Lisensi
-Dikembangkan dengan penuh dedikasi untuk pemelajar di Indonesia. © 2026 PahamTeks.
-
+Dibuat dengan dedikasi untuk memajukan literasi teknologi dan bahasa bagi siapa saja di Indonesia. © 2026 PahamTeks.

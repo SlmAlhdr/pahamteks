@@ -1,56 +1,53 @@
-# Definisi Kemampuan & Pengetahuan Domain (SKILL.md)
+# Matriks Domain Materi & Kemampuan Sistem (SKILL.md)
 
-Dokumen ini memetakan seluruh **domain kemampuan (*skills*)** yang tertanam dan dikuasai oleh sistem **PahamTeks**, baik dari sisi materi edukasi, kapabilitas AI, maupun keandalan rekayasa perangkat lunak.
+Dokumen ini memetakan cakupan materi yang diajarkan di PahamTeks, cara kita menyusun kurikulum belajarnya, serta keandalan teknis yang ditangani oleh sistem.
 
 ---
 
-## 1. Domain Bahasa Pemrograman & Rekayasa Perangkat Lunak
+## 1. Domain Koding & Bahasa Pemrograman
 
-PahamTeks mampu menguji, menjelaskan, dan menganalisis konsep-konsep teknis berikut:
+PahamTeks dirancang untuk mengupas logika pemrograman dari nol sampai pemahaman arsitektur:
 
-| Kategori | Bahasa / Teknologi | Ruang Lingkup Materi |
+| Bidang | Materi yang Diajarkan | Yang Dipelajari Pemelajar |
 | :--- | :--- | :--- |
-| **Fondasi & Algoritma** | Logika Komputasi, Pseudocode, Python | Logika percabangan (*if-else*), perulangan (*loops*), fungsi, struktur data array/list/hashmap, kompleksitas Big-O. |
-| **Pengembangan Web** | HTML5, CSS3, JavaScript modern (ESM) | Semantik web, layouting flexbox & grid, DOM manipulation, asynchronous (*Promise*, *async/await*), API integration. |
-| **Ekosistem Modern** | React 18, Node.js, Express.js | Komponen berbasis fungsi, React hooks (*useState*, *useEffect*, *useRef*), Virtual DOM, middleware Express. |
-| **Arsitektur API** | GraphQL (Apollo) & REST | Skema typeDefs, resolvers, queries, mutations, context authorization, endpoint health check. |
-| **Basis Data Relasional** | MySQL & SQLite | Desain tabel, relasi kunci asing (*Foreign Keys*), query parameterized anti-SQL injection, indeksasi, dan transaksi failover. |
-| **Bahasa Sistem & OOP** | Java, C++, Go, Rust | Pemrograman berorientasi objek (Enkapsulasi, Pewarisan, Polimorfisme), pengelolaan memori, tipe data statis vs dinamis. |
+| **Logika & Algoritma** | Dasar Komputasi, Pseudocode, Python | Logika percabangan (*if-else*), perulangan (*loops*), fungsi, struktur data list & dictionary, efisiensi algoritma sederhana. |
+| **Web Frontend** | HTML5, CSS3, JavaScript modern | Struktur halaman, flexbox/grid, interaksi DOM, asynchronous (*Promise* & *async/await*), konsep komponen React. |
+| **Backend & API** | Node.js, Express, GraphQL, REST | Cara server bekerja, endpoint API, skema GraphQL, autentikasi sesi, dan pemahaman status HTTP. |
+| **Database** | SQL (MySQL & SQLite) | Perancangan tabel, primary & foreign key, query SELECT/INSERT/UPDATE, pencegahan SQL Injection. |
+| **Sistem & Konsep OOP** | Java, C++, Go, Rust | Pemrograman berorientasi objek (kelas, objek, enkapsulasi, pewarisan), manajemen memori, dan tipe data statis vs dinamis. |
 
 ---
 
-## 2. Domain Linguistik & Bahasa Dunia (Human Languages)
+## 2. Domain Bahasa Manusia (Linguistik Dunia)
 
-PahamTeks menguasai 50+ bahasa dunia dengan fokus pembelajaran praktis:
-* **Bahasa Utama**: Bahasa Inggris, Jepang, Korea, Mandarin (Sederhana & Tradisional), Jerman, Prancis, Spanyol, Arab, Rusia, Belanda, dll.
-* **Tingkat Kesulitan**: Pemula (*Beginner*), Menengah (*Intermediate*), dan Mahir (*Advanced*).
-* **Fokus Kompetensi**:
-  1. *Grammar & Sentence Syntax*: Pola kalimat (SVO, SOV), tenses, konjugasi kata kerja, partikel.
-  2. *Core Vocabulary*: Kosakata tematik sehari-hari, istilah akademik, dan istilah percakapan kerja.
-  3. *Contextual Nuances & Idioms*: Idiom populer, bahasa percakapan santai, dan ungkapan sopan formal.
-  4. *Speech & Audio Processing*: Pemrosesan audio suara menjadi teks (*voice-to-text*) menggunakan AI multimodal.
-
----
-
-## 3. Domain Pedagogi & Prompt Engineering AI
-
-Sistem memiliki keahlian khusus dalam merancang prompt AI edukasi yang efektif:
-* **Scaffolding Learning**: Memecah materi kompleks menjadi 5 unit pembelajaran yang bertahap (Fondasi -> Struktur -> Percakapan -> Idiom -> Penguasaan Mahir).
-* **Anti-Repetition Prompting**: Menggunakan pengacakan *seed* variasi dinamis agar soal latihan kuis selalu segar dan tidak monoton.
-* **Human-Like Feedback Formulation**:
-  * Menghindari kalimat kaku mesin (*"Sebagai AI..."*).
-  * Memberikan analisis kesalahan yang empatik dan suportif (menjelaskan letak jebakan soal dan cara mudah mengingat aturan benarnya).
-* **Strict JSON Schema Enforcement**: Menjamin keluaran AI selalu sesuai kontrak struktur data tanpa merusak proses parsing aplikasi.
+PahamTeks mencakup lebih dari 50 bahasa dunia, dengan fokus utama pada pemakaian nyata:
+- **Bahasa Pilihan Populer**: Bahasa Inggris, Jepang, Korea, Mandarin, Arab, Jerman, Prancis, Spanyol, dan Rusia.
+- **Fokus Pembelajaran**:
+  1. **Struktur Kalimat**: Pola kalimat (subjek-predikat-objek), partikel bahasa Jepang/Korea, tenses bahasa Inggris, kata kerja berubah (*conjugation*).
+  2. **Kosakata Tematik**: Kata-kata yang sering dipakai di kantor, pergaulan, perjalanan, dan percakapan teknologi.
+  3. **Idiom & Konteks Budaya**: Ungkapan kiasan yang tidak bisa diterjemahkan kata per kata.
+  4. **Pelafalan & Suara**: Pemelajar bisa mendengar pengucapan kata dan berlatih berbicara lewat input mikrofon.
 
 ---
 
-## 4. Domain Keamanan & Keandalan Sistem (DevSecOps)
+## 3. Pendekatan Pedagogi AI (Cara AI Mengajar)
 
-Sistem dirancang dengan keahlian rekayasa sistem modern:
-* **Failover Otomatis**: Kemampuan mengalihkan eksekusi query dari MySQL ke SQLite tanpa *downtime* saat database utama tidak terjangkau.
-* **Mitigasi Serangan**:
-  * *Brute Force Mitigation*: Pemblokiran otomatis akun/IP setelah 5x kegagalan berturut-turut.
-  * *Denial of Service (DoS) Prevention*: Pembatasan frekuensi request 200 req / 15 menit.
-  * *Email Bombing Protection*: Pembatasan permintaan OTP 3x per 10 menit.
-* **Integrasi Pemantauan (*Uptime & Telemetry*)**: Menyediakan endpoint `/health` terstandarisasi untuk integrasi monitoring pihak ketiga (UptimeRobot/BetterStack).
+Kita tidak ingin AI di PahamTeks bersikap seperti mesin pemeriksa kuis yang kaku:
+1. **Belajar Bertahap 5 Bab (Scaffolding)**:
+   Materi dipecah dari hal paling mudah (Bab 1: Fondasi) hingga tantangan yang butuh pemikiran analitis (Bab 5: Kasus Kompleks).
+2. **Soal Anti-Membosankan**:
+   Prompt AI Gemini dibuat dengan variasi acak dinamis agar soal kuis tidak monoton walau diulang beberapa kali.
+3. **Umpan Balik Empatik ("Kenapa Salah?")**:
+   Saat pemelajar salah, AI tidak langsung menghakimi. AI menjelaskan jebakan logika di balik opsi yang salah dan memberikan jembatan keledai (*mnemonic*) agar mudah diingat.
+4. **Respon JSON Valid**:
+   AI diprogram menghasilkan struktur JSON murni agar frontend bisa menampilkannya dengan mulus tanpa error parsing.
 
+---
+
+## 4. Keandalan Rekayasa Sistem (DevSecOps)
+
+Sistem PahamTeks dipersenjatai kemampuan teknis tingkat produksi:
+- **Failover Database Otomatis**: Backend tidak pernah tumbang hanya karena MySQL lokal mati; sistem otomatis memakai SQLite lokal sebagai penyelamat.
+- **Proteksi Brute-Force**: Memblokir serangan tebak kata sandi secara otomatis setelah 5 kali percobaan gagal.
+- **Proteksi Email & Server**: Membatasi laju request (*Rate Limiter*) dan menahan upaya spam OTP email.
+- **Pemantauan Uptime**: Menyediakan endpoint `/health` siap pakai untuk telemetri dan integrasi pemantau eksternal.

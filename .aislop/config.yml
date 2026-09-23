@@ -28,3 +28,4 @@ rules:
   todo-stubs: warning
   as-any: warning
   monster-functions: warning
+

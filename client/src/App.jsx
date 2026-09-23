@@ -34,12 +34,12 @@ export default function App() {
           setQuizHistory(JSON.parse(savedLogs));
         }
         return;
-      } catch (e) {
+      } catch (err) {
+        console.warn('[AppAuth] Failed to parse stored user, resetting state:', err.message);
         localStorage.removeItem('pahamteks_user');
       }
     }
 
-    // 2. Cek akun tamu (guest) tersimpan di sessionStorage
     const savedGuest = sessionStorage.getItem('pahamteks_guest_user');
     if (savedGuest) {
       try {
@@ -48,7 +48,8 @@ export default function App() {
         if (savedGuestLogs) {
           setQuizHistory(JSON.parse(savedGuestLogs));
         }
-      } catch (e) {
+      } catch (err) {
+        console.warn('[AppAuth] Failed to parse guest user, resetting state:', err.message);
         sessionStorage.removeItem('pahamteks_guest_user');
       }
     }
@@ -78,7 +79,8 @@ export default function App() {
     if (savedGuestLogs) {
       try {
         setQuizHistory(JSON.parse(savedGuestLogs));
-      } catch (e) {
+      } catch (err) {
+        console.warn('[AppHistory] Failed to parse guest logs:', err.message);
         setQuizHistory([]);
       }
     } else {
@@ -99,7 +101,8 @@ export default function App() {
     if (savedLogs) {
       try {
         setQuizHistory(JSON.parse(savedLogs));
-      } catch (e) {
+      } catch (err) {
+        console.warn('[AppHistory] Failed to parse permanent logs:', err.message);
         setQuizHistory([]);
       }
     }
