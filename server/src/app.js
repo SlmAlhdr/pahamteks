@@ -21,13 +21,18 @@ app.use(helmet({
 }));
 
 // 2. Pembatasan Domain CORS (Whitelist)
+const envAllowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+    : [];
+
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'http://localhost:4000',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:3000',
-    'https://pahamteks.vercel.app'
+    'https://pahamteks.vercel.app',
+    ...envAllowedOrigins
 ];
 
 app.use(cors({
@@ -35,9 +40,10 @@ app.use(cors({
         // Izinkan request tanpa origin (seperti UptimeRobot, server-to-server health probe, mobile/curl)
         if (!origin) return callback(null, true);
 
-        // Izinkan jika ada di daftar, berakhiran .vercel.app, atau dalam mode development
+        // Izinkan jika ada di daftar, berakhiran .vercel.app, Cloudflare tunnel (*.trycloudflare.com), atau mode dev
         const isVercelSubdomain = /\.vercel\.app$/.test(origin);
-        if (allowedOrigins.includes(origin) || isVercelSubdomain || process.env.NODE_ENV !== 'production') {
+        const isCloudflareTunnel = /\.trycloudflare\.com$/.test(origin);
+        if (allowedOrigins.includes(origin) || isVercelSubdomain || isCloudflareTunnel || process.env.NODE_ENV !== 'production') {
             return callback(null, true);
         }
         return callback(new Error('Akses diblokir oleh kebijakan keamanan CORS PahamTeks.'));

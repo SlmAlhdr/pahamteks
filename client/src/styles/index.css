@@ -1587,8 +1587,10 @@ textarea {
     font-weight: 900;
     margin: 0;
     line-height: 1.18;
+    color: #ffffff;
     background: linear-gradient(135deg, #ffffff 40%, var(--btn-cyan) 80%, var(--btn-green) 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
