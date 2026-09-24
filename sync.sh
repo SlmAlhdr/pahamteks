@@ -121,9 +121,39 @@ do_status() {
     fi
 }
 
+do_watch() {
+    local INTERVAL="${1:-60}"
+    echo -e "${BLUE}=== Memulai Mode Pemantau Otomatis (Auto Watcher) ===${NC}"
+    echo -e "Memeriksa dan menyinkronkan folder pahamteks setiap ${INTERVAL} detik."
+    echo -e "Tekan ${YELLOW}Ctrl + C${NC} untuk berhenti.\n"
+
+    while true; do
+        TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+        
+        # 1. Auto Pull jika ada perubahan di remote GitHub
+        git fetch origin "$CURRENT_BRANCH" --quiet 2>/dev/null || true
+        LOCAL=$(git rev-parse HEAD 2>/dev/null || echo "")
+        REMOTE=$(git rev-parse "origin/$CURRENT_BRANCH" 2>/dev/null || echo "")
+
+        if [ "$LOCAL" != "$REMOTE" ] && [ -n "$REMOTE" ]; then
+            echo -e "${GREEN}[${TIMESTAMP}] Terdeteksi update di GitHub! Melakukan pull...${NC}"
+            do_pull 2>/dev/null || true
+        fi
+
+        # 2. Auto Push jika ada perubahan di file lokal
+        if ! git diff-index --quiet HEAD -- 2>/dev/null || [ -n "$(git status -s)" ]; then
+            echo -e "${GREEN}[${TIMESTAMP}] Terdeteksi perubahan lokal! Melakukan auto push...${NC}"
+            do_push "Auto-sync: $TIMESTAMP" 2>/dev/null || true
+        fi
+
+        sleep "$INTERVAL"
+    done
+}
+
 show_help() {
     echo "Penggunaan skrip automasi sync pahamteks:"
-    echo "  ./sync.sh              -> Otomatis pull update terbaru lalu push perubahan lokal"
+    echo "  ./sync.sh              -> Sekali jalan: Otomatis pull lalu push perubahan lokal"
+    echo "  ./sync.sh watch [dtk]  -> Terus berjalan di background: Auto pull & auto push otomatis (default: 60 detik)"
     echo "  ./sync.sh sync [pesan] -> Pull lalu push dengan pesan commit tertentu"
     echo "  ./sync.sh pull         -> Hanya menarik (pull) perubahan dari GitHub"
     echo "  ./sync.sh push [pesan] -> Hanya mengirim (commit & push) perubahan lokal"
@@ -141,6 +171,9 @@ case "$ACTION" in
         do_pull
         do_push "$CUSTOM_MSG"
         echo -e "\n${GREEN}✔ Proses sinkronisasi selesai sepenuhnya!${NC}"
+        ;;
+    watch)
+        do_watch "$CUSTOM_MSG"
         ;;
     pull)
         do_pull
@@ -162,3 +195,4 @@ case "$ACTION" in
         exit 1
         ;;
 esac
+
