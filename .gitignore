@@ -59,3 +59,9 @@ docs/
 # Executables & tools
 *.exe
 
+# Legacy standalone files (archived in archive/)
+/index.html
+/requirements.txt
+api/index.py
+
+
