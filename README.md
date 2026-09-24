@@ -29,20 +29,34 @@ Di PahamTeks, pemelajar di Indonesia bisa mengasah keduanya sekaligus:
 
 ## Panduan Tim & Dokumentasi Lengkap (`docs/`)
 
-Semua catatan perencanaan, arsitektur, dan SOP teknis tersimpan di folder [`docs/`](./docs/):
+Semua catatan perencanaan, arsitektur, panduan teknis, dan roadmap tersimpan lengkap di folder [`docs/`](./docs/):
 
+- 🧭 **[Roadmap Pengembangan Tim](./docs/ROADMAP.md)**: Rencana tahapan proyek (Fase 1 s/d 4) dan prioritas fitur saat ini.
+- ⚙️ **[Panduan Tim Backend](./docs/PANDUAN_BACKEND.md)**: Alur kerja Node.js, Express, GraphQL Resolvers, rotasi Gemini AI, dan penanganan database.
+- 🎨 **[Panduan Tim Frontend](./docs/PANDUAN_FRONTEND.md)**: Struktur komponen React 18, styling CSS murni, audio speech, dan standar antarmuka bebas alert.
+- 🌐 **[Panduan Akses HTTPS Pribadi](./docs/PANDUAN_AKSES_HTTPS_PRIBADI.md)**: Tutorial membuka akses publik via Cloudflare Tunnel untuk uji coba di HP atau bersama tim.
 - 📄 **[PRD (Product Requirement)](./docs/PRD.md)**: Visi produk, persona pengguna, dan ide fitur yang siap didiskusikan bersama tim.
 - 🏗️ **[Arsitektur Sistem](./docs/ARCHITECTURE.md)**: Diagram aliran data React 18, Apollo GraphQL, Gemini AI, dan mekanisme failover database.
 - 🤖 **[Pedoman Karakter & AI Agent](./docs/AGENT.md)**: Persona maskot Teksie, gaya bahasa mentor, dan aturan otomatisasi development.
-- 📋 **[Roadmap & Backlog Tim](./docs/TODO.md)**: Apa yang sudah selesai, prioritas sprint saat ini, dan ide-ide masa depan.
+- 📋 **[Backlog & TODO Tim](./docs/TODO.md)**: Catatan backlog teknis dan ide-ide masa depan.
 - 🧠 **[Matriks Domain Materi](./docs/SKILL.md)**: Silabus bahasa pemrograman dan linguistik yang diajarkan di PahamTeks.
-- ⚙️ **[Alur Kerja & SOP](./docs/WORKFLOW.md)**: Standar setup lokal, backup database berkala, dan penanganan insiden.
 - 🛡️ **[AI Quality Gate](./docs/AI_SLOP.md)**: Standar kebersihan kode, aturan anti-AI-slop, dan pipeline CI GitHub Actions.
-- 📖 **[Panduan Memulai Tim](./docs/README.md)**: Titik awal orientasi untuk rekan developer atau kontributor baru.
 
 ---
 
-## Menjalankan di Komputer Lokal
+## 🚀 Menjalankan di Komputer Lokal
+
+### Opsi A: Super Cepat (Khusus Windows)
+Bagi anggota tim di Windows, proyek ini sudah dilengkapi tombol pintasan siap pakai:
+
+1. **Setup Pertama Kali**: Klik dua kali berkas **`setup.bat`** (otomatis membuat `server/.env` dan menginstall seluruh dependensi).
+2. **Isi API Key**: Buka berkas `server/.env`, masukkan kunci gratis Gemini API Anda di baris `GEMINI_API_KEY=...`.
+3. **Jalankan Aplikasi**: Klik dua kali berkas **`start-dev.bat`** (otomatis membuka jendela Backend & Frontend sekaligus).
+4. **Sinkronisasi Kode**: Klik dua kali **`sync.bat`** saat ingin menarik (*pull*) update tim dan mendorong (*push*) hasil kerja Anda.
+
+---
+
+### Opsi B: Manual via Terminal (Cross-Platform)
 
 ```bash
 # 1. Clone repositori
@@ -50,16 +64,15 @@ git clone https://github.com/slmalhadar-lab/pahamteks.git
 cd pahamteks
 
 # 2. Setup konfigurasi environment
-cp .env.example server/.env
+cp server/.env.example server/.env
 # Isi minimal GEMINI_API_KEY di dalam server/.env
 
 # 3. Pasang pustaka dependensi
-npm --prefix server install
-npm --prefix client install
+npm install
 
 # 4. Jalankan aplikasi (buka dua terminal terpisah)
 npm --prefix server run dev    # Backend berjalan di http://localhost:4000
-npm --prefix client run dev    # Frontend berjalan di http://localhost:5173
+npm --prefix client run dev    # Frontend berjalan di http://localhost:3000
 ```
 
 ---
