@@ -10,11 +10,22 @@ server/package-lock.json
 dist/
 client/dist/
 
-# Environment variables & secrets
+# Environment variables & secrets (Zero Leak Policy)
 .env
-server/.env
-client/.env.local
+.env.*
 *.env
+*.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Secrets, keys & credentials
+*.pem
+*.key
+*.cert
+credentials*.json
+service-account*.json
 
 # Cache & temporary files
 .cache/
