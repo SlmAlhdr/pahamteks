@@ -189,6 +189,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
   const [userAnswersLog, setUserAnswersLog] = useState([]);
   const [explanation, setExplanation] = useState('');
   const [explaining, setExplaining] = useState(false);
+  const [loadError, setLoadError] = useState('');
 
   const [fetchQuiz, { loading: quizLoading }] = useLazyQuery(GENERATE_QUIZ, { fetchPolicy: 'network-only' });
   const [fetchChallenge, { loading: challengeLoading }] = useLazyQuery(GENERATE_CHALLENGE, { fetchPolicy: 'network-only' });
@@ -227,6 +228,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     setUserAnswersLog([]);
     setExplanation('');
 
+    setLoadError('');
     const targetUnitObj = unitsList.find(u => u.unit === unitToLoad) || activeUnitObj;
     setCurrentUnit(targetUnitObj.unit);
 
@@ -248,7 +250,8 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
         if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
       }
     } catch (err) {
-      alert(currentLang === 'en' ? ('Failed to load questions: ' + err.message) : ('Gagal memuat soal: ' + err.message));
+      console.warn('[QuizView] Gagal memuat soal:', err.message);
+      setLoadError(currentLang === 'en' ? ('⚠️ Failed to load questions: ' + err.message) : ('⚠️ Gagal memuat soal: ' + err.message));
     }
   };
 
@@ -451,6 +454,23 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
               <option value="Mahir">{t('opt_level_3')}</option>
             </select>
           </div>
+
+          {/* Error Banner */}
+          {loadError && (
+            <div style={{
+              padding: '12px 16px',
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '12px',
+              color: '#fca5a5',
+              marginBottom: '15px',
+              fontSize: '0.92rem',
+              textAlign: 'center',
+              fontWeight: 600
+            }}>
+              {loadError}
+            </div>
+          )}
 
           {/* Start Buttons */}
           <div className="action-row">

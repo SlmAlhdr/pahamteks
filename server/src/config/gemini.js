@@ -37,7 +37,7 @@ export function getApiKeyPoolStatus() {
     };
 }
 
-const MODELS_TO_TRY = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+const MODELS_TO_TRY = ['gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
 
 /**
  * Menjalankan generate content teks dengan sistem failover antar-model dan rotasi API Key jika kuota habis.

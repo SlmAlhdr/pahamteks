@@ -22,6 +22,7 @@ export const LANGUAGES_MAP = {
 };
 
 const quizCache = new Map();
+const dictionaryCache = new Map();
 
 function parseSafeJson(rawText) {
     try {
@@ -50,6 +51,11 @@ export const geminiResolvers = {
             if (!keyword || !keyword.trim()) {
                 return { result: '', error: lang === 'en' ? 'Search keyword cannot be empty!' : 'Kata kunci pencarian tidak boleh kosong!' };
             }
+            const cleanKeyword = keyword.trim();
+            const cacheKey = `${lang}_${cleanKeyword.toLowerCase()}`;
+            if (dictionaryCache.has(cacheKey)) {
+                return { result: dictionaryCache.get(cacheKey), error: null };
+            }
             try {
                 const isEn = lang === 'en';
                 const prompt = isEn
@@ -75,6 +81,7 @@ Pedoman Penulisan:
 - Tolak dengan sopan hanya jika topik benar-benar di luar edukasi, bahasa, sains, atau teknologi.`;
 
                 const text = await generateSafeContent(prompt);
+                if (text) { dictionaryCache.set(cacheKey, text); }
                 return { result: text, error: null };
             } catch (err) {
                 return { result: '', error: `⚠️ Error: ${err.message}` };
