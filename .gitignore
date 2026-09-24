@@ -40,7 +40,8 @@ Thumbs.db
 # Agent configuration
 .agent/
 
-# AI slop quality gate (kept local, not pushed)
+# Local documentation & AI slop quality gate (kept local, not pushed)
+docs/
 .aislop/
 .github/workflows/aislop.yml
 

@@ -6,4 +6,4 @@ Asisten AI yang bekerja di repositori PahamTeks wajib mengadopsi standar arsitek
 - **Standar Koding Human-Grade**: Dilarang keras membuat catch kosong (*swallowed exceptions*), selalu gunakan utilitas bersama di `client/src/utils/` (`speechUtils.js` dan `quizUtils.js`).
 - **Verifikasi Build**: Setiap selesai mengubah kode, wajib memverifikasi build frontend (`npm --prefix client run build`).
 - **Zero Leak Policy**: Dilarang keras men-stage atau membocorkan berkas `.env`, kredensial, atau database binary lokal (`*.sqlite`).
-- **Dokumentasi Tim**: Folder `docs/` dipush ke repositori agar rekan tim dapat membaca panduan dan roadmap. Folder `.aislop/` tetap disimpan secara lokal.
+- **Penyimpanan Lokal**: Folder `docs/` dan `.aislop/` disimpan secara lokal di mesin pengembang dan tidak dipush ke repositori publik GitHub.
