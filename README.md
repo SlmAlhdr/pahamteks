@@ -1,7 +1,6 @@
 # PahamTeks
 
-> Platform belajar interaktif yang menggabungkan bahasa manusia dan logika pemrograman dalam satu tempat, ditenagai AI.  
-> Aplikasi langsung: [pahamteks.vercel.app](https://pahamteks.vercel.app)
+> Platform belajar interaktif yang menggabungkan bahasa manusia dan logika pemrograman dalam satu tempat, ditenagai AI. 
 
 ---
 
