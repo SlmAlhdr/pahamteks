@@ -81,7 +81,7 @@ const server = new ApolloServer({
 
 await server.start();
 
-// Mount GraphQL endpoint dengan context IP dan Authorization
+// Sediakan token dan IP client bagi resolver yang memerlukan konteks keamanan.
 app.use('/graphql', expressMiddleware(server, {
     context: async ({ req }) => {
         const token = req.headers.authorization || '';
@@ -90,7 +90,7 @@ app.use('/graphql', expressMiddleware(server, {
     }
 }));
 
-// 6. REST Health Check & System Monitoring Endpoint
+// Ringkas status database, API key, keamanan, dan memori untuk pemantauan.
 app.get('/health', (req, res) => {
     const keyStatus = getApiKeyPoolStatus();
     const memory = process.memoryUsage();

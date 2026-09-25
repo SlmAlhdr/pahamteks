@@ -1,6 +1,4 @@
-/**
- * Web Speech API utility for speech synthesis
- */
+// Ucapkan teks dengan Web Speech API jika fitur tersedia di browser.
 export function speakText(text, lang = 'id') {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text) {
     return;
@@ -15,4 +13,3 @@ export function speakText(text, lang = 'id') {
     console.warn('[SpeechSynthesis] Failed to play audio:', err.message);
   }
 }
-

@@ -34,6 +34,7 @@ function Test-ForbiddenPath([string]$Path) {
 }
 
 function Invoke-SafePush {
+    # Validasi branch, file sensitif, dan build sebelum membuat commit.
     $branch = (git branch --show-current).Trim()
     if ($branch -ne 'main') {
         Write-Host "[BLOCKED] Branch aktif '$branch'; target otomatis adalah main. Tidak ada commit/push." -ForegroundColor Red
@@ -93,6 +94,7 @@ Write-Host "Commit/push setelah $QuietSeconds detik tanpa edit; polling tiap $Po
 Write-Host 'Tidak melakukan auto-pull. Tekan Ctrl+C untuk berhenti.' -ForegroundColor DarkGray
 
 while ($true) {
+    # Pantau perubahan dan mulai sinkronisasi setelah jeda edit berakhir.
     $changes = Get-WorktreeChanges
     if ($changes.Count -eq 0) {
         Start-Sleep -Seconds $PollSeconds

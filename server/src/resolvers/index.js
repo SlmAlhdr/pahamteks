@@ -6,6 +6,7 @@ import { isDbConnected } from '../config/db.js';
 
 export const resolvers = {
     Query: {
+        // Gabungkan status layanan dengan resolver fitur lainnya.
         serverStatus: () => {
             const status = getApiKeyPoolStatus();
             return {
@@ -26,4 +27,3 @@ export const resolvers = {
         ...historyResolvers.Mutation
     }
 };
-

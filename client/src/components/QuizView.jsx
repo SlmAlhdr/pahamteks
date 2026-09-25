@@ -134,6 +134,7 @@ const CODING_CATEGORIES_EN = [
   { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
+// Baca progres topik dari penyimpanan akun atau sesi tamu.
 function getSavedProgress(topic) {
   try {
     const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress');
@@ -147,6 +148,7 @@ function getSavedProgress(topic) {
   return { currentUnit: 1, completedUnits: [] };
 }
 
+// Simpan bab yang selesai dan bab berikutnya ke penyimpanan browser.
 function saveProgress(topic, unitDone, nextUnit) {
   try {
     const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress') || '{}';
@@ -220,6 +222,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
   const activeUnitObj = unitsList.find(u => u.unit === currentUnit) || unitsList[0];
 
+  // Muat soal tantangan atau kuis reguler untuk bab yang dipilih.
   const handleStart = async ({ isChallengeMode = false, unitToLoad = currentUnit, forceRefresh = false } = {}) => {
     setCurrentIndex(0);
     setSelectedAnswerIndex(null);
@@ -255,6 +258,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     }
   };
 
+  // Lanjut ke bab berikutnya dan minta set soal baru.
   const handleContinueNextUnit = () => {
     const nextUnitNum = currentUnit < 5 ? currentUnit + 1 : 1;
     handleStart({ unitToLoad: nextUnitNum, forceRefresh: true });
@@ -262,6 +266,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
   const currentQ = questions[currentIndex];
 
+  // Catat pilihan sekali dan perbarui skor serta ringkasan jawaban.
   const handleSelectAnswer = (opt, index) => {
     if (selectedAnswerIndex !== null) return;
     setSelectedAnswerIndex(index);
@@ -286,6 +291,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     ]);
   };
 
+  // Pindah soal, atau simpan progres saat kuis selesai.
   const handleNext = () => {
     setSelectedAnswerIndex(null);
     setExplanation('');
@@ -311,6 +317,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
     }
   };
 
+  // Minta AI menjelaskan perbedaan jawaban pengguna dan kunci jawaban.
   const handleAskWhyWrong = async () => {
     if (!currentQ || selectedAnswerIndex === null) return;
     setExplaining(true);

@@ -55,14 +55,17 @@ export default function App() {
     }
   }, []);
 
+  // Ambil teks sesuai bahasa aktif, lalu gunakan Bahasa Indonesia sebagai fallback.
   const t = (key) => {
     return dict[currentLang]?.[key] || dict['id']?.[key] || key;
   };
 
+  // Ganti bahasa UI antara Indonesia dan Inggris.
   const toggleLanguage = () => {
     setCurrentLang(prev => prev === 'id' ? 'en' : 'id');
   };
 
+  // Buka modal akun pada alur login, daftar, atau reset yang dipilih.
   const handleOpenAuth = (mode = 'login') => {
     setAuthInitialMode(mode);
     setIsAuthOpen(true);
@@ -109,6 +112,7 @@ export default function App() {
     setActiveTab('home');
   };
 
+  // Bersihkan sesi dan data sementara sebelum kembali ke beranda.
   const handleLogout = () => {
     const wasGuest = user?.isGuest;
     setUser(null);
@@ -131,6 +135,7 @@ export default function App() {
     });
   };
 
+  // Tambahkan hasil kuis dan simpan sesuai jenis sesi pengguna.
   const handleFinishQuiz = (newLog) => {
     setQuizHistory(prev => {
       const updated = [newLog, ...prev];

@@ -12,6 +12,7 @@ import {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'pahamteks_jwt_super_secure_key_2026';
 
+// Buat token sesi yang dipakai client setelah autentikasi berhasil.
 function createJwtToken(user) {
     return jwt.sign(
         {
@@ -37,6 +38,7 @@ function isValidUsername(username) {
 
 export const authResolvers = {
     Query: {
+        // Cari profil melalui email atau username, termasuk fallback memori.
         me: async (_, { email }) => {
             if (!email) return null;
             const cleanIdentifier = email.trim().toLowerCase();
@@ -82,6 +84,7 @@ export const authResolvers = {
     },
 
     Mutation: {
+        // Kirim OTP pendaftaran setelah cek batas permintaan dan duplikasi email.
         sendOtp: async (_, { email }, context) => {
             if (!email || !email.trim()) {
                 return { success: false, message: 'Alamat email wajib diisi!' };
@@ -139,6 +142,7 @@ export const authResolvers = {
             };
         },
 
+        // Verifikasi OTP, simpan akun baru, lalu buat sesi pengguna.
         register: async (_, { email, password, username, fname, lname, otp }, context) => {
             const finalUsername = (username || fname || '').trim();
 
@@ -291,6 +295,7 @@ export const authResolvers = {
             };
         },
 
+        // Validasi kredensial dan proteksi brute-force sebelum membuat sesi.
         login: async (_, { email, password }, context) => {
             if (!email || !password) {
                 return { success: false, message: 'Email/Username dan kata sandi wajib diisi!' };
@@ -395,6 +400,7 @@ export const authResolvers = {
             };
         },
 
+        // Kirim kode reset setelah memastikan akun dapat ditemukan.
         requestPasswordReset: async (_, { email }, context) => {
             if (!email || !email.trim()) {
                 return { success: false, message: 'Alamat email atau username wajib diisi!' };
@@ -473,6 +479,7 @@ export const authResolvers = {
             };
         },
 
+        // Ganti kata sandi hanya jika kode reset masih valid.
         resetPassword: async (_, { email, otp, newPassword }) => {
             if (!email || !otp || !newPassword) {
                 return { success: false, message: 'Semua kolom wajib diisi lengkap!' };

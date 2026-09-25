@@ -4,6 +4,7 @@ const memLogs = [];
 
 export const historyResolvers = {
     Query: {
+        // Ambil log aktivitas terbaru dari database atau fallback memori.
         userLogs: async (_, { limit = 20 }) => {
             if (isDbConnected()) {
                 const db = getDb();
@@ -28,6 +29,7 @@ export const historyResolvers = {
     },
 
     Mutation: {
+        // Simpan aktivitas pengguna tanpa menggagalkan alur utama bila DB gagal.
         logActivity: async (_, { action, details, userId }) => {
             if (!action) return false;
 
@@ -56,4 +58,3 @@ export const historyResolvers = {
         }
     }
 };
-

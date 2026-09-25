@@ -761,6 +761,7 @@ export function ClusterStagePlatform({ className = '' }) {
 /**
  * Suara Sintesis Interaktif Menggunakan Web Audio API (Zero Dependency)
  */
+// Buat efek suara singkat sesuai karakter tanpa aset audio tambahan.
 function playCharacterSound(type) {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -983,6 +984,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
   const [bubbleFact, setBubbleFact] = useState(null);
   const autoCloseTimerRef = useRef(null);
 
+  // Tampilkan dialog karakter, mainkan suara, lalu tutup otomatis.
   const handleCharacterClick = (charKey) => {
     playCharacterSound(charKey);
     setBouncingChar(charKey);
@@ -1002,6 +1004,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
     }, 7000);
   };
 
+  // Tampilkan fakta dari balon informasi dan tutup otomatis.
   const handleBubbleClick = (bubbleKey) => {
     playCharacterSound('teksie');
     const fact = BUBBLE_FACTS[bubbleKey];

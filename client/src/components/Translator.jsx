@@ -32,6 +32,7 @@ export default function Translator({ t, currentLang }) {
   const [translateMutation, { loading: translating }] = useMutation(TRANSLATE_MUTATION);
   const [transcribeMutation, { loading: transcribing }] = useMutation(TRANSCRIBE_AUDIO_MUTATION);
 
+  // Kirim teks dan pilihan bahasa ke layanan penerjemah.
   const handleTranslate = async (textToTranslate = sourceText) => {
     if (!textToTranslate.trim()) {
       setTargetText('');
@@ -56,6 +57,7 @@ export default function Translator({ t, currentLang }) {
     }
   };
 
+  // Tukar bahasa sumber/tujuan sekaligus isi kedua kolom.
   const handleSwap = () => {
     if (sourceLang === 'auto') return;
     const prevSource = sourceLang;
@@ -69,6 +71,7 @@ export default function Translator({ t, currentLang }) {
     setTargetText(prevSourceText);
   };
 
+  // Rekam audio, minta transkripsi, lalu terjemahkan hasilnya.
   const handleVoiceInput = async () => {
     if (isRecording) {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
@@ -131,6 +134,7 @@ export default function Translator({ t, currentLang }) {
     }
   };
 
+  // Salin hasil terjemahan dan tampilkan status singkat.
   const copyToClipboard = () => {
     if (!targetText) return;
     navigator.clipboard?.writeText(targetText);

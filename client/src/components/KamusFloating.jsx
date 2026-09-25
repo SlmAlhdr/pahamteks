@@ -17,6 +17,7 @@ export default function KamusFloating({ t, currentLang }) {
 
   const [fetchDictionary, { loading }] = useLazyQuery(GET_DICTIONARY);
 
+  // Cari definisi AI dari panel kamus mengambang.
   const handleSearch = async (kw = keyword) => {
     if (!kw.trim()) return;
     setResult(currentLang === 'id' ? 'Mencari penjelasan...' : 'Searching definition...');
@@ -32,6 +33,7 @@ export default function KamusFloating({ t, currentLang }) {
     }
   };
 
+  // Pilih istilah acak untuk contoh pencarian cepat.
   const handleRandom = () => {
     const randomWord = RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
     setKeyword(randomWord);

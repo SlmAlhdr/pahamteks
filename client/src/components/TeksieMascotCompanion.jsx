@@ -540,6 +540,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
   useEffect(() => {
     if (!isDragging) return;
 
+    // Geser maskot mengikuti pointer dan batasi posisinya di layar.
     const onPointerMove = (e) => {
       const clientX = e.clientX;
       const clientY = e.clientY;
@@ -556,6 +557,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       setCoords({ x: newX, y: newY });
     };
 
+    // Simpan posisi baru saat drag selesai.
     const onPointerUp = (e) => {
       setIsDragging(false);
 

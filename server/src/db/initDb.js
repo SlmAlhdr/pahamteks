@@ -8,6 +8,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Siapkan database MySQL dan jalankan skema serta migrasi yang diperlukan.
 async function initDatabase() {
     console.log('🚀 [DB INIT] Memulai inisialisasi database MySQL untuk PahamTeks...');
 
@@ -71,4 +72,3 @@ async function initDatabase() {
 }
 
 initDatabase();
-

@@ -278,6 +278,7 @@ export default function LanguageInsights({ t, currentLang }) {
   const [aiAnalysis, setAiAnalysis] = useState('');
   const [fetchDictionary, { loading: aiLoading }] = useLazyQuery(GET_DICTIONARY);
 
+  // Ubah nama bahasa ke label sesuai mode dan bahasa UI.
   const getLangName = (l) => {
     if (insightMode === 'human') {
       return HUMAN_LANG_NAMES[l]?.[currentLang] || l;
@@ -285,6 +286,7 @@ export default function LanguageInsights({ t, currentLang }) {
     return l;
   };
 
+  // Atur pasangan awal saat pengguna berpindah domain perbandingan.
   const handleModeChange = (mode) => {
     setInsightMode(mode);
     if (mode === 'human') {
@@ -297,6 +299,7 @@ export default function LanguageInsights({ t, currentLang }) {
     setAiAnalysis('');
   };
 
+  // Minta AI membandingkan dua bahasa atau teknologi yang dipilih.
   const handleRunAiComparison = async () => {
     const l1 = getLangName(lang1);
     const l2 = getLangName(lang2);

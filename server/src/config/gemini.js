@@ -21,6 +21,7 @@ if (apiKeysPool.length === 0) {
 
 let currentKeyIndex = 0;
 
+// Ambil API key berikutnya secara melingkar dari pool yang tersedia.
 export function getNextApiKey() {
     if (apiKeysPool.length === 0) {
         throw new Error('API Key Gemini belum terpasang di server/.env (Gunakan GEMINI_API_KEY_1 atau GEMINI_API_KEY).');
@@ -50,6 +51,7 @@ export async function generateSafeContent(prompt) {
     const maxAttempts = Math.max(apiKeysPool.length * 2, 4);
     let lastError = null;
 
+    // Ulangi permintaan agar kegagalan kuota/model sementara bisa dialihkan.
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const apiKey = getNextApiKey();
         const ai = new GoogleGenAI({ apiKey });
@@ -123,6 +125,7 @@ export async function transcribeAudioSafe(audioBase64, mimeType = 'audio/webm', 
     const maxAttempts = Math.max(apiKeysPool.length * 2, 4);
     let lastError = null;
 
+    // Coba key dan model berikutnya jika layanan sebelumnya gagal.
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const apiKey = getNextApiKey();
         const ai = new GoogleGenAI({ apiKey });
@@ -156,4 +159,3 @@ export async function transcribeAudioSafe(audioBase64, mimeType = 'audio/webm', 
 
     throw new Error('Gagal mentranskripsi audio karena kuota API Key habis.');
 }
-

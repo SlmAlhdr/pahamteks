@@ -1,7 +1,7 @@
 export const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
 /**
- * Normalizes question option text by removing prefixes like "A.", "1.", etc.
+ * Hapus awalan label opsi agar teks soal konsisten saat dibandingkan.
  */
 export function cleanOptionText(raw) {
   if (raw == null) return '';
@@ -9,7 +9,7 @@ export function cleanOptionText(raw) {
 }
 
 /**
- * Validates whether a selected option matches the correct answer key
+ * Cocokkan pilihan dengan kunci, baik kunci huruf maupun teks jawaban.
  */
 export function isOptionCorrect(opt, index, q) {
   if (!q || !q.answer) return false;
@@ -32,4 +32,3 @@ export function isOptionCorrect(opt, index, q) {
 
   return false;
 }
-

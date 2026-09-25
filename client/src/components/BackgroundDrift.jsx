@@ -20,6 +20,7 @@ export default function BackgroundDrift() {
     const trackHeight = Math.max(window.innerHeight / totalTexts, 40);
     const floatingTexts = [];
 
+    // Buat satu elemen untuk tiap sapaan; semua elemen dianimasikan bersama.
     for (let i = 0; i < totalTexts; i++) {
       const el = document.createElement('div');
       el.className = 'hello-text';
@@ -43,6 +44,7 @@ export default function BackgroundDrift() {
     }
 
     let animId;
+    // Perbarui posisi elemen pada setiap frame dan ulangi animasinya.
     function animateTexts() {
       const width = window.innerWidth;
       floatingTexts.forEach(t => {

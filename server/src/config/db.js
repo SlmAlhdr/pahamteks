@@ -68,6 +68,7 @@ export async function testDbConnection() {
  * - Menjaga replikasi data ke cadangan saat ada penulisan data baru.
  */
 export function getDb() {
+    // Gunakan MySQL saat tersedia, lalu teruskan query ke SQLite saat gagal.
     return {
         execute: async (sql, params = []) => {
             // Jika MySQL terhubung, coba eksekusi di MySQL

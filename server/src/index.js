@@ -3,6 +3,7 @@ import app from './app.js';
 import { testDbConnection } from './config/db.js';
 import { getApiKeyPoolStatus } from './config/gemini.js';
 
+// Jalankan Express pada port environment atau port lokal default.
 const PORT = process.env.PORT || 4000;
 const httpServer = http.createServer(app);
 

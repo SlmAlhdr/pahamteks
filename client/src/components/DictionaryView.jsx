@@ -174,6 +174,7 @@ export default function DictionaryView({ t, currentLang }) {
 
   const [fetchDictionary, { loading }] = useLazyQuery(GET_DICTIONARY);
 
+  // Ambil definisi AI untuk kata yang dicari.
   const handleSearch = async (kw = keyword) => {
     if (!kw.trim()) return;
     setResult(currentLang === 'id' ? 'Menghubungkan ke server AI...' : 'Connecting to AI server...');
@@ -189,12 +190,14 @@ export default function DictionaryView({ t, currentLang }) {
     }
   };
 
+  // Pilih kata populer secara acak lalu cari definisinya.
   const handleRandom = () => {
     const randomWord = QUICK_WORDS[Math.floor(Math.random() * QUICK_WORDS.length)];
     setKeyword(randomWord);
     handleSearch(randomWord);
   };
 
+  // Isi kolom pencarian dari daftar istilah dan tampilkan hasilnya.
   const handleSelectWord = (word) => {
     setKeyword(word);
     handleSearch(word);

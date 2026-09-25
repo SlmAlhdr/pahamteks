@@ -15,6 +15,7 @@ export default function ChallengeView() {
     fetchPolicy: 'network-only'
   });
 
+  // Ambil paket soal tantangan untuk kategori yang dipilih.
   const handleStart = async () => {
     setSubmitted(false);
     setAnswers({});
@@ -31,11 +32,13 @@ export default function ChallengeView() {
     }
   };
 
+  // Simpan satu pilihan per soal dan kunci jawaban setelah dikirim.
   const handleSelect = (qIndex, optIndex) => {
     if (submitted) return;
     setAnswers(prev => ({ ...prev, [qIndex]: optIndex }));
   };
 
+  // Hitung jumlah jawaban benar dari semua soal yang sudah dijawab.
   const calculateScore = () => {
     let s = 0;
     questions.forEach((q, i) => {
@@ -161,4 +164,3 @@ export default function ChallengeView() {
     </div>
   );
 }
-

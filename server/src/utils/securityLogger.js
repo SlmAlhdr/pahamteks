@@ -13,6 +13,7 @@ const OTP_WINDOW_MS = 10 * 60 * 1000; // 10 menit
 /**
  * Catat audit keamanan ke konsol dan database
  */
+// Simpan audit keamanan ke database dan gunakan log server bila gagal.
 export async function logSecurityEvent({ eventType, severity = 'INFO', identifier = null, ip = null, details = null, userId = null }) {
     const timestamp = new Date().toISOString();
     const icon = severity === 'ALERT' ? '🚨' : severity === 'WARN' ? '⚠️' : '🛡️';
@@ -37,6 +38,7 @@ export async function logSecurityEvent({ eventType, severity = 'INFO', identifie
 /**
  * Cek apakah akun atau IP sedang diblokir karena brute-force login
  */
+// Periksa apakah identitas login masih berada dalam masa blokir.
 export function checkLoginBruteForce(identifier, ip = 'unknown') {
     const key = (identifier || '').toLowerCase().trim();
     if (!key) return { isBlocked: false };
@@ -65,6 +67,7 @@ export function checkLoginBruteForce(identifier, ip = 'unknown') {
 /**
  * Catat kegagalan login dan picu blokir jika melebihi batas
  */
+// Catat kegagalan login dan blokir sementara setelah batas terlampaui.
 export function recordLoginFailure(identifier, ip = 'unknown') {
     const key = (identifier || '').toLowerCase().trim();
     if (!key) return;
@@ -98,6 +101,7 @@ export function recordLoginFailure(identifier, ip = 'unknown') {
 /**
  * Reset catatan kegagalan saat login berhasil
  */
+// Hapus hitungan gagal setelah login sukses dan catat peristiwanya.
 export function recordLoginSuccess(identifier, ip = 'unknown', userId = null) {
     const key = (identifier || '').toLowerCase().trim();
     if (key) {
@@ -116,6 +120,7 @@ export function recordLoginSuccess(identifier, ip = 'unknown', userId = null) {
 /**
  * Batasi frekuensi permohonan OTP untuk mencegah email bombing / resource exhaustion
  */
+// Batasi pengiriman OTP per email dalam satu jendela waktu.
 export function checkOtpRateLimit(email, ip = 'unknown') {
     const key = (email || '').toLowerCase().trim();
     const now = Date.now();
@@ -145,4 +150,3 @@ export function checkOtpRateLimit(email, ip = 'unknown') {
     otpRequestAttempts.set(key, record);
     return { allowed: true };
 }
-

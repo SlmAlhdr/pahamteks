@@ -24,6 +24,7 @@ export const LANGUAGES_MAP = {
 const quizCache = new Map();
 const dictionaryCache = new Map();
 
+// Ambil JSON dari keluaran AI yang mungkin dibungkus markdown.
 function parseSafeJson(rawText) {
     try {
         let cleaned = rawText.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '').trim();
@@ -47,6 +48,7 @@ export const geminiResolvers = {
             }));
         },
 
+        // Cari definisi AI dan gunakan cache untuk kata yang pernah dicari.
         dictionary: async (_, { keyword, lang = 'id' }) => {
             if (!keyword || !keyword.trim()) {
                 return { result: '', error: lang === 'en' ? 'Search keyword cannot be empty!' : 'Kata kunci pencarian tidak boleh kosong!' };
@@ -88,6 +90,7 @@ Pedoman Penulisan:
             }
         },
 
+        // Buat soal sesuai topik/unit dan gunakan cache kecuali diminta refresh.
         generateQuiz: async (_, { categories, level, lang = 'id', unit = 1, topicDetail = '', refresh = false }) => {
             const isEn = lang === 'en';
             const cleanCategories = Array.isArray(categories) ? categories : [categories || 'General'];
@@ -180,6 +183,7 @@ Pedoman Penulisan:
             }
         },
 
+        // Hasilkan soal tantangan untuk kategori yang dipilih.
         generateChallenge: async (_, { category, lang = 'id' }) => {
             const isEn = lang === 'en';
             const prompt = isEn
@@ -229,6 +233,7 @@ Pedoman Penulisan:
     },
 
     Mutation: {
+        // Terjemahkan teks sesuai bahasa sumber dan tujuan.
         translate: async (_, { text, source, target }) => {
             if (!text || !text.trim()) {
                 return { translatedText: '', error: null };
@@ -251,6 +256,7 @@ Pedoman Penulisan:
             }
         },
 
+        // Jelaskan letak kesalahan dan konsep di balik jawaban yang benar.
         explainAnswer: async (_, { question, userAnswer, correctAnswer, category = 'General', lang = 'id' }) => {
             if (!question || !question.trim()) {
                 return { explanation: '', error: 'Pertanyaan tidak boleh kosong!' };
@@ -286,6 +292,7 @@ Pedoman Penulisan:
             }
         },
 
+        // Ubah data audio yang dikirim client menjadi teks.
         transcribeAudio: async (_, { audioBase64, mimeType = 'audio/webm', lang = 'id' }) => {
             if (!audioBase64 || !audioBase64.trim()) {
                 return { text: '', error: 'Data audio tidak ditemukan!' };

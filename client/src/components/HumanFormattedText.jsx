@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 /**
  * Format string inline sederhana: **bold**, *italic*, dan `code`
  */
+// Ubah format inline sederhana dari jawaban AI menjadi elemen React.
 function renderInline(text) {
   if (!text) return null;
 
@@ -35,6 +36,7 @@ function renderInline(text) {
   });
 }
 
+// Render teks miring, termasuk yang berada di dalam teks tebal.
 function renderItalicOnly(text, keyPrefix = '') {
   if (!text) return null;
   const parts = text.split(/(\*[^*]+\*)/g);
@@ -53,6 +55,7 @@ function renderItalicOnly(text, keyPrefix = '') {
 function CodeSnippet({ code, lang }) {
   const [copied, setCopied] = useState(false);
 
+  // Salin potongan kode dan tampilkan tanda berhasil sementara.
   const handleCopy = () => {
     navigator.clipboard?.writeText(code);
     setCopied(true);
@@ -77,6 +80,7 @@ function CodeSnippet({ code, lang }) {
 export default function HumanFormattedText({ content }) {
   if (!content) return null;
 
+  // Pisahkan blok kode dari teks agar tiap format bisa dirender terpisah.
   let cleanText = content
     .replace(/^(\*{0,3}\s*)?Kamus\s+(Pintar\s+)?AI\s*(\*{0,3})?:?/gim, '')
     .replace(/^\s*[-*_]{3,}\s*$/gm, '')
@@ -106,6 +110,7 @@ export default function HumanFormattedText({ content }) {
       let currentList = [];
 
       const flushList = () => {
+        // Tutup daftar yang sedang dikumpulkan sebelum pindah format.
         if (currentList.length > 0) {
           elements.push(
             <ul key={`ul-${elements.length}`} className="human-list">
@@ -185,4 +190,3 @@ export default function HumanFormattedText({ content }) {
     </div>
   );
 }
-

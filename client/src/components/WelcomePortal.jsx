@@ -52,6 +52,7 @@ export default function WelcomePortal({
   const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
   const [resetPasswordMutation, { loading: resetLoading }] = useMutation(RESET_PASSWORD_MUTATION);
 
+  // Minta kode verifikasi email sebelum pendaftaran.
   const handleSendOtp = async () => {
     if (!email.trim()) {
       setStatusMsg({ text: 'Masukkan alamat email terlebih dahulu.', isError: true });
@@ -70,6 +71,7 @@ export default function WelcomePortal({
     }
   };
 
+  // Minta OTP reset berdasarkan email atau username.
   const handleRequestPasswordReset = async () => {
     if (!email.trim()) {
       setStatusMsg({ text: 'Masukkan email atau username akun Anda!', isError: true });
@@ -88,6 +90,7 @@ export default function WelcomePortal({
     }
   };
 
+  // Validasi formulir lalu kirim OTP dan kata sandi baru ke server.
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (!email.trim() || !otp.trim() || !newPassword.trim()) {
@@ -125,6 +128,7 @@ export default function WelcomePortal({
     }
   };
 
+  // Kirim kredensial dan teruskan data akun saat login berhasil.
   const handleLogin = async (e) => {
     e.preventDefault();
     setStatusMsg({ text: '', isError: false });
@@ -140,6 +144,7 @@ export default function WelcomePortal({
     }
   };
 
+  // Daftarkan akun dengan email, username, kata sandi, dan OTP.
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!username.trim()) {

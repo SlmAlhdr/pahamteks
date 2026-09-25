@@ -21,6 +21,7 @@ const TABLES = [
     'translations'
 ];
 
+// Ekspor isi tabel yang dipilih ke snapshot SQL lokal.
 async function exportSqlBackup() {
     console.log('📦 [SQL BACKUP EXPORTER] Memulai pencadangan data ke berkas SQL snapshot...');
     const db = getDb();
@@ -41,6 +42,7 @@ async function exportSqlBackup() {
 
     let totalRowsExported = 0;
 
+    // Ekspor tiap tabel; kesalahan satu tabel dicatat tanpa menghentikan sisanya.
     for (const table of TABLES) {
         try {
             const [rows] = await db.execute(`SELECT * FROM ${table}`);
@@ -87,4 +89,3 @@ exportSqlBackup().catch(err => {
     console.error('❌ [SQL BACKUP EXPORTER] Terjadi kesalahan:', err);
     process.exit(1);
 });
-

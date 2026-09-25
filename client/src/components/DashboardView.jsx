@@ -1,6 +1,7 @@
 import React from 'react';
 
 export default function DashboardView({ t, user, history = [], onOpenAuth, onBackHome, currentLang }) {
+  // Ringkas jumlah sesi dan nilai rata-rata untuk kartu progres pengguna.
   const totalSessions = history.length;
   const avgScore = totalSessions > 0
     ? Math.round(history.reduce((acc, curr) => acc + (curr.score / curr.total) * 100, 0) / totalSessions)
