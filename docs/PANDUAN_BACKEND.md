@@ -268,6 +268,92 @@ query {
 
 ---
 
+## 👑 Akses & Pemantauan Khusus Administrator (Admin & Ops Guide)
+
+Bagi pengembang atau administrator yang ingin mengawasi kesehatan server, melacak log aktivitas pengguna, dan mengelola database, berikut peta berkas dan pintu akses admin yang tersedia di backend:
+
+### 1. Peta Berkas Akses Admin di Server
+
+| Kebutuhan Admin | Berkas yang Bertanggung Jawab | Cara Mengakses |
+| :--- | :--- | :--- |
+| **Status Kesehatan Server (Health & Uptime)** | `server/src/app.js` | Akses browser/curl ke `GET http://localhost:4000/health` |
+| **Kueri Status Server GraphQL** | `server/src/schema/typeDefs.js` & `server/src/resolvers/authResolvers.js` | Kueri GraphQL `serverStatus` di Playground |
+| **Audit Trail & Log Aktivitas Pengguna** | `server/src/resolvers/historyResolvers.js` | Kueri GraphQL `userLogs(limit: Int)` di Playground |
+| **Log Keamanan & Brute-Force Guard** | `server/src/utils/securityLogger.js` | Tabel `security_events` & pencatatan log otomatis |
+| **Ekspor Backup Database SQL** | `server/src/db/exportSqlBackup.js` | Jalankan terminal: `node server/src/db/exportSqlBackup.js` |
+| **Akses Langsung Basis Data (GUI)** | `server/data/pahamteks_backup.sqlite` | Buka file dengan *DB Browser for SQLite* atau *DBeaver* |
+
+---
+
+### 2. Memeriksa Pemantauan Kesehatan Server via REST `/health`
+
+Endpoint ini dibuat khusus agar administrator atau layanan monitoring (seperti UptimeRobot/BetterStack) bisa memeriksa kondisi server secara instan:
+
+```powershell
+curl http://localhost:4000/health
+```
+
+**Contoh Output Balasan:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-09-25T12:50:00.000Z",
+  "database": {
+    "connected": true,
+    "mode": "SQLite (Fallback Engine)"
+  },
+  "gemini": {
+    "poolSize": 3,
+    "status": "active"
+  },
+  "memory": {
+    "rss": "65.4 MB",
+    "heapUsed": "38.2 MB"
+  }
+}
+```
+
+---
+
+### 3. Kueri Khusus Administrator di GraphQL Playground
+
+Buka browser di `http://localhost:4000/graphql`, lalu admin dapat mengeksekusi kueri berikut:
+
+#### A. Memeriksa Jumlah Kunci AI & Status Database:
+```graphql
+query AdminCheckServer {
+  serverStatus {
+    status
+    geminiKeysCount
+    dbConnected
+    timestamp
+  }
+}
+```
+
+#### B. Memeriksa Audit Trail 50 Aktivitas Terakhir Pengguna:
+```graphql
+query AdminAuditLogs {
+  userLogs(limit: 50) {
+    id
+    userId
+    action
+    details
+    createdAt
+  }
+}
+```
+
+---
+
+### 4. Roadmap Arsitektur: Rencana Panel Admin Khusus (Role-Based Admin)
+Saat ini hak akses sistem dikelola melalui otentikasi JWT dan endpoint pemantauan di atas. Jika tim ingin membuat **Dashboard Admin Visual** di frontend:
+1. Tambahkan kolom `role TEXT DEFAULT 'student'` di tabel `users` (`'student'` vs `'admin'`).
+2. Buat middleware otentikasi di backend yang memverifikasi `user.role === 'admin'`.
+3. Sediakan komponen frontend khusus `AdminDashboardView.jsx` yang hanya bisa dibuka oleh pengguna dengan role admin.
+
+---
+
 ## 🚀 Perintah Menjalankan Backend & Utilitas
 
 ```powershell

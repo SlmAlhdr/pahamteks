@@ -242,6 +242,25 @@ Misalnya kamu diminta membuat tampilan baru bernama **FlashcardView**:
 
 ---
 
+## 👑 Catatan Akses & Dasbor Administrator di Frontend
+
+Banyak rekan tim yang bertanya: *"Di mana file akses admin di frontend?"*
+
+Berikut status dan peta akses admin di sisi antarmuka:
+1. **Dasbor yang Ada Saat Ini (`DashboardView.jsx`)**:
+   Berkas ini adalah **Dasbor Akun Pemelajar** (*Student Dashboard*). Fungsinya adalah menampilkan statistik skor kuis pribadi, riwayat pengerjaan, dan akurasi belajar pengguna yang sedang login.
+2. **Akses Pemantauan Admin Saat Ini**:
+   Saat ini, pemantauan status server, kuota AI Gemini, dan audit aktivitas pengguna diakses langsung oleh pengembang/admin melalui:
+   - **REST Health Check**: `http://localhost:4000/health` (menampilkan status database, pool Gemini, dan memori RAM).
+   - **GraphQL Playground**: `http://localhost:4000/graphql` menggunakan kueri `serverStatus` dan `userLogs(limit: 50)`.
+3. **Panduan Menambahkan Halaman Admin Visual (`AdminDashboardView.jsx`)**:
+   Jika tim ingin membuat halaman admin visual di frontend:
+   - Buat komponen baru `client/src/components/AdminDashboardView.jsx`.
+   - Gunakan kueri `GET_SERVER_STATUS` dan `GET_USER_LOGS` yang sudah siap di `client/src/graphql/queries.js`.
+   - Pasang proteksi di `App.jsx` agar tab admin hanya bisa dibuka jika akun pengguna memiliki tanda/role admin (`user.isAdmin === true`).
+
+---
+
 ## 🛑 Standar Kualitas Koding (Zero AI Slop)
 
 1. **Dilarang Browser Alert**: Jangan pernah menulis `alert("Berhasil!")` atau `confirm("Yakin?")`. Gunakan `CenterNotificationModal`.

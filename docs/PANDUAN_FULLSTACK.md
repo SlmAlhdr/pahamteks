@@ -261,6 +261,50 @@ Salin berkas `.env.example` menjadi `server/.env`:
 
 ---
 
+## 👑 Akses & Pemantauan Administrator Secara End-to-End
+
+Dalam arsitektur fullstack PahamTeks, administrator dan pengembang memiliki beberapa pintu inspeksi untuk memantau kesehatan ekosistem secara menyeluruh dari hulu ke hilir:
+
+### 1. Peta Pintu Masuk Akses Admin
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                             AKSES PEMANTAUAN ADMIN                               │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ 1. REST Health Check   : GET http://localhost:4000/health (JSON Uptime, RAM, DB) │
+│ 2. GraphQL Playground  : POST http://localhost:4000/graphql (serverStatus, logs) │
+│ 3. Database Explorer   : File SQLite server/data/pahamteks_backup.sqlite via GUI │
+│ 4. Backup CLI Script   : node server/src/db/exportSqlBackup.js                   │
+│ 5. Audit Trail Logs    : Tabel security_events & user_activity_logs              │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2. Cara Administrator Memeriksa Sistem
+* **Pemeriksaan Cepat (Uptime & RAM)**: Kunjungi `http://localhost:4000/health`. Jika muncul status `"status": "ok"` dan `"connected": true`, seluruh pipa backend dan database berfungsi normal.
+* **Memeriksa Audit Log Pemelajar**: Buka `http://localhost:4000/graphql` dan jalankan:
+  ```graphql
+  query AdminAuditLogs {
+    serverStatus {
+      geminiKeysCount
+      dbConnected
+      timestamp
+    }
+    userLogs(limit: 20) {
+      id
+      userId
+      action
+      details
+      createdAt
+    }
+  }
+  ```
+
+### 3. Perbedaan Dasbor Pengguna vs Dasbor Administrator
+* **Dasbor Saat Ini (`client/src/components/DashboardView.jsx`)**: Merupakan **Dasbor Akun Pemelajar** (menampilkan skor kuis pribadi, riwayat pengerjaan, dan akurasi belajar).
+* **Rencana Dasbor Admin (`AdminView`)**: Direncanakan pada roadmap untuk menampilkan agregat seluruh pemelajar, grafik utilisasi kuota Gemini API, dan manajemen konten kuis.
+
+---
+
 ## 🚀 Alur Kerja Harian Menjalankan Kedua Server
 
 Buka dua jendela terminal terpisah di komputer kamu:
