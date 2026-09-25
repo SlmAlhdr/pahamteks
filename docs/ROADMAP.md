@@ -110,5 +110,49 @@ Fase ini dirancang untuk membawa PahamTeks ke ranah publik yang lebih luas dan m
 
 ---
 
+## 🗣️ Bahan Diskusi Tim: Usulan Fokus dan Tanggung Jawab
+
+Bagian ini adalah bahan rapat untuk disepakati bersama, bukan penetapan tugas atau tenggat final. Sesuaikan status fase setelah tim memeriksa kondisi aplikasi dan memilih prioritas.
+
+### Urutan Prioritas yang Diusulkan
+
+1. **Fondasi kualitas dan kesiapan rilis**
+   - Susun skenario QA untuk mode tamu, login/OTP, pengerjaan dan penyimpanan skor kuis, kamus, penerjemah, serta tampilan mobile.
+   - Catat bug dengan langkah reproduksi, dampak, dan status perbaikan; tambahkan tes otomatis untuk logika dan alur penting secara bertahap.
+   - Aktifkan pemantauan endpoint `/health` dan error produksi; dokumentasikan backup, uji pemulihan data, serta langkah rollback.
+2. **Mutu materi dan validasi pengalaman belajar**
+   - Tetapkan capaian belajar dan tingkat kesulitan tiap unit.
+   - Tinjau akurasi soal, jawaban, contoh, dan penjelasan AI menggunakan sampel materi yang disepakati.
+   - Kumpulkan umpan balik pemelajar dan pilih indikator sederhana untuk menilai apakah fitur membantu.
+3. **Pengembangan fitur belajar berikutnya**
+   - Setelah fondasi kualitas disepakati, pilih satu fitur fokus, misalnya EXP/streak atau penyempurnaan dashboard riwayat.
+   - Lanjutkan fitur suara dan ekspansi materi setelah mutu hasil AI, biaya, aksesibilitas, dan pengalaman pengguna dapat dievaluasi.
+
+### Usulan Pembagian Tanggung Jawab Awal
+
+| Anggota/peran | Usulan fokus | Catatan untuk diskusi |
+| :--- | :--- | :--- |
+| **Salim — Fullstack & Product Lead** | Integrasi teknis, prioritas produk, penerimaan masukan pengguna, dan koordinasi rilis. | Jaga agar keputusan dan review tidak menjadi bottleneck pada satu orang. |
+| **Devica — Frontend** | Antarmuka, responsivitas, aksesibilitas, dan implementasi UX. | Tentukan bagaimana kebutuhan desain dan uji pengguna masuk ke tugas frontend. |
+| **Irpan & Daffa — Backend** | Skema/API GraphQL, database, autentikasi, dan layanan AI. | Sepakati pembagian modul, pairing untuk tugas baru, dan review silang yang rutin. |
+| **Repan — uji coba QA satu sprint** | Menguji alur pengguna dan mencatat bug/regresi. | Konfirmasi minat dan kecocokan Repan terlebih dahulu; bila lebih cocok di materi, coba peran peninjau materi. |
+| **Kurator materi — kontribusi paruh waktu** | Memeriksa akurasi dan tingkat kesulitan materi bahasa serta pemrograman. | Dapat dijalankan oleh anggota/peninjau yang punya keahlian domain; belum perlu posisi penuh waktu. |
+| **DevOps — tanggung jawab bergilir** | Pemantauan, backup/pemulihan, konfigurasi rilis, dan respons insiden. | Tunjuk pemilik untuk tiap tugas operasional; pertimbangkan bantuan spesialis bila beban meningkat. |
+
+### Kriteria Selesai untuk Setiap Fitur
+
+- Tujuan dan alur pengguna yang ingin dibantu sudah jelas.
+- Skenario berhasil dan gagal diuji, termasuk layar ponsel bila fitur memiliki UI.
+- Error ditangani dengan pesan yang dapat dipahami dan tidak membocorkan data sensitif.
+- Perubahan frontend lulus build; perubahan backend diperiksa terhadap kontrak GraphQL dan dampak database.
+- Dokumentasi, pemantauan, dan cara pemulihan diperbarui bila perubahan memengaruhi operasi sistem.
+
+### Keputusan yang Perlu Dibawa Pulang dari Rapat
+
+- Pilih maksimal dua prioritas untuk sprint berikutnya dan sebutkan pemiliknya.
+- Sepakati apakah Repan ingin mencoba QA atau peninjauan materi.
+- Tentukan siapa yang memegang pemantauan dan pemulihan operasional.
+- Selaraskan urutan prioritas di roadmap ini dengan `docs/TODO.md`.
+
 ## 📌 Catatan Penutup untuk Tim
 Roadmap ini bersifat fleksibel (*living document*). Setiap kali kita menyelesaikan satu target sprint atau memiliki ide inovatif baru dari hasil uji coba pengguna, kita akan mendiskusikannya bersama dan memperbarui dokumen ini.

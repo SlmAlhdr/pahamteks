@@ -36,7 +36,39 @@ Dokumen ini adalah papan catatan bersama untuk memantau apa yang sudah beres, ap
 
 ---
 
-## 2. ⏳ Prioritas Sprint Saat Ini (Perlu Kita Bahas Bareng)
+## 2. 🗣️ Usulan Bahan Diskusi Sprint Berikutnya
+
+Daftar di bawah adalah usulan untuk diprioritaskan bersama, belum menjadi komitmen sprint sampai tim menyepakati pemilik dan ruang lingkupnya. Selaraskan pilihan akhir dengan bagian “Bahan Diskusi Tim” di [`ROADMAP.md`](./ROADMAP.md).
+
+1. **Fondasi QA dan regresi alur utama**:
+   - Buat checklist untuk mode tamu, login/OTP, kuis dan penyimpanan skor, kamus, penerjemah, serta tampilan mobile.
+   - Catat langkah reproduksi, dampak, pemilik perbaikan, dan status setiap bug.
+   - Tambahkan tes otomatis bertahap untuk logika kuis, API penting, dan alur pengguna yang paling sering dipakai.
+2. **Pemantauan dan kesiapan pemulihan**:
+   - Daftarkan endpoint `/health` ke pemantau eksternal dan sepakati siapa yang menerima notifikasi.
+   - Dokumentasikan backup serta uji pemulihan data secara berkala.
+   - Catat langkah rollback dan respons ketika layanan atau penyedia AI bermasalah.
+3. **Validasi mutu materi**:
+   - Tetapkan capaian belajar dan tingkat kesulitan untuk unit yang aktif.
+   - Buat sampel soal dan jawaban acuan untuk meninjau akurasi soal serta penjelasan AI.
+   - Tunjuk peninjau materi dan sepakati proses koreksi sebelum konten dirilis.
+4. **Masukan pengguna dan indikator sederhana**:
+   - Kumpulkan umpan balik pemelajar tentang bagian yang membingungkan atau gagal.
+   - Tentukan indikator awal, seperti penyelesaian kuis, error request, dan keberhasilan penyimpanan skor.
+5. **Pilih fitur belajar setelah fondasi disepakati**:
+   - Bahas EXP/streak dan penyempurnaan dashboard riwayat.
+   - Pilih satu fokus terlebih dahulu berdasarkan kebutuhan pengguna dan kesiapan data.
+
+### Keputusan yang Dicari dalam Rapat
+
+- Maksimal dua prioritas sprint, masing-masing dengan satu pemilik dan kriteria selesai.
+- Kesediaan Repan mencoba QA atau peninjauan materi selama satu sprint.
+- Pemilik bergilir untuk pemantauan, backup, dan prosedur rilis.
+- Kesepakatan alur Git tim, terutama penggunaan auto-sync yang dapat commit/push langsung ke `main` setelah jeda tanpa edit.
+
+## 3. ⏳ Prioritas Sprint Saat Ini (Perlu Kita Bahas Bareng)
+
+Daftar ini adalah prioritas yang sudah tercatat sebelumnya. Urutan dan statusnya perlu dikonfirmasi bersama usulan QA, pemulihan, dan validasi materi di bagian atas; jangan anggap semua item otomatis masuk sprint berikutnya.
 
 1. **Daftarkan Endpoint `/health` ke Pemantau Eksternal (UptimeRobot / BetterStack)**:
    - Endpoint `/health` backend kita sudah lengkap dengan data RAM, status database, dan pool key.
@@ -50,7 +82,7 @@ Dokumen ini adalah papan catatan bersama untuk memantau apa yang sudah beres, ap
 
 ---
 
-## 3. 💡 Tumpukan Ide Liar (Backlog Tim)
+## 4. 💡 Tumpukan Ide Liar (Backlog Tim)
 
 Ini ide-ide jangka panjang yang menurut saya sangat menarik jika PahamTeks sudah makin ramai:
 
