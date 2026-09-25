@@ -20,31 +20,59 @@ Teknologi utama yang kita pakai:
 
 ---
 
-## 📂 Peta Struktur Folder `server/`
+## 📂 Peta Lengkap File Backend (`server/`)
 
-Berikut denah berkas yang ada di dalam folder backend:
+Berikut **seluruh file** yang ada di folder backend beserta penjelasan fungsi masing-masing:
 
 ```text
 server/
+├── package.json                        <- Daftar pustaka (dependencies) backend
+├── .env                                <- Kunci rahasia API & konfigurasi database (JANGAN DIPUSH)
+├── .env.example                        <- Template .env untuk panduan tim baru
 ├── data/
-│   └── pahamteks_backup.sqlite  <- Database lokal SQLite (otomatis dibuat jika MySQL mati)
-├── src/
-│   ├── app.js                   <- Pengaturan Express, CORS, dan integrasi Apollo Server
-│   ├── index.js                 <- Pintu masuk utama: menjalankan server di port 4000
-│   ├── config/
-│   │   └── gemini.js            <- Pengaturan AI: rotasi API Key dan pemilihan model tercepat
-│   ├── database/
-│   │   ├── connection.js        <- Logika deteksi MySQL otomatis fallback ke SQLite
-│   │   └── migrations.js        <- Pembuat tabel otomatis saat server pertama menyala
-│   ├── resolvers/
-│   │   ├── authResolvers.js     <- Logika login, register, dan verifikasi JWT token
-│   │   ├── geminiResolvers.js   <- Logika kuis AI, kamus pintar, dan cache memori
-│   │   └── progressResolvers.js <- Logika penyimpanan riwayat kuis dan skor pemelajar
-│   └── schema/
-│       └── typeDefs.js          <- "Kontrak data": daftar semua Query dan Mutation GraphQL
-├── package.json
-└── .env                         <- Kunci rahasia API dan konfigurasi database (JANGAN DIPUSH)
+│   └── pahamteks_backup.sqlite         <- Database cadangan SQLite (otomatis dibuat)
+├── backups/
+│   └── *.sql                           <- Hasil backup database (otomatis, jangan di-push)
+└── src/
+    ├── index.js                        <- Pintu masuk utama: menjalankan server di port 4000
+    ├── app.js                          <- Pengaturan Express, CORS, Helmet, Rate Limiter, Apollo
+    │
+    ├── config/
+    │   ├── db.js                       <- Koneksi MySQL + auto-failover ke SQLite + auto-migrasi
+    │   └── gemini.js                   <- Rotasi API Key Gemini (round-robin 1-9) & pemilihan model
+    │
+    ├── db/
+    │   ├── fallbackDb.js               <- Mesin SQLite lokal: skema tabel & query executor
+    │   ├── initDb.js                   <- Skrip inisialisasi database (membuat tabel awal)
+    │   └── exportSqlBackup.js          <- Skrip ekspor backup database ke file .sql
+    │
+    ├── resolvers/
+    │   ├── index.js                    <- Penggabung semua resolver menjadi satu objek
+    │   ├── authResolvers.js            <- Login, register, OTP email, reset password, JWT token
+    │   ├── geminiResolvers.js          <- Kuis AI, kamus pintar, penerjemah, cache memori
+    │   └── historyResolvers.js         <- Riwayat kuis, log aktivitas, skor pemelajar
+    │
+    ├── schema/
+    │   └── typeDefs.js                 <- "Kontrak data" GraphQL: semua Query & Mutation
+    │
+    └── utils/
+        ├── emailService.js             <- Pengirim email OTP & reset password via Nodemailer
+        └── securityLogger.js           <- Proteksi brute-force, rate limiting OTP, log keamanan
 ```
+
+### Tabel Ringkasan: File Mana untuk Apa?
+
+| Jika kamu ingin... | Buka file ini |
+| :--- | :--- |
+| Menambah query atau mutation baru | `src/schema/typeDefs.js` lalu resolver terkait |
+| Mengubah logika login / register / OTP | `src/resolvers/authResolvers.js` |
+| Mengubah logika kuis / kamus / cache AI | `src/resolvers/geminiResolvers.js` |
+| Mengubah logika riwayat / skor | `src/resolvers/historyResolvers.js` |
+| Menambah/mengubah tabel di database | `src/db/fallbackDb.js` (SQLite) dan `src/config/db.js` (MySQL) |
+| Mengubah konfigurasi CORS / keamanan | `src/app.js` |
+| Menambah model AI atau rotasi key | `src/config/gemini.js` |
+| Mengubah pengaturan email OTP | `src/utils/emailService.js` |
+| Mengekspor backup database | `src/db/exportSqlBackup.js` |
 
 ---
 
@@ -63,7 +91,7 @@ Di PahamTeks, semua komunikasi data melewati satu pintu gerbang tunggal:
 
 Salah satu masalah paling umum saat developer baru bergabung adalah repotnya menginstall dan menyalakan MySQL lokal. Di PahamTeks, kita menyelesaikan masalah ini secara tuntas:
 
-1. Saat server dinyalakan, berkas `server/src/database/connection.js` akan mencoba menyapa database MySQL.
+1. Saat server dinyalakan, berkas `server/src/config/db.js` akan mencoba menyapa database MySQL.
 2. **Jika MySQL aktif**: Sistem akan menggunakan MySQL sebagai database utama.
 3. **Jika MySQL mati / tidak ada**: Server tidak akan crash! Sistem otomatis menyalakan mesin **SQLite lokal** (`server/data/pahamteks_backup.sqlite`).
 4. Semua data kuis, akun pengguna, dan progres tetap tersimpan rapi di berkas SQLite tersebut. Kamu bisa langsung koding tanpa perlu membuka XAMPP sama sekali!
@@ -80,6 +108,22 @@ Memanggil model AI ke server Google membutuhkan waktu dan kuota. Agar aplikasi k
    Di file `server/.env`, kita bisa memasang hingga 9 kunci API (`GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, dst). Jika salah satu kunci terkena batas kuota, backend otomatis meminjam kunci berikutnya tanpa membuat pengguna menunggu.
 3. **In-Memory Cache (`dictionaryCache` & `quizCache`)**:
    Di `server/src/resolvers/geminiResolvers.js`, kata yang sudah pernah dicari di kamus (seperti `syntax`, `algorithm`, dll) langsung disimpan di memori RAM server. Saat kata tersebut dicari lagi, backend membalasnya dalam waktu **`0.04 milidetik` (super instan)**!
+
+---
+
+## 🔐 Sistem Autentikasi & Keamanan
+
+Berikut rangkuman fitur keamanan yang sudah berjalan di backend:
+
+| Fitur | File | Penjelasan |
+| :--- | :--- | :--- |
+| JWT Token (7 hari) | `authResolvers.js` | Setiap login berhasil, server mengeluarkan token terenkripsi yang berlaku 7 hari |
+| Hashing Password (bcrypt) | `authResolvers.js` | Password pengguna tidak pernah disimpan dalam bentuk teks asli |
+| OTP Email | `emailService.js` | Kode verifikasi 6-digit dikirim ke email saat mendaftar atau reset password |
+| Proteksi Brute-Force | `securityLogger.js` | Jika ada percobaan login gagal berulang kali, akses di-blokir sementara |
+| Rate Limiter Global | `app.js` | Maksimal 200 request per 15 menit per IP |
+| Helmet HTTP Headers | `app.js` | Perlindungan header HTTP standar industri |
+| CORS Whitelist | `app.js` | Hanya domain yang diizinkan yang bisa mengirim request |
 
 ---
 
@@ -114,14 +158,14 @@ Nyalakan server:
 ```powershell
 npm --prefix server run dev
 ```
-Buka browser dan kunjungi: `http://localhost:4000/graphql`.  
+Buka browser dan kunjungi: `http://localhost:4000/graphql`.
 Ketik kueri berikut di panel pengujian:
 ```graphql
 query {
     dailyQuote
 }
 ```
-Klik tombol **Run**. Jika teks kata mutiara muncul di sebelah kanan, fitur baru kamu sudah berhasil! 🎉
+Klik tombol **Run**. Jika teks kata mutiara muncul di sebelah kanan, fitur baru kamu sudah berhasil!
 
 ---
 
