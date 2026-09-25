@@ -96,17 +96,51 @@ Berikut alur lengkap yang terjadi di balik layar saat seorang pemelajar menyeles
 
 ## 📂 Peta Hubungan: Komponen Frontend vs Backend vs Database
 
-Tabel berikut memetakan setiap fitur di antarmuka pengguna ke file backend dan tabel database yang bertanggung jawab:
+Tabel berikut memetakan setiap fitur di antarmuka pengguna ke berkas backend dan tabel database yang bertanggung jawab dengan lokasi path persis:
 
-| Fitur Aplikasi | Komponen Antarmuka (`client/`) | Resolver Backend (`server/`) | Tabel Database / Layanan |
+| Fitur Aplikasi | Berkas Frontend (`client/`) | Berkas Resolver Backend (`server/`) | Tabel Database / Layanan |
 | :--- | :--- | :--- | :--- |
-| **Kuis Adaptif (Unit 1–5)** | `src/components/QuizView.jsx` | `src/resolvers/geminiResolvers.js` | Gemini AI + In-Memory Cache |
-| **Kamus Pintar & Glosarium** | `src/components/DictionaryView.jsx` | `src/resolvers/geminiResolvers.js` | `dictionary_cache` + Gemini AI |
-| **Login & Registrasi Akun** | `src/components/AuthModal.jsx` | `src/resolvers/authResolvers.js` | `users` (Bcrypt hash) |
-| **Kode OTP Verifikasi Email** | `src/components/AuthModal.jsx` | `src/utils/emailService.js` | `otp_verifications` + Nodemailer |
-| **Riwayat Skor & Statistik** | `src/components/DashboardView.jsx` | `src/resolvers/historyResolvers.js` | `quiz_history` (MySQL/SQLite) |
-| **Log Aktivitas Pengguna** | `src/App.jsx` | `src/resolvers/historyResolvers.js` | `user_activity_logs` |
-| **Maskot Pintar Teksie** | `src/components/TeksieMascotCompanion.jsx` | Logika state lokal React | Suara Web Speech API |
+| **Kuis Adaptif (Unit 1–5)** | [`client/src/components/QuizView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/QuizView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | Gemini AI + In-Memory Cache |
+| **Kamus Pintar & Glosarium** | [`client/src/components/DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | `dictionary_cache` + Gemini AI |
+| **Login & Registrasi Akun** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) | `users` (Bcrypt hash) |
+| **Kode OTP Verifikasi Email** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/utils/emailService.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/emailService.js) | `otp_verifications` + Nodemailer |
+| **Riwayat Skor & Statistik** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `quiz_history` (MySQL/SQLite) |
+| **Log Aktivitas Pengguna** | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `user_activity_logs` |
+| **Maskot Pintar Teksie** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) | Logika state lokal React | Suara Web Speech API |
+| **Monitoring & Status Server** | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) (`/health`) | Endpoint Health JSON |
+
+---
+
+## 🗺️ Kompas Arah Berkas: Peta Lengkap Navigasi Seluruh Proyek PahamTeks
+
+Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di seluruh proyek:
+
+| Domain | Kebutuhan Pengembangan | Lokasi Berkas Persis |
+| :--- | :--- | :--- |
+| **Frontend** | Konfigurasi port (3000) & proxy GraphQL | [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) |
+| **Frontend** | Inisialisasi Apollo Client & header token | [`client/src/main.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/main.jsx) |
+| **Frontend** | Navigasi tab utama & state login | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) |
+| **Frontend** | Seluruh styling CSS, warna :root, & animasi | [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) |
+| **Frontend** | Kueri GraphQL client (`GET_QUIZ`, dll) | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) |
+| **Frontend** | Mutasi GraphQL client (`LOGIN`, `REGISTER`) | [`client/src/graphql/mutations.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/mutations.js) |
+| **Frontend** | Utilitas audio sintesis suara | [`client/src/utils/speechUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/speechUtils.js) |
+| **Frontend** | Utilitas validasi kunci kuis (A-D) | [`client/src/utils/quizUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/quizUtils.js) |
+| **Backend** | Pintu masuk listener server port 4000 | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
+| **Backend** | Pengaturan Express, Helmet, CORS, & `/health` | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Backend** | "Kontrak Data" GraphQL (Query & Mutation) | [`server/src/schema/typeDefs.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/schema/typeDefs.js) |
+| **Backend** | Logika eksekusi autentikasi & JWT | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) |
+| **Backend** | Logika kuis AI, kamus, & RAM cache | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) |
+| **Backend** | Logika riwayat skor kuis & audit logs | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) |
+| **Backend** | Koneksi MySQL & logika failover ke SQLite | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
+| **Backend** | Mesin database cadangan SQLite lokal | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
+| **Backend** | Berkas biner database SQLite lokal | `server/data/pahamteks_backup.sqlite` |
+| **Backend** | Rotasi API key Gemini 1–9 & prompt AI | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
+| **Backend** | Layanan email OTP via Nodemailer SMTP | [`server/src/utils/emailService.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/emailService.js) |
+| **Backend** | Proteksi brute-force & audit keamanan | [`server/src/utils/securityLogger.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/securityLogger.js) |
+| **Backend** | Skrip ekspor database ke file `.sql` | [`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js) |
+| **Backend** | Variabel rahasia lokal (.env) | `server/.env` (panduan di `server/.env.example`) |
+| **Admin** | Status monitoring & uptime server REST | `GET http://localhost:4000/health` |
+| **Admin** | Kueri audit aktivitas pengguna GraphQL | `serverStatus` & `userLogs` di `POST /graphql` |
 
 ---
 
@@ -258,50 +292,6 @@ Salin berkas `.env.example` menjadi `server/.env`:
 ### 5. Kuota AI Habis: `429 Too Many Requests`
 * **Penyebab**: Akun Google Gemini API sedang kehabisan limit kueri per menit.
 * **Solusi**: Tambahkan kunci API baru di `server/.env` sebagai `GEMINI_API_KEY_2`. Backend otomatis merotasi kunci tanpa mengganggu pengguna.
-
----
-
-## 👑 Akses & Pemantauan Administrator Secara End-to-End
-
-Dalam arsitektur fullstack PahamTeks, administrator dan pengembang memiliki beberapa pintu inspeksi untuk memantau kesehatan ekosistem secara menyeluruh dari hulu ke hilir:
-
-### 1. Peta Pintu Masuk Akses Admin
-
-```text
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                             AKSES PEMANTAUAN ADMIN                               │
-├──────────────────────────────────────────────────────────────────────────────────┤
-│ 1. REST Health Check   : GET http://localhost:4000/health (JSON Uptime, RAM, DB) │
-│ 2. GraphQL Playground  : POST http://localhost:4000/graphql (serverStatus, logs) │
-│ 3. Database Explorer   : File SQLite server/data/pahamteks_backup.sqlite via GUI │
-│ 4. Backup CLI Script   : node server/src/db/exportSqlBackup.js                   │
-│ 5. Audit Trail Logs    : Tabel security_events & user_activity_logs              │
-└──────────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 2. Cara Administrator Memeriksa Sistem
-* **Pemeriksaan Cepat (Uptime & RAM)**: Kunjungi `http://localhost:4000/health`. Jika muncul status `"status": "ok"` dan `"connected": true`, seluruh pipa backend dan database berfungsi normal.
-* **Memeriksa Audit Log Pemelajar**: Buka `http://localhost:4000/graphql` dan jalankan:
-  ```graphql
-  query AdminAuditLogs {
-    serverStatus {
-      geminiKeysCount
-      dbConnected
-      timestamp
-    }
-    userLogs(limit: 20) {
-      id
-      userId
-      action
-      details
-      createdAt
-    }
-  }
-  ```
-
-### 3. Perbedaan Dasbor Pengguna vs Dasbor Administrator
-* **Dasbor Saat Ini (`client/src/components/DashboardView.jsx`)**: Merupakan **Dasbor Akun Pemelajar** (menampilkan skor kuis pribadi, riwayat pengerjaan, dan akurasi belajar).
-* **Rencana Dasbor Admin (`AdminView`)**: Direncanakan pada roadmap untuk menampilkan agregat seluruh pemelajar, grafik utilisasi kuota Gemini API, dan manajemen konten kuis.
 
 ---
 

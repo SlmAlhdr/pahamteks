@@ -19,9 +19,9 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 | 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | Standar kebersihan kode agar tidak ada kode sampah AI, cara cek lokal, dan aturan CI GitHub Actions. | Wajib dicek saat nulis kode pakai AI assistant (Cursor, Antigravity, dll). |
 | 🤖 [`AGENT_ADAPTATION.md`](./AGENT_ADAPTATION.md) | Panduan adaptasi otomatis untuk AI Agent rekan tim/teman saat membuka folder PahamTeks. | Wajib dibaca oleh asisten AI baru agar langsung paham arsitektur sistem. |
 | 🌐 [`PANDUAN_AKSES_HTTPS_PRIBADI.md`](./PANDUAN_AKSES_HTTPS_PRIBADI.md) | Cara membuka akses web ke internet/HP via Cloudflare Tunnel saat Vercel nonaktif. | Saat butuh demo langsung dari laptop atau menguji fitur via HP di luar jaringan. |
-| 💻 [`PANDUAN_FRONTEND.md`](./PANDUAN_FRONTEND.md) | Panduan lengkap frontend: analogi ruang makan, 7 pilar penyusun, pohon komponen, 19 file UI, sistem audio, token auth, styling CSS, dan panduan dasbor admin. | Saat membuat/memodifikasi komponen antarmuka pengguna di React atau mengatur tampilan. |
-| ⚙️ [`PANDUAN_BACKEND.md`](./PANDUAN_BACKEND.md) | Panduan lengkap backend: analogi dapur, 8 pilar penyusun, Apollo GraphQL vs REST, skema 6 tabel, failover SQLite, rotasi AI Gemini, dan bab akses admin/monitoring. | Saat membuat kueri/mutasi baru, resolver, skema database, atau pemantauan admin. |
-| 🔄 [`PANDUAN_FULLSTACK.md`](./PANDUAN_FULLSTACK.md) | Panduan lengkap fullstack: analogi manajer restoran, 6 jembatan penghubung, siklus hidup request 8 tahap, tutorial end-to-end, troubleshooting, & pemantauan admin. | Saat menghubungkan fitur baru dari UI hingga ke database/AI atau mengawasi sistem. |
+| 💻 [`PANDUAN_FRONTEND.md`](./PANDUAN_FRONTEND.md) | Panduan lengkap frontend: analogi ruang makan, 7 pilar penyusun, pohon komponen, 19 file UI, sistem audio, token auth, dan styling pure CSS. | Saat membuat/memodifikasi komponen antarmuka pengguna di React atau mengatur tampilan. |
+| ⚙️ [`PANDUAN_BACKEND.md`](./PANDUAN_BACKEND.md) | Panduan lengkap backend: analogi dapur, 8 pilar penyusun, Apollo GraphQL vs REST, skema 6 tabel, failover SQLite, dan rotasi AI Gemini. | Saat membuat kueri/mutasi baru, resolver, skema database, atau konfigurasi keamanan. |
+| 🔄 [`PANDUAN_FULLSTACK.md`](./PANDUAN_FULLSTACK.md) | Panduan lengkap fullstack: analogi manajer restoran, 6 jembatan penghubung, siklus hidup request 8 tahap, tutorial end-to-end, & kamus troubleshooting. | Saat menghubungkan fitur baru dari UI hingga ke database/AI atau mengatasi error integrasi. |
 
 
 ---

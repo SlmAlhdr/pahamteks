@@ -119,6 +119,29 @@ server/
         └── securityLogger.js           <- Pencatat log keamanan, rate limit OTP, & brute-force guard
 ```
 
+### 🧭 Panduan Arah & Lokasi Cepat Berkas Backend
+
+Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di backend:
+
+| Jika Kamu Ingin Mencari / Mengubah... | Lokasi Berkas Persis (Path Lengkap) |
+| :--- | :--- |
+| **Port server, CORS, Rate Limit, Helmet, & endpoint `/health`** | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Port listener utama server (Port 4000)** | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
+| **Koneksi MySQL, deteksi failover ke SQLite, & migrasi** | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
+| **Rotasi 1-9 API Key Gemini, pemilihan model AI, & prompt** | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
+| **Skema 6 tabel SQLite lokal & query executor fallback** | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
+| **File database SQLite lokal tempat data tersimpan** | `server/data/pahamteks_backup.sqlite` |
+| **Skrip ekspor data ke file backup .sql** | [`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js) |
+| **Kontrak skema GraphQL (Query & Mutation type definitions)** | [`server/src/schema/typeDefs.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/schema/typeDefs.js) |
+| **Logika login, register, OTP email, reset password, & JWT** | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) |
+| **Logika kuis adaptif, kamus pintar AI, & RAM memory cache** | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) |
+| **Logika riwayat kuis pemelajar & kueri audit admin (`userLogs`)** | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) |
+| **Penggabung seluruh resolver GraphQL** | [`server/src/resolvers/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/index.js) |
+| **Template email OTP & konfigurasi SMTP Nodemailer** | [`server/src/utils/emailService.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/emailService.js) |
+| **Logika brute-force guard, rate limiting OTP, & log insiden** | [`server/src/utils/securityLogger.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/securityLogger.js) |
+| **Kunci rahasia API & kredensial database (Lokal)** | `server/.env` (contoh di `server/.env.example`) |
+| **Daftar pustaka dependencies backend** | [`server/package.json`](file:///c:/Salim/Kerjaan/pahamteks/server/package.json) |
+
 ---
 
 ## 🗄️ Skema Lengkap Tabel Database (6 Tabel Inti)

@@ -140,6 +140,42 @@ client/
         └── speechUtils.js               <- Pemutar audio sintesis ucapan multi-bahasa
 ```
 
+### 🧭 Panduan Arah & Lokasi Cepat Berkas Frontend
+
+Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
+
+| Jika Kamu Ingin Mencari / Mengubah... | Lokasi Berkas Persis (Path Lengkap) |
+| :--- | :--- |
+| **Navigasi tab utama, sesi login pengguna, & layout induk** | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) |
+| **Inisialisasi React, Apollo Provider, & injeksi header JWT** | [`client/src/main.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/main.jsx) |
+| **Port frontend (3000), host jaringan, & proxy GraphQL** | [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) |
+| **Font Nunito, title bar, favicon, & HTML container** | [`client/index.html`](file:///c:/Salim/Kerjaan/pahamteks/client/index.html) |
+| **Layar kuis adaptif (Unit 1-5, timer bar, tombol opsi A-D)** | [`client/src/components/QuizView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/QuizView.jsx) |
+| **Layar kamus pintar AI & glosarium istilah A-Z** | [`client/src/components/DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx) |
+| **Wadah gabungan tab kamus dan tab penerjemah** | [`client/src/components/CombinedDictTranslator.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/CombinedDictTranslator.jsx) |
+| **Fitur penerjemah teks multi-bahasa AI** | [`client/src/components/Translator.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Translator.jsx) |
+| **Tombol balon mengambang di pojok kanan bawah** | [`client/src/components/KamusFloating.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/KamusFloating.jsx) |
+| **Maskot pintar Teksie (animasi tidur, reaktif, balon dialog)** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) |
+| **Modal login, registrasi, OTP email, & reset password** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) |
+| **Modal notifikasi tengah layar pengganti `alert()`** | [`client/src/components/CenterNotificationModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/CenterNotificationModal.jsx) |
+| **Navbar atas (logo, tombol ganti tab, tombol logout)** | [`client/src/components/Navbar.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Navbar.jsx) |
+| **Layar beranda (Home Hero banner penyambut)** | [`client/src/components/HomeHero.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/HomeHero.jsx) |
+| **Portal pemilihan jalur awal belajar (Bahasa vs Koding)** | [`client/src/components/WelcomePortal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/WelcomePortal.jsx) |
+| **Dasbor akun pemelajar (riwayat kuis pribadi & statistik)** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) |
+| **Layar tantangan harian koding & kuis cepat** | [`client/src/components/ChallengeView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/ChallengeView.jsx) |
+| **Layar wawasan linguistik dan perbandingan bahasa** | [`client/src/components/LanguageInsights.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LanguageInsights.jsx) |
+| **Pusat materi belajar terpadu** | [`client/src/components/LearningHub.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LearningHub.jsx) |
+| **Perender teks markdown jawaban AI agar rapi** | [`client/src/components/HumanFormattedText.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/HumanFormattedText.jsx) |
+| **Efek partikel latar belakang mengambang halus** | [`client/src/components/BackgroundDrift.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/BackgroundDrift.jsx) |
+| **Koleksi ikon SVG 2D kustom** | [`client/src/components/Art2DIcons.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Art2DIcons.jsx) |
+| **Ilustrasi karakter mini 2D pendukung** | [`client/src/components/MiniCharacters.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/MiniCharacters.jsx) |
+| **Definisi kueri GraphQL Apollo Client (GET_QUIZ, dll)** | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) |
+| **Definisi mutasi GraphQL Apollo Client (LOGIN, dll)** | [`client/src/graphql/mutations.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/mutations.js) |
+| **Pusat seluruh styling CSS, variabel warna :root, & animasi** | [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) |
+| **Logika validasi jawaban kuis & opsi huruf A-D** | [`client/src/utils/quizUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/quizUtils.js) |
+| **Logika pemutar suara pelafalan kata Web Speech API** | [`client/src/utils/speechUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/speechUtils.js) |
+| **Daftar pustaka dependencies client** | [`client/package.json`](file:///c:/Salim/Kerjaan/pahamteks/client/package.json) |
+
 ---
 
 ## 🎨 Panduan Desain & Variabel Warna (`index.css`)
@@ -239,25 +275,6 @@ Misalnya kamu diminta membuat tampilan baru bernama **FlashcardView**:
    npm --prefix client run build
    ```
    Pastikan tidak ada sintaks JSX atau impor yang rusak sebelum commit.
-
----
-
-## 👑 Catatan Akses & Dasbor Administrator di Frontend
-
-Banyak rekan tim yang bertanya: *"Di mana file akses admin di frontend?"*
-
-Berikut status dan peta akses admin di sisi antarmuka:
-1. **Dasbor yang Ada Saat Ini (`DashboardView.jsx`)**:
-   Berkas ini adalah **Dasbor Akun Pemelajar** (*Student Dashboard*). Fungsinya adalah menampilkan statistik skor kuis pribadi, riwayat pengerjaan, dan akurasi belajar pengguna yang sedang login.
-2. **Akses Pemantauan Admin Saat Ini**:
-   Saat ini, pemantauan status server, kuota AI Gemini, dan audit aktivitas pengguna diakses langsung oleh pengembang/admin melalui:
-   - **REST Health Check**: `http://localhost:4000/health` (menampilkan status database, pool Gemini, dan memori RAM).
-   - **GraphQL Playground**: `http://localhost:4000/graphql` menggunakan kueri `serverStatus` dan `userLogs(limit: 50)`.
-3. **Panduan Menambahkan Halaman Admin Visual (`AdminDashboardView.jsx`)**:
-   Jika tim ingin membuat halaman admin visual di frontend:
-   - Buat komponen baru `client/src/components/AdminDashboardView.jsx`.
-   - Gunakan kueri `GET_SERVER_STATUS` dan `GET_USER_LOGS` yang sudah siap di `client/src/graphql/queries.js`.
-   - Pasang proteksi di `App.jsx` agar tab admin hanya bisa dibuka jika akun pengguna memiliki tanda/role admin (`user.isAdmin === true`).
 
 ---
 
