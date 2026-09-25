@@ -1,179 +1,282 @@
-# Panduan Pengembangan Backend PahamTeks
+# Panduan Lengkap Pengembangan Backend PahamTeks
 
-Halo rekan tim backend! Dokumen ini ditulis dengan bahasa yang santai dan mudah dipahami agar siapa pun—bahkan yang baru pertama kali menyentuh Node.js atau GraphQL—bisa langsung mengerti alur kerja server **PahamTeks** dan percaya diri untuk ikut menulis kode.
-
----
-
-## 🧭 Gambaran Umum: Apa Tugas Backend Kita?
-
-Secara sederhana, backend kita bertugas sebagai "dapur". Frontend (antarmuka web yang dilihat pengguna) akan mengirim pesanan data, lalu backend mengolahnya:
-* Memeriksa dan menyimpan data pengguna / progres kuis ke database.
-* Berkomunikasi dengan Google Gemini AI untuk meracik soal kuis, menjelaskan kata di kamus, atau mentranskripsi suara.
-* Mengirimkan kembali data yang sudah matang ke frontend dalam format JSON yang rapi.
-
-Teknologi utama yang kita pakai:
-1. **Node.js (ESM - ECMAScript Modules)**: Kita memakai sintaks modern `import / export` (bukan `require`).
-2. **Express.js**: Kerangka server web ringan.
-3. **Apollo Server v4 (GraphQL)**: Pintu gerbang API utama di alamat `/graphql`.
-4. **Dual Database (MySQL + SQLite)**: Sistem penyimpanan data yang anti-gagal.
-5. **Google Gen AI SDK**: Penghubung resmi ke model AI Gemini.
+Selamat datang rekan tim backend! Dokumen ini disusun secara lengkap dan mendalam agar siapa pun yang baru bergabung ke tim server **PahamTeks** bisa langsung memahami: **apa itu backend, bagian-bagian penyusunnya, cara kerja GraphQL, sistem database failover ganda, hingga rotasi multi-kunci AI Gemini**.
 
 ---
 
-## 📂 Peta Lengkap File Backend (`server/`)
+## 💡 Apa Itu Backend Sebenarnya? (Analogi Sederhana)
 
-Berikut **seluruh file** yang ada di folder backend beserta penjelasan fungsi masing-masing:
+Jika diumpamakan sebagai **restoran**:
+* **Backend** adalah **dapur utama, brankas penyimpanan resep rahasia, dan gudang bahan makanan**.
+* Pengunjung di ruang makan (frontend) tidak pernah melihat wajan, kompor, atau gudang beras secara langsung. Mereka hanya memesan menu lewat pelayan, lalu dapur menyiapkan masakan dan mengirimkannya kembali ke meja.
+* Tanpa backend, aplikasi kita hanya berupa gambar mati: tidak bisa menyimpan skor kuis, tidak bisa login, tidak bisa mengirim email verifikasi, dan tidak bisa menghasilkan soal kuis cerdas berbasis AI.
+
+---
+
+## ⚙️ Backend PahamTeks Itu Terdiri dari Apa Saja?
+
+Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama**:
 
 ```text
-server/
-├── package.json                        <- Daftar pustaka (dependencies) backend
-├── .env                                <- Kunci rahasia API & konfigurasi database (JANGAN DIPUSH)
-├── .env.example                        <- Template .env untuk panduan tim baru
-├── data/
-│   └── pahamteks_backup.sqlite         <- Database cadangan SQLite (otomatis dibuat)
-├── backups/
-│   └── *.sql                           <- Hasil backup database (otomatis, jangan di-push)
-└── src/
-    ├── index.js                        <- Pintu masuk utama: menjalankan server di port 4000
-    ├── app.js                          <- Pengaturan Express, CORS, Helmet, Rate Limiter, Apollo
-    │
-    ├── config/
-    │   ├── db.js                       <- Koneksi MySQL + auto-failover ke SQLite + auto-migrasi
-    │   └── gemini.js                   <- Rotasi API Key Gemini (round-robin 1-9) & pemilihan model
-    │
-    ├── db/
-    │   ├── fallbackDb.js               <- Mesin SQLite lokal: skema tabel & query executor
-    │   ├── initDb.js                   <- Skrip inisialisasi database (membuat tabel awal)
-    │   └── exportSqlBackup.js          <- Skrip ekspor backup database ke file .sql
-    │
-    ├── resolvers/
-    │   ├── index.js                    <- Penggabung semua resolver menjadi satu objek
-    │   ├── authResolvers.js            <- Login, register, OTP email, reset password, JWT token
-    │   ├── geminiResolvers.js          <- Kuis AI, kamus pintar, penerjemah, cache memori
-    │   └── historyResolvers.js         <- Riwayat kuis, log aktivitas, skor pemelajar
-    │
-    ├── schema/
-    │   └── typeDefs.js                 <- "Kontrak data" GraphQL: semua Query & Mutation
-    │
-    └── utils/
-        ├── emailService.js             <- Pengirim email OTP & reset password via Nodemailer
-        └── securityLogger.js           <- Proteksi brute-force, rate limiting OTP, log keamanan
+┌────────────────────────────────────────────────────────────────────────┐
+│                        BACKEND PAHAMTEKS                               │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. HTTP WEB SERVER    : Express.js (Menjalankan listener di port 4000) │
+│ 2. PERISAI KEAMANAN   : Helmet, CORS Whitelist, Rate Limiter, Brute-G  │
+│ 3. RUNTIME GRAPHQL    : Apollo Server v4 (Skema typeDefs & resolvers)  │
+│ 4. DUAL DATABASE      : MySQL Utama + SQLite Cadangan Otomatis         │
+│ 5. MESIN AI GEMINI    : Google GenAI SDK + Rotasi Multi-Kunci 1–9     │
+│ 6. MULTI-TIER CACHE   : RAM Memory Cache (0.04 ms) + Database Cache    │
+│ 7. AUTENTIKASI        : Enkripsi Bcrypt + Token JWT Sesi 7-Hari        │
+│ 8. LAYANAN EMAIL OTP  : Nodemailer SMTP untuk kode verifikasi 6-digit   │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Tabel Ringkasan: File Mana untuk Apa?
+Mari kita bedah masing-masing komponen di atas:
 
-| Jika kamu ingin... | Buka file ini |
-| :--- | :--- |
-| Menambah query atau mutation baru | `src/schema/typeDefs.js` lalu resolver terkait |
-| Mengubah logika login / register / OTP | `src/resolvers/authResolvers.js` |
-| Mengubah logika kuis / kamus / cache AI | `src/resolvers/geminiResolvers.js` |
-| Mengubah logika riwayat / skor | `src/resolvers/historyResolvers.js` |
-| Menambah/mengubah tabel di database | `src/db/fallbackDb.js` (SQLite) dan `src/config/db.js` (MySQL) |
-| Mengubah konfigurasi CORS / keamanan | `src/app.js` |
-| Menambah model AI atau rotasi key | `src/config/gemini.js` |
-| Mengubah pengaturan email OTP | `src/utils/emailService.js` |
-| Mengekspor backup database | `src/db/exportSqlBackup.js` |
+### 1. HTTP Web Server (Express.js)
+Pintu gerbang yang menerima koneksi internet dari browser di `http://localhost:4000`. Express menangani parsing JSON, file statis, dan memantau status kesehatan server via endpoint REST `GET /health`.
+
+### 2. Perisai Keamanan (Security Middleware)
+Sebelum request diizinkan masuk ke logika aplikasi, Express menyaringnya melalui 4 lapis pertahanan:
+* **Helmet**: Mengamankan header HTTP terhadap serangan XSS dan sniffing.
+* **CORS Whitelist**: Memastikan hanya alamat frontend resmi (misal `http://localhost:3000`) yang boleh mengakses API.
+* **Rate Limiter**: Membatasi maksimal 200 request per 15 menit per alamat IP agar server tidak tumbang diserang spam/DDoS.
+* **Brute-Force Guard (`securityLogger.js`)**: Memblokir sementara IP yang berkali-kali salah memasukkan password atau salah menebak kode OTP.
+
+### 3. Runtime GraphQL (Apollo Server v4)
+PahamTeks menggunakan Apollo Server v4 untuk memproses permintaan data. Berbeda dengan REST API konvensional yang memiliki puluhan URL terpisah (`/api/login`, `/api/quiz`, `/api/dictionary`), di GraphQL hanya ada **satu pintu tunggal** yaitu `/graphql`.
+
+### 4. Dual Database Failover (MySQL + SQLite)
+Sistem penyimpanan data kita memiliki kecerdasan otomatis (*failover engine*):
+* **MySQL**: Digunakan sebagai basis data relasional utama untuk lingkungan produksi berskala besar.
+* **SQLite Cadangan (`fallbackDb.js`)**: Jika MySQL di komputer developer mati atau belum diinstall, backend otomatis mengaktifkan database SQLite lokal (`server/data/pahamteks_backup.sqlite`). **Server tidak akan crash** dan developer bisa langsung mulai koding!
+
+### 5. Mesin AI Gemini dengan Rotasi Multi-Kunci
+Kuis dinamis dan penjelasan istilah diproduksi oleh Google Gemini AI. Agar aplikasi tidak terhenti saat kuota gratis Google habis, backend memiliki sistem **Round-Robin** yang menggilir hingga 9 kunci API berbeda (`GEMINI_API_KEY_1` s.d. `GEMINI_API_KEY_9`).
+
+### 6. Multi-Tier Cache (Memori Super Cepat)
+* **RAM Cache**: Pertanyaan kamus yang sudah pernah dicari disimpan di memori RAM server. Kueri berikutnya dijawab dalam waktu **`0.04 milidetik`** tanpa perlu memanggil Gemini API lagi.
+* **Database Cache**: Istilah juga disimpan ke tabel `dictionary_cache` agar tidak hilang saat server di-restart.
+
+### 7. Autentikasi Pengguna (Bcrypt & JWT)
+* **Bcrypt**: Password pengguna di-acak dengan salt rounds terenkripsi. Teks password asli tidak pernah tersimpan di database.
+* **JWT (JSON Web Token)**: Saat login berhasil, server menerbitkan token berformat string terenkripsi yang berlaku 7 hari sebagai tiket izin akses kuis dan profil.
+
+### 8. Layanan Pengiriman Email OTP (Nodemailer)
+Mengirim email otomatis berisi 6-digit angka rahasia ke kotak masuk pengguna saat registrasi atau permintaan reset password.
 
 ---
 
 ## 🍽️ Mengapa Kita Menggunakan GraphQL (Bukan REST Biasa)?
 
-Bayangkan kamu sedang makan di restoran prasmanan:
-* **Pada REST API Biasa**: Pelayan menyajikan satu paket makanan lengkap berisi nasi, ayam, sayur, dan sambal, meskipun kamu sebenarnya hanya minta sambal saja (*over-fetching*).
-* **Pada GraphQL**: Kamu bebas mengambil piring dan hanya memilih menu yang kamu mau. Frontend bisa meminta: *"Tolong kirimkan nama pengguna dan skornya saja, email dan passwordnya tidak perlu."*
+Berikut perbandingan mudahnya:
 
-Di PahamTeks, semua komunikasi data melewati satu pintu gerbang tunggal:
-`http://localhost:4000/graphql`
-
----
-
-## 🛡️ Rahasia Dual Database Failover (Anti-Error Saat Setup Lokal)
-
-Salah satu masalah paling umum saat developer baru bergabung adalah repotnya menginstall dan menyalakan MySQL lokal. Di PahamTeks, kita menyelesaikan masalah ini secara tuntas:
-
-1. Saat server dinyalakan, berkas `server/src/config/db.js` akan mencoba menyapa database MySQL.
-2. **Jika MySQL aktif**: Sistem akan menggunakan MySQL sebagai database utama.
-3. **Jika MySQL mati / tidak ada**: Server tidak akan crash! Sistem otomatis menyalakan mesin **SQLite lokal** (`server/data/pahamteks_backup.sqlite`).
-4. Semua data kuis, akun pengguna, dan progres tetap tersimpan rapi di berkas SQLite tersebut. Kamu bisa langsung koding tanpa perlu membuka XAMPP sama sekali!
-
----
-
-## ⚡ Sistem Caching & Optimasi AI Gemini
-
-Memanggil model AI ke server Google membutuhkan waktu dan kuota. Agar aplikasi kita cepat dan hemat, kita menerapkan 3 strategi:
-
-1. **Prioritas Model Cepat (`gemini-3.5-flash-lite`)**:
-   Model ini diatur di urutan pertama pada `server/src/config/gemini.js` karena memiliki waktu respon cepat (sekitar belasan detik) dan sangat stabil dari lonjakan beban (*high demand*).
-2. **Rotasi API Key (Round-Robin)**:
-   Di file `server/.env`, kita bisa memasang hingga 9 kunci API (`GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, dst). Jika salah satu kunci terkena batas kuota, backend otomatis meminjam kunci berikutnya tanpa membuat pengguna menunggu.
-3. **In-Memory Cache (`dictionaryCache` & `quizCache`)**:
-   Di `server/src/resolvers/geminiResolvers.js`, kata yang sudah pernah dicari di kamus (seperti `syntax`, `algorithm`, dll) langsung disimpan di memori RAM server. Saat kata tersebut dicari lagi, backend membalasnya dalam waktu **`0.04 milidetik` (super instan)**!
-
----
-
-## 🔐 Sistem Autentikasi & Keamanan
-
-Berikut rangkuman fitur keamanan yang sudah berjalan di backend:
-
-| Fitur | File | Penjelasan |
+| Aspek | REST API Biasa | GraphQL Apollo di PahamTeks |
 | :--- | :--- | :--- |
-| JWT Token (7 hari) | `authResolvers.js` | Setiap login berhasil, server mengeluarkan token terenkripsi yang berlaku 7 hari |
-| Hashing Password (bcrypt) | `authResolvers.js` | Password pengguna tidak pernah disimpan dalam bentuk teks asli |
-| OTP Email | `emailService.js` | Kode verifikasi 6-digit dikirim ke email saat mendaftar atau reset password |
-| Proteksi Brute-Force | `securityLogger.js` | Jika ada percobaan login gagal berulang kali, akses di-blokir sementara |
-| Rate Limiter Global | `app.js` | Maksimal 200 request per 15 menit per IP |
-| Helmet HTTP Headers | `app.js` | Perlindungan header HTTP standar industri |
-| CORS Whitelist | `app.js` | Hanya domain yang diizinkan yang bisa mengirim request |
+| **Endpoint URL** | Banyak URL (`/api/users`, `/api/scores`, `/api/quiz`) | Hanya 1 Endpoint tunggal: `/graphql` |
+| **Over-fetching** | Mengambil seluruh data meski hanya butuh nama (boros kuota) | Frontend meminta persis data yang dibutuhkan saja |
+| **Under-fetching** | Harus memanggil 3 API berbeda untuk menampilkan 1 halaman | Cukup 1 kueri GraphQL untuk mengambil data kuis + profil user sekaligus |
+| **Dokumentasi** | Perlu membuat Swagger/Postman manual | Otomatis memiliki dokumentasi skema interaktif di GraphQL Sandbox |
 
 ---
 
-## 🛠️ Tutorial: Cara Menambah Fitur Baru di Backend
+## 📂 Peta Lengkap Berkas Backend (`server/`)
 
-Misalnya kamu ingin membuat fitur baru: mengambil kata mutiara edukasi acak (*quote*). Ada 3 langkah mudah:
+```text
+server/
+├── package.json                        <- Daftar pustaka & skrip server ("dev", "start")
+├── .env                                <- Kunci rahasia API & database (JANGAN DIPUSH KE GIT)
+├── .env.example                        <- Template contoh .env untuk tim baru
+├── data/
+│   └── pahamteks_backup.sqlite         <- Berkas database SQLite lokal (dibuat otomatis)
+├── backups/
+│   └── *.sql                           <- File backup dump database
+└── src/
+    ├── index.js                        <- Entry point: menyalakan listener di port 4000
+    ├── app.js                          <- Inisialisasi Express, CORS, Helmet, Rate Limit, & Apollo
+    │
+    ├── config/
+    │   ├── db.js                       <- Koneksi MySQL pool, auto-failover, dan auto-migrasi tabel
+    │   └── gemini.js                   <- Rotasi kunci API Gemini 1-9 & pemilihan model AI
+    │
+    ├── db/
+    │   ├── fallbackDb.js               <- Mesin SQLite: inisialisasi 6 tabel & fungsi query
+    │   ├── initDb.js                   <- Skrip inisialisasi awal database
+    │   └── exportSqlBackup.js          <- Skrip backup mengekspor data ke file SQL
+    │
+    ├── resolvers/                      <- Seluruh logika eksekusi data GraphQL
+    │   ├── index.js                    <- Penggabung semua resolver
+    │   ├── authResolvers.js            <- Login, register, verifikasi OTP, & reset password
+    │   ├── geminiResolvers.js          <- Kuis adaptif, kamus pintar AI, penerjemah, memory cache
+    │   └── historyResolvers.js         <- Riwayat kuis, aktivitas, dan skor belajar pemelajar
+    │
+    ├── schema/
+    │   └── typeDefs.js                 <- "Kontrak data": seluruh definisi Type, Query, & Mutation
+    │
+    └── utils/
+        ├── emailService.js             <- Pengirim email OTP verifikasi menggunakan Nodemailer
+        └── securityLogger.js           <- Pencatat log keamanan, rate limit OTP, & brute-force guard
+```
 
-### Langkah 1: Daftarkan Kontrak Data di `typeDefs.js`
-Buka `server/src/schema/typeDefs.js`, lalu tambahkan Query baru:
+---
+
+## 🗄️ Skema Lengkap Tabel Database (6 Tabel Inti)
+
+Baik di MySQL maupun di SQLite fallback, kita menggunakan skema 6 tabel yang sama:
+
+```text
+  ┌──────────────┐         ┌───────────────────┐
+  │    users     │         │   quiz_history    │
+  ├──────────────┤         ├───────────────────┤
+  │ id (PK)      │◄───┐    │ id (PK)           │
+  │ email        │    └───-│ user_id (FK)      │
+  │ username     │         │ level             │
+  │ password     │         │ score             │
+  │ first_name   │         │ total_questions   │
+  │ created_at   │         │ answers_json      │
+  └──────────────┘         └───────────────────┘
+         ▲
+         │                 ┌───────────────────────┐
+         │                 │  user_activity_logs   │
+         │                 ├───────────────────────┤
+         └─────────────────│ user_id (FK)          │
+                           │ action                │
+                           │ details               │
+                           └───────────────────────┘
+
+  ┌────────────────────────┐      ┌────────────────────────┐
+  │    otp_verifications   │      │    dictionary_cache    │
+  ├────────────────────────┤      ├────────────────────────┤
+  │ email (PK)             │      │ keyword (PK)           │
+  │ otp_code               │      │ lang                   │
+  │ expires_at             │      │ result (Markdown AI)   │
+  │ created_at             │      │ created_at             │
+  └────────────────────────┘      └────────────────────────┘
+```
+
+1. **`users`**: Menyimpan kredensial akun pemelajar, status email, dan profil.
+2. **`otp_verifications`**: Tempat menyimpan kode OTP 6-digit acak yang memiliki masa kedaluwarsa 10 menit.
+3. **`quiz_history`**: Mencatat setiap riwayat penyelesaian kuis (unit, skor yang diraih, jawaban detail dalam format JSON, waktu pengerjaan).
+4. **`user_activity_logs`**: Log jejak audit keamanan (kapan user login, ganti password, atau mengerjakan tes).
+5. **`dictionary_cache`**: Menyimpan jawaban kamus AI secara permanen agar pencarian kata yang sama tidak membuang kuota Gemini.
+6. **`security_events`**: Mencatat IP dan aktivitas mencurigakan yang diblokir oleh sistem keamanan.
+
+---
+
+## 🛡️ Alur Kerja Dual Database Failover
+
+```text
+Server Mulai Dijalankan (src/index.js)
+              │
+              ▼
+    [ Panggil db.js ]
+              │
+              ▼
+   Mencoba koneksi ke MySQL?
+              │
+     ┌────────┴────────┐
+     ▼                 ▼
+  [SUKSES]          [GAGAL]
+     │                 │
+  Gunakan           Gunakan SQLite Cadangan:
+  MySQL Utama       server/data/pahamteks_backup.sqlite
+     │                 │
+     └────────┬────────┘
+              │
+              ▼
+   Jalankan Auto-Migrasi (Buat tabel jika belum ada)
+              │
+              ▼
+   Apollo Server Siap di Port 4000!
+```
+
+---
+
+## 🔐 Alur Lengkap Autentikasi & Verifikasi OTP Email
+
+Berikut proses pendaftaran pengguna baru dari awal sampai akun aktif:
+
+```text
+[1. User Mendaftar]   Pengguna memasukkan email, username, dan password di antarmuka.
+        │
+        ▼
+[2. Hash Password]    Backend meng-hash password menggunakan bcryptjs (10 salt rounds).
+        │
+        ▼
+[3. Generate OTP]     Backend menghasilkan 6-digit angka acak (misal: "847291").
+        │
+        ▼
+[4. Simpan ke DB]     Kode OTP disimpan di tabel otp_verifications dengan batas waktu 10 menit.
+        │
+        ▼
+[5. Kirim Email]      Nodemailer mengirim template email rapi ke kotak masuk pengguna.
+        │
+        ▼
+[6. Verifikasi OTP]   Pengguna memasukkan 6 digit di UI. Backend memvalidasi kecocokan kode.
+        │
+        ▼
+[7. Terbitkan JWT]    Jika valid, akun disimpan di tabel users dan server menerbitkan token JWT 7-hari.
+```
+
+---
+
+## 🛠️ Studi Kasus: Cara Menambah Kueri / Fitur Baru di Backend
+
+Misalnya kamu ingin membuat fitur kueri baru: **Mengecek versi aplikasi & status server**:
+
+### 1. Daftarkan di Kontrak Skema (`server/src/schema/typeDefs.js`)
 ```graphql
+type AppStatus {
+    version: String!
+    environment: String!
+    activeDatabase: String!
+}
+
 type Query {
     # Fitur lama...
-    dailyQuote: String!
+    appStatus: AppStatus!
 }
 ```
 
-### Langkah 2: Tulis Logika Fungsinya di Resolver
-Buka file resolver yang sesuai (misalnya `server/src/resolvers/geminiResolvers.js`):
+### 2. Tulis Logika di Resolver (`server/src/resolvers/geminiResolvers.js` atau file baru)
 ```javascript
-export const geminiResolvers = {
+export const statusResolvers = {
     Query: {
-        // Query lainnya...
-        dailyQuote: async () => {
-            return "Pendidikan adalah senjata paling ampuh untuk mengubah dunia. - Nelson Mandela";
+        appStatus: async () => {
+            return {
+                version: "1.0.0",
+                environment: process.env.NODE_ENV || "development",
+                activeDatabase: isSqliteFallback ? "SQLite (Cadangan)" : "MySQL (Utama)"
+            };
         }
     }
 };
 ```
 
-### Langkah 3: Uji Coba di Apollo Sandbox
-Nyalakan server:
-```powershell
-npm --prefix server run dev
-```
-Buka browser dan kunjungi: `http://localhost:4000/graphql`.
-Ketik kueri berikut di panel pengujian:
+### 3. Uji Coba di Browser
+Buka `http://localhost:4000/graphql` dan jalankan:
 ```graphql
 query {
-    dailyQuote
+    appStatus {
+        version
+        environment
+        activeDatabase
+    }
 }
 ```
-Klik tombol **Run**. Jika teks kata mutiara muncul di sebelah kanan, fitur baru kamu sudah berhasil!
 
 ---
 
-## 🛑 Aturan Penting Koding Backend (Zero AI Slop)
+## 🚀 Perintah Menjalankan Backend & Utilitas
 
-1. **Dilarang Menelan Error (`No Swallowed Catches`)**:
-   Jangan pernah menulis blok `catch (err) {}` kosong melompong. Selalu berikan log yang bermakna minimal dengan `console.warn('[NamaModul] Error:', err.message);`.
-2. **Jaga Kerahasiaan Kunci**:
-   File `server/.env` dan database binary `*.sqlite` tidak boleh di-stage atau di-push ke GitHub.
-3. **Script Dev yang Aman**:
-   Gunakan selalu `npm --prefix server run dev`. Script ini sudah dilengkapi flag `--watch-path=src` agar server tidak looping restart saat folder dependensi disentuh.
+```powershell
+# Menjalankan server backend dengan auto-reload (port 4000)
+npm --prefix server run dev
+
+# Memeriksa endpoint kesehatan server
+curl http://localhost:4000/health
+
+# Mengekspor isi database ke file backup SQL
+node server/src/db/exportSqlBackup.js
+```

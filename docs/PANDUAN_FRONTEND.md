@@ -1,124 +1,263 @@
-# Panduan Pengembangan Frontend PahamTeks
+# Panduan Lengkap Pengembangan Frontend PahamTeks
 
-Halo rekan tim frontend! Dokumen ini dibuat agar siapa pun yang baru bergabung ke tim antarmuka **PahamTeks** bisa langsung memahami bagaimana susunan komponen React kita bekerja, bagaimana mengatur gaya tampilan di CSS, dan bagaimana data mengalir dari layar pengguna ke server.
-
----
-
-## 🎨 Gambaran Umum: Apa Tugas Frontend Kita?
-
-Frontend adalah "wajah" dari PahamTeks. Semua hal yang bisa dilihat, diklik, didengar suaranya, dan disentuh oleh pemelajar di layar laptop atau ponsel diatur di sini:
-* Menampilkan tata letak kartu kuis, animasi tombol, dan maskot Teksie yang ramah.
-* Mengatur pergantian tab navigasi (Belajar Bahasa, Tantangan Koding, Kamus Pintar, Penerjemah).
-* Mengirim permintaan data ke backend melalui Apollo Client GraphQL dan menyajikan balasannya tanpa perlu reload halaman.
-
-Teknologi utama yang kita pakai:
-1. **React 18**: Pustaka antarmuka berbasis komponen.
-2. **Vite 6**: Alat build lokal yang sangat kencang dan instan.
-3. **Apollo Client**: Pustaka resmi untuk berinteraksi dengan API GraphQL.
-4. **Pure CSS (`client/src/styles/index.css`)**: Seluruh gaya desain dipusatkan di satu file CSS tanpa framework yang rumit.
-5. **Web Speech API**: Pengucapan audio alami untuk kosakata bahasa asing.
+Selamat datang rekan tim frontend! Dokumen ini disusun secara lengkap dan mendalam agar siapa pun yang baru bergabung ke tim pengembang antarmuka **PahamTeks** bisa langsung memahami: **apa itu frontend, bagian-bagian penyusunnya, cara kerja komponen, dan alur koding praktis dari nol**.
 
 ---
 
-## 📂 Peta Struktur Folder `client/`
+## 💡 Apa Itu Frontend Sebenarnya? (Analogi Sederhana)
 
-Berikut denah berkas yang ada di dalam folder frontend:
+Bayangkan PahamTeks seperti sebuah **restoran modern**:
+* **Frontend** adalah seluruh **ruang makan restoran**: desain interior meja dan kursi yang nyaman, buku menu yang rapi, senyuman pelayan, hingga piring dan sendok yang digunakan tamu.
+* Semua hal yang bisa **dilihat matanya, diklik jarinya, didengar suaranya, dan dirasakan animasinya** oleh pemelajar di layar laptop atau HP adalah wilayah kerja **Frontend**.
+* Frontend tidak menyimpan database rahasia pengguna; tugas frontend adalah menyajikan data dari dapur (backend) secara menarik, cepat, dan ramah pengguna.
+
+---
+
+## 🧱 Frontend PahamTeks Itu Terdiri dari Apa Saja?
+
+Di dalam folder `client/`, aplikasi frontend kita tersusun dari **7 pilar utama**:
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        FRONTEND PAHAMTEKS                              │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. KOMPONEN UI        : 19 Komponen React mandiri (Layar kuis, kamus) │
+│ 2. STATE MANAGEMENT   : React Hooks (useState, useEffect, useContext)  │
+│ 3. LAPISAN DATA       : Apollo Client v3 (Kueri GraphQL & Mutasi)      │
+│ 4. DESAIN & STYLING   : Pure CSS Semantik di index.css (Zero Bloat)    │
+│ 5. MULTIMEDIA AUDIO   : Web Speech API (Pelafalan suara bahasa asing)  │
+│ 6. MASKOT REAKTIF     : Sahabat belajar virtual "Teksie"               │
+│ 7. MODAL NOTIFIKASI   : Dialog elegan tengah layar (Pengganti alert()) │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+Mari kita bedah satu per satu setiap pilar di atas:
+
+### 1. Komponen Antarmuka (React 18 Components)
+Aplikasi dibangun menggunakan prinsip lego: layar besar disusun dari pecahan-pecahan komponen kecil yang dapat digunakan kembali (*reusable*). Setiap komponen berada di `client/src/components/`.
+
+### 2. State Management (Penyimpanan Status Sementara)
+Frontend perlu mengingat hal-hal yang sedang terjadi di layar pengguna, contohnya:
+* Soal kuis nomor berapa yang sedang dikerjakan? (`currentQuestionIndex`)
+* Apakah pengguna sudah memilih jawaban A, B, C, atau D? (`selectedAnswer`)
+* Apakah modal login sedang terbuka atau tertutup? (`isAuthOpen`)
+* Siapa pengguna yang sedang login saat ini? (`currentUser`)
+
+Semua ini dikelola menggunakan **React Hooks bawaan** (`useState`, `useEffect`, `useCallback`) tanpa memerlukan pustaka rumit seperti Redux yang memperberat ukuran aplikasi.
+
+### 3. Lapisan Komunikasi Data (Apollo Client GraphQL)
+Frontend tidak menggunakan `axios` atau `fetch` manual yang berserakan. Semua permintaan data ke server dibungkus oleh **Apollo Client**:
+* **Query** (`useQuery` / `useLazyQuery`): Untuk *mengambil* data dari server (misal: mengambil soal kuis, mencari kosakata di kamus).
+* **Mutation** (`useMutation`): Untuk *mengubah atau menyimpan* data ke server (misal: mendaftar akun baru, login, menyimpan skor kuis).
+
+### 4. Desain & Estetika (Pure CSS di `index.css`)
+Seluruh tampilan grafis diatur di satu berkas terpusat: `client/src/styles/index.css`:
+* **Kenapa tidak pakai Tailwind atau Bootstrap?** Karena CSS murni membuat bundle aplikasi sangat kecil (~59 KB) dan loading secepat kilat (*zero runtime bloat*).
+* Memakai variabel warna global di blok `:root` sehingga tema aplikasi sangat mudah diganti secara seragam.
+
+### 5. Sintesis Audio Alami (Web Speech API)
+Untuk fitur belajar bahasa asing (Inggris, Prancis, Jepang, Jerman), pemelajar perlu mendengar cara pengucapan kata yang tepat. Frontend memanfaatkan mesin suara native browser melalui utilitas bersama `client/src/utils/speechUtils.js`.
+
+### 6. Sahabat Maskot Interaktif (Teksie)
+PahamTeks memiliki maskot pintar bernama **Teksie** (`TeksieMascotCompanion.jsx`). Teksie bukan gambar mati; dia memiliki mesin *state* internal:
+* Jika pengguna diam selama beberapa puluh detik: Teksie masuk mode tidur (*idle state*).
+* Jika pengguna menjawab kuis dengan benar: Teksie melompat gembira.
+* Jika pengguna salah menjawab: Teksie memberikan ekspresi ramah yang menyemangati.
+
+### 7. Modal & Notifikasi Terpadu
+Untuk menjaga pengalaman pengguna tetap profesional, PahamTeks **mengharamkan popup `alert()` bawaan browser** yang kaku. Seluruh pesan sukses, konfirmasi, atau error disajikan via `CenterNotificationModal.jsx`.
+
+---
+
+## 🌳 Pohon Komponen Aplikasi (Component Tree)
+
+Berikut gambaran bagaimana satu komponen memanggil komponen lainnya di dalam React:
+
+```text
+main.jsx (Pembungkus ApolloProvider)
+└── App.jsx (Navigasi Tab Utama, State Autentikasi, & Notifikasi)
+    ├── Navbar.jsx (Header atas, profil pengguna, tombol ganti tab)
+    ├── BackgroundDrift.jsx (Efek latar belakang melayang halus)
+    ├── TeksieMascotCompanion.jsx (Maskot mengambang interaktif)
+    ├── KamusFloating.jsx (Tombol akses cepat kamus pintar di sudut layar)
+    ├── AuthModal.jsx (Popup login, register, OTP email, reset password)
+    ├── CenterNotificationModal.jsx (Popup notifikasi informasi/error)
+    │
+    └── [ LAYAR AKTIF BERDASARKAN TAB ]
+        ├── WelcomePortal.jsx / HomeHero.jsx  -> Tab "Beranda"
+        ├── QuizView.jsx                      -> Tab "Belajar Kuis" (Unit 1–5)
+        ├── CombinedDictTranslator.jsx        -> Tab "Kamus & Terjemahan"
+        │   ├── DictionaryView.jsx (Kamus Pintar & Glosarium A-Z)
+        │   └── Translator.jsx (Penerjemah kalimat AI)
+        ├── ChallengeView.jsx                 -> Tab "Tantangan Harian"
+        ├── DashboardView.jsx                 -> Tab "Statistik & Progres"
+        └── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
+```
+
+---
+
+## 📂 Peta Lengkap File & Folder Frontend (`client/`)
 
 ```text
 client/
-├── src/
-│   ├── main.jsx                     <- Pintu masuk aplikasi React & pembungkus ApolloProvider
-│   ├── App.jsx                      <- Komponen induk pengatur navigasi tab & autentikasi
-│   ├── components/                  <- Kumpulan komponen antarmuka mandiri
-│   │   ├── QuizView.jsx             <- Layar kuis utama (Bab 1–5, timer, dan evaluasi skor)
-│   │   ├── DictionaryView.jsx       <- Layar Kamus Pintar AI & Glosarium A–Z
-│   │   ├── KamusFloating.jsx        <- Tombol mengambang (floating button) untuk akses kamus cepat
-│   │   ├── CombinedDictTranslator.jsx <- Wadah gabungan kamus dan penerjemah
-│   │   └── HumanFormattedText.jsx   <- Perender teks markdown ramah pembaca untuk jawaban AI
-│   ├── graphql/
-│   │   ├── queries.js               <- Kumpulan kueri data GraphQL (GET_QUIZ, GET_DICTIONARY, dll)
-│   │   └── mutations.js             <- Kumpulan aksi mutasi data (LOGIN, REGISTER, EXPLAIN_ANSWER)
-│   ├── styles/
-│   │   └── index.css                <- Sumber utama seluruh gaya tampilan dan variabel tema
-│   └── utils/
-│       ├── quizUtils.js             <- Utilitas pemeriksa kunci jawaban kuis (LETTERS, isOptionCorrect)
-│       └── speechUtils.js           <- Fungsi bersama untuk memutar suara pengucapan (speakText)
-├── index.html                       <- Template HTML dasar & pemanggil font Nunito
-├── vite.config.js                   <- Pengaturan port 3000, host jaringan, dan proxy backend
-└── package.json
+├── package.json                         <- Daftar pustaka & perintah skrip ("dev", "build")
+├── vite.config.js                       <- Konfigurasi Vite: port 3000, network host, dan proxy
+├── index.html                           <- Template HTML tunggal tempat React ditempelkan (root)
+└── src/
+    ├── main.jsx                         <- Titik masuk aplikasi: konfigurasi Apollo Client & Provider
+    ├── App.jsx                          <- Pusat kendali tab, sesi login pengguna, dan modal global
+    │
+    ├── components/                      <- Seluruh komponen antarmuka pengguna (19 file)
+    │   ├── Art2DIcons.jsx               <- Kumpulan ikon SVG 2D kustom
+    │   ├── AuthModal.jsx                <- Form modal login, registrasi, OTP, & reset password
+    │   ├── BackgroundDrift.jsx          <- Partikel latar belakang animasi ringan
+    │   ├── CenterNotificationModal.jsx  <- Modal tengah layar pengganti alert()
+    │   ├── ChallengeView.jsx            <- Layar tantangan koding & kuis harian
+    │   ├── CombinedDictTranslator.jsx   <- Wadah penyatu kamus dan translator
+    │   ├── DashboardView.jsx            <- Layar progres skor dan statistik belajar
+    │   ├── DictionaryView.jsx           <- Layar kamus AI dan glosarium A–Z
+    │   ├── HomeHero.jsx                 <- Banner penyambut di beranda
+    │   ├── HumanFormattedText.jsx       <- Perender jawaban AI menjadi markdown ramah baca
+    │   ├── KamusFloating.jsx            <- Tombol melayang cepat untuk membuka kamus
+    │   ├── LanguageInsights.jsx         <- Layar eksplorasi wawasan dan tips bahasa
+    │   ├── LearningHub.jsx              <- Pusat materi teori pembelajaran
+    │   ├── MiniCharacters.jsx           <- Ilustrasi grafis 2D pendukung materi
+    │   ├── Navbar.jsx                   <- Navigasi atas dan status akun pengguna
+    │   ├── QuizView.jsx                 <- Layar kuis adaptif utama (Unit 1–5)
+    │   ├── TeksieMascotCompanion.jsx    <- Maskot pintar interaktif Teksie
+    │   ├── Translator.jsx               <- Layar penerjemah teks multi-bahasa
+    │   └── WelcomePortal.jsx            <- Portal pemilihan jalur belajar (Bahasa vs Koding)
+    │
+    ├── graphql/                         <- Kontrak kueri data ke backend
+    │   ├── queries.js                   <- Kueri: GET_QUIZ, GET_DICTIONARY, GET_PROFILE, dll
+    │   └── mutations.js                 <- Mutasi: LOGIN, REGISTER, SAVE_QUIZ_SCORE, dll
+    │
+    ├── styles/
+    │   └── index.css                    <- Sumber tunggal seluruh desain CSS (Design Tokens)
+    │
+    └── utils/                           <- Utilitas bersama (Wajib digunakan ulang)
+        ├── quizUtils.js                 <- Validasi jawaban kuis (LETTERS, isOptionCorrect)
+        └── speechUtils.js               <- Pemutar audio sintesis ucapan multi-bahasa
 ```
 
 ---
 
-## 🎨 Filosofi Desain: Mengapa Pure CSS di `index.css`?
+## 🎨 Panduan Desain & Variabel Warna (`index.css`)
 
-Di PahamTeks, kita sengaja tidak menggunakan Tailwind CSS atau Bootstrap. Alasannya sederhana:
-1. **Ringan & Bebas Pembengkakan (*Zero Bloat*)**: Ukuran bundle aplikasi kita tetap sangat kecil (file CSS hanya sekitar ~59 KB).
-2. **Mudah Dirawat & Ditemukan**: Nama class kita sangat semantik dan mudah ditebak, contohnya `.quiz-card`, `.btn-huge`, `.timer-bar`, dan `.unit-card`.
-3. **Variabel Warna Terpusat**: Seluruh palet warna (hijau mint, biru toska, abu lembut) tersimpan di blok `:root` pada baris-baris awal `client/src/styles/index.css`. Jika ingin mengubah nuansa warna aplikasi, kamu cukup mengganti nilai variabel di sana!
+Semua gaya visual diatur menggunakan variabel CSS (*Design Tokens*) pada baris awal `client/src/styles/index.css`:
+
+```css
+:root {
+  /* Palet Warna Utama */
+  --bg-main: #f8fafc;           /* Latar belakang halaman (putih abu sejuk) */
+  --text-main: #1e293b;         /* Warna teks utama (hitam arang gelap) */
+  --text-muted: #64748b;        /* Warna teks sekunder / penjelasan */
+  --primary-green: #10b981;     /* Hijau emerald: tombol aksi & status benar */
+  --primary-hover: #059669;     /* Warna tombol hijau saat disorot kursor */
+  --accent-blue: #0ea5e9;       /* Biru langit: kartu kamus & info penting */
+  --danger-red: #ef4444;        /* Merah: pesan error & status jawaban salah */
+  
+  /* Bentuk & Bayangan */
+  --card-bg: #ffffff;           /* Warna dasar kartu komponen */
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); /* Bayangan lembut */
+  --radius-lg: 16px;            /* Sudut membulat modern pada kartu */
+  --radius-full: 9999px;        /* Tombol bulat penuh (kapsul) */
+}
+```
+
+### Aturan Menulis Kelas CSS:
+* Gunakan nama kelas yang deskriptif dan mencerminkan fungsinya: `.quiz-card`, `.btn-action`, `.option-button`, `.timer-track`.
+* Hindari menulis inline-style `style={{ marginTop: '20px' }}` di berkas JSX kecuali untuk nilai dinamis murni (seperti lebar persentase progress bar timer).
 
 ---
 
-## 🔄 Bagaimana Data Mengalir di Komponen Kita?
+## 🔐 Manajemen Autentikasi Pengguna di Frontend
 
-Berikut contoh nyata saat pemelajar mencari kata di Kamus Pintar ([`DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx)):
+Bagaimana cara frontend mengetahui apakah pengguna sedang login atau tamu?
 
+```text
+[ Pengguna Isi Email & Password ]
+               │
+               ▼
+[ AuthModal.jsx panggil mutasi LOGIN ]
+               │
+               ▼
+[ Server kembalikan token JWT ]
+               │
+               ├─► 1. Simpan token: localStorage.setItem('pahamteks_auth_token', token)
+               │
+               ├─► 2. Simpan user: setCurrentUser(data.login.user)
+               │
+               └─► 3. main.jsx otomatis membaca token & menyematkannya ke header:
+                      Authorization: Bearer <token_jwt>
 ```
-[ Input Pengguna ] -> ketik "syntax" lalu klik tombol "Cari"
-         │
-         ▼
-[ Handler React ] -> panggil fetchDictionary({ variables: { keyword: 'syntax', lang: 'id' } })
-         │
-         ▼
-[ Apollo Client ] -> mengirim POST request ke endpoint /graphql
-         │
-         ▼
-[ State React ] -> update setResult(res.data.dictionary.result)
-         │
-         ▼
-[ Tampilan UI ] -> HumanFormattedText merender penjelasan berformat rapi di layar
-```
 
-Semua kueri GraphQL sudah disiapkan di folder `client/src/graphql/`. Kamu tinggal mengimpor kueri yang dibutuhkan dan menjalankannya menggunakan hook `useQuery` atau `useLazyQuery`.
-
----
-
-## 🗣️ Cara Menambahkan Suara Pengucapan (Speech Synthesis)
-
-Jika kamu membuat komponen baru yang membutuhkan tombol pemutar suara (misal melafalkan kosakata baru), **selalu gunakan utilitas bersama** di `client/src/utils/speechUtils.js`:
-
+Saat pengguna menekan tombol **Logout**, frontend cukup menjalankan:
 ```javascript
+localStorage.removeItem('pahamteks_auth_token');
+setCurrentUser(null);
+```
+
+---
+
+## 🗣️ Cara Pakai Audio Pelafalan Bahasa (`speechUtils.js`)
+
+Jika kamu membuat fitur baru yang menampilkan kata bahasa asing, selalu sediakan tombol dengarkan suara:
+
+```jsx
+import React from 'react';
 import { speakText } from '../utils/speechUtils';
 
-// Cara pakai saat tombol speaker diklik:
-const handleDengarkan = () => {
-  speakText("Bonjour, comment ça va?", "fr"); // Parameter: (teks, kode_bahasa)
-};
+export function TombolSuara({ kata, kodeBahasa }) {
+  return (
+    <button 
+      className="btn-speaker" 
+      onClick={() => speakText(kata, kodeBahasa)}
+      title="Dengarkan Pengucapan"
+    >
+      🔊 Dengarkan
+    </button>
+  );
+}
 ```
-Fungsi ini otomatis menangani pilihan aksen suara terbaik di browser pemelajar dan membersihkan simbol markdown sebelum suara dibunyikan.
+* `kodeBahasa` yang didukung: `'en'` (Inggris), `'fr'` (Prancis), `'ja'` (Jepang), `'de'` (Jerman), `'es'` (Spanyol), `'id'` (Indonesia).
 
 ---
 
-## 🛑 Aturan Penting Koding Frontend (Zero AI Slop)
+## 🛠️ Studi Kasus: Cara Menambah Komponen / Tampilan Baru
 
-1. **Dilarang Keras Menggunakan `alert()` Browser Bawaan**:
-   Dialog `alert()` bawaan browser terasa kaku dan merusak estetika aplikasi. Selalu gunakan status teks ramah di kartu komponen atau modal notifikasi yang serasi dengan tema web.
-2. **Gunakan Kembali Utilitas Bersama**:
-   Jangan menulis ulang logika pengecekan opsi kuis atau pemutar suara di sembarang tempat. Gunakan `quizUtils.js` dan `speechUtils.js`.
-3. **Wajib Verifikasi Build Sebelum Selesai**:
-   Sebelum mengakhiri pekerjaan atau menyerahkan tugas ke rekan lain, wajib jalankan perintah verifikasi build di terminal:
+Misalnya kamu diminta membuat tampilan baru bernama **FlashcardView**:
+
+1. **Buat Berkas Komponen**: Buat `client/src/components/FlashcardView.jsx`.
+2. **Gunakan Utilitas Bersama**: Jika butuh validasi atau suara, impor dari `client/src/utils/`.
+3. **Tambahkan Styling di `index.css`**: Buat blok kelas CSS baru, misalnya `.flashcard-container` dan `.flashcard-card`.
+4. **Daftarkan di `App.jsx`**:
+   - Tambahkan tab baru di daftar menu `activeTab`.
+   - Render `<FlashcardView />` saat tab tersebut dipilih pengguna.
+5. **Verifikasi Build**:
    ```powershell
    npm --prefix client run build
    ```
-   Pastikan hasilnya berstatus sukses (`✓ built in X.XXs`) tanpa ada error kompilasi.
+   Pastikan tidak ada sintaks JSX atau impor yang rusak sebelum commit.
 
 ---
 
-## 🛠️ Tutorial: Cara Menjalankan Frontend di Komputer Kamu
+## 🛑 Standar Kualitas Koding (Zero AI Slop)
 
-Buka terminal di root project, lalu ketik:
+1. **Dilarang Browser Alert**: Jangan pernah menulis `alert("Berhasil!")` atau `confirm("Yakin?")`. Gunakan `CenterNotificationModal`.
+2. **Tangani Semua Error**: Jangan biarkan `catch (e) {}` kosong. Minimal beri `console.warn('[FlashcardView] Error:', e)`.
+3. **Responsif di Ponsel**: Pastikan tata letak flex/grid memiliki `flex-wrap: wrap` atau media query `@media (max-width: 768px)` agar tidak patah saat dibuka lewat layar HP.
+4. **Verifikasi Build Wajib**: Selalu jalankan `npm --prefix client run build` sebelum push.
+
+---
+
+## 🚀 Perintah Menjalankan Frontend
+
 ```powershell
+# Menjalankan server pengembangan lokal (port 3000)
 npm --prefix client run dev
+
+# Memeriksa dan memvalidasi hasil build produksi
+npm --prefix client run build
 ```
-Buka browser di alamat: `http://localhost:3000`.  
-Setiap kali kamu menyimpan perubahan file di `client/src/`, tampilan di browser akan otomatis terbarui secara instan (*Hot Module Replacement*)!
+Buka browser di alamat: `http://localhost:3000`. Setiap kali file disimpan, Vite HMR akan memperbarui tampilan browser secara instan tanpa perlu reload!
