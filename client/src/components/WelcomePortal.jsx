@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import {
   LOGIN_MUTATION,
+  ADMIN_LOGIN_MUTATION,
   REGISTER_MUTATION,
   SEND_OTP_MUTATION,
   REQUEST_PASSWORD_RESET_MUTATION,
@@ -37,9 +38,10 @@ export default function WelcomePortal({
   currentLang,
   t
 }) {
-  const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register' | 'forgot'
+  const [activeTab, setActiveTab] = useState('login'); // login, admin, register, atau forgot
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [username, setUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,6 +49,7 @@ export default function WelcomePortal({
   const [statusMsg, setStatusMsg] = useState({ text: '', isError: false });
 
   const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
+  const [adminLoginMutation, { loading: adminLoginLoading }] = useMutation(ADMIN_LOGIN_MUTATION);
   const [registerMutation, { loading: regLoading }] = useMutation(REGISTER_MUTATION);
   const [sendOtpMutation, { loading: otpLoading }] = useMutation(SEND_OTP_MUTATION);
   const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
@@ -144,6 +147,22 @@ export default function WelcomePortal({
     }
   };
 
+  // Verifikasi login admin melalui API sebelum membuka dashboard privat.
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await adminLoginMutation({ variables: { email, password, adminPassword } });
+      if (res.data?.adminLogin?.success && res.data.adminLogin.user?.role === 'ADMIN') {
+        onAuthSuccess(res.data.adminLogin.user);
+      } else {
+        setStatusMsg({ text: res.data?.adminLogin?.message || 'Kredensial admin tidak valid.', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
   // Daftarkan akun dengan email, username, kata sandi, dan OTP.
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -217,10 +236,10 @@ export default function WelcomePortal({
 
           <div className="welcome-card-wrapper">
         {/* Tab Switcher */}
-        {activeTab === 'forgot' ? (
+        {activeTab === 'forgot' || activeTab === 'admin' ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>
-              {t('auth_reset_title')}
+              {activeTab === 'admin' ? 'Login Administrator' : t('auth_reset_title')}
             </h3>
             <button
               type="button"
@@ -228,6 +247,7 @@ export default function WelcomePortal({
               style={{ padding: '6px 14px', fontSize: '0.85rem' }}
               onClick={() => {
                 setActiveTab('login');
+                setAdminPassword('');
                 setStatusMsg({ text: '', isError: false });
               }}
             >
@@ -324,6 +344,64 @@ export default function WelcomePortal({
               disabled={loginLoading}
             >
               {loginLoading ? 'Memproses...' : t('auth_btn_login')}
+            </button>
+          </form>
+        )}
+
+        {activeTab === 'login' && (
+          <button
+            type="button"
+            className="admin-login-link"
+            onClick={() => {
+              setActiveTab('admin');
+              setStatusMsg({ text: '', isError: false });
+            }}
+          >
+            Masuk khusus administrator
+          </button>
+        )}
+
+        {activeTab === 'admin' && (
+          <form onSubmit={handleAdminLogin} className="auth-form">
+            <p className="admin-login-hint">Gunakan email yang diizinkan, password akun Anda, dan password admin tambahan.</p>
+            <label className="admin-login-label" htmlFor="welcome-admin-email">Email admin</label>
+            <input
+              id="welcome-admin-email"
+              type="email"
+              className="auth-input"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label className="admin-login-label" htmlFor="welcome-admin-account-password">Password akun</label>
+            <input
+              id="welcome-admin-account-password"
+              type="password"
+              className="auth-input"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label className="admin-login-label" htmlFor="welcome-admin-shared-password">Password admin</label>
+            <input
+              id="welcome-admin-shared-password"
+              type="password"
+              className="auth-input"
+              autoComplete="off"
+              minLength={16}
+              required
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="btn-huge btn-green"
+              style={{ width: '100%', marginTop: '6px', minWidth: 'unset' }}
+              disabled={adminLoginLoading}
+            >
+              {adminLoginLoading ? 'Memverifikasi…' : 'Masuk ke Dashboard Admin'}
             </button>
           </form>
         )}

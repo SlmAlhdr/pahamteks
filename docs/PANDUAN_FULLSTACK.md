@@ -328,7 +328,7 @@ Kunjungi alamat:
 2. Masukkan email akun ke `ADMIN_EMAILS` di `server/.env`; beberapa email dipisahkan koma.
 3. Buat `ADMIN_PASSWORD` acak minimal 16 karakter. Ini adalah password tambahan bersama, di samping password akun masing-masing admin.
 4. Pastikan `JWT_SECRET` berisi secret acak minimal 32 karakter, lalu restart backend.
-5. Buka `http://127.0.0.1:3000`, pilih login, lalu **Masuk khusus administrator**. Masukkan email, password akun, dan password admin.
+5. Buka `http://127.0.0.1:3000`. Pada kartu login layar awal, klik **Masuk khusus administrator** tepat di bawah tombol login pengguna. Masukkan email, password akun, dan password admin.
 6. Setelah login sukses, menu **Admin** membuka dashboard status server dan audit log.
 
 Backend memberikan klaim admin hanya setelah password akun, allowlist email, dan `ADMIN_PASSWORD` lolos pemeriksaan. Login biasa tidak mengangkat role. Mengubah `ADMIN_PASSWORD` membatalkan sesi admin lama. Query `serverStatus`, `userLogs`, dan detail `/health` memerlukan token admin yang valid; `logActivity` mengambil identitas pemilik dari token, bukan dari input `userId` klien. Gunakan HTTPS jika aplikasi dibuka melalui jaringan publik.
