@@ -91,7 +91,8 @@ main.jsx (Pembungkus ApolloProvider)
         │   └── Translator.jsx (Penerjemah kalimat AI)
         ├── ChallengeView.jsx                 -> Tab "Tantangan Harian"
         ├── DashboardView.jsx                 -> Tab "Statistik & Progres"
-        └── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
+        ├── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
+        └── AdminDashboardView.jsx            -> Tab "👑 Admin" (Dasbor Telemetri, Gemini Key Pool, & Audit Log)
 ```
 
 ---
@@ -107,7 +108,8 @@ client/
     ├── main.jsx                         <- Titik masuk aplikasi: konfigurasi Apollo Client & Provider
     ├── App.jsx                          <- Pusat kendali tab, sesi login pengguna, dan modal global
     │
-    ├── components/                      <- Seluruh komponen antarmuka pengguna (19 file)
+    ├── components/                      <- Seluruh komponen antarmuka pengguna (20 file)
+    │   ├── AdminDashboardView.jsx       <- Layar panel kendali admin & pemantauan telemetri server
     │   ├── Art2DIcons.jsx               <- Kumpulan ikon SVG 2D kustom
     │   ├── AuthModal.jsx                <- Form modal login, registrasi, OTP, & reset password
     │   ├── BackgroundDrift.jsx          <- Partikel latar belakang animasi ringan
@@ -162,6 +164,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 | **Layar beranda (Home Hero banner penyambut)** | [`client/src/components/HomeHero.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/HomeHero.jsx) |
 | **Portal pemilihan jalur awal belajar (Bahasa vs Koding)** | [`client/src/components/WelcomePortal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/WelcomePortal.jsx) |
 | **Dasbor akun pemelajar (riwayat kuis pribadi & statistik)** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) |
+| **Panel Administrator visual (Metrik server, Gemini key pool, audit log)** | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
 | **Layar tantangan harian koding & kuis cepat** | [`client/src/components/ChallengeView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/ChallengeView.jsx) |
 | **Layar wawasan linguistik dan perbandingan bahasa** | [`client/src/components/LanguageInsights.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LanguageInsights.jsx) |
 | **Pusat materi belajar terpadu** | [`client/src/components/LearningHub.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LearningHub.jsx) |

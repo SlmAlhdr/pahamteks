@@ -7,6 +7,13 @@ export const GET_SERVER_STATUS = gql`
       geminiKeysCount
       dbConnected
       timestamp
+      activeDbEngine
+      uptimeSeconds
+      memoryRssMb
+      memoryHeapMb
+      totalUsersCount
+      totalQuizzesCount
+      geminiModel
     }
   }
 `;

@@ -29,6 +29,7 @@ service-account*.json
 
 # Cache & temporary files
 .cache/
+.codex-npm-cache/
 __pycache__/
 api/__pycache__/
 *.pyc

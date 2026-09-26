@@ -60,6 +60,13 @@ export const typeDefs = `#graphql
         geminiKeysCount: Int!
         dbConnected: Boolean!
         timestamp: String!
+        activeDbEngine: String
+        uptimeSeconds: Float
+        memoryRssMb: Float
+        memoryHeapMb: Float
+        totalUsersCount: Int
+        totalQuizzesCount: Int
+        geminiModel: String
     }
 
     type Query {

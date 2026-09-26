@@ -108,6 +108,7 @@ Tabel berikut memetakan setiap fitur di antarmuka pengguna ke berkas backend dan
 | **Log Aktivitas Pengguna** | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `user_activity_logs` |
 | **Maskot Pintar Teksie** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) | Logika state lokal React | Suara Web Speech API |
 | **Monitoring & Status Server** | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) (`/health`) | Endpoint Health JSON |
+| **Panel Administrator Visual** | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) | `server/src/resolvers/index.js` & `historyResolvers.js` | `user_activity_logs` + Pool Gemini |
 
 ---
 
@@ -120,6 +121,7 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Frontend** | Konfigurasi port (3000) & proxy GraphQL | [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) |
 | **Frontend** | Inisialisasi Apollo Client & header token | [`client/src/main.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/main.jsx) |
 | **Frontend** | Navigasi tab utama & state login | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) |
+| **Frontend** | Panel visual admin lengkap di antarmuka web (Navbar 👑 Admin) | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
 | **Frontend** | Seluruh styling CSS, warna :root, & animasi | [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) |
 | **Frontend** | Kueri GraphQL client (`GET_QUIZ`, dll) | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) |
 | **Frontend** | Mutasi GraphQL client (`LOGIN`, `REGISTER`) | [`client/src/graphql/mutations.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/mutations.js) |
@@ -141,6 +143,7 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Backend** | Variabel rahasia lokal (.env) | `server/.env` (panduan di `server/.env.example`) |
 | **Admin** | Status monitoring & uptime server REST | `GET http://localhost:4000/health` |
 | **Admin** | Kueri audit aktivitas pengguna GraphQL | `serverStatus` & `userLogs` di `POST /graphql` |
+| **Admin** | Panel visual admin langsung di web browser | Tab 👑 Admin di navigasi atas |
 
 ---
 

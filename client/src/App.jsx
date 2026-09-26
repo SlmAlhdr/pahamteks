@@ -10,6 +10,7 @@ import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
 import TeksieMascotCompanion from './components/TeksieMascotCompanion';
 import CenterNotificationModal from './components/CenterNotificationModal';
+import AdminDashboardView from './components/AdminDashboardView';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 
@@ -203,7 +204,12 @@ export default function App() {
 
       {/* Main Content Pages */}
       <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-        {!user ? (
+        {activeTab === 'admin' ? (
+          <AdminDashboardView
+            currentLang={currentLang}
+            onBackHome={() => setActiveTab('home')}
+          />
+        ) : !user ? (
           <WelcomePortal
             onAuthSuccess={handleAuthSuccess}
             onGuestLogin={handleGuestLogin}
