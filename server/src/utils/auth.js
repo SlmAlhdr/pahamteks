@@ -1,11 +1,85 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { GraphQLError } from 'graphql';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 
 const JWT_ISSUER = 'pahamteks-api';
 const JWT_AUDIENCE = 'pahamteks-client';
 
 const EMERGENCY_FALLBACK_SECRET = 'pahamteks-emergency-fallback-session-secret-key-32-chars-long';
+const BCRYPT_SALT_ROUNDS = 10;
+
+/**
+ * Mengenkripsi kata sandi pengguna secara kuat menggunakan algoritma Bcrypt (Salt 10 rounds).
+ * Mencegah kebocoran plaintext password dan tahan terhadap serangan rainbow table.
+ */
+export async function hashPassword(plainPassword) {
+    if (!plainPassword || typeof plainPassword !== 'string') {
+        throw new Error('Kata sandi tidak valid untuk dienkripsi.');
+    }
+    const salt = await bcrypt.genSalt(BCRYPT_SALT_ROUNDS);
+    return bcrypt.hash(plainPassword, salt);
+}
+
+/**
+ * Memverifikasi kecocokan kata sandi dengan hash Bcrypt ($2a$, $2b$, $2y$).
+ * Jika hash berupa plaintext lama, verifikasi tetap didukung untuk migrasi otomatis.
+ */
+export async function verifyPassword(plainPassword, storedHash) {
+    if (!plainPassword || !storedHash) return false;
+    try {
+        if (typeof storedHash === 'string' && (storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$') || storedHash.startsWith('$2y$'))) {
+            return await bcrypt.compare(plainPassword, storedHash);
+        }
+        return plainPassword === storedHash;
+    } catch (err) {
+        console.warn('⚠️ [Password Verify Error]', err.message);
+        return false;
+    }
+}
+
+/**
+ * Menghasilkan cryptographic signature stateless untuk verifikasi OTP pada lingkungan serverless.
+ * Format token: `${expiresAt}.${hmac}`
+ * Memungkinkan verifikasi kode verifikasi pada container Vercel berbeda tanpa shared in-memory state.
+ */
+export function createOtpSignature(email, otpCode, expiresAt) {
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanOtp = String(otpCode || '').trim();
+    const expiryMs = typeof expiresAt === 'number' ? expiresAt : new Date(expiresAt).getTime();
+    const dataToSign = `${cleanEmail}:${cleanOtp}:${expiryMs}`;
+    const hmac = createHmac('sha256', getJwtSecret()).update(dataToSign).digest('hex');
+    return `${expiryMs}.${hmac}`;
+}
+
+/**
+ * Memvalidasi cryptographic signature stateless OTP.
+ * Memeriksa tanda tangan server dan masa aktif kode (10 menit).
+ */
+export function verifyOtpSignature(email, otpCode, signature) {
+    if (!signature || typeof signature !== 'string') return false;
+    const parts = signature.split('.');
+    if (parts.length !== 2) return false;
+
+    const [expiryStr, expectedHmac] = parts;
+    const expiryMs = parseInt(expiryStr, 10);
+    if (isNaN(expiryMs) || Date.now() > expiryMs) {
+        return false; // Kadaluarsa
+    }
+
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanOtp = String(otpCode || '').trim();
+    const dataToSign = `${cleanEmail}:${cleanOtp}:${expiryMs}`;
+    const actualHmac = createHmac('sha256', getJwtSecret()).update(dataToSign).digest('hex');
+
+    try {
+        const actualBuf = Buffer.from(actualHmac, 'utf8');
+        const expectedBuf = Buffer.from(expectedHmac, 'utf8');
+        return actualBuf.length === expectedBuf.length && timingSafeEqual(actualBuf, expectedBuf);
+    } catch {
+        return false;
+    }
+}
 
 function getJwtSecret() {
     const secret = process.env.JWT_SECRET?.trim();

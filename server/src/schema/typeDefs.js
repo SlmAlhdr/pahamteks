@@ -46,6 +46,7 @@ export const typeDefs = `#graphql
         message: String!
         user: User
         token: String
+        otpSignature: String
     }
 
     type UserActivityLog {
@@ -103,6 +104,7 @@ export const typeDefs = `#graphql
             fname: String
             lname: String
             otp: String!
+            otpSignature: String
         ): AuthResponse!
         login(
             email: String!
@@ -118,6 +120,7 @@ export const typeDefs = `#graphql
             email: String!
             otp: String!
             newPassword: String!
+            otpSignature: String
         ): AuthResponse!
         logActivity(
             action: String!

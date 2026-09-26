@@ -47,6 +47,7 @@ export default function WelcomePortal({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpSignature, setOtpSignature] = useState('');
   const [statusMsg, setStatusMsg] = useState({ text: '', isError: false });
 
   const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
@@ -70,6 +71,9 @@ export default function WelcomePortal({
     try {
       const res = await sendOtpMutation({ variables: { email } });
       if (res.data?.sendOtp?.success) {
+        if (res.data.sendOtp.otpSignature) {
+          setOtpSignature(res.data.sendOtp.otpSignature);
+        }
         setStatusMsg({ text: t('auth_otp_msg'), isError: false });
       } else {
         setStatusMsg({ text: res.data?.sendOtp?.message || 'Gagal mengirim kode verifikasi.', isError: true });
@@ -89,6 +93,9 @@ export default function WelcomePortal({
     try {
       const res = await requestResetMutation({ variables: { email } });
       if (res.data?.requestPasswordReset?.success) {
+        if (res.data.requestPasswordReset.otpSignature) {
+          setOtpSignature(res.data.requestPasswordReset.otpSignature);
+        }
         setStatusMsg({ text: res.data.requestPasswordReset.message, isError: false });
       } else {
         setStatusMsg({ text: res.data?.requestPasswordReset?.message || 'Gagal meminta reset kata sandi', isError: true });
@@ -117,7 +124,7 @@ export default function WelcomePortal({
     setStatusMsg({ text: '', isError: false });
     try {
       const res = await resetPasswordMutation({
-        variables: { email, otp, newPassword }
+        variables: { email, otp, newPassword, otpSignature }
       });
       if (res.data?.resetPassword?.success) {
         setStatusMsg({ text: res.data.resetPassword.message, isError: false });
@@ -125,6 +132,7 @@ export default function WelcomePortal({
           setActiveTab('login');
           setPassword('');
           setOtp('');
+          setOtpSignature('');
           setNewPassword('');
           setConfirmPassword('');
         }, 1800);
@@ -178,7 +186,7 @@ export default function WelcomePortal({
     setStatusMsg({ text: '', isError: false });
     try {
       const res = await registerMutation({
-        variables: { email, password, username: username.trim(), otp }
+        variables: { email, password, username: username.trim(), otp, otpSignature }
       });
       if (res.data?.register?.success) {
         onAuthSuccess(res.data.register.user);

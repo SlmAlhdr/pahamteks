@@ -50,6 +50,7 @@ type AuthResponse {
     message: String!
     user: User
     token: String
+    otpSignature: String
 }
 
 type UserActivityLog {
@@ -107,10 +108,11 @@ type Mutation {
         fname: String
         lname: String
         otp: String!
+        otpSignature: String
     ): AuthResponse!
     login(email: String!, password: String!): AuthResponse!
     adminLogin(email: String!, password: String!, adminPassword: String): AuthResponse!
     requestPasswordReset(email: String!): AuthResponse!
-    resetPassword(email: String!, otp: String!, newPassword: String!): AuthResponse!
+    resetPassword(email: String!, otp: String!, newPassword: String!, otpSignature: String): AuthResponse!
     logActivity(action: String!, details: String): Boolean!
 }

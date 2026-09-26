@@ -52,6 +52,7 @@ export const SEND_OTP_MUTATION = gql`
     sendOtp(email: $email) {
       success
       message
+      otpSignature
     }
   }
 `;
@@ -64,6 +65,7 @@ export const REGISTER_MUTATION = gql`
     $fname: String
     $lname: String
     $otp: String!
+    $otpSignature: String
   ) {
     register(
       email: $email
@@ -72,6 +74,7 @@ export const REGISTER_MUTATION = gql`
       fname: $fname
       lname: $lname
       otp: $otp
+      otpSignature: $otpSignature
     ) {
       success
       message
@@ -127,13 +130,24 @@ export const REQUEST_PASSWORD_RESET_MUTATION = gql`
     requestPasswordReset(email: $email) {
       success
       message
+      otpSignature
     }
   }
 `;
 
 export const RESET_PASSWORD_MUTATION = gql`
-  mutation ResetPassword($email: String!, $otp: String!, $newPassword: String!) {
-    resetPassword(email: $email, otp: $otp, newPassword: $newPassword) {
+  mutation ResetPassword(
+    $email: String!
+    $otp: String!
+    $newPassword: String!
+    $otpSignature: String
+  ) {
+    resetPassword(
+      email: $email
+      otp: $otp
+      newPassword: $newPassword
+      otpSignature: $otpSignature
+    ) {
       success
       message
     }

@@ -1,7 +1,16 @@
-import bcrypt from 'bcryptjs';
 import { getDb, isDbConnected } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
-import { createAccessToken, isAdminEmail, requireAuthenticatedUser, requireAdmin, verifyAdminPassword } from '../utils/auth.js';
+import {
+    createAccessToken,
+    isAdminEmail,
+    requireAuthenticatedUser,
+    requireAdmin,
+    verifyAdminPassword,
+    hashPassword,
+    verifyPassword,
+    createOtpSignature,
+    verifyOtpSignature
+} from '../utils/auth.js';
 import {
     checkLoginBruteForce,
     recordLoginFailure,
@@ -159,9 +168,10 @@ export const authResolvers = {
                 // 2. Generate kode OTP 6-digit acak
                 const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
                 const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+                const otpSignature = createOtpSignature(cleanEmail, otpCode, expiresAt);
 
                 // 3. Simpan OTP di database dan memori sebagai cadangan
-                memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
+                memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime(), signature: otpSignature });
 
                 if (isDbConnected()) {
                     const db = getDb();
@@ -180,7 +190,8 @@ export const authResolvers = {
 
                 return {
                     success: emailResult.success,
-                    message: emailResult.message
+                    message: emailResult.message,
+                    otpSignature: emailResult.success ? otpSignature : null
                 };
             } catch (unhandledErr) {
                 console.error('[sendOtp Resolver Error]:', unhandledErr);
@@ -191,8 +202,8 @@ export const authResolvers = {
             }
         },
 
-        // Verifikasi OTP, simpan akun baru, lalu buat sesi pengguna.
-        register: async (_, { email, password, username, fname, lname, otp }, context) => {
+        // Verifikasi OTP (DB/Memory/HMAC), enkripsi password dengan Bcrypt, simpan akun, buat sesi.
+        register: async (_, { email, password, username, fname, lname, otp, otpSignature }, context) => {
             const finalUsername = (username || fname || '').trim();
 
             if (!email || !password || !finalUsername || !otp) {
@@ -213,95 +224,92 @@ export const authResolvers = {
             const cleanEmail = email.trim().toLowerCase();
             const cleanOtp = otp.trim();
 
+            // 1. Validasi Kode OTP: Cek Database, Memory, atau Stateless HMAC Signature
+            let isOtpValid = false;
+            let otpErrorMsg = '';
+
+            // Cek di Database
+            if (isDbConnected()) {
+                const db = getDb();
+                try {
+                    const [rows] = await db.execute(
+                        'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
+                        [cleanEmail]
+                    );
+                    if (rows && rows.length > 0) {
+                        const rec = rows[0];
+                        if (new Date(rec.expires_at) < new Date()) {
+                            otpErrorMsg = 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang kode baru.';
+                        } else if (rec.otp_code === cleanOtp) {
+                            isOtpValid = true;
+                        } else {
+                            otpErrorMsg = 'Kode verifikasi salah! Periksa kembali email Anda.';
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[DB Fetch Register OTP]', err.message);
+                }
+            }
+
+            // Cek di Memory lokal jika belum valid
+            if (!isOtpValid && memOtp.has(cleanEmail)) {
+                const memRecord = memOtp.get(cleanEmail);
+                const storedCode = typeof memRecord === 'object' ? memRecord.code : memRecord;
+                const expiresAtTime = typeof memRecord === 'object' ? memRecord.expiresAt : Infinity;
+
+                if (Date.now() > expiresAtTime) {
+                    otpErrorMsg = 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang.';
+                } else if (storedCode === cleanOtp) {
+                    isOtpValid = true;
+                } else {
+                    otpErrorMsg = 'Kode verifikasi salah! Periksa kembali email Anda.';
+                }
+            }
+
+            // Cek Stateless HMAC signature (solusi ampuh untuk multi-instance serverless Vercel)
+            if (!isOtpValid && otpSignature) {
+                if (verifyOtpSignature(cleanEmail, cleanOtp, otpSignature)) {
+                    isOtpValid = true;
+                } else {
+                    otpErrorMsg = 'Kode verifikasi salah atau sudah kadaluarsa. Silakan kirim ulang.';
+                }
+            }
+
+            if (!isOtpValid) {
+                return {
+                    success: false,
+                    message: otpErrorMsg || 'Kode verifikasi belum dikirim atau sudah kadaluarsa. Silakan kirim ulang.'
+                };
+            }
+
+            // 2. Enkripsi kata sandi kuat menggunakan sistem Bcrypt (Salt 10)
+            const hash = await hashPassword(password);
+
+            // 3. Simpan akun ke Database (MySQL / fallback)
+            let userId = null;
             if (isDbConnected()) {
                 const db = getDb();
                 try {
                     // Validasi apakah username sudah digunakan
                     const [existingUser] = await db.execute('SELECT id FROM users WHERE username = ?', [finalUsername]);
-                    if (existingUser.length > 0) {
+                    if (existingUser && existingUser.length > 0) {
                         return { success: false, message: `Username "${finalUsername}" sudah digunakan. Silakan pilih username lain!` };
                     }
 
                     // Validasi apakah email sudah terdaftar
                     const [existingEmail] = await db.execute('SELECT id FROM users WHERE email = ?', [cleanEmail]);
-                    if (existingEmail.length > 0) {
+                    if (existingEmail && existingEmail.length > 0) {
                         return { success: false, message: 'Email ini sudah terdaftar! Silakan langsung masuk.' };
                     }
-
-                    // Validasi OTP dari Database dengan fallback memori cadangan
-                    let otpRows = [];
-                    try {
-                        const [rows] = await db.execute(
-                            'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
-                            [cleanEmail]
-                        );
-                        otpRows = rows || [];
-                    } catch (err) {
-                        console.warn('[DB Fetch Register OTP]', err.message);
-                    }
-
-                    let record = null;
-                    if (otpRows.length > 0) {
-                        record = otpRows[0];
-                    } else if (memOtp.has(cleanEmail)) {
-                        const memRecord = memOtp.get(cleanEmail);
-                        record = {
-                            otp_code: typeof memRecord === 'object' ? memRecord.code : memRecord,
-                            expires_at: typeof memRecord === 'object' ? new Date(memRecord.expiresAt).toISOString() : new Date(Date.now() + 600000).toISOString()
-                        };
-                    }
-
-                    if (!record) {
-                        return { success: false, message: 'Kode verifikasi belum dikirim atau sudah kadaluarsa. Silakan kirim ulang.' };
-                    }
-
-                    if (new Date(record.expires_at) < new Date()) {
-                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]).catch(() => {});
-                        memOtp.delete(cleanEmail);
-                        return { success: false, message: 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang kode baru.' };
-                    }
-
-                    if (record.otp_code !== cleanOtp) {
-                        return { success: false, message: 'Kode verifikasi salah! Periksa kembali email Anda.' };
-                    }
-
-                    // Hashing password dengan bcrypt (Salt 10)
-                    const salt = await bcrypt.genSalt(10);
-                    const hash = await bcrypt.hash(password, salt);
 
                     const [res] = await db.execute(
                         'INSERT INTO users (email, username, password, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
                         [cleanEmail, finalUsername, hash, finalUsername, (lname || '').trim()]
                     );
+                    userId = res.insertId;
 
                     // Hapus OTP setelah berhasil digunakan
                     await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]).catch(() => {});
-                    memOtp.delete(cleanEmail);
-
-                    const token = createAccessToken({ id: res.insertId, email: cleanEmail, username: finalUsername });
-                    logSecurityEvent({
-                        eventType: 'USER_REGISTERED',
-                        severity: 'INFO',
-                        identifier: cleanEmail,
-                        ip: context?.clientIp,
-                        details: `Pengguna baru @${finalUsername} berhasil didaftarkan.`,
-                        userId: res.insertId
-                    });
-
-                    return {
-                        success: true,
-                        message: `Pendaftaran akun @${finalUsername} berhasil! Selamat datang di PahamTeks.`,
-                        token,
-                        user: {
-                            id: String(res.insertId),
-                            email: cleanEmail,
-                            username: finalUsername,
-                            name: finalUsername,
-                            role: 'USER',
-                            token,
-                            createdAt: new Date().toISOString()
-                        }
-                    };
                 } catch (err) {
                     if (err.code === 'ER_DUP_ENTRY') {
                         return { success: false, message: 'Email atau username ini sudah terdaftar!' };
@@ -310,50 +318,35 @@ export const authResolvers = {
                 }
             }
 
-            // Fallback memori
-            // Cek apakah username sudah dipakai di memori
-            for (const [, u] of memUsers.entries()) {
-                if (u.username && u.username.toLowerCase() === finalUsername.toLowerCase()) {
-                    return { success: false, message: `Username "${finalUsername}" sudah digunakan di sistem!` };
-                }
-            }
-
-            const memRecord = memOtp.get(cleanEmail);
-            if (!memRecord) {
-                return { success: false, message: 'Kode verifikasi belum diminta atau sudah kadaluarsa.' };
-            }
-
-            const storedCode = typeof memRecord === 'object' ? memRecord.code : memRecord;
-            const expiresAtTime = typeof memRecord === 'object' ? memRecord.expiresAt : Infinity;
-
-            if (Date.now() > expiresAtTime) {
-                memOtp.delete(cleanEmail);
-                return { success: false, message: 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang.' };
-            }
-
-            if (storedCode !== cleanOtp) {
-                return { success: false, message: 'Kode verifikasi salah!' };
-            }
-
-            // Enkripsi password di memori juga dengan bcrypt
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash(password, salt);
-
+            // Simpan juga di fallback memori agar sesi lokal instan
             memUsers.set(cleanEmail, {
+                id: userId || 'mem-' + cleanEmail,
                 email: cleanEmail,
                 username: finalUsername,
                 password: hash,
-                name: finalUsername
+                name: finalUsername,
+                created_at: new Date().toISOString()
             });
             memOtp.delete(cleanEmail);
 
-            const token = createAccessToken({ id: 'mem-' + cleanEmail, email: cleanEmail, username: finalUsername });
+            const finalId = userId ? String(userId) : 'mem-' + cleanEmail;
+            const token = createAccessToken({ id: finalId, email: cleanEmail, username: finalUsername });
+
+            logSecurityEvent({
+                eventType: 'USER_REGISTERED',
+                severity: 'INFO',
+                identifier: cleanEmail,
+                ip: context?.clientIp,
+                details: `Pengguna baru @${finalUsername} berhasil didaftarkan dengan kata sandi terenkripsi.`,
+                userId: finalId
+            });
+
             return {
                 success: true,
-                message: `Pendaftaran akun @${finalUsername} berhasil!`,
+                message: `Pendaftaran akun @${finalUsername} berhasil! Selamat datang di PahamTeks.`,
                 token,
                 user: {
-                    id: 'mem-' + cleanEmail,
+                    id: finalId,
                     email: cleanEmail,
                     username: finalUsername,
                     name: finalUsername,
@@ -402,12 +395,7 @@ export const authResolvers = {
                 return { success: false, message: 'Akun dengan email ini belum terdaftar. Silakan lakukan registrasi terlebih dahulu.' };
             }
 
-            let accountPasswordValid = false;
-            if (account.password && (account.password.startsWith('$2a$') || account.password.startsWith('$2b$'))) {
-                accountPasswordValid = await bcrypt.compare(password, account.password);
-            } else {
-                accountPasswordValid = account.password === password;
-            }
+            let accountPasswordValid = await verifyPassword(password, account.password);
 
             if (!accountPasswordValid) {
                 recordLoginFailure(cleanEmail, clientIp);
@@ -419,6 +407,14 @@ export const authResolvers = {
                     details: 'Percobaan login admin gagal: kata sandi salah.'
                 });
                 return { success: false, message: 'Kata sandi akun salah!' };
+            }
+
+            // Migrasi otomatis password plaintext ke Bcrypt hash jika ditemukan
+            if (account.password === password) {
+                hashPassword(password).then(h => {
+                    const db = getDb();
+                    db.execute('UPDATE users SET password = ? WHERE email = ?', [h, cleanEmail]).catch(() => {});
+                }).catch(() => {});
             }
 
             const displayName = account.username || `${account.first_name || ''} ${account.last_name || ''}`.trim() || cleanEmail.split('@')[0];
@@ -480,16 +476,18 @@ export const authResolvers = {
                     }
 
                     const user = rows[0];
-                    let isMatch = false;
-                    if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
-                        isMatch = await bcrypt.compare(password, user.password);
-                    } else {
-                        isMatch = user.password === password;
-                    }
+                    const isMatch = await verifyPassword(password, user.password);
 
                     if (!isMatch) {
                         recordLoginFailure(cleanIdentifier, clientIp);
                         return { success: false, message: 'Kata sandi salah!' };
+                    }
+
+                    // Migrasi otomatis plaintext ke Bcrypt hash jika terdeteksi
+                    if (user.password === password) {
+                        hashPassword(password).then(h => {
+                            db.execute('UPDATE users SET password = ? WHERE id = ?', [h, user.id]).catch(() => {});
+                        }).catch(() => {});
                     }
 
                     const isAdmin = isAdminEmail(user.email);
@@ -532,16 +530,17 @@ export const authResolvers = {
                 return { success: false, message: 'Akun tidak ditemukan!' };
             }
 
-            let isMatch = false;
-            if (foundUser.password.startsWith('$2a$') || foundUser.password.startsWith('$2b$')) {
-                isMatch = await bcrypt.compare(password, foundUser.password);
-            } else {
-                isMatch = foundUser.password === password;
-            }
+            const isMatch = await verifyPassword(password, foundUser.password);
 
             if (!isMatch) {
                 recordLoginFailure(cleanIdentifier, clientIp);
                 return { success: false, message: 'Kata sandi salah!' };
+            }
+
+            if (foundUser.password === password) {
+                hashPassword(password).then(h => {
+                    foundUser.password = h;
+                }).catch(() => {});
             }
 
             const isAdmin = isAdminEmail(foundUser.email);
@@ -618,9 +617,10 @@ export const authResolvers = {
             // Generate kode OTP reset 6 digit
             const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+            const otpSignature = createOtpSignature(targetEmail, otpCode, expiresAt);
 
             // Simpan ke memori dan database sebagai cadangan
-            memOtp.set(targetEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
+            memOtp.set(targetEmail, { code: otpCode, expiresAt: expiresAt.getTime(), signature: otpSignature });
 
             if (isDbConnected()) {
                 const db = getDb();
@@ -641,12 +641,13 @@ export const authResolvers = {
                 success: emailRes.success,
                 message: emailRes.success
                     ? `Kode reset kata sandi telah dikirim ke ${targetEmail}. Silakan cek kotak masuk atau folder spam.`
-                    : emailRes.message
+                    : emailRes.message,
+                otpSignature: emailRes.success ? otpSignature : null
             };
         },
 
-        // Ganti kata sandi hanya jika kode reset masih valid.
-        resetPassword: async (_, { email, otp, newPassword }) => {
+        // Ganti kata sandi dengan verifikasi kode reset (DB/Memory/HMAC) dan enkripsi Bcrypt.
+        resetPassword: async (_, { email, otp, newPassword, otpSignature }) => {
             if (!email || !otp || !newPassword) {
                 return { success: false, message: 'Semua kolom wajib diisi lengkap!' };
             }
@@ -667,100 +668,101 @@ export const authResolvers = {
                         'SELECT email FROM users WHERE email = ? OR username = ?',
                         [cleanIdentifier.toLowerCase(), cleanIdentifier]
                     );
-                    if (rows.length === 0) {
-                        return { success: false, message: 'Akun tidak ditemukan!' };
+                    if (rows && rows.length > 0) {
+                        targetEmail = rows[0].email;
                     }
-                    targetEmail = rows[0].email;
-
-                    // 2. Verifikasi OTP dari database dengan fallback memori
-                    let otpRows = [];
-                    try {
-                        const [dbOtp] = await db.execute(
-                            'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
-                            [targetEmail]
-                        );
-                        otpRows = dbOtp || [];
-                    } catch (err) {
-                        console.warn('[DB Fetch Reset OTP]', err.message);
-                    }
-
-                    let record = null;
-                    if (otpRows.length > 0) {
-                        record = otpRows[0];
-                    } else if (memOtp.has(targetEmail)) {
-                        const memRecord = memOtp.get(targetEmail);
-                        record = {
-                            otp_code: typeof memRecord === 'object' ? memRecord.code : memRecord,
-                            expires_at: typeof memRecord === 'object' ? new Date(memRecord.expiresAt).toISOString() : new Date(Date.now() + 600000).toISOString()
-                        };
-                    }
-
-                    if (!record) {
-                        return { success: false, message: 'Kode reset belum diminta atau sudah tidak berlaku. Silakan kirim ulang.' };
-                    }
-
-                    if (new Date(record.expires_at) < new Date()) {
-                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]).catch(() => {});
-                        memOtp.delete(targetEmail);
-                        return { success: false, message: 'Kode reset sudah kadaluarsa. Silakan minta kode baru.' };
-                    }
-
-                    if (record.otp_code !== cleanOtp) {
-                        return { success: false, message: 'Kode verifikasi reset salah!' };
-                    }
-
-                    // 3. Hash password baru dengan bcrypt
-                    const salt = await bcrypt.genSalt(10);
-                    const hash = await bcrypt.hash(newPassword, salt);
-
-                    // 4. Update password di database
-                    await db.execute('UPDATE users SET password = ? WHERE email = ?', [hash, targetEmail]);
-
-                    // 5. Hapus OTP yang sudah dipakai
-                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]).catch(() => {});
-                    memOtp.delete(targetEmail);
-
-                    return {
-                        success: true,
-                        message: 'Kata sandi berhasil diperbarui! Silakan masuk dengan kata sandi baru Anda.'
-                    };
                 } catch (err) {
-                    console.warn('[DB Reset Password Error]', err.message);
-                    return { success: false, message: 'Gagal mereset kata sandi: ' + err.message };
-                }
-            }
-
-            // Fallback memori
-            for (const [, u] of memUsers.entries()) {
-                if (u.email.toLowerCase() === cleanIdentifier.toLowerCase() || (u.username && u.username.toLowerCase() === cleanIdentifier.toLowerCase())) {
-                    targetEmail = u.email;
-                    break;
+                    console.warn('[DB Find Reset User Error]', err.message);
                 }
             }
 
             if (!targetEmail) {
-                return { success: false, message: 'Akun tidak ditemukan!' };
+                for (const [, u] of memUsers.entries()) {
+                    if (u.email.toLowerCase() === cleanIdentifier.toLowerCase() || (u.username && u.username.toLowerCase() === cleanIdentifier.toLowerCase())) {
+                        targetEmail = u.email;
+                        break;
+                    }
+                }
             }
 
-            const memRecord = memOtp.get(targetEmail);
-            if (!memRecord) {
-                return { success: false, message: 'Kode reset belum diminta atau sudah kadaluarsa.' };
+            if (!targetEmail) {
+                // Jika identifier berformat email, gunakan langsung
+                if (cleanIdentifier.includes('@')) {
+                    targetEmail = cleanIdentifier.toLowerCase();
+                } else {
+                    return { success: false, message: 'Akun dengan email atau username ini tidak ditemukan!' };
+                }
             }
 
-            const storedCode = typeof memRecord === 'object' ? memRecord.code : memRecord;
-            const expiresAtTime = typeof memRecord === 'object' ? memRecord.expiresAt : Infinity;
+            // 2. Verifikasi OTP dari database, memori, atau stateless HMAC
+            let isOtpValid = false;
+            let otpErrorMsg = '';
 
-            if (Date.now() > expiresAtTime) {
-                memOtp.delete(targetEmail);
-                return { success: false, message: 'Kode reset sudah kadaluarsa.' };
+            if (isDbConnected()) {
+                const db = getDb();
+                try {
+                    const [dbOtp] = await db.execute(
+                        'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
+                        [targetEmail]
+                    );
+                    if (dbOtp && dbOtp.length > 0) {
+                        const rec = dbOtp[0];
+                        if (new Date(rec.expires_at) < new Date()) {
+                            otpErrorMsg = 'Kode reset sudah kadaluarsa. Silakan minta kode baru.';
+                        } else if (rec.otp_code === cleanOtp) {
+                            isOtpValid = true;
+                        } else {
+                            otpErrorMsg = 'Kode verifikasi reset salah!';
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[DB Fetch Reset OTP]', err.message);
+                }
             }
 
-            if (storedCode !== cleanOtp) {
-                return { success: false, message: 'Kode verifikasi reset salah!' };
+            if (!isOtpValid && memOtp.has(targetEmail)) {
+                const memRecord = memOtp.get(targetEmail);
+                const storedCode = typeof memRecord === 'object' ? memRecord.code : memRecord;
+                const expiresAtTime = typeof memRecord === 'object' ? memRecord.expiresAt : Infinity;
+
+                if (Date.now() > expiresAtTime) {
+                    otpErrorMsg = 'Kode reset sudah kadaluarsa. Silakan minta kode baru.';
+                } else if (storedCode === cleanOtp) {
+                    isOtpValid = true;
+                } else {
+                    otpErrorMsg = 'Kode verifikasi reset salah!';
+                }
             }
 
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash(newPassword, salt);
+            // Stateless HMAC verification (Vercel Serverless multi-instance)
+            if (!isOtpValid && otpSignature) {
+                if (verifyOtpSignature(targetEmail, cleanOtp, otpSignature)) {
+                    isOtpValid = true;
+                } else {
+                    otpErrorMsg = 'Kode reset salah atau sudah kadaluarsa!';
+                }
+            }
+
+            if (!isOtpValid) {
+                return {
+                    success: false,
+                    message: otpErrorMsg || 'Kode reset belum diminta atau sudah tidak berlaku. Silakan kirim ulang.'
+                };
+            }
+
+            // 3. Hash password baru dengan enkripsi Bcrypt
+            const hash = await hashPassword(newPassword);
+
+            // 4. Update password di database & memori
+            if (isDbConnected()) {
+                const db = getDb();
+                try {
+                    await db.execute('UPDATE users SET password = ? WHERE email = ?', [hash, targetEmail]);
+                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]).catch(() => {});
+                } catch (err) {
+                    console.warn('[DB Reset Password Error]', err.message);
+                }
+            }
 
             const userToUpdate = memUsers.get(targetEmail);
             if (userToUpdate) {

@@ -27,11 +27,46 @@ const DB_FILE_PATH = path.join(DATA_DIR, 'pahamteks_backup.sqlite');
 
 let sqliteDb = null;
 
+const JSON_BACKUP_PATH = path.join(DATA_DIR, 'pahamteks_mem_backup.json');
+
 const memStore = {
     users: new Map(),
     otp: new Map(),
     logs: []
 };
+
+function saveMemoryStoreToDisk() {
+    try {
+        const payload = {
+            users: Array.from(memStore.users.entries()),
+            otp: Array.from(memStore.otp.entries()),
+            logs: memStore.logs.slice(-200)
+        };
+        fs.writeFileSync(JSON_BACKUP_PATH, JSON.stringify(payload), 'utf8');
+    } catch (_err) {
+        // Abaikan jika filesystem serverless read-only
+    }
+}
+
+function loadMemoryStoreFromDisk() {
+    try {
+        if (fs.existsSync(JSON_BACKUP_PATH)) {
+            const raw = fs.readFileSync(JSON_BACKUP_PATH, 'utf8');
+            const data = JSON.parse(raw);
+            if (Array.isArray(data.users)) {
+                memStore.users = new Map(data.users);
+            }
+            if (Array.isArray(data.otp)) {
+                memStore.otp = new Map(data.otp);
+            }
+            if (Array.isArray(data.logs)) {
+                memStore.logs = data.logs;
+            }
+        }
+    } catch (_err) {
+        // Abaikan jika file korup
+    }
+}
 
 function executeMemorySql(cleanSql, cleanParams) {
     const isSelect = /^\s*SELECT/i.test(cleanSql);
@@ -41,6 +76,7 @@ function executeMemorySql(cleanSql, cleanParams) {
             const otp_code = String(cleanParams[1] || '');
             const expires_at = String(cleanParams[2] || '');
             memStore.otp.set(email, { otp_code, expires_at });
+            saveMemoryStoreToDisk();
             return [{ insertId: 1, affectedRows: 1 }, []];
         }
         if (/SELECT/i.test(cleanSql)) {
@@ -51,21 +87,20 @@ function executeMemorySql(cleanSql, cleanParams) {
         if (/DELETE/i.test(cleanSql)) {
             const email = String(cleanParams[0] || '').toLowerCase().trim();
             memStore.otp.delete(email);
+            saveMemoryStoreToDisk();
             return [{ affectedRows: 1 }, []];
         }
     }
     if (/users/i.test(cleanSql)) {
         if (/SELECT/i.test(cleanSql)) {
-            if (/WHERE\s+email\s*=/i.test(cleanSql)) {
-                const email = String(cleanParams[0] || '').toLowerCase().trim();
-                const u = memStore.users.get(email);
-                return [u ? [{ ...u }] : [], []];
-            }
-            if (/WHERE\s+username\s*=/i.test(cleanSql)) {
-                const uname = String(cleanParams[0] || '').toLowerCase().trim();
+            if (/WHERE/i.test(cleanSql)) {
+                const param1 = String(cleanParams[0] || '').toLowerCase().trim();
+                const param2 = String(cleanParams[1] || cleanParams[0] || '').toLowerCase().trim();
                 let found = null;
                 for (const u of memStore.users.values()) {
-                    if ((u.username || '').toLowerCase() === uname) {
+                    const uEmail = (u.email || '').toLowerCase();
+                    const uName = (u.username || '').toLowerCase();
+                    if (uEmail === param1 || uName === param1 || uEmail === param2 || uName === param2) {
                         found = u;
                         break;
                     }
@@ -92,7 +127,21 @@ function executeMemorySql(cleanSql, cleanParams) {
                 created_at: new Date().toISOString()
             };
             memStore.users.set(email, newUser);
+            saveMemoryStoreToDisk();
             return [{ insertId: newUser.id, affectedRows: 1 }, []];
+        }
+        if (/UPDATE/i.test(cleanSql)) {
+            const newPassword = String(cleanParams[0] || '');
+            const target = String(cleanParams[1] || '').toLowerCase().trim();
+            for (const [key, u] of memStore.users.entries()) {
+                if (String(u.id) === target || (u.email && u.email.toLowerCase() === target)) {
+                    u.password = newPassword;
+                    memStore.users.set(key, u);
+                    saveMemoryStoreToDisk();
+                    return [{ affectedRows: 1 }, []];
+                }
+            }
+            return [{ affectedRows: 0 }, []];
         }
     }
     if (/user_activity_logs/i.test(cleanSql)) {
@@ -104,6 +153,7 @@ function executeMemorySql(cleanSql, cleanParams) {
                 details: cleanParams[2] || '',
                 created_at: new Date().toISOString()
             });
+            saveMemoryStoreToDisk();
             return [{ insertId: memStore.logs.length, affectedRows: 1 }, []];
         }
         if (/SELECT/i.test(cleanSql)) {
@@ -118,9 +168,10 @@ function executeMemorySql(cleanSql, cleanParams) {
  * Inisialisasi Database Cadangan SQL (SQLite)
  */
 export function initFallbackSqlDb() {
+    loadMemoryStoreFromDisk();
     try {
-        if (!sqliteDb) {
-            if (DatabaseSyncClass) sqliteDb = new DatabaseSyncClass(DB_FILE_PATH);
+        if (!sqliteDb && DatabaseSyncClass) {
+            sqliteDb = new DatabaseSyncClass(DB_FILE_PATH);
             console.log('🛡️ [SQL FALLBACK] Database Cadangan SQL (SQLite) siap pada:', DB_FILE_PATH);
             
             // Inisialisasi skema tabel SQL
@@ -216,13 +267,6 @@ function normalizeQueryForSqlite(sql) {
  * Adapter eksekusi SQL kompatibel dengan interface mysql2 [rows, fields]
  */
 export async function executeFallbackSql(sql, params = []) {
-    if (!sqliteDb) {
-        initFallbackSqlDb();
-    }
-    if (!sqliteDb) {
-        return executeMemorySql(cleanSql, cleanParams);
-    }
-
     const cleanSql = normalizeQueryForSqlite(sql);
     const isSelect = /^\s*SELECT/i.test(cleanSql);
 
@@ -242,6 +286,13 @@ export async function executeFallbackSql(sql, params = []) {
         }
         return p;
     });
+
+    if (!sqliteDb) {
+        initFallbackSqlDb();
+    }
+    if (!sqliteDb) {
+        return executeMemorySql(cleanSql, cleanParams);
+    }
 
     try {
         const stmt = sqliteDb.prepare(cleanSql);
