@@ -220,12 +220,15 @@ Pedoman Penulisan:
                 const raw = await generateSafeContent(prompt);
                 return parseSafeJson(raw);
             } catch (err) {
+                console.warn(`⚠️ [Gemini Challenge Fallback] Gagal memuat soal tantangan: ${err.message}`);
                 return [
                     {
-                        instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
-                        question: `Detail: ${err.message}`,
-                        options: isEn ? ["Check API", "Wait", "Ok", "Cancel"] : ["Cek API", "Tunggu", "Ok", "Batal"],
-                        answer: "A"
+                        instruction: isEn ? '🚨 SYSTEM ERROR' : '🚨 SISTEM ERROR',
+                        question: isEn
+                            ? 'Failed to load challenge questions. Please try again in a moment.'
+                            : 'Gagal memuat soal tantangan. Silakan coba lagi sebentar.',
+                        options: isEn ? ['Try Again', 'Wait', 'Ok', 'Cancel'] : ['Coba Lagi', 'Tunggu', 'Ok', 'Batal'],
+                        answer: 'A'
                     }
                 ];
             }

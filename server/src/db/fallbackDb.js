@@ -43,8 +43,11 @@ function saveMemoryStoreToDisk() {
             logs: memStore.logs.slice(-200)
         };
         fs.writeFileSync(JSON_BACKUP_PATH, JSON.stringify(payload), 'utf8');
-    } catch (_err) {
-        // Abaikan jika filesystem serverless read-only
+    } catch (err) {
+        // Filesystem serverless mungkin read-only; abaikan diam-diam hanya saat itu
+        if (err.code !== 'EROFS' && err.code !== 'EACCES') {
+            console.warn('[SQL FALLBACK] Gagal menyimpan memory store ke disk:', err.message);
+        }
     }
 }
 
@@ -63,8 +66,8 @@ function loadMemoryStoreFromDisk() {
                 memStore.logs = data.logs;
             }
         }
-    } catch (_err) {
-        // Abaikan jika file korup
+    } catch (err) {
+        console.warn('[SQL FALLBACK] Gagal memuat memory store dari disk (mungkin file korup):', err.message);
     }
 }
 
