@@ -42,11 +42,11 @@ flowchart TD
 
     subgraph DataLayer ["Penyimpanan Data Resilien"]
         DBManager["Unified Database Manager (db.js)"]
-        MySQL[("MySQL Utama (Lokal / Cloud)")]
-        SQLite[("SQLite Cadangan (Otomatis Aktif Saat MySQL Down)")]
+        MySQL[("MySQL Cloud Persisten (produksi/Vercel)")]
+        SQLite[("SQLite lokal (development saja)")]
         
-        DBManager -->|Prioritas Utama| MySQL
-        DBManager -->|Auto-Failover / Cadangan| SQLite
+        DBManager -->|Produksi| MySQL
+        DBManager -->|Fallback lokal saja| SQLite
     end
 
     Apollo -->|Permintaan GraphQL| Security
@@ -94,17 +94,9 @@ Backend kita bangun dengan **Node.js (ES Modules)**:
 
 ## 4. Kenapa Kita Pakai Dua Database? (Dual Database Strategy)
 
-Salah satu masalah paling umum saat aplikasi web dikembangkan adalah: *bagaimana kalau database MySQL lokal belum dinyalakan, passwordnya salah, atau servernya mendadak mati?*
+MySQL cloud menjadi penyimpanan persisten untuk produksi. Pada Vercel, koneksi dibuka saat request pertama karena handler GraphQL berjalan sebagai fungsi serverless. Skema tabel dibuat saat koneksi berhasil.
 
-Alih-alih membiarkan backend crash dan menampilkan error ke pengguna, kita membangun sistem **Dual Database Auto-Failover** di `server/src/config/db.js`:
-
-1. **Kondisi Normal (MySQL Aktif)**:
-   - Backend membaca dan menulis ke MySQL utama.
-   - Setiap ada perubahan data baru (`INSERT`, `UPDATE`), data juga direplikasi ke SQLite lokal di background.
-2. **Kondisi Darurat (MySQL Offline/Down)**:
-   - Sistem langsung mengalihkan semua query ke SQLite (`node:sqlite` bawaan Node.js).
-   - Pengguna tetap bisa login, mengerjakan kuis, dan menyimpan progres tanpa menyadari ada masalah di server MySQL.
-   - Saat MySQL menyala kembali, sistem siap kembali ke mode utama.
+SQLite hanya dipakai sebagai fallback development lokal. Filesystem fungsi Vercel, termasuk `/tmp`, bersifat sementara dan tidak boleh dipakai untuk menyimpan akun atau progres. Jika database cloud belum dikonfigurasi atau sedang tidak bisa dihubungi, operasi akun di produksi gagal dengan pesan layanan database tidak siap; backend tidak menganggap data memori sebagai data tersimpan.
 
 ---
 

@@ -24,7 +24,7 @@ Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama*
 │ 1. HTTP WEB SERVER    : Express.js (Menjalankan listener di port 4000) │
 │ 2. PERISAI KEAMANAN   : Helmet, CORS Whitelist, Rate Limiter, Brute-G  │
 │ 3. RUNTIME GRAPHQL    : Apollo Server v4 (Skema typeDefs & resolvers)  │
-│ 4. DUAL DATABASE      : MySQL Utama + SQLite Cadangan Otomatis         │
+│ 4. DATABASE           : MySQL Cloud + SQLite Lokal untuk Development    │
 │ 5. MESIN AI GEMINI    : Google GenAI SDK + Rotasi Multi-Kunci 1–9     │
 │ 6. MULTI-TIER CACHE   : RAM Memory Cache (0.04 ms) + Database Cache    │
 │ 7. AUTENTIKASI        : Enkripsi Bcrypt + Token JWT Sesi 7-Hari        │
@@ -47,10 +47,10 @@ Sebelum request diizinkan masuk ke logika aplikasi, Express menyaringnya melalui
 ### 3. Runtime GraphQL (Apollo Server v4)
 PahamTeks menggunakan Apollo Server v4 untuk memproses permintaan data. Berbeda dengan REST API konvensional yang memiliki puluhan URL terpisah (`/api/login`, `/api/quiz`, `/api/dictionary`), di GraphQL hanya ada **satu pintu tunggal** yaitu `/graphql`.
 
-### 4. Dual Database Failover (MySQL + SQLite)
-Sistem penyimpanan data kita memiliki kecerdasan otomatis (*failover engine*):
-* **MySQL**: Digunakan sebagai basis data relasional utama untuk lingkungan produksi berskala besar.
-* **SQLite Cadangan (`fallbackDb.js`)**: Jika MySQL di komputer developer mati atau belum diinstall, backend otomatis mengaktifkan database SQLite lokal (`server/data/pahamteks_backup.sqlite`). **Server tidak akan crash** dan developer bisa langsung mulai koding!
+### 4. Database produksi dan fallback lokal
+* **MySQL cloud persisten**: Wajib dikonfigurasi untuk production dan Vercel melalui `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME`. Tabel dibuat otomatis ketika koneksi pertama berhasil.
+* **SQLite (`fallbackDb.js`)**: Hanya dipakai untuk development lokal ketika MySQL tidak tersedia. SQLite dan memori di `/tmp` Vercel tidak permanen dan tidak menyimpan data produksi.
+* **Vercel**: Jika kredensial database tidak ada atau database tidak bisa dihubungi, backend menolak menyimpan akun. Gunakan MySQL cloud yang dapat diakses dari Vercel dan jangan isi `DB_HOST=localhost` pada Production.
 
 ### 5. Mesin AI Gemini dengan Rotasi Multi-Kunci
 Kuis dinamis dan penjelasan istilah diproduksi oleh Google Gemini AI. Agar aplikasi tidak terhenti saat kuota gratis Google habis, backend memiliki sistem **Round-Robin** yang menggilir hingga 9 kunci API berbeda (`GEMINI_API_KEY_1` s.d. `GEMINI_API_KEY_9`).
@@ -188,23 +188,23 @@ Baik di MySQL maupun di SQLite fallback, kita menggunakan skema 6 tabel yang sam
 
 ---
 
-## 🛡️ Alur Kerja Dual Database Failover
+## 🛡️ Alur Kerja Database Lokal dan Vercel
 
 ```text
-Server Mulai Dijalankan (src/index.js)
+Request GraphQL Masuk (Express / Vercel Function)
               │
               ▼
     [ Panggil db.js ]
               │
               ▼
-   Mencoba koneksi ke MySQL?
+   Memeriksa koneksi MySQL cloud?
               │
      ┌────────┴────────┐
      ▼                 ▼
-  [SUKSES]          [GAGAL]
+  [SUKSES]       [Belum siap]
      │                 │
-  Gunakan           Gunakan SQLite Cadangan:
-  MySQL Utama       server/data/pahamteks_backup.sqlite
+  Gunakan           Produksi: tolak penyimpanan akun
+  MySQL Cloud       Lokal: gunakan SQLite fallback
      │                 │
      └────────┬────────┘
               │

@@ -1,4 +1,4 @@
-import { getDb, isDbConnected } from '../config/db.js';
+import { getDb, isDbConnected, isPersistentDatabaseRequired } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
 import {
     createAccessToken,
@@ -318,15 +318,25 @@ export const authResolvers = {
                 }
             }
 
+            // Do not report success for an account stored only in a serverless instance's memory.
+            if (isPersistentDatabaseRequired() && !userId) {
+                return {
+                    success: false,
+                    message: 'Akun belum tersimpan karena database belum siap. Silakan coba lagi beberapa saat lagi.'
+                };
+            }
+
             // Simpan juga di fallback memori agar sesi lokal instan
-            memUsers.set(cleanEmail, {
-                id: userId || 'mem-' + cleanEmail,
-                email: cleanEmail,
-                username: finalUsername,
-                password: hash,
-                name: finalUsername,
-                created_at: new Date().toISOString()
-            });
+            if (!isPersistentDatabaseRequired()) {
+                memUsers.set(cleanEmail, {
+                    id: userId || 'mem-' + cleanEmail,
+                    email: cleanEmail,
+                    username: finalUsername,
+                    password: hash,
+                    name: finalUsername,
+                    created_at: new Date().toISOString()
+                });
+            }
             memOtp.delete(cleanEmail);
 
             const finalId = userId ? String(userId) : 'mem-' + cleanEmail;

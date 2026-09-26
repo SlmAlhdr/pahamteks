@@ -83,8 +83,8 @@ Berikut alur lengkap yang terjadi di balik layar saat seorang pemelajar menyeles
 [5. JWT Verification] Server memverifikasi tanda tangan, issuer, audience, dan masa berlaku token sebelum mengambil identitas akun.
         │
         ▼
-[6. Database Logic]   historyResolvers.js mencoba menyimpan baris skor ke tabel MySQL quiz_history.
-        │             Jika koneksi MySQL mati, sistem otomatis mengalihkan penyimpanan ke SQLite!
+[6. Database Logic]   historyResolvers.js menyimpan skor ke MySQL cloud persisten.
+        │             SQLite hanya dipakai untuk development lokal, bukan sebagai storage Vercel.
         │
         ▼
 [7. JSON Response]    Apollo Server mengirim balasan: { data: { saveQuizScore: { success: true } } }.
@@ -259,10 +259,14 @@ Salin berkas `.env.example` menjadi `server/.env`:
 | `JWT_SECRET` | Ya | Secret acak minimal 32 karakter; server menolak nilai kosong/pendek dan penggantian secret membatalkan sesi lama |
 | `ADMIN_EMAILS` | Tidak | Email akun terverifikasi yang diberi role admin, dipisahkan koma; kosong berarti belum ada admin |
 | `ADMIN_PASSWORD` | Saat admin diaktifkan | Password tambahan bersama, minimal 16 karakter acak; tim admin tetap login dengan password akun masing-masing |
-| `DB_HOST` | Opsional | Host MySQL (default `localhost`); SQLite lokal dipakai sebagai failover |
-| `DB_PORT` | Opsional | Port MySQL (default `3306`) |
-| `DB_USER` | Opsional | Pengguna MySQL (default `root`) |
-| `DB_PASSWORD` | Opsional | Password pengguna MySQL |
+| `DB_HOST` | Wajib di production/Vercel | Host MySQL cloud persisten; `localhost` hanya untuk development lokal |
+| `DB_PORT` | Wajib di production/Vercel | Port MySQL cloud, umumnya `3306` |
+| `DB_USER` | Wajib di production/Vercel | Pengguna database MySQL cloud |
+| `DB_PASSWORD` | Wajib di production/Vercel | Password database cloud, disimpan sebagai Environment Variable rahasia |
+| `DB_NAME` | Wajib di production/Vercel | Nama database yang sudah dibuat oleh penyedia MySQL cloud |
+| `DB_SSL` | Opsional | Isi `true` jika penyedia MySQL mewajibkan TLS/SSL |
+
+Vercel tidak menyimpan SQLite `/tmp` secara permanen. Hubungkan MySQL cloud dari **Vercel Project → Settings → Environment Variables** untuk Production dan Preview, lalu lakukan deployment baru. Jika koneksi database belum siap, registrasi akan ditolak dan tidak membuat akun sementara di memori.
 | `DB_NAME` | Opsional | Nama database (default `pahamteks_db`) |
 | `GEMINI_API_KEY_1` | Untuk fitur AI | Kunci Gemini pertama; isi `_2` sampai `_9` untuk rotasi atau `GEMINI_API_KEY` untuk satu kunci |
 | `EMAIL_USER` | Untuk email OTP | Alamat email pengirim |
@@ -286,9 +290,9 @@ Buat secret acak melalui terminal dengan `node -e "console.log(require('node:cry
 * **Penyebab**: Origin browser berbeda dari origin lokal yang diizinkan server.
 * **Solusi**: Pastikan frontend berjalan di `http://127.0.0.1:3000`. Tambahkan origin ekstra ke `ALLOWED_ORIGINS` hanya jika memang diperlukan.
 
-### 3. Log Muncul: `🛡️ [SQL FALLBACK] Database Cadangan SQL (SQLite) siap`
-* **Penyebab**: Backend mencoba menghubungi MySQL di port 3306 tetapi tidak merespon (XAMPP mati atau belum dipasang).
-* **Solusi**: Jangan panik, ini adalah fitur keamanan otomatis. Backend tetap berjalan 100% normal menggunakan SQLite lokal.
+### 3. Log MySQL gagal terhubung di Vercel
+* **Penyebab**: Kredensial database persisten belum diatur, database belum aktif, atau akses jaringan database belum mengizinkan Vercel.
+* **Solusi**: Isi variabel `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` pada Vercel. SQLite fallback hanya berlaku di development lokal.
 
 ### 4. Port Sudah Digunakan: `Error: listen EADDRINUSE: address already in use :::4000`
 * **Penyebab**: Ada proses node server lama yang masih menggantung di background (misalnya terminal ditutup tanpa `Ctrl + C`).

@@ -8,7 +8,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs } from './schema/typeDefs.js';
 import { resolvers } from './resolvers/index.js';
 import { getApiKeyPoolStatus } from './config/gemini.js';
-import { isDbConnected, getDbStatus } from './config/db.js';
+import { getDbStatus } from './config/db.js';
 import { assertJwtSecretConfigured, authenticateRequest } from './utils/auth.js';
 
 import path from 'path';
@@ -144,7 +144,7 @@ app.get('/health', (req, res) => {
         service: 'PahamTeks GraphQL & Gemini Server',
         uptimeSeconds: Math.floor(process.uptime()),
         database: {
-            connected: isDbConnected(),
+            connected: dbInfo.primary === 'MYSQL_ONLINE' || dbInfo.activeEngine === 'SQLite (Fallback lokal)',
             primary: dbInfo.primary,
             backup: dbInfo.backup,
             activeEngine: dbInfo.activeEngine

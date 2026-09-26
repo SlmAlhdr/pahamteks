@@ -26,7 +26,7 @@ flowchart LR
    ```bash
    npm --prefix server run init-db
    ```
-   *Catatan: Kalau di laptopmu belum ada MySQL, santai saja. Backend otomatis memakai SQLite cadangan tanpa kamu perlu setting apa pun.*
+   *Catatan: SQLite fallback hanya untuk development lokal. Di Vercel, isi variabel database dengan kredensial MySQL cloud persisten; SQLite di `/tmp` tidak menyimpan data antar-instance.*
 4. **Jalankan Aplikasi**:
    * Terminal 1 (Backend): `npm --prefix server run dev` (port 4000)
    * Terminal 2 (Frontend): `npm --prefix client run dev` (port 5173)
@@ -88,8 +88,8 @@ Jika tiba-tiba web lambat, ada laporan kuis gagal dimuat, atau server down:
 1. **Buka Endpoint Kesehatan Server**:
    Akses `https://<domain-backend>/health` di browser.
 2. **Periksa Status Komponen**:
-   * **Jika status database MySQL `connected: false`**:
-     Tidak perlu panik, cek bagian `activeEngine`. Sistem kita otomatis beralih ke SQLite cadangan sehingga pengguna tetap bisa belajar normal. Kamu tinggal menyalakan kembali service MySQL.
+   * **Jika status database `connected: false` di Vercel**:
+     Periksa `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` di Vercel Project Settings → Environment Variables. Deploy ulang setelah memperbarui variabel.
    * **Jika kuota Gemini limit (429)**:
      Cek `geminiKeysRegistered`. Tambahkan satu API key gratis cadangan di `server/.env` (`GEMINI_API_KEY_2=...`).
    * **Jika RAM server melonjak tinggi**:
