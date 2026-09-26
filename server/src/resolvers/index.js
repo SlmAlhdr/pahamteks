@@ -15,7 +15,8 @@ const accessPolicies = {
         generateQuiz: 'public',
         generateChallenge: 'public',
         me: 'authenticated',
-        userLogs: 'admin'
+        userLogs: 'admin',
+        adminUsers: 'admin'
     },
     Mutation: {
         translate: 'public',

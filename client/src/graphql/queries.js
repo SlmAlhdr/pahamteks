@@ -62,3 +62,16 @@ export const GET_USER_LOGS = gql`
     }
   }
 `;
+
+export const GET_ADMIN_USERS = gql`
+  query GetAdminUsers($limit: Int) {
+    adminUsers(limit: $limit) {
+      id
+      email
+      username
+      name
+      role
+      createdAt
+    }
+  }
+`;

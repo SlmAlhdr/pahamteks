@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { getDb, isDbConnected } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
-import { createAccessToken, isAdminEmail, requireAuthenticatedUser, verifyAdminPassword } from '../utils/auth.js';
+import { createAccessToken, isAdminEmail, requireAuthenticatedUser, requireAdmin, verifyAdminPassword } from '../utils/auth.js';
 import {
     checkLoginBruteForce,
     recordLoginFailure,
@@ -68,6 +68,60 @@ export const authResolvers = {
             }
 
             return null;
+        },
+
+        // Ambil daftar seluruh pengguna terdaftar (khusus admin terverifikasi)
+        adminUsers: async (_, { limit = 100 }, context) => {
+            // Perlindungan ganda di tingkat resolver
+            requireAdmin(context);
+            const safeLimit = Math.min(500, Math.max(1, Number.isInteger(limit) ? limit : 100));
+
+            const userList = [];
+            const seenEmails = new Set();
+
+            if (isDbConnected()) {
+                const db = getDb();
+                try {
+                    // Password SAMA SEKALI TIDAK DIAMBIL untuk menjaga keamanan 100%
+                    const [rows] = await db.execute(
+                        'SELECT id, email, username, first_name, last_name, created_at FROM users ORDER BY created_at DESC LIMIT ?',
+                        [safeLimit]
+                    );
+                    for (const u of rows) {
+                        const cleanEmail = (u.email || '').toLowerCase().trim();
+                        seenEmails.add(cleanEmail);
+                        const displayName = u.username || `${u.first_name || ''} ${u.last_name || ''}`.trim() || cleanEmail.split('@')[0];
+                        userList.push({
+                            id: String(u.id),
+                            email: cleanEmail,
+                            username: u.username || cleanEmail.split('@')[0],
+                            name: displayName,
+                            role: isAdminEmail(cleanEmail) ? 'ADMIN' : 'USER',
+                            createdAt: u.created_at ? new Date(u.created_at).toISOString() : null
+                        });
+                    }
+                } catch (err) {
+                    console.warn('[AdminUsers Query DB Error]', err.message);
+                }
+            }
+
+            // Gabungkan pengguna di memori jika ada akun lokal yang belum tersimpan di DB
+            for (const [, u] of memUsers.entries()) {
+                const cleanEmail = (u.email || '').toLowerCase().trim();
+                if (!seenEmails.has(cleanEmail) && userList.length < safeLimit) {
+                    seenEmails.add(cleanEmail);
+                    userList.push({
+                        id: 'mem-' + cleanEmail,
+                        email: cleanEmail,
+                        username: u.username || cleanEmail.split('@')[0],
+                        name: u.username || u.name || cleanEmail.split('@')[0],
+                        role: isAdminEmail(cleanEmail) ? 'ADMIN' : 'USER',
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+
+            return userList;
         }
     },
 

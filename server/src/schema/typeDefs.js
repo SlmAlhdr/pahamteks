@@ -78,6 +78,7 @@ export const typeDefs = `#graphql
         generateChallenge(category: String!, lang: String): [QuizItem!]!
         me: User
         userLogs(limit: Int): [UserActivityLog!]!
+        adminUsers(limit: Int): [User!]!
     }
 
     type Mutation {
