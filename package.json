@@ -16,7 +16,9 @@
     "client": "npm --prefix client run dev",
     "client:build": "npm --prefix client run build",
     "sync": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/sync.ps1",
-    "auto-sync": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/auto-sync.ps1"
+    "auto-sync": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/auto-sync.ps1",
+    "auto-sync:install": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/install-auto-sync.ps1",
+    "auto-sync:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/install-auto-sync.ps1 -Remove"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1"

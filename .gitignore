@@ -29,6 +29,8 @@ service-account*.json
 
 # Cache & temporary files
 .cache/
+.auto-sync.log
+scripts/auto-sync.log
 __pycache__/
 api/__pycache__/
 *.pyc
