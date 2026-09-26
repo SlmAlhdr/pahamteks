@@ -8,19 +8,30 @@ dotenv.config();
 
 const isVercel = Boolean(process.env.VERCEL);
 const persistentDatabaseRequired = isVercel || process.env.NODE_ENV === 'production';
-const mysqlConfigured = Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME);
+// TiDB Cloud's Vercel integration uses TIDB_* names; DB_* stays supported for other providers.
+const usingTiDbCloud = Boolean(process.env.TIDB_HOST && !process.env.DB_HOST);
+const databaseEnv = {
+    host: process.env.DB_HOST || process.env.TIDB_HOST,
+    port: process.env.DB_PORT || process.env.TIDB_PORT,
+    user: process.env.DB_USER || process.env.TIDB_USER,
+    password: process.env.DB_PASSWORD || process.env.TIDB_PASSWORD,
+    name: process.env.DB_NAME || process.env.TIDB_DATABASE
+};
+const mysqlConfigured = Boolean(databaseEnv.host && databaseEnv.user && databaseEnv.name);
 
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: Number.parseInt(process.env.DB_PORT || '3306', 10),
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'pahamteks_db',
+    host: databaseEnv.host || 'localhost',
+    port: Number.parseInt(databaseEnv.port || '3306', 10),
+    user: databaseEnv.user || 'root',
+    password: databaseEnv.password || '',
+    database: databaseEnv.name || 'pahamteks_db',
     waitForConnections: true,
     connectionLimit: isVercel ? 5 : 10,
     queueLimit: 0,
     connectTimeout: 5000,
-    ...(process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: true } } : {})
+    ...(process.env.DB_SSL === 'true' || (usingTiDbCloud && process.env.DB_SSL !== 'false')
+        ? { ssl: { rejectUnauthorized: true } }
+        : {})
 };
 
 let pool = null;
