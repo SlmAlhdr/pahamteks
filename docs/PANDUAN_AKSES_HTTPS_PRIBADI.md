@@ -33,12 +33,11 @@ Sebelum menekan Deploy, buka menu **"Environment Variables"** pada halaman setup
 | Nama Variabel (*Key*) | Contoh Nilai (*Value*) | Keterangan |
 | :--- | :--- | :--- |
 | `GEMINI_API_KEY_1` | `AIzaSy...` | Kunci API Gemini dari Google AI Studio |
-| `ADMIN_EMAILS` | `admin@emailkamu.com` | Email yang diizinkan untuk login sebagai administrator |
-| `ADMIN_PASSWORD` | `PasswordRahasiaAdmin123!` | Password admin bersama untuk membuka hak akses admin |
+| `ADMIN_EMAILS` | `kamu@email.com,tim1@email.com,tim2@email.com` | **Daftar email admin/tim (pisahkan dengan koma)** yang memiliki hak akses administrator |
 | `JWT_SECRET` | `string-acak-panjang-dan-aman-32-karakter` | Kunci rahasia enkripsi sesi login |
 | `NODE_ENV` | `production` | Mode produksi |
 
-> **Catatan**: Jika kamu punya database MySQL online (seperti TiDB, PlanetScale, atau Aiven), kamu juga bisa menambahkan `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Jika tidak diisi, backend otomatis menggunakan fallback storage lokal aman di serverless.
+> **Catatan**: Jika kamu punya database MySQL online (seperti TiDB, PlanetScale, atau Aiven), kamu juga bisa menambahkan `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Jika tidak diisi, backend otomatis menggunakan fallback SQLite aman di serverless.
 
 ### Langkah 3 — Klik Deploy
 1. Klik tombol **"Deploy"**.
@@ -47,7 +46,7 @@ Sebelum menekan Deploy, buka menu **"Environment Variables"** pada halaman setup
    ```text
    https://pahamteks.vercel.app
    ```
-   *(atau nama proyek acak yang diberikan Vercel).*
+   *(atau nama domain acak yang diberikan Vercel).*
 
 ### Langkah 4 — Membuka Web di HP / Perangkat Lain
 * **Halaman Pengguna**: Buka `https://pahamteks.vercel.app` di browser HP kamu. Web akan langsung terbuka dengan aman (HTTPS dan gembok hijau).
@@ -55,7 +54,17 @@ Sebelum menekan Deploy, buka menu **"Environment Variables"** pada halaman setup
   ```text
   https://pahamteks.vercel.app/admin
   ```
-  Masukkan email admin, password akun, dan password admin bersama. Kamu akan langsung dialihkan ke **Dasbor Administrator** visual!
+  Masukkan email admin yang terdaftar di `ADMIN_EMAILS` dan kata sandi akun pribadi kamu. Kamu akan langsung dialihkan ke **Dasbor Administrator** visual!
+
+### 👥 Cara Menambahkan Anggota Tim sebagai Admin (Sistem Opsi B: Email Allowlist)
+Kamu tidak perlu membagikan password master server kepada siapa pun! Sistem login admin PahamTeks menggunakan sistem **Allowlist Email**:
+1. **Tambahkan Email Tim**: Buka dashboard Vercel proyek kamu > **Settings** > **Environment Variables** > edit `ADMIN_EMAILS` dan tambahkan email anggota tim (pisahkan dengan koma), contoh:
+   ```text
+   owner@gmail.com,teman1@gmail.com,teman2@perusahaan.com
+   ```
+2. **Anggota Tim Mendaftar Akun**: Minta anggota tim membuka web PahamTeks dan mendaftarkan akun menggunakan alamat email mereka sendiri serta membuat kata sandi mereka sendiri.
+3. **Login Sebagai Admin**: Anggota tim langsung login di halaman `/admin` (atau form login biasa) dengan email dan password pribadi mereka. Sistem secara otomatis mendeteksi email mereka di daftar `ADMIN_EMAILS` dan memberikan peran `ADMIN`.
+4. **Mencabut Hak Akses**: Jika anggota tim sudah tidak bertugas, kamu cukup menghapus email mereka dari `ADMIN_EMAILS` di Vercel. Hak akses administrator mereka akan langsung dicabut seketika!
 
 ### Langkah 5 — Otomatisasi Pembaruan (Auto-Deploy)
 Setiap kali kamu mengupdate kode di laptop lalu menjalankan perintah:

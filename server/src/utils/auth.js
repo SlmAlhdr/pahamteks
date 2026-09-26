@@ -50,13 +50,12 @@ export function createAccessToken(user, { adminSession = false } = {}) {
     const id = String(user.id || '');
     if (!email || !id) throw new Error('Cannot issue a session token without a user ID and email.');
 
-    // Klaim admin hanya dapat dibuat setelah adminLogin memverifikasi kedua password.
+    // Klaim adminSession dibuat untuk user admin terdaftar.
     return jwt.sign(
         {
             email,
             username: user.username || null,
-            adminSession: Boolean(adminSession),
-            ...(adminSession ? { adminPasswordFingerprint: getAdminPasswordFingerprint() } : {})
+            adminSession: Boolean(adminSession)
         },
         getJwtSecret(),
         {
@@ -86,12 +85,10 @@ export function authenticateRequest(authorizationHeader) {
         if (typeof payload !== 'object' || !payload.sub || !payload.email) return null;
 
         const email = String(payload.email).trim().toLowerCase();
-        // Role admin perlu klaim sesi khusus dan email yang masih ada di allowlist.
-        const currentAdminPasswordFingerprint = getAdminPasswordFingerprint();
+        // Opsi B: Role admin valid jika memiliki klaim adminSession dan email-nya terdaftar di allowlist ADMIN_EMAILS.
+        // Menghapus email dari ADMIN_EMAILS mencabut hak akses admin seketika.
         const isAdminSession = Boolean(
             payload.adminSession === true &&
-            currentAdminPasswordFingerprint &&
-            payload.adminPasswordFingerprint === currentAdminPasswordFingerprint &&
             isAdminEmail(email)
         );
         return {

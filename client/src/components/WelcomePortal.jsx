@@ -43,7 +43,6 @@ export default function WelcomePortal({
   const [activeTab, setActiveTab] = useState(initialTab); // login, admin, register, atau forgot
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
   const [username, setUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -158,7 +157,7 @@ export default function WelcomePortal({
     e.preventDefault();
     setStatusMsg({ text: '', isError: false });
     try {
-      const res = await adminLoginMutation({ variables: { email, password, adminPassword } });
+      const res = await adminLoginMutation({ variables: { email: email.trim().toLowerCase(), password } });
       if (res.data?.adminLogin?.success && res.data.adminLogin.user?.role === 'ADMIN') {
         onAuthSuccess(res.data.adminLogin.user);
       } else {
@@ -361,7 +360,7 @@ export default function WelcomePortal({
 
         {activeTab === 'admin' && (
           <form onSubmit={handleAdminLogin} className="auth-form">
-            <p className="admin-login-hint">Gunakan email yang diizinkan, password akun Anda, dan password admin tambahan.</p>
+            <p className="admin-login-hint">Gunakan email yang terdaftar di ADMIN_EMAILS dan kata sandi akun pribadi Anda.</p>
             <label className="admin-login-label" htmlFor="welcome-admin-email">Email admin</label>
             <input
               id="welcome-admin-email"
@@ -381,17 +380,6 @@ export default function WelcomePortal({
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-            <label className="admin-login-label" htmlFor="welcome-admin-shared-password">Password admin</label>
-            <input
-              id="welcome-admin-shared-password"
-              type="password"
-              className="auth-input"
-              autoComplete="off"
-              minLength={16}
-              required
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
             />
             <button
               type="submit"

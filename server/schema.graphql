@@ -108,7 +108,7 @@ type Mutation {
         otp: String!
     ): AuthResponse!
     login(email: String!, password: String!): AuthResponse!
-    adminLogin(email: String!, password: String!, adminPassword: String!): AuthResponse!
+    adminLogin(email: String!, password: String!, adminPassword: String): AuthResponse!
     requestPasswordReset(email: String!): AuthResponse!
     resetPassword(email: String!, otp: String!, newPassword: String!): AuthResponse!
     logActivity(action: String!, details: String): Boolean!

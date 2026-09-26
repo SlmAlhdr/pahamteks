@@ -302,10 +302,10 @@ export const authResolvers = {
             };
         },
 
-        // Admin perlu akun terdaftar, email allowlist, password akun, dan secret admin kedua.
-        adminLogin: async (_, { email, password, adminPassword }, context) => {
-            if (!email || !password || !adminPassword) {
-                return { success: false, message: 'Email dan kedua kata sandi wajib diisi.' };
+        // Opsi B: Admin login cukup menggunakan email allowlist dan kata sandi akun pribadi.
+        adminLogin: async (_, { email, password }, context) => {
+            if (!email || !password) {
+                return { success: false, message: 'Email admin dan kata sandi akun wajib diisi!' };
             }
 
             const cleanEmail = email.trim().toLowerCase();
@@ -315,10 +315,10 @@ export const authResolvers = {
                 return { success: false, message: bruteCheck.message };
             }
 
-            // Balasan gagal seragam tidak mengungkap apakah email terdaftar sebagai admin.
+            // Validasi apakah email terdaftar dalam allowlist ADMIN_EMAILS
             if (!isAdminEmail(cleanEmail)) {
                 recordLoginFailure(cleanEmail, clientIp);
-                return { success: false, message: 'Kredensial admin tidak valid.' };
+                return { success: false, message: 'Email Anda belum terdaftar sebagai administrator di sistem.' };
             }
 
             let account = null;
@@ -335,22 +335,28 @@ export const authResolvers = {
             }
             account ||= memUsers.get(cleanEmail) || null;
 
-            let accountPasswordValid = false;
-            if (account?.password?.startsWith('$2a$') || account?.password?.startsWith('$2b$')) {
-                accountPasswordValid = await bcrypt.compare(password, account.password);
+            if (!account) {
+                recordLoginFailure(cleanEmail, clientIp);
+                return { success: false, message: 'Akun dengan email ini belum terdaftar. Silakan lakukan registrasi terlebih dahulu.' };
             }
 
-            const adminPasswordValid = verifyAdminPassword(adminPassword);
-            if (!account || !accountPasswordValid || !adminPasswordValid) {
+            let accountPasswordValid = false;
+            if (account.password && (account.password.startsWith('$2a$') || account.password.startsWith('$2b$'))) {
+                accountPasswordValid = await bcrypt.compare(password, account.password);
+            } else {
+                accountPasswordValid = account.password === password;
+            }
+
+            if (!accountPasswordValid) {
                 recordLoginFailure(cleanEmail, clientIp);
                 logSecurityEvent({
                     eventType: 'ADMIN_LOGIN_FAILED',
                     severity: 'WARNING',
                     identifier: cleanEmail,
                     ip: clientIp,
-                    details: 'Percobaan login admin gagal.'
+                    details: 'Percobaan login admin gagal: kata sandi salah.'
                 });
-                return { success: false, message: 'Kredensial admin tidak valid.' };
+                return { success: false, message: 'Kata sandi akun salah!' };
             }
 
             const displayName = account.username || `${account.first_name || ''} ${account.last_name || ''}`.trim() || cleanEmail.split('@')[0];
@@ -360,9 +366,17 @@ export const authResolvers = {
             );
             recordLoginSuccess(cleanEmail, clientIp, account.id);
 
+            logSecurityEvent({
+                eventType: 'ADMIN_LOGIN_SUCCESS',
+                severity: 'INFO',
+                identifier: cleanEmail,
+                ip: clientIp,
+                details: `Administrator @${displayName} (${cleanEmail}) berhasil login.`
+            });
+
             return {
                 success: true,
-                message: 'Login admin berhasil.',
+                message: 'Login administrator berhasil.',
                 token,
                 user: {
                     id: String(account.id || `mem-${cleanEmail}`),
@@ -416,8 +430,12 @@ export const authResolvers = {
                         return { success: false, message: 'Kata sandi salah!' };
                     }
 
+                    const isAdmin = isAdminEmail(user.email);
                     const displayName = user.username || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0];
-                    const token = createAccessToken({ id: user.id, email: user.email, username: user.username });
+                    const token = createAccessToken(
+                        { id: user.id, email: user.email, username: user.username },
+                        { adminSession: isAdmin }
+                    );
                     recordLoginSuccess(cleanIdentifier, clientIp, user.id);
 
                     return {
@@ -429,7 +447,7 @@ export const authResolvers = {
                             email: user.email,
                             username: user.username || user.email.split('@')[0],
                             name: displayName,
-                            role: 'USER',
+                            role: isAdmin ? 'ADMIN' : 'USER',
                             token
                         }
                     };
@@ -464,7 +482,11 @@ export const authResolvers = {
                 return { success: false, message: 'Kata sandi salah!' };
             }
 
-            const token = createAccessToken({ id: 'mem-' + foundUser.email, email: foundUser.email, username: foundUser.username });
+            const isAdmin = isAdminEmail(foundUser.email);
+            const token = createAccessToken(
+                { id: 'mem-' + foundUser.email, email: foundUser.email, username: foundUser.username },
+                { adminSession: isAdmin }
+            );
             recordLoginSuccess(cleanIdentifier, clientIp);
 
             return {
@@ -476,7 +498,7 @@ export const authResolvers = {
                     email: foundUser.email,
                     username: foundUser.username || foundUser.email.split('@')[0],
                     name: foundUser.username || foundUser.name,
-                    role: 'USER',
+                    role: isAdmin ? 'ADMIN' : 'USER',
                     token
                 }
             };

@@ -110,7 +110,7 @@ export const typeDefs = `#graphql
         adminLogin(
             email: String!
             password: String!
-            adminPassword: String!
+            adminPassword: String
         ): AuthResponse!
         requestPasswordReset(email: String!): AuthResponse!
         resetPassword(

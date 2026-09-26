@@ -17,6 +17,8 @@
     "client:build": "npm --prefix client run build",
     "sync": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/sync.ps1",
     "auto-sync": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/auto-sync.ps1"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
-
