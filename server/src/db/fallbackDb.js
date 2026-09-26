@@ -6,9 +6,14 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.resolve(__dirname, '../../data');
+const isVercel = Boolean(process.env.VERCEL);
+const DATA_DIR = isVercel ? path.join('/tmp', 'pahamteks_data') : path.resolve(__dirname, '../../data');
 if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+    try {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+    } catch (err) {
+        console.warn('[SQL FALLBACK] Gagal membuat direktori data:', err.message);
+    }
 }
 
 const DB_FILE_PATH = path.join(DATA_DIR, 'pahamteks_backup.sqlite');

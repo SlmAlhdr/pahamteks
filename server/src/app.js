@@ -42,9 +42,10 @@ app.use(cors({
         // Izinkan request tanpa origin (seperti UptimeRobot, server-to-server health probe, mobile/curl)
         if (!origin) return callback(null, true);
 
-        // Izinkan origin lokal, daftar env, Cloudflare tunnel, atau mode dev
+        // Izinkan origin lokal, daftar env, Cloudflare tunnel, Vercel, atau mode dev
         const isCloudflareTunnel = /\.trycloudflare\.com$/.test(origin);
-        if (allowedOrigins.includes(origin) || isCloudflareTunnel || process.env.NODE_ENV !== 'production') {
+        const isVercel = /\.vercel\.app$/.test(origin);
+        if (allowedOrigins.includes(origin) || isCloudflareTunnel || isVercel || process.env.NODE_ENV !== 'production') {
             return callback(null, true);
         }
         return callback(new Error('Akses diblokir oleh kebijakan keamanan CORS PahamTeks.'));
