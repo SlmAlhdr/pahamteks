@@ -11,7 +11,8 @@ httpServer.listen(PORT, async () => {
     console.log(`\n======================================================`);
     console.log(`🚀 [PahamTeks Backend] Berjalan di port ${PORT}`);
     console.log(`📡 [GraphQL Endpoint]: http://localhost:${PORT}/graphql`);
-    console.log(`🏥 [Health Check]:     http://localhost:${PORT}/health`);
+    console.log(`🏥 [Public Health]:    http://localhost:${PORT}/healthz`);
+    console.log(`🔒 [Admin Health]:     http://localhost:${PORT}/health`);
 
     const keyStatus = getApiKeyPoolStatus();
     if (keyStatus.totalKeys > 0) {

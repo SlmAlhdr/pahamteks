@@ -80,6 +80,8 @@ export const REGISTER_MUTATION = gql`
         email
         username
         name
+        role
+        token
       }
     }
   }
@@ -95,6 +97,8 @@ export const LOGIN_MUTATION = gql`
         email
         username
         name
+        role
+        token
       }
     }
   }
@@ -119,8 +123,7 @@ export const RESET_PASSWORD_MUTATION = gql`
 `;
 
 export const LOG_ACTIVITY_MUTATION = gql`
-  mutation LogActivity($action: String!, $details: String, $userId: ID) {
-    logActivity(action: $action, details: $details, userId: $userId)
+  mutation LogActivity($action: String!, $details: String) {
+    logActivity(action: $action, details: $details)
   }
 `;
-

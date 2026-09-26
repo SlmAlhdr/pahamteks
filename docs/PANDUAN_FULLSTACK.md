@@ -37,7 +37,7 @@ Mari kita telaah masing-masing jembatan di atas:
 ### 1. Jembatan Protokol Jaringan (Network & Ports)
 * **Frontend** berjalan di browser pengguna melalui web server Vite di port `http://localhost:3000`.
 * **Backend** berjalan di mesin Node.js Express di port `http://localhost:4000`.
-* Kedua dunia ini berkomunikasi lewat protokol HTTP POST ke URL `/graphql` dan GET ke `/health`.
+* Kedua dunia ini berkomunikasi lewat HTTP POST ke `/graphql`; probe publik minimal tersedia di `/healthz` dan detail `/health` memerlukan token admin.
 * Express memiliki middleware `cors()` yang memastikan browser tidak memblokir komunikasi antar port yang berbeda ini.
 
 ### 2. Kontrak Data Bersama (GraphQL Schema)
@@ -79,7 +79,7 @@ Berikut alur lengkap yang terjadi di balik layar saat seorang pemelajar menyeles
 [4. Security Shield]  Express menyaring request melalui Helmet, CORS Whitelist, dan Rate Limiter.
         │
         ▼
-[5. JWT Verification] Middleware server memeriksa keaslian token JWT dan mengekstrak user_id pemelajar.
+[5. JWT Verification] Server memverifikasi tanda tangan, issuer, audience, dan masa berlaku token sebelum mengambil identitas akun.
         │
         ▼
 [6. Database Logic]   historyResolvers.js mencoba menyimpan baris skor ke tabel MySQL quiz_history.
@@ -121,14 +121,15 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Frontend** | Konfigurasi port (3000) & proxy GraphQL | [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) |
 | **Frontend** | Inisialisasi Apollo Client & header token | [`client/src/main.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/main.jsx) |
 | **Frontend** | Navigasi tab utama & state login | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) |
-| **Frontend** | Panel visual admin lengkap di antarmuka web (Navbar 👑 Admin) | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
+| **Frontend** | Panel admin visual belum terhubung di working tree saat ini | `client/src/components/AdminDashboardView.jsx` |
 | **Frontend** | Seluruh styling CSS, warna :root, & animasi | [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) |
 | **Frontend** | Kueri GraphQL client (`GET_QUIZ`, dll) | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) |
 | **Frontend** | Mutasi GraphQL client (`LOGIN`, `REGISTER`) | [`client/src/graphql/mutations.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/mutations.js) |
 | **Frontend** | Utilitas audio sintesis suara | [`client/src/utils/speechUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/speechUtils.js) |
 | **Frontend** | Utilitas validasi kunci kuis (A-D) | [`client/src/utils/quizUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/quizUtils.js) |
 | **Backend** | Pintu masuk listener server port 4000 | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
-| **Backend** | Pengaturan Express, Helmet, CORS, & `/health` | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Backend** | Pengaturan Express, Helmet, CORS, `/healthz`, dan `/health` admin | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Backend** | Verifikasi sesi JWT dan role admin | [`server/src/utils/auth.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/auth.js) |
 | **Backend** | "Kontrak Data" GraphQL (Query & Mutation) | [`server/src/schema/typeDefs.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/schema/typeDefs.js) |
 | **Backend** | Logika eksekusi autentikasi & JWT | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) |
 | **Backend** | Logika kuis AI, kamus, & RAM cache | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) |
@@ -141,9 +142,10 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Backend** | Proteksi brute-force & audit keamanan | [`server/src/utils/securityLogger.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/securityLogger.js) |
 | **Backend** | Skrip ekspor database ke file `.sql` | [`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js) |
 | **Backend** | Variabel rahasia lokal (.env) | `server/.env` (panduan di `server/.env.example`) |
-| **Admin** | Status monitoring & uptime server REST | `GET http://localhost:4000/health` |
+| **Admin** | Detail status server REST | `GET http://localhost:4000/health` dengan token admin |
+| **Monitoring** | Probe server publik minimal | `GET http://localhost:4000/healthz` |
 | **Admin** | Kueri audit aktivitas pengguna GraphQL | `serverStatus` & `userLogs` di `POST /graphql` |
-| **Admin** | Panel visual admin langsung di web browser | Tab 👑 Admin di navigasi atas |
+| **Admin** | Akses data audit/status di GraphQL | Token admin pada query `serverStatus` dan `userLogs` |
 
 ---
 
@@ -252,7 +254,8 @@ Salin berkas `.env.example` menjadi `server/.env`:
 | :--- | :--- | :--- |
 | `PORT` | Ya | Port server Express & GraphQL (Default: `4000`) |
 | `CORS_ORIGIN` | Ya | Alamat frontend yang diizinkan (`http://localhost:3000`) |
-| `JWT_SECRET` | Ya | Kunci acak untuk enkripsi tanda tangan token sesi login |
+| `JWT_SECRET` | Ya | Secret acak minimal 32 karakter; server menolak nilai kosong/pendek dan penggantian secret membatalkan sesi lama |
+| `ADMIN_EMAILS` | Tidak | Email akun terverifikasi yang diberi role admin, dipisahkan koma; kosong berarti belum ada admin |
 | `GEMINI_API_KEY_1` | Ya | Kunci API utama Google Gemini AI (`AIzaSy...`) |
 | `GEMINI_API_KEY_2` | Opsional | Kunci API cadangan ke-2 untuk rotasi kuota otomatis |
 | `GEMINI_API_KEY_3` | Opsional | Kunci API cadangan ke-3 untuk rotasi kuota otomatis |
@@ -313,7 +316,12 @@ npm --prefix client run dev
 Kunjungi alamat:
 * **Aplikasi Web**: `http://localhost:3000`
 * **GraphQL Interactive Playground**: `http://localhost:4000/graphql`
-* **Health Check API**: `http://localhost:4000/health`
+* **Probe publik minimal**: `http://localhost:4000/healthz`
+* **Health detail admin**: `http://localhost:4000/health` dengan `Authorization: Bearer <token-admin>`
+
+### Menyiapkan akun admin
+
+Isi `ADMIN_EMAILS` di `server/.env` dengan email akun PahamTeks yang sudah terverifikasi, misalnya `ADMIN_EMAILS=nama@contoh.com`. Beberapa alamat dapat dipisahkan koma. Role selalu dihitung backend dari daftar ini; frontend tidak dapat menetapkan role. Login ulang setelah konfigurasi agar token sesi baru dipakai. Query `serverStatus`, `userLogs`, dan endpoint detail `/health` memerlukan token admin. Query `me` serta mutasi `logActivity` memerlukan token pengguna, dan identitas pemilik log diambil dari token, bukan dari `userId` kiriman klien. Operasi belajar dan autentikasi tetap tersedia untuk tamu.
 
 ---
 

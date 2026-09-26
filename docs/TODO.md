@@ -72,7 +72,7 @@ Daftar ini adalah prioritas yang sudah tercatat sebelumnya. Urutan dan statusnya
 
 1. **Daftarkan Endpoint `/health` ke Pemantau Eksternal (UptimeRobot / BetterStack)**:
    - Endpoint `/health` backend kita sudah lengkap dengan data RAM, status database, dan pool key.
-   - Kita tinggal mendaftarkan URL produksi ke UptimeRobot (gratis) agar jika server Vercel/Render mati, kita langsung dapat notifikasi Telegram atau email.
+   - Daftarkan URL health publik setelah deployment diaktifkan kembali agar gangguan server dapat memberi notifikasi Telegram atau email.
 2. **Sistem Gamifikasi: Streak Belajar & EXP**:
    - Menghitung hari belajar berturut-turut dengan ikon api (🔥) agar pemelajar terpacu buka web setiap hari.
    - Reward EXP setiap kali menyelesaikan 1 kuis unit.

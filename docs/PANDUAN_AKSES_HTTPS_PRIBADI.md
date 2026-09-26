@@ -14,7 +14,7 @@ Panduan ini memberi kamu **3 cara** untuk mengatasi hal itu:
 | :--- | :---: | :--- | :--- |
 | **A. Cloudflare Tunnel** | Ya | Siapa saja di dunia (punya link) | Demo ke dosen, uji coba di HP dari mana saja |
 | **B. Satu Jaringan Wi-Fi** | Tidak | HP/laptop yang terhubung Wi-Fi sama | Testing cepat di HP sendiri di rumah/kampus |
-| **C. Vercel (Deployment)** | Ya | Siapa saja (domain tetap) | Presentasi resmi, link permanen |
+| **C. Deployment publik permanen** | — | Tidak tersedia sementara | Aktifkan kembali deployment saat layanan publik siap |
 
 ---
 
@@ -159,13 +159,9 @@ Ganti `192.168.1.15` dengan angka IP laptop kamu yang didapat dari langkah 2.
 
 ---
 
-## 🌐 Cara C: Deploy ke Vercel (Link Permanen)
+## 🌐 Deployment Permanen Sementara Nonaktif
 
-Jika kamu ingin link yang **tidak berubah-ubah** dan bisa diakses kapan saja tanpa harus menyalakan laptop, gunakan Vercel. Proyek PahamTeks sudah dikonfigurasi untuk deployment Vercel.
-
-Link resmi yang sudah aktif: **[pahamteks.vercel.app](https://pahamteks.vercel.app)**
-
-Deploy otomatis terjadi setiap kali ada push ke branch `main` di GitHub (jika akun Vercel sudah terhubung ke repositori).
+PahamTeks saat ini tidak memakai endpoint Vercel. Gunakan server lokal untuk pengembangan. Untuk demo sementara dari internet, nyalakan Cloudflare Tunnel sesuai Cara A; URL tunnel hanya aktif selama prosesnya berjalan.
 
 ---
 

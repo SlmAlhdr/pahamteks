@@ -36,6 +36,7 @@ export const typeDefs = `#graphql
         email: String!
         username: String
         name: String!
+        role: String! # Nilai respons dari backend; bukan input untuk menetapkan hak akses.
         token: String
         createdAt: String
     }
@@ -60,13 +61,6 @@ export const typeDefs = `#graphql
         geminiKeysCount: Int!
         dbConnected: Boolean!
         timestamp: String!
-        activeDbEngine: String
-        uptimeSeconds: Float
-        memoryRssMb: Float
-        memoryHeapMb: Float
-        totalUsersCount: Int
-        totalQuizzesCount: Int
-        geminiModel: String
     }
 
     type Query {
@@ -82,7 +76,7 @@ export const typeDefs = `#graphql
             refresh: Boolean
         ): [QuizItem!]!
         generateChallenge(category: String!, lang: String): [QuizItem!]!
-        me(email: String): User
+        me: User
         userLogs(limit: Int): [UserActivityLog!]!
     }
 
@@ -122,8 +116,6 @@ export const typeDefs = `#graphql
         logActivity(
             action: String!
             details: String
-            userId: ID
         ): Boolean!
     }
 `;
-

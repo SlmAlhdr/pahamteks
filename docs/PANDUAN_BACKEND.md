@@ -35,7 +35,7 @@ Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama*
 Mari kita bedah masing-masing komponen di atas:
 
 ### 1. HTTP Web Server (Express.js)
-Pintu gerbang yang menerima koneksi internet dari browser di `http://localhost:4000`. Express menangani parsing JSON, file statis, dan memantau status kesehatan server via endpoint REST `GET /health`.
+Pintu gerbang yang menerima koneksi browser di `http://localhost:4000`. Express menyediakan probe publik minimal `GET /healthz` dan detail health khusus admin di `GET /health`.
 
 ### 2. Perisai Keamanan (Security Middleware)
 Sebelum request diizinkan masuk ke logika aplikasi, Express menyaringnya melalui 4 lapis pertahanan:
@@ -125,7 +125,8 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di backend:
 
 | Jika Kamu Ingin Mencari / Mengubah... | Lokasi Berkas Persis (Path Lengkap) |
 | :--- | :--- |
-| **Port server, CORS, Rate Limit, Helmet, & endpoint `/health`** | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Port server, CORS, Rate Limit, Helmet, & endpoint health** | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
+| **Verifikasi JWT dan role admin berbasis email allowlist** | [`server/src/utils/auth.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/auth.js) |
 | **Port listener utama server (Port 4000)** | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
 | **Koneksi MySQL, deteksi failover ke SQLite, & migrasi** | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
 | **Rotasi 1-9 API Key Gemini, pemilihan model AI, & prompt** | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
@@ -299,40 +300,29 @@ Bagi pengembang atau administrator yang ingin mengawasi kesehatan server, melaca
 
 | Kebutuhan Admin | Berkas yang Bertanggung Jawab | Cara Mengakses |
 | :--- | :--- | :--- |
-| **Status Kesehatan Server (Health & Uptime)** | `server/src/app.js` | Akses browser/curl ke `GET http://localhost:4000/health` |
-| **Kueri Status Server GraphQL** | `server/src/schema/typeDefs.js` & `server/src/resolvers/authResolvers.js` | Kueri GraphQL `serverStatus` di Playground |
-| **Audit Trail & Log Aktivitas Pengguna** | `server/src/resolvers/historyResolvers.js` | Kueri GraphQL `userLogs(limit: Int)` di Playground |
+| **Probe server publik minimal** | `server/src/app.js` | `GET http://localhost:4000/healthz` (hanya status proses) |
+| **Status server terperinci** | `server/src/schema/typeDefs.js` & `server/src/resolvers/index.js` | Query GraphQL `serverStatus`, hanya untuk token admin |
+| **Audit trail aktivitas pengguna** | `server/src/resolvers/historyResolvers.js` | Query GraphQL `userLogs(limit: Int)`, hanya untuk token admin |
 | **Log Keamanan & Brute-Force Guard** | `server/src/utils/securityLogger.js` | Tabel `security_events` & pencatatan log otomatis |
 | **Ekspor Backup Database SQL** | `server/src/db/exportSqlBackup.js` | Jalankan terminal: `node server/src/db/exportSqlBackup.js` |
 | **Akses Langsung Basis Data (GUI)** | `server/data/pahamteks_backup.sqlite` | Buka file dengan *DB Browser for SQLite* atau *DBeaver* |
 
 ---
 
-### 2. Memeriksa Pemantauan Kesehatan Server via REST `/health`
+### 2. Memeriksa Probe Server Publik via REST `/healthz`
 
-Endpoint ini dibuat khusus agar administrator atau layanan monitoring (seperti UptimeRobot/BetterStack) bisa memeriksa kondisi server secara instan:
+Endpoint publik ini hanya memberi sinyal hidup/mati agar detail database, memori, dan Gemini tidak terbuka:
 
 ```powershell
-curl http://localhost:4000/health
+curl http://localhost:4000/healthz
 ```
+
+Detail `GET /health` memerlukan header `Authorization: Bearer <token-admin>`.
 
 **Contoh Output Balasan:**
 ```json
 {
-  "status": "ok",
-  "timestamp": "2026-09-25T12:50:00.000Z",
-  "database": {
-    "connected": true,
-    "mode": "SQLite (Fallback Engine)"
-  },
-  "gemini": {
-    "poolSize": 3,
-    "status": "active"
-  },
-  "memory": {
-    "rss": "65.4 MB",
-    "heapUsed": "38.2 MB"
-  }
+  "status": "OK"
 }
 ```
 
@@ -340,7 +330,7 @@ curl http://localhost:4000/health
 
 ### 3. Kueri Khusus Administrator di GraphQL Playground
 
-Buka browser di `http://localhost:4000/graphql`, lalu admin dapat mengeksekusi kueri berikut:
+Buka GraphQL client di `http://localhost:4000/graphql`, masuk dengan token akun yang emailnya ada di `ADMIN_EMAILS`, lalu admin dapat mengeksekusi kueri berikut:
 
 #### A. Memeriksa Jumlah Kunci AI & Status Database:
 ```graphql
@@ -369,11 +359,22 @@ query AdminAuditLogs {
 
 ---
 
-### 4. Roadmap Arsitektur: Rencana Panel Admin Khusus (Role-Based Admin)
-Saat ini hak akses sistem dikelola melalui otentikasi JWT dan endpoint pemantauan di atas. Jika tim ingin membuat **Dashboard Admin Visual** di frontend:
-1. Tambahkan kolom `role TEXT DEFAULT 'student'` di tabel `users` (`'student'` vs `'admin'`).
-2. Buat middleware otentikasi di backend yang memverifikasi `user.role === 'admin'`.
-3. Sediakan komponen frontend khusus `AdminDashboardView.jsx` yang hanya bisa dibuka oleh pengguna dengan role admin.
+### 4. Panel Admin (Role-Based Access)
+
+Backend menentukan role dari daftar email `ADMIN_EMAILS` di `server/.env`. Token sesi diverifikasi server; role dari payload klien tidak dipercaya. Biarkan daftar kosong sampai alamat admin ditetapkan. `serverStatus`, `userLogs`, dan detail `GET /health` ditolak untuk pengguna biasa.
+Saat ini backend melindungi resolver admin dan detail health dengan JWT terverifikasi serta daftar email `ADMIN_EMAILS`. Panel visual frontend belum terhubung; jangan mengandalkan UI sebagai kontrol akses.
+
+Untuk mengaktifkan admin, isi `ADMIN_EMAILS` sendiri dengan email yang dipakai akun PahamTeks, misalnya `ADMIN_EMAILS=nama@contoh.com`. Beberapa admin dapat dipisahkan koma. Email harus sama dengan email akun terverifikasi; setelah diatur, keluar lalu masuk kembali agar sesi baru digunakan. Jangan pernah menaruh daftar ini di kode frontend. `JWT_SECRET` wajib berupa nilai acak minimal 32 karakter dan server berhenti saat nilainya kosong atau terlalu pendek. Mengganti secret akan membatalkan semua token lama.
+
+Setiap resolver root memiliki kebijakan akses eksplisit di `server/src/resolvers/index.js`. `me` memerlukan sesi, `logActivity` mengambil pemilik log dari identitas token, sedangkan `userLogs`, `serverStatus`, dan detail `/health` memerlukan role admin. Operasi belajar serta login/registrasi tetap publik untuk mendukung pengguna tamu. Log aktivitas tidak dapat dibaca oleh akun biasa.
+
+Contoh memeriksa health detail setelah memperoleh token admin melalui login:
+
+```powershell
+curl.exe -H "Authorization: Bearer <token-admin>" http://localhost:4000/health
+```
+
+Jangan menempelkan token nyata ke dokumentasi, tiket, atau commit.
 
 ---
 
@@ -383,8 +384,8 @@ Saat ini hak akses sistem dikelola melalui otentikasi JWT dan endpoint pemantaua
 # Menjalankan server backend dengan auto-reload (port 4000)
 npm --prefix server run dev
 
-# Memeriksa endpoint kesehatan server
-curl http://localhost:4000/health
+# Memeriksa probe publik minimal
+curl http://localhost:4000/healthz
 
 # Mengekspor isi database ke file backup SQL
 node server/src/db/exportSqlBackup.js

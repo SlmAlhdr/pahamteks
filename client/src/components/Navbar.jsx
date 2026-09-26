@@ -59,15 +59,6 @@ export default function Navbar({
               <span>{t('nav_dict_trans')}</span>
             </button>
             <button
-              className={`btn-nav ${activeTab === 'admin' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admin')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              title="Panel Administrator & Server Monitor"
-            >
-              <span>👑</span>
-              <span>Admin</span>
-            </button>
-            <button
               className="lang-toggle"
               onClick={onToggleLang}
               title="Ubah Bahasa / Switch Language"
@@ -98,26 +89,15 @@ export default function Navbar({
             </button>
           </div>
         ) : !user ? (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              className={`btn-nav ${activeTab === 'admin' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admin')}
-              title="Panel Administrator & Server Monitor"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', fontSize: '0.82rem' }}
-            >
-              <span>👑</span>
-              <span>Admin</span>
-            </button>
-            <button
-              className="lang-toggle"
-              onClick={onToggleLang}
-              title="Ubah Bahasa / Switch Language"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <Globe2DIcon size={16} />
-              <span>{currentLang.toUpperCase()}</span>
-            </button>
-          </div>
+          <button
+            className="lang-toggle"
+            onClick={onToggleLang}
+            title="Ubah Bahasa / Switch Language"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Globe2DIcon size={16} />
+            <span>{currentLang.toUpperCase()}</span>
+          </button>
         ) : null}
       </div>
     </div>

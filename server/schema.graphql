@@ -40,6 +40,7 @@ type User {
     email: String!
     username: String
     name: String!
+  role: String! # Role dihitung server dari ADMIN_EMAILS, tidak dapat ditentukan klien.
     token: String
     createdAt: String
 }
@@ -79,7 +80,7 @@ type Query {
         refresh: Boolean
     ): [QuizItem!]!
     generateChallenge(category: String!, lang: String): [QuizItem!]!
-    me(email: String): User
+    me: User
     userLogs(limit: Int): [UserActivityLog!]!
 }
 
@@ -109,5 +110,5 @@ type Mutation {
     login(email: String!, password: String!): AuthResponse!
     requestPasswordReset(email: String!): AuthResponse!
     resetPassword(email: String!, otp: String!, newPassword: String!): AuthResponse!
-    logActivity(action: String!, details: String, userId: ID): Boolean!
+    logActivity(action: String!, details: String): Boolean!
 }

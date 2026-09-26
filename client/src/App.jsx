@@ -10,9 +10,9 @@ import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
 import TeksieMascotCompanion from './components/TeksieMascotCompanion';
 import CenterNotificationModal from './components/CenterNotificationModal';
-import AdminDashboardView from './components/AdminDashboardView';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
+import { apolloClient } from './apolloClient';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -29,12 +29,17 @@ export default function App() {
     const savedUser = localStorage.getItem('pahamteks_user');
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
-        const savedLogs = localStorage.getItem('pahamteks_logs');
-        if (savedLogs) {
-          setQuizHistory(JSON.parse(savedLogs));
+        const parsedUser = JSON.parse(savedUser);
+        // Sesi lama tanpa token server tidak boleh dianggap sebagai login terverifikasi.
+        if (typeof parsedUser?.token === 'string' && parsedUser.token) {
+          setUser(parsedUser);
+          const savedLogs = localStorage.getItem('pahamteks_logs');
+          if (savedLogs) {
+            setQuizHistory(JSON.parse(savedLogs));
+          }
+          return;
         }
-        return;
+        localStorage.removeItem('pahamteks_user');
       } catch (err) {
         console.warn('[AppAuth] Failed to parse stored user, resetting state:', err.message);
         localStorage.removeItem('pahamteks_user');
@@ -116,6 +121,10 @@ export default function App() {
   // Bersihkan sesi dan data sementara sebelum kembali ke beranda.
   const handleLogout = () => {
     const wasGuest = user?.isGuest;
+    // Bersihkan cache Apollo agar data privat sesi sebelumnya tidak tertinggal setelah logout.
+    apolloClient.clearStore().catch((err) => {
+      console.warn('[AppAuth] Failed to clear cached GraphQL data:', err.message);
+    });
     setUser(null);
     localStorage.removeItem('pahamteks_user');
     sessionStorage.removeItem('pahamteks_guest_user');
@@ -204,12 +213,7 @@ export default function App() {
 
       {/* Main Content Pages */}
       <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-        {activeTab === 'admin' ? (
-          <AdminDashboardView
-            currentLang={currentLang}
-            onBackHome={() => setActiveTab('home')}
-          />
-        ) : !user ? (
+        {!user ? (
           <WelcomePortal
             onAuthSuccess={handleAuthSuccess}
             onGuestLogin={handleGuestLogin}

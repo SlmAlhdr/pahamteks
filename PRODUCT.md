@@ -23,7 +23,7 @@ Penyatuan pembelajaran bahasa dunia (human languages) dan bahasa pemrograman dal
 
 - Web application yang diakses lewat peramban mobile (smartphone) dan desktop.
 - Model penggunaan mandiri (self-paced learning) tanpa kewajiban login awal (tersedia mode tamu berbasis sesi lokal) dengan opsi upgrade ke akun resmi terverifikasi OTP email.
-- Lingkungan produksi berjalan di atas arsitektur serverless Vercel dan basis data cloud.
+- Deployment publik sementara nonaktif; aplikasi dijalankan secara lokal selama pengembangan.
 
 ## Capabilities and Constraints
 
@@ -57,4 +57,3 @@ Penyatuan pembelajaran bahasa dunia (human languages) dan bahasa pemrograman dal
 - Dukungan penuh antarmuka bahasa Indonesia yang mudah dipahami oleh semua kalangan pemelajar.
 - Kontras warna teks dan elemen UI yang memenuhi standar keterbacaan di berbagai kondisi pencahayaan.
 - Elemen interaktif dan tombol dengan ukuran target sentuh (touch target) yang ergonomis untuk pengguna mobile.
-

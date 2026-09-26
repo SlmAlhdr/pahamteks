@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.12.9",
-    "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^4.3.4",
     "graphql": "^16.10.0",
     "lucide-react": "^0.475.0",

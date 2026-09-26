@@ -101,7 +101,7 @@ export async function sendOtpEmail(toEmail, otpCode) {
     return {
       success: false,
       delivered: false,
-      message: 'Gagal mengirim: Pengirim email belum diatur (EMAIL_USER & EMAIL_PASS kosong di server/.env atau Vercel Settings).'
+      message: 'Gagal mengirim: Pengirim email belum diatur (isi EMAIL_USER & EMAIL_PASS di server/.env atau konfigurasi environment hosting).'
     };
   }
 
@@ -222,4 +222,3 @@ export async function sendPasswordResetEmail(toEmail, otpCode) {
     };
   }
 }
-

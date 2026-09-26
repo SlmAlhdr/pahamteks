@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { getDb, isDbConnected } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
+import { createAccessToken, getRoleForEmail, requireAuthenticatedUser } from '../utils/auth.js';
 import {
     checkLoginBruteForce,
     recordLoginFailure,
@@ -9,21 +9,6 @@ import {
     checkOtpRateLimit,
     logSecurityEvent
 } from '../utils/securityLogger.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'pahamteks_jwt_super_secure_key_2026';
-
-// Buat token sesi yang dipakai client setelah autentikasi berhasil.
-function createJwtToken(user) {
-    return jwt.sign(
-        {
-            id: String(user.id),
-            email: user.email,
-            username: user.username
-        },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-    );
-}
 
 // Fallback in-memory database jika MySQL belum dikonfigurasi password-nya
 const memUsers = new Map();
@@ -38,17 +23,18 @@ function isValidUsername(username) {
 
 export const authResolvers = {
     Query: {
-        // Cari profil melalui email atau username, termasuk fallback memori.
-        me: async (_, { email }) => {
-            if (!email) return null;
-            const cleanIdentifier = email.trim().toLowerCase();
+        // Profil selalu ditentukan dari identitas token, bukan argumen klien.
+        me: async (_, __, context) => {
+            const currentUser = requireAuthenticatedUser(context);
+            // Email berasal dari token yang ditandatangani server, bukan variabel query dari browser.
+            const cleanIdentifier = currentUser.email;
 
             if (isDbConnected()) {
                 const db = getDb();
                 try {
                     const [rows] = await db.execute(
-                        'SELECT id, email, username, first_name, last_name, created_at FROM users WHERE email = ? OR username = ?',
-                        [cleanIdentifier, cleanIdentifier]
+                        'SELECT id, email, username, first_name, last_name, created_at FROM users WHERE email = ?',
+                        [cleanIdentifier]
                     );
                     if (rows.length > 0) {
                         const u = rows[0];
@@ -58,6 +44,7 @@ export const authResolvers = {
                             email: u.email,
                             username: u.username || u.email.split('@')[0],
                             name: displayName,
+                            role: getRoleForEmail(u.email),
                             createdAt: u.created_at ? new Date(u.created_at).toISOString() : null
                         };
                     }
@@ -74,6 +61,7 @@ export const authResolvers = {
                         email: u.email,
                         username: u.username || u.email.split('@')[0],
                         name: u.username || u.name,
+                        role: getRoleForEmail(u.email),
                         createdAt: new Date().toISOString()
                     };
                 }
@@ -211,7 +199,7 @@ export const authResolvers = {
                     // Hapus OTP setelah berhasil digunakan
                     await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
 
-                    const token = createJwtToken({ id: res.insertId, email: cleanEmail, username: finalUsername });
+                    const token = createAccessToken({ id: res.insertId, email: cleanEmail, username: finalUsername });
                     logSecurityEvent({
                         eventType: 'USER_REGISTERED',
                         severity: 'INFO',
@@ -230,6 +218,7 @@ export const authResolvers = {
                             email: cleanEmail,
                             username: finalUsername,
                             name: finalUsername,
+                            role: getRoleForEmail(cleanEmail),
                             token,
                             createdAt: new Date().toISOString()
                         }
@@ -279,7 +268,7 @@ export const authResolvers = {
             });
             memOtp.delete(cleanEmail);
 
-            const token = createJwtToken({ id: 'mem-' + cleanEmail, email: cleanEmail, username: finalUsername });
+            const token = createAccessToken({ id: 'mem-' + cleanEmail, email: cleanEmail, username: finalUsername });
             return {
                 success: true,
                 message: `Pendaftaran akun @${finalUsername} berhasil!`,
@@ -289,6 +278,7 @@ export const authResolvers = {
                     email: cleanEmail,
                     username: finalUsername,
                     name: finalUsername,
+                    role: getRoleForEmail(cleanEmail),
                     token,
                     createdAt: new Date().toISOString()
                 }
@@ -337,7 +327,7 @@ export const authResolvers = {
                     }
 
                     const displayName = user.username || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0];
-                    const token = createJwtToken({ id: user.id, email: user.email, username: user.username });
+                    const token = createAccessToken({ id: user.id, email: user.email, username: user.username });
                     recordLoginSuccess(cleanIdentifier, clientIp, user.id);
 
                     return {
@@ -349,6 +339,7 @@ export const authResolvers = {
                             email: user.email,
                             username: user.username || user.email.split('@')[0],
                             name: displayName,
+                            role: getRoleForEmail(user.email),
                             token
                         }
                     };
@@ -383,7 +374,7 @@ export const authResolvers = {
                 return { success: false, message: 'Kata sandi salah!' };
             }
 
-            const token = createJwtToken({ id: 'mem-' + foundUser.email, email: foundUser.email, username: foundUser.username });
+            const token = createAccessToken({ id: 'mem-' + foundUser.email, email: foundUser.email, username: foundUser.username });
             recordLoginSuccess(cleanIdentifier, clientIp);
 
             return {
@@ -395,6 +386,7 @@ export const authResolvers = {
                     email: foundUser.email,
                     username: foundUser.username || foundUser.email.split('@')[0],
                     name: foundUser.username || foundUser.name,
+                    role: getRoleForEmail(foundUser.email),
                     token
                 }
             };

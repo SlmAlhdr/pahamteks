@@ -9,8 +9,11 @@ import { typeDefs } from './schema/typeDefs.js';
 import { resolvers } from './resolvers/index.js';
 import { getApiKeyPoolStatus } from './config/gemini.js';
 import { isDbConnected, getDbStatus } from './config/db.js';
+import { assertJwtSecretConfigured, authenticateRequest } from './utils/auth.js';
 
 dotenv.config();
+// Gagalkan startup jika secret JWT belum disiapkan; jangan pernah memakai nilai default.
+assertJwtSecretConfigured();
 
 const app = express();
 
@@ -31,7 +34,6 @@ const allowedOrigins = [
     'http://localhost:4000',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:3000',
-    'https://pahamteks.vercel.app',
     ...envAllowedOrigins
 ];
 
@@ -40,10 +42,9 @@ app.use(cors({
         // Izinkan request tanpa origin (seperti UptimeRobot, server-to-server health probe, mobile/curl)
         if (!origin) return callback(null, true);
 
-        // Izinkan jika ada di daftar, berakhiran .vercel.app, Cloudflare tunnel (*.trycloudflare.com), atau mode dev
-        const isVercelSubdomain = /\.vercel\.app$/.test(origin);
+        // Izinkan origin lokal, daftar env, Cloudflare tunnel, atau mode dev
         const isCloudflareTunnel = /\.trycloudflare\.com$/.test(origin);
-        if (allowedOrigins.includes(origin) || isVercelSubdomain || isCloudflareTunnel || process.env.NODE_ENV !== 'production') {
+        if (allowedOrigins.includes(origin) || isCloudflareTunnel || process.env.NODE_ENV !== 'production') {
             return callback(null, true);
         }
         return callback(new Error('Akses diblokir oleh kebijakan keamanan CORS PahamTeks.'));
@@ -84,14 +85,27 @@ await server.start();
 // Sediakan token dan IP client bagi resolver yang memerlukan konteks keamanan.
 app.use('/graphql', expressMiddleware(server, {
     context: async ({ req }) => {
-        const token = req.headers.authorization || '';
-        const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-        return { token, clientIp };
+        // Identitas hanya berasal dari Bearer token yang lolos verifikasi.
+        const user = authenticateRequest(req.headers.authorization);
+        const clientIp = req.ip || req.socket?.remoteAddress || 'unknown';
+        return { user, clientIp };
     }
 }));
 
-// Ringkas status database, API key, keamanan, dan memori untuk pemantauan.
+// Probe publik hanya mengungkap bahwa proses hidup; detail operasional hanya untuk admin.
+app.get('/healthz', (_req, res) => {
+    res.json({ status: 'OK' });
+});
+
 app.get('/health', (req, res) => {
+    const user = authenticateRequest(req.headers.authorization);
+    if (!user) {
+        return res.status(401).json({ error: 'Autentikasi diperlukan.' });
+    }
+    if (user.role !== 'ADMIN') {
+        return res.status(403).json({ error: 'Akses khusus administrator.' });
+    }
+
     const keyStatus = getApiKeyPoolStatus();
     const memory = process.memoryUsage();
     

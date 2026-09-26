@@ -3,7 +3,7 @@
 **Penulis/Inisiator**: Salim  
 **Status**: Aktif berjalan & dasar diskusi tim  
 **Target Produk**: Web App responsif (desktop & smartphone)  
-**Alamat Web**: [pahamteks.vercel.app](https://pahamteks.vercel.app)
+**Alamat Web**: Deployment publik sementara nonaktif; gunakan server lokal selama pengembangan.
 
 ---
 

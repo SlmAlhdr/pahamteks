@@ -57,8 +57,8 @@ Setiap kali kamu (atau AI asistenmu) selesai membuat fitur baru atau memperbaiki
    git push origin main
                │
                ▼
-5. Vercel Otomatis Deploy
-   Periksa https://pahamteks.vercel.app untuk verifikasi hasil live
+5. Deployment Publik Sementara Nonaktif
+   Jalankan backend dan frontend secara lokal. Jika perlu demo dari internet, nyalakan Cloudflare Tunnel hanya selama sesi demo.
 ```
 
 ### 🛑 Pantangan Keras (Zero Leak Policy):

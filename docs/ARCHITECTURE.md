@@ -120,7 +120,7 @@ Untuk mencegah kuota gratisan Google Gemini habis di tengah jalan saat banyak pe
 ## 6. Standar Keamanan Sistem
 
 - **Helmet**: Mengamankan header HTTP terhadap clickjacking, MIME sniffing, dan XSS.
-- **CORS Whitelist**: Membatasi akses API hanya untuk domain frontend yang sah (`localhost`, `127.0.0.1`, dan domain `*.vercel.app`).
+- **CORS Whitelist**: Membatasi akses API ke origin lokal, daftar `ALLOWED_ORIGINS`, dan Cloudflare Tunnel saat digunakan.
 - **Global Rate Limiter**: Maksimal 200 request per 15 menit per alamat IP untuk mencegah penyerangan DoS.
 - **Anti-Brute Force**: Jika terjadi kegagalan login berturut-turut hingga 5 kali pada email/username yang sama, akun/IP tersebut dibekukan selama 15 menit.
 - **Anti-Email Bombing**: Permintaan OTP registrasi dan reset kata sandi dibatasi maksimal 3 kali per 10 menit untuk menjaga kuota SMTP dan menghindari spam.
