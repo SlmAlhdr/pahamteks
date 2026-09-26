@@ -23,7 +23,9 @@ export const historyResolvers = {
                         userId: r.user_id ? String(r.user_id) : null,
                         action: r.action,
                         details: r.details,
-                        createdAt: r.created_at ? r.created_at.toISOString() : new Date().toISOString()
+                        createdAt: r.created_at
+                            ? new Date(r.created_at).toISOString()
+                            : new Date().toISOString()
                     }));
                 } catch (err) {
                     console.warn('[History Query Error]', err.message);

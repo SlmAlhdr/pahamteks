@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import {
   LOGIN_MUTATION,
+  ADMIN_LOGIN_MUTATION,
   REGISTER_MUTATION,
   SEND_OTP_MUTATION,
   REQUEST_PASSWORD_RESET_MUTATION,
@@ -19,6 +20,7 @@ export default function AuthModal({
   const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [username, setUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,6 +28,7 @@ export default function AuthModal({
   const [statusMsg, setStatusMsg] = useState({ text: '', isError: false });
 
   const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
+  const [adminLoginMutation, { loading: adminLoginLoading }] = useMutation(ADMIN_LOGIN_MUTATION);
   const [registerMutation, { loading: regLoading }] = useMutation(REGISTER_MUTATION);
   const [sendOtpMutation, { loading: otpLoading }] = useMutation(SEND_OTP_MUTATION);
   const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
@@ -134,6 +137,24 @@ export default function AuthModal({
     }
   };
 
+  // Login admin butuh akun pribadi yang sah dan password admin kedua.
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setStatusMsg({ text: '', isError: false });
+    try {
+      const res = await adminLoginMutation({ variables: { email, password, adminPassword } });
+      if (res.data?.adminLogin?.success && res.data.adminLogin.user?.role === 'ADMIN') {
+        onAuthSuccess(res.data.adminLogin.user);
+        setAdminPassword('');
+        onClose();
+      } else {
+        setStatusMsg({ text: res.data?.adminLogin?.message || 'Kredensial admin tidak valid.', isError: true });
+      }
+    } catch (err) {
+      setStatusMsg({ text: err.message, isError: true });
+    }
+  };
+
   // 5. Submit Register Akun dengan 1 Kotak Username
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -159,6 +180,7 @@ export default function AuthModal({
 
   const getModalTitle = () => {
     if (mode === 'login') return t('auth_login_title');
+    if (mode === 'admin') return 'Login Administrator';
     if (mode === 'register') return t('auth_reg_title');
     return t('auth_reset_title');
   };
@@ -256,6 +278,60 @@ export default function AuthModal({
                 {t('auth_btn_reg')}
               </span>
             </div>
+
+            <button
+              type="button"
+              className="admin-login-link"
+              onClick={() => {
+                setMode('admin');
+                setStatusMsg({ text: '', isError: false });
+              }}
+            >
+              Masuk khusus administrator
+            </button>
+          </form>
+        )}
+
+        {mode === 'admin' && (
+          <form onSubmit={handleAdminLogin} className="auth-form">
+            <p className="admin-login-hint">Gunakan email admin yang diizinkan, password akun Anda, dan password admin tambahan.</p>
+            <label className="admin-login-label" htmlFor="admin-email">Email admin</label>
+            <input
+              id="admin-email"
+              type="email"
+              className="auth-input"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label className="admin-login-label" htmlFor="admin-account-password">Password akun</label>
+            <input
+              id="admin-account-password"
+              type="password"
+              className="auth-input"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label className="admin-login-label" htmlFor="admin-shared-password">Password admin</label>
+            <input
+              id="admin-shared-password"
+              type="password"
+              className="auth-input"
+              autoComplete="current-password"
+              minLength={16}
+              required
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+            />
+            <button type="submit" className="btn-huge btn-green" disabled={adminLoginLoading}>
+              {adminLoginLoading ? 'Memverifikasi...' : 'Masuk ke Dashboard Admin'}
+            </button>
+            <button type="button" className="admin-login-link" onClick={() => setMode('login')}>
+              Kembali ke login pengguna
+            </button>
           </form>
         )}
 

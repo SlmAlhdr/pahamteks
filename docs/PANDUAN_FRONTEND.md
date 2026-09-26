@@ -162,6 +162,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 | **Layar beranda (Home Hero banner penyambut)** | [`client/src/components/HomeHero.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/HomeHero.jsx) |
 | **Portal pemilihan jalur awal belajar (Bahasa vs Koding)** | [`client/src/components/WelcomePortal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/WelcomePortal.jsx) |
 | **Dasbor akun pemelajar (riwayat kuis pribadi & statistik)** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) |
+| **Dashboard visual dan log audit khusus admin** | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
 | **Layar tantangan harian koding & kuis cepat** | [`client/src/components/ChallengeView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/ChallengeView.jsx) |
 | **Layar wawasan linguistik dan perbandingan bahasa** | [`client/src/components/LanguageInsights.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LanguageInsights.jsx) |
 | **Pusat materi belajar terpadu** | [`client/src/components/LearningHub.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LearningHub.jsx) |
@@ -175,6 +176,10 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 | **Logika validasi jawaban kuis & opsi huruf A-D** | [`client/src/utils/quizUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/quizUtils.js) |
 | **Logika pemutar suara pelafalan kata Web Speech API** | [`client/src/utils/speechUtils.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/utils/speechUtils.js) |
 | **Daftar pustaka dependencies client** | [`client/package.json`](file:///c:/Salim/Kerjaan/pahamteks/client/package.json) |
+
+### Dashboard administrator
+
+Admin membuka login aplikasi, memilih **Masuk khusus administrator**, lalu memasukkan email yang terdaftar pada `ADMIN_EMAILS`, password akun pribadi, dan password admin tambahan. Mutasi `adminLogin` meminta backend memverifikasi ketiganya sebelum mengeluarkan token dengan sesi admin. Komponen dashboard menjalankan kueri status server dan log; backend tetap menolak request jika token bukan sesi admin yang valid. Jangan menyimpan `ADMIN_PASSWORD` di kode atau environment variable frontend.
 
 ---
 
@@ -296,4 +301,4 @@ npm --prefix client run dev
 # Memeriksa dan memvalidasi hasil build produksi
 npm --prefix client run build
 ```
-Buka browser di alamat: `http://localhost:3000`. Setiap kali file disimpan, Vite HMR akan memperbarui tampilan browser secara instan tanpa perlu reload!
+Buka browser di alamat: `http://127.0.0.1:3000`. Server dev terikat ke loopback dan tidak menerima koneksi dari perangkat lain di jaringan.

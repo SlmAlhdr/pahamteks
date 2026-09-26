@@ -55,10 +55,10 @@ export const GET_USER_LOGS = gql`
   query GetUserLogs($limit: Int) {
     userLogs(limit: $limit) {
       id
+      userId
       action
       details
       createdAt
     }
   }
 `;
-

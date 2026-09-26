@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { GraphQLError } from 'graphql';
+import { createHash, timingSafeEqual } from 'node:crypto';
 
 const JWT_ISSUER = 'pahamteks-api';
 const JWT_AUDIENCE = 'pahamteks-client';
@@ -17,25 +18,46 @@ export function assertJwtSecretConfigured() {
     getJwtSecret();
 }
 
-export function getRoleForEmail(email) {
-    // Role admin selalu dihitung dari allowlist server, bukan klaim role dari browser.
+export function isAdminEmail(email) {
+    // Allowlist menetapkan siapa yang boleh mencoba admin; sesi harus membuktikan password tambahan.
     const normalizedEmail = String(email || '').trim().toLowerCase();
     const adminEmails = (process.env.ADMIN_EMAILS || '')
         .split(',')
         .map(value => value.trim().toLowerCase())
         .filter(Boolean);
 
-    return adminEmails.includes(normalizedEmail) ? 'ADMIN' : 'USER';
+    return adminEmails.includes(normalizedEmail);
 }
 
-export function createAccessToken(user) {
+export function verifyAdminPassword(candidate) {
+    const expected = process.env.ADMIN_PASSWORD || '';
+    if (typeof candidate !== 'string' || expected.trim().length < 16) return false;
+
+    const candidateBytes = Buffer.from(candidate, 'utf8');
+    const expectedBytes = Buffer.from(expected, 'utf8');
+    return candidateBytes.length === expectedBytes.length && timingSafeEqual(candidateBytes, expectedBytes);
+}
+
+function getAdminPasswordFingerprint() {
+    // Perubahan password admin otomatis menonaktifkan token admin yang diterbitkan sebelumnya.
+    const password = process.env.ADMIN_PASSWORD || '';
+    if (password.trim().length < 16) return '';
+    return createHash('sha256').update(password, 'utf8').digest('hex');
+}
+
+export function createAccessToken(user, { adminSession = false } = {}) {
     const email = String(user.email || '').trim().toLowerCase();
     const id = String(user.id || '');
     if (!email || !id) throw new Error('Cannot issue a session token without a user ID and email.');
 
-    // Token membawa identitas akun; role sengaja tidak disimpan agar perubahan allowlist langsung berlaku.
+    // Klaim admin hanya dapat dibuat setelah adminLogin memverifikasi kedua password.
     return jwt.sign(
-        { email, username: user.username || null },
+        {
+            email,
+            username: user.username || null,
+            adminSession: Boolean(adminSession),
+            ...(adminSession ? { adminPasswordFingerprint: getAdminPasswordFingerprint() } : {})
+        },
         getJwtSecret(),
         {
             algorithm: 'HS256',
@@ -64,11 +86,19 @@ export function authenticateRequest(authorizationHeader) {
         if (typeof payload !== 'object' || !payload.sub || !payload.email) return null;
 
         const email = String(payload.email).trim().toLowerCase();
+        // Role admin perlu klaim sesi khusus dan email yang masih ada di allowlist.
+        const currentAdminPasswordFingerprint = getAdminPasswordFingerprint();
+        const isAdminSession = Boolean(
+            payload.adminSession === true &&
+            currentAdminPasswordFingerprint &&
+            payload.adminPasswordFingerprint === currentAdminPasswordFingerprint &&
+            isAdminEmail(email)
+        );
         return {
             id: String(payload.sub),
             email,
             username: typeof payload.username === 'string' ? payload.username : null,
-            role: getRoleForEmail(email)
+            role: isAdminSession ? 'ADMIN' : 'USER'
         };
     } catch {
         // Token kedaluwarsa, rusak, atau ditandatangani secret lain tidak membuat request dipercaya.

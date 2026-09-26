@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { getDb, isDbConnected } from '../config/db.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/emailService.js';
-import { createAccessToken, getRoleForEmail, requireAuthenticatedUser } from '../utils/auth.js';
+import { createAccessToken, isAdminEmail, requireAuthenticatedUser, verifyAdminPassword } from '../utils/auth.js';
 import {
     checkLoginBruteForce,
     recordLoginFailure,
@@ -44,7 +44,7 @@ export const authResolvers = {
                             email: u.email,
                             username: u.username || u.email.split('@')[0],
                             name: displayName,
-                            role: getRoleForEmail(u.email),
+                            role: currentUser.role,
                             createdAt: u.created_at ? new Date(u.created_at).toISOString() : null
                         };
                     }
@@ -61,7 +61,7 @@ export const authResolvers = {
                         email: u.email,
                         username: u.username || u.email.split('@')[0],
                         name: u.username || u.name,
-                        role: getRoleForEmail(u.email),
+                        role: currentUser.role,
                         createdAt: new Date().toISOString()
                     };
                 }
@@ -218,7 +218,7 @@ export const authResolvers = {
                             email: cleanEmail,
                             username: finalUsername,
                             name: finalUsername,
-                            role: getRoleForEmail(cleanEmail),
+                            role: 'USER',
                             token,
                             createdAt: new Date().toISOString()
                         }
@@ -278,14 +278,87 @@ export const authResolvers = {
                     email: cleanEmail,
                     username: finalUsername,
                     name: finalUsername,
-                    role: getRoleForEmail(cleanEmail),
+                    role: 'USER',
                     token,
                     createdAt: new Date().toISOString()
                 }
             };
         },
 
-        // Validasi kredensial dan proteksi brute-force sebelum membuat sesi.
+        // Admin perlu akun terdaftar, email allowlist, password akun, dan secret admin kedua.
+        adminLogin: async (_, { email, password, adminPassword }, context) => {
+            if (!email || !password || !adminPassword) {
+                return { success: false, message: 'Email dan kedua kata sandi wajib diisi.' };
+            }
+
+            const cleanEmail = email.trim().toLowerCase();
+            const clientIp = context?.clientIp || 'unknown';
+            const bruteCheck = checkLoginBruteForce(cleanEmail, clientIp);
+            if (bruteCheck.isBlocked) {
+                return { success: false, message: bruteCheck.message };
+            }
+
+            // Balasan gagal seragam tidak mengungkap apakah email terdaftar sebagai admin.
+            if (!isAdminEmail(cleanEmail)) {
+                recordLoginFailure(cleanEmail, clientIp);
+                return { success: false, message: 'Kredensial admin tidak valid.' };
+            }
+
+            let account = null;
+            try {
+                // Adapter getDb memilih MySQL atau SQLite fallback tanpa mempercayai input klien.
+                const db = getDb();
+                const [rows] = await db.execute(
+                    'SELECT id, email, username, password, first_name, last_name FROM users WHERE email = ?',
+                    [cleanEmail]
+                );
+                account = rows[0] || null;
+            } catch (err) {
+                console.warn('[Admin Login DB Error]', err.message);
+            }
+            account ||= memUsers.get(cleanEmail) || null;
+
+            let accountPasswordValid = false;
+            if (account?.password?.startsWith('$2a$') || account?.password?.startsWith('$2b$')) {
+                accountPasswordValid = await bcrypt.compare(password, account.password);
+            }
+
+            const adminPasswordValid = verifyAdminPassword(adminPassword);
+            if (!account || !accountPasswordValid || !adminPasswordValid) {
+                recordLoginFailure(cleanEmail, clientIp);
+                logSecurityEvent({
+                    eventType: 'ADMIN_LOGIN_FAILED',
+                    severity: 'WARNING',
+                    identifier: cleanEmail,
+                    ip: clientIp,
+                    details: 'Percobaan login admin gagal.'
+                });
+                return { success: false, message: 'Kredensial admin tidak valid.' };
+            }
+
+            const displayName = account.username || `${account.first_name || ''} ${account.last_name || ''}`.trim() || cleanEmail.split('@')[0];
+            const token = createAccessToken(
+                { id: account.id || `mem-${cleanEmail}`, email: cleanEmail, username: account.username },
+                { adminSession: true }
+            );
+            recordLoginSuccess(cleanEmail, clientIp, account.id);
+
+            return {
+                success: true,
+                message: 'Login admin berhasil.',
+                token,
+                user: {
+                    id: String(account.id || `mem-${cleanEmail}`),
+                    email: cleanEmail,
+                    username: account.username || cleanEmail.split('@')[0],
+                    name: displayName,
+                    role: 'ADMIN',
+                    token
+                }
+            };
+        },
+
+        // Validasi kredensial dan proteksi brute-force sebelum membuat sesi pengguna.
         login: async (_, { email, password }, context) => {
             if (!email || !password) {
                 return { success: false, message: 'Email/Username dan kata sandi wajib diisi!' };
@@ -339,7 +412,7 @@ export const authResolvers = {
                             email: user.email,
                             username: user.username || user.email.split('@')[0],
                             name: displayName,
-                            role: getRoleForEmail(user.email),
+                            role: 'USER',
                             token
                         }
                     };
@@ -386,7 +459,7 @@ export const authResolvers = {
                     email: foundUser.email,
                     username: foundUser.username || foundUser.email.split('@')[0],
                     name: foundUser.username || foundUser.name,
-                    role: getRoleForEmail(foundUser.email),
+                    role: 'USER',
                     token
                 }
             };

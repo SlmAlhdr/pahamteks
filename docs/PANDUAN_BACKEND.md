@@ -35,12 +35,12 @@ Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama*
 Mari kita bedah masing-masing komponen di atas:
 
 ### 1. HTTP Web Server (Express.js)
-Pintu gerbang yang menerima koneksi browser di `http://localhost:4000`. Express menyediakan probe publik minimal `GET /healthz` dan detail health khusus admin di `GET /health`.
+Pintu gerbang yang menerima koneksi lokal di `http://127.0.0.1:4000`. Express menyediakan probe minimal `GET /healthz` dan detail health khusus admin di `GET /health`.
 
 ### 2. Perisai Keamanan (Security Middleware)
 Sebelum request diizinkan masuk ke logika aplikasi, Express menyaringnya melalui 4 lapis pertahanan:
 * **Helmet**: Mengamankan header HTTP terhadap serangan XSS dan sniffing.
-* **CORS Whitelist**: Memastikan hanya alamat frontend resmi (misal `http://localhost:3000`) yang boleh mengakses API.
+* **CORS Whitelist**: Mengatur origin browser yang boleh mengakses API; frontend lokal berjalan di `http://127.0.0.1:3000`.
 * **Rate Limiter**: Membatasi maksimal 200 request per 15 menit per alamat IP agar server tidak tumbang diserang spam/DDoS.
 * **Brute-Force Guard (`securityLogger.js`)**: Memblokir sementara IP yang berkali-kali salah memasukkan password atau salah menebak kode OTP.
 
@@ -279,7 +279,7 @@ export const statusResolvers = {
 ```
 
 ### 3. Uji Coba di Browser
-Buka `http://localhost:4000/graphql` dan jalankan:
+Buka `http://127.0.0.1:4000/graphql` dan jalankan:
 ```graphql
 query {
     appStatus {
@@ -300,7 +300,7 @@ Bagi pengembang atau administrator yang ingin mengawasi kesehatan server, melaca
 
 | Kebutuhan Admin | Berkas yang Bertanggung Jawab | Cara Mengakses |
 | :--- | :--- | :--- |
-| **Probe server publik minimal** | `server/src/app.js` | `GET http://localhost:4000/healthz` (hanya status proses) |
+| **Probe server minimal** | `server/src/app.js` | `GET http://127.0.0.1:4000/healthz` (hanya status proses) |
 | **Status server terperinci** | `server/src/schema/typeDefs.js` & `server/src/resolvers/index.js` | Query GraphQL `serverStatus`, hanya untuk token admin |
 | **Audit trail aktivitas pengguna** | `server/src/resolvers/historyResolvers.js` | Query GraphQL `userLogs(limit: Int)`, hanya untuk token admin |
 | **Log Keamanan & Brute-Force Guard** | `server/src/utils/securityLogger.js` | Tabel `security_events` & pencatatan log otomatis |
@@ -314,7 +314,7 @@ Bagi pengembang atau administrator yang ingin mengawasi kesehatan server, melaca
 Endpoint publik ini hanya memberi sinyal hidup/mati agar detail database, memori, dan Gemini tidak terbuka:
 
 ```powershell
-curl http://localhost:4000/healthz
+curl http://127.0.0.1:4000/healthz
 ```
 
 Detail `GET /health` memerlukan header `Authorization: Bearer <token-admin>`.
@@ -330,7 +330,7 @@ Detail `GET /health` memerlukan header `Authorization: Bearer <token-admin>`.
 
 ### 3. Kueri Khusus Administrator di GraphQL Playground
 
-Buka GraphQL client di `http://localhost:4000/graphql`, masuk dengan token akun yang emailnya ada di `ADMIN_EMAILS`, lalu admin dapat mengeksekusi kueri berikut:
+Buka GraphQL client di `http://127.0.0.1:4000/graphql`, masuk dengan token sesi admin, lalu jalankan kueri berikut:
 
 #### A. Memeriksa Jumlah Kunci AI & Status Database:
 ```graphql
@@ -361,17 +361,27 @@ query AdminAuditLogs {
 
 ### 4. Panel Admin (Role-Based Access)
 
-Backend menentukan role dari daftar email `ADMIN_EMAILS` di `server/.env`. Token sesi diverifikasi server; role dari payload klien tidak dipercaya. Biarkan daftar kosong sampai alamat admin ditetapkan. `serverStatus`, `userLogs`, dan detail `GET /health` ditolak untuk pengguna biasa.
-Saat ini backend melindungi resolver admin dan detail health dengan JWT terverifikasi serta daftar email `ADMIN_EMAILS`. Panel visual frontend belum terhubung; jangan mengandalkan UI sebagai kontrol akses.
+Email di `ADMIN_EMAILS` hanya menentukan akun yang diizinkan mencoba login admin. Backend memberi role admin setelah password akun dan `ADMIN_PASSWORD` juga benar serta menerbitkan token sesi admin bertanda tangan. Role yang dikirim browser tidak dipercaya. `serverStatus`, `userLogs`, dan detail `GET /health` ditolak tanpa token admin yang sah.
 
-Untuk mengaktifkan admin, isi `ADMIN_EMAILS` sendiri dengan email yang dipakai akun PahamTeks, misalnya `ADMIN_EMAILS=nama@contoh.com`. Beberapa admin dapat dipisahkan koma. Email harus sama dengan email akun terverifikasi; setelah diatur, keluar lalu masuk kembali agar sesi baru digunakan. Jangan pernah menaruh daftar ini di kode frontend. `JWT_SECRET` wajib berupa nilai acak minimal 32 karakter dan server berhenti saat nilainya kosong atau terlalu pendek. Mengganti secret akan membatalkan semua token lama.
+Untuk mengaktifkan admin:
 
-Setiap resolver root memiliki kebijakan akses eksplisit di `server/src/resolvers/index.js`. `me` memerlukan sesi, `logActivity` mengambil pemilik log dari identitas token, sedangkan `userLogs`, `serverStatus`, dan detail `/health` memerlukan role admin. Operasi belajar serta login/registrasi tetap publik untuk mendukung pengguna tamu. Log aktivitas tidak dapat dibaca oleh akun biasa.
+1. Daftarkan akun PahamTeks biasa dan verifikasi emailnya.
+2. Isi `ADMIN_EMAILS` dengan email akun tersebut. Beberapa alamat dapat dipisahkan koma.
+3. Isi `ADMIN_PASSWORD` dengan password admin tambahan acak minimal 16 karakter. Semua email di allowlist memakai password admin tambahan yang sama; tiap admin tetap memasukkan password akun masing-masing.
+4. Isi `JWT_SECRET` dengan secret acak minimal 32 karakter. Server menolak secret kosong/pendek; menggantinya membatalkan semua sesi lama.
+5. Restart backend setelah mengubah `.env`.
+
+Login admin memeriksa password akun, email allowlist, dan `ADMIN_PASSWORD` di backend. Login biasa tidak memberikan role admin meski emailnya ada di allowlist. Backend hanya membuat klaim sesi admin setelah ketiga pemeriksaan berhasil, dan menurunkan hak akses jika email tidak lagi ada di allowlist.
+Fingerprint secret admin juga diperiksa pada setiap request; mengganti `ADMIN_PASSWORD` langsung membatalkan sesi admin yang lama.
+
+Buka aplikasi di `http://127.0.0.1:3000`, masuk ke login, lalu pilih **Masuk khusus administrator**. Isi email, password akun, serta password admin. Setelah berhasil, menu **Admin** membuka dashboard visual. Dashboard menampilkan status GraphQL, koneksi database, jumlah kunci Gemini, serta maksimal 100 log terbaru. Semua query tetap diperiksa server; menyembunyikan menu di frontend bukan kontrol akses.
+
+Setiap resolver root memiliki kebijakan akses eksplisit di `server/src/resolvers/index.js`. `me` memerlukan sesi, `logActivity` mengambil pemilik log dari identitas token, sedangkan `userLogs`, `serverStatus`, dan detail `/health` memerlukan sesi admin. Operasi belajar serta autentikasi tetap publik untuk mendukung pengguna tamu. Log aktivitas tidak dapat dibaca oleh akun biasa.
 
 Contoh memeriksa health detail setelah memperoleh token admin melalui login:
 
 ```powershell
-curl.exe -H "Authorization: Bearer <token-admin>" http://localhost:4000/health
+curl.exe -H "Authorization: Bearer <token-admin>" http://127.0.0.1:4000/health
 ```
 
 Jangan menempelkan token nyata ke dokumentasi, tiket, atau commit.
@@ -385,7 +395,7 @@ Jangan menempelkan token nyata ke dokumentasi, tiket, atau commit.
 npm --prefix server run dev
 
 # Memeriksa probe publik minimal
-curl http://localhost:4000/healthz
+curl http://127.0.0.1:4000/healthz
 
 # Mengekspor isi database ke file backup SQL
 node server/src/db/exportSqlBackup.js

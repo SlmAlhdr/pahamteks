@@ -5,6 +5,7 @@ import WelcomePortal from './components/WelcomePortal';
 import LearningHub from './components/LearningHub';
 import CombinedDictTranslator from './components/CombinedDictTranslator';
 import DashboardView from './components/DashboardView';
+import AdminDashboardView from './components/AdminDashboardView';
 import KamusFloating from './components/KamusFloating';
 import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
@@ -101,6 +102,9 @@ export default function App() {
   // Masuk/Daftar dengan Akun Permanen
   const handleAuthSuccess = (userData) => {
     const fullUser = { ...userData, isGuest: false };
+    apolloClient.clearStore().catch((err) => {
+      console.warn('[AppAuth] Failed to clear cached GraphQL data after login:', err.message);
+    });
     setUser(fullUser);
     localStorage.setItem('pahamteks_user', JSON.stringify(fullUser));
     sessionStorage.removeItem('pahamteks_guest_user');
@@ -115,7 +119,7 @@ export default function App() {
         setQuizHistory([]);
       }
     }
-    setActiveTab('home');
+    setActiveTab(fullUser.role === 'ADMIN' ? 'admin' : 'home');
   };
 
   // Bersihkan sesi dan data sementara sebelum kembali ke beranda.
@@ -223,6 +227,9 @@ export default function App() {
           />
         ) : (
           <>
+            {activeTab === 'admin' && (
+              <AdminDashboardView user={user} onBackHome={() => setActiveTab('home')} />
+            )}
             {activeTab === 'home' && (
               <HomeHero onNavigate={setActiveTab} t={t} currentLang={currentLang} />
             )}

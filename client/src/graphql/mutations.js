@@ -104,6 +104,24 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
+// Login admin menggabungkan password akun masing-masing dan password admin server.
+export const ADMIN_LOGIN_MUTATION = gql`
+  mutation AdminLogin($email: String!, $password: String!, $adminPassword: String!) {
+    adminLogin(email: $email, password: $password, adminPassword: $adminPassword) {
+      success
+      message
+      user {
+        id
+        email
+        username
+        name
+        role
+        token
+      }
+    }
+  }
+`;
+
 export const REQUEST_PASSWORD_RESET_MUTATION = gql`
   mutation RequestPasswordReset($email: String!) {
     requestPasswordReset(email: $email) {

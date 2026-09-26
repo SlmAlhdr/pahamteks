@@ -24,6 +24,7 @@ const accessPolicies = {
         sendOtp: 'public',
         register: 'public',
         login: 'public',
+        adminLogin: 'public',
         requestPasswordReset: 'public',
         resetPassword: 'public',
         logActivity: 'authenticated'

@@ -5,11 +5,13 @@ import { getApiKeyPoolStatus } from './config/gemini.js';
 
 // Jalankan Express pada port environment atau port lokal default.
 const PORT = process.env.PORT || 4000;
+// Default development listener hanya menerima koneksi dari komputer ini.
+const HOST = process.env.HOST || '127.0.0.1';
 const httpServer = http.createServer(app);
 
-httpServer.listen(PORT, async () => {
+httpServer.listen(PORT, HOST, async () => {
     console.log(`\n======================================================`);
-    console.log(`🚀 [PahamTeks Backend] Berjalan di port ${PORT}`);
+    console.log(`🚀 [PahamTeks Backend] Berjalan di http://${HOST}:${PORT}`);
     console.log(`📡 [GraphQL Endpoint]: http://localhost:${PORT}/graphql`);
     console.log(`🏥 [Public Health]:    http://localhost:${PORT}/healthz`);
     console.log(`🔒 [Admin Health]:     http://localhost:${PORT}/health`);

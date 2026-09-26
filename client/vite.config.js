@@ -5,14 +5,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    host: true,
-    allowedHosts: true,
+    // Jangan paparkan development server ke perangkat lain di jaringan lokal.
+    host: '127.0.0.1',
     proxy: {
       '/graphql': {
-        target: 'http://localhost:4000',
+        target: 'http://127.0.0.1:4000',
         changeOrigin: true
       }
     }
   }
 });
-

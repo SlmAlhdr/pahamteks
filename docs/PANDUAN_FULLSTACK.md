@@ -35,8 +35,9 @@ Arsitektur fullstack kita disatukan oleh **6 jembatan penghubung utama**:
 Mari kita telaah masing-masing jembatan di atas:
 
 ### 1. Jembatan Protokol Jaringan (Network & Ports)
-* **Frontend** berjalan di browser pengguna melalui web server Vite di port `http://localhost:3000`.
-* **Backend** berjalan di mesin Node.js Express di port `http://localhost:4000`.
+* **Frontend** berjalan di browser pengguna melalui Vite pada `http://127.0.0.1:3000`.
+* **Backend** berjalan di Node.js Express pada `http://127.0.0.1:4000`.
+* Keduanya terikat ke loopback secara default sehingga hanya dapat diakses dari komputer yang menjalankannya.
 * Kedua dunia ini berkomunikasi lewat HTTP POST ke `/graphql`; probe publik minimal tersedia di `/healthz` dan detail `/health` memerlukan token admin.
 * Express memiliki middleware `cors()` yang memastikan browser tidak memblokir komunikasi antar port yang berbeda ini.
 
@@ -54,7 +55,7 @@ Aplikasi kita sangat cepat karena menerapkan strategi caching di dua sisi:
 * **Sisi Server (RAM Cache & Database Cache)**: Hasil komputasi AI Gemini disimpan di memori server agar respon dapat dikembalikan dalam waktu **`0.04 ms`**.
 
 ### 5. Pengaturan Lingkungan Terpusat (`.env`)
-Seluruh kunci rahasia disimpan di file `server/.env` dan dilindungi secara ketat oleh *Zero Leak Policy* agar tidak pernah bocor ke internet.
+Nilai rahasia disimpan di `server/.env`, yang tidak boleh di-commit. Repositori privat membatasi akses sesuai izin GitHub, tetapi bukan brankas rahasia: tetap jangan simpan kredensial di Git, dokumentasi, atau kode frontend.
 
 ### 6. Standar Kualitas & Otomatisasi Git
 Setiap perubahan kode wajib lolos verifikasi build frontend (`npm --prefix client run build`) dan dipush ke GitHub secara otomatis.
@@ -72,7 +73,7 @@ Berikut alur lengkap yang terjadi di balik layar saat seorang pemelajar menyeles
 [2. Frontend Calc]    React menghitung total jawaban benar menggunakan quizUtils.js (isOptionCorrect).
         │
         ▼
-[3. Apollo Dispatch]  Apollo Client mengirim HTTP POST ke http://localhost:4000/graphql membawa
+[3. Apollo Dispatch]  Apollo Client mengirim HTTP POST ke http://127.0.0.1:4000/graphql membawa
         │             mutasi SAVE_QUIZ_SCORE dan header Authorization: Bearer <token_jwt>.
         │
         ▼
@@ -121,7 +122,7 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Frontend** | Konfigurasi port (3000) & proxy GraphQL | [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) |
 | **Frontend** | Inisialisasi Apollo Client & header token | [`client/src/main.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/main.jsx) |
 | **Frontend** | Navigasi tab utama & state login | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) |
-| **Frontend** | Panel admin visual belum terhubung di working tree saat ini | `client/src/components/AdminDashboardView.jsx` |
+| **Frontend** | Dashboard visual khusus administrator | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
 | **Frontend** | Seluruh styling CSS, warna :root, & animasi | [`client/src/styles/index.css`](file:///c:/Salim/Kerjaan/pahamteks/client/src/styles/index.css) |
 | **Frontend** | Kueri GraphQL client (`GET_QUIZ`, dll) | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) |
 | **Frontend** | Mutasi GraphQL client (`LOGIN`, `REGISTER`) | [`client/src/graphql/mutations.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/mutations.js) |
@@ -142,8 +143,8 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Backend** | Proteksi brute-force & audit keamanan | [`server/src/utils/securityLogger.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/securityLogger.js) |
 | **Backend** | Skrip ekspor database ke file `.sql` | [`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js) |
 | **Backend** | Variabel rahasia lokal (.env) | `server/.env` (panduan di `server/.env.example`) |
-| **Admin** | Detail status server REST | `GET http://localhost:4000/health` dengan token admin |
-| **Monitoring** | Probe server publik minimal | `GET http://localhost:4000/healthz` |
+| **Admin** | Detail status server REST | `GET http://127.0.0.1:4000/health` dengan token admin |
+| **Monitoring** | Probe server minimal | `GET http://127.0.0.1:4000/healthz` |
 | **Admin** | Kueri audit aktivitas pengguna GraphQL | `serverStatus` & `userLogs` di `POST /graphql` |
 | **Admin** | Akses data audit/status di GraphQL | Token admin pada query `serverStatus` dan `userLogs` |
 
@@ -253,20 +254,22 @@ Salin berkas `.env.example` menjadi `server/.env`:
 | Nama Variabel | Wajib? | Penjelasan & Contoh Nilai |
 | :--- | :--- | :--- |
 | `PORT` | Ya | Port server Express & GraphQL (Default: `4000`) |
-| `CORS_ORIGIN` | Ya | Alamat frontend yang diizinkan (`http://localhost:3000`) |
+| `HOST` | Ya | Alamat bind backend (default `127.0.0.1`, hanya komputer lokal) |
+| `ALLOWED_ORIGINS` | Opsional | Daftar origin frontend tambahan dipisahkan koma; localhost sudah diizinkan secara default |
 | `JWT_SECRET` | Ya | Secret acak minimal 32 karakter; server menolak nilai kosong/pendek dan penggantian secret membatalkan sesi lama |
 | `ADMIN_EMAILS` | Tidak | Email akun terverifikasi yang diberi role admin, dipisahkan koma; kosong berarti belum ada admin |
-| `GEMINI_API_KEY_1` | Ya | Kunci API utama Google Gemini AI (`AIzaSy...`) |
-| `GEMINI_API_KEY_2` | Opsional | Kunci API cadangan ke-2 untuk rotasi kuota otomatis |
-| `GEMINI_API_KEY_3` | Opsional | Kunci API cadangan ke-3 untuk rotasi kuota otomatis |
-| `MYSQL_HOST` | Ya | Host server MySQL (Default: `localhost`) |
-| `MYSQL_PORT` | Ya | Port database MySQL (Default: `3306`) |
-| `MYSQL_USER` | Ya | Akun pengguna MySQL (Default: `root`) |
-| `MYSQL_PASSWORD` | Ya | Password MySQL (Bisa dikosongkan `""` jika XAMPP lokal) |
-| `MYSQL_DATABASE` | Ya | Nama skema database (Default: `pahamteks`) |
-| `SMTP_HOST` | Ya | Server pengirim email verifikasi OTP (`smtp.gmail.com`) |
-| `SMTP_USER` | Ya | Alamat email pengirim (`noreply.pahamteks@gmail.com`) |
-| `SMTP_PASS` | Ya | 16-karakter App Password Google Mail |
+| `ADMIN_PASSWORD` | Saat admin diaktifkan | Password tambahan bersama, minimal 16 karakter acak; tim admin tetap login dengan password akun masing-masing |
+| `DB_HOST` | Opsional | Host MySQL (default `localhost`); SQLite lokal dipakai sebagai failover |
+| `DB_PORT` | Opsional | Port MySQL (default `3306`) |
+| `DB_USER` | Opsional | Pengguna MySQL (default `root`) |
+| `DB_PASSWORD` | Opsional | Password pengguna MySQL |
+| `DB_NAME` | Opsional | Nama database (default `pahamteks_db`) |
+| `GEMINI_API_KEY_1` | Untuk fitur AI | Kunci Gemini pertama; isi `_2` sampai `_9` untuk rotasi atau `GEMINI_API_KEY` untuk satu kunci |
+| `EMAIL_USER` | Untuk email OTP | Alamat email pengirim |
+| `EMAIL_PASS` | Untuk email OTP | Gmail App Password atau password SMTP khusus aplikasi |
+| `APOLLO_KEY` | Opsional | Token Rover untuk publish schema; tidak dipakai backend dan jangan commit |
+
+Buat secret acak melalui terminal dengan `node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"`, lalu salin nilainya langsung ke `JWT_SECRET` atau `ADMIN_PASSWORD` pada `server/.env`. Perintah ini menghasilkan nilai 32 karakter. Jangan menaruh nilai yang dihasilkan di `.env.example`.
 
 > [!CAUTION]
 > **Zero Leak Policy**: Berkas `server/.env` dan database `server/data/*.sqlite` **TIDAK BOLEH PERNAH DI-PUSH** ke GitHub!
@@ -277,11 +280,11 @@ Salin berkas `.env.example` menjadi `server/.env`:
 
 ### 1. `Network error: Failed to fetch` di Console Browser
 * **Penyebab**: Server backend di port 4000 belum menyala atau mati mendadak.
-* **Solusi**: Buka terminal backend dan jalankan `npm --prefix server run dev`. Pastikan muncul tulisan `🚀 Apollo Server siap di http://localhost:4000/graphql`.
+* **Solusi**: Buka terminal backend dan jalankan `npm --prefix server run dev`. Pastikan listener `http://127.0.0.1:4000` aktif.
 
 ### 2. `CORS policy: No 'Access-Control-Allow-Origin' header is present`
-* **Penyebab**: Alamat URL frontend yang kamu buka di browser tidak cocok dengan nilai `CORS_ORIGIN` di berkas `server/.env`.
-* **Solusi**: Pastikan frontend berjalan di port 3000 atau samakan nilai `CORS_ORIGIN=http://localhost:3000`.
+* **Penyebab**: Origin browser berbeda dari origin lokal yang diizinkan server.
+* **Solusi**: Pastikan frontend berjalan di `http://127.0.0.1:3000`. Tambahkan origin ekstra ke `ALLOWED_ORIGINS` hanya jika memang diperlukan.
 
 ### 3. Log Muncul: `🛡️ [SQL FALLBACK] Database Cadangan SQL (SQLite) siap`
 * **Penyebab**: Backend mencoba menghubungi MySQL di port 3306 tetapi tidak merespon (XAMPP mati atau belum dipasang).
@@ -314,14 +317,23 @@ npm --prefix client run dev
 ```
 
 Kunjungi alamat:
-* **Aplikasi Web**: `http://localhost:3000`
-* **GraphQL Interactive Playground**: `http://localhost:4000/graphql`
-* **Probe publik minimal**: `http://localhost:4000/healthz`
-* **Health detail admin**: `http://localhost:4000/health` dengan `Authorization: Bearer <token-admin>`
+* **Aplikasi Web**: `http://127.0.0.1:3000`
+* **GraphQL Interactive Playground**: `http://127.0.0.1:4000/graphql`
+* **Probe publik minimal**: `http://127.0.0.1:4000/healthz`
+* **Health detail admin**: `http://127.0.0.1:4000/health` dengan `Authorization: Bearer <token-admin>`
 
-### Menyiapkan akun admin
+### Menyiapkan dan membuka dashboard admin
 
-Isi `ADMIN_EMAILS` di `server/.env` dengan email akun PahamTeks yang sudah terverifikasi, misalnya `ADMIN_EMAILS=nama@contoh.com`. Beberapa alamat dapat dipisahkan koma. Role selalu dihitung backend dari daftar ini; frontend tidak dapat menetapkan role. Login ulang setelah konfigurasi agar token sesi baru dipakai. Query `serverStatus`, `userLogs`, dan endpoint detail `/health` memerlukan token admin. Query `me` serta mutasi `logActivity` memerlukan token pengguna, dan identitas pemilik log diambil dari token, bukan dari `userId` kiriman klien. Operasi belajar dan autentikasi tetap tersedia untuk tamu.
+1. Daftarkan akun pengguna dan verifikasi emailnya.
+2. Masukkan email akun ke `ADMIN_EMAILS` di `server/.env`; beberapa email dipisahkan koma.
+3. Buat `ADMIN_PASSWORD` acak minimal 16 karakter. Ini adalah password tambahan bersama, di samping password akun masing-masing admin.
+4. Pastikan `JWT_SECRET` berisi secret acak minimal 32 karakter, lalu restart backend.
+5. Buka `http://127.0.0.1:3000`, pilih login, lalu **Masuk khusus administrator**. Masukkan email, password akun, dan password admin.
+6. Setelah login sukses, menu **Admin** membuka dashboard status server dan audit log.
+
+Backend memberikan klaim admin hanya setelah password akun, allowlist email, dan `ADMIN_PASSWORD` lolos pemeriksaan. Login biasa tidak mengangkat role. Mengubah `ADMIN_PASSWORD` membatalkan sesi admin lama. Query `serverStatus`, `userLogs`, dan detail `/health` memerlukan token admin yang valid; `logActivity` mengambil identitas pemilik dari token, bukan dari input `userId` klien. Gunakan HTTPS jika aplikasi dibuka melalui jaringan publik.
+
+`server/.env` dan database lokal tidak ikut commit. Repositori privat membatasi akses kepada pemilik dan kolaborator yang diberi izin, tetapi secret tetap jangan dimasukkan ke Git karena bisa tersalin ke clone, log, atau integrasi lain.
 
 ---
 

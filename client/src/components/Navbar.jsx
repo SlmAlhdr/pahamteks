@@ -58,6 +58,15 @@ export default function Navbar({
               <Search2DIcon size={16} />
               <span>{t('nav_dict_trans')}</span>
             </button>
+            {user?.role === 'ADMIN' && (
+              <button
+                className={`btn-nav admin-nav-link ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => setActiveTab('admin')}
+                title="Buka dashboard administrator"
+              >
+                Admin
+              </button>
+            )}
             <button
               className="lang-toggle"
               onClick={onToggleLang}
