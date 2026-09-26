@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import {
   LOGIN_MUTATION,
@@ -35,10 +35,11 @@ import {
 export default function WelcomePortal({
   onAuthSuccess,
   onGuestLogin,
+  initialTab = 'login',
   currentLang,
   t
 }) {
-  const [activeTab, setActiveTab] = useState('login'); // login, admin, register, atau forgot
+  const [activeTab, setActiveTab] = useState(initialTab); // login, admin, register, atau forgot
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -54,6 +55,10 @@ export default function WelcomePortal({
   const [sendOtpMutation, { loading: otpLoading }] = useMutation(SEND_OTP_MUTATION);
   const [requestResetMutation, { loading: resetReqLoading }] = useMutation(REQUEST_PASSWORD_RESET_MUTATION);
   const [resetPasswordMutation, { loading: resetLoading }] = useMutation(RESET_PASSWORD_MUTATION);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   // Minta kode verifikasi email sebelum pendaftaran.
   const handleSendOtp = async () => {

@@ -318,6 +318,7 @@ npm --prefix client run dev
 
 Kunjungi alamat:
 * **Aplikasi Web**: `http://127.0.0.1:3000`
+* **Dashboard admin langsung**: `http://127.0.0.1:3000/admin` (login admin bila belum masuk)
 * **GraphQL Interactive Playground**: `http://127.0.0.1:4000/graphql`
 * **Probe publik minimal**: `http://127.0.0.1:4000/healthz`
 * **Health detail admin**: `http://127.0.0.1:4000/health` dengan `Authorization: Bearer <token-admin>`
@@ -328,8 +329,8 @@ Kunjungi alamat:
 2. Masukkan email akun ke `ADMIN_EMAILS` di `server/.env`; beberapa email dipisahkan koma.
 3. Buat `ADMIN_PASSWORD` acak minimal 16 karakter. Ini adalah password tambahan bersama, di samping password akun masing-masing admin.
 4. Pastikan `JWT_SECRET` berisi secret acak minimal 32 karakter, lalu restart backend.
-5. Buka `http://127.0.0.1:3000`. Pada kartu login layar awal, klik **Masuk khusus administrator** tepat di bawah tombol login pengguna. Masukkan email, password akun, dan password admin.
-6. Setelah login sukses, menu **Admin** membuka dashboard status server dan audit log.
+5. Buka `http://127.0.0.1:3000/admin`. Jika belum login, halaman menampilkan form admin: email, password akun, dan password admin.
+6. Setelah login sukses, dashboard status server dan audit log tampil di URL `/admin`. Menu **Admin** juga mengarah ke URL tersebut.
 
 Backend memberikan klaim admin hanya setelah password akun, allowlist email, dan `ADMIN_PASSWORD` lolos pemeriksaan. Login biasa tidak mengangkat role. Mengubah `ADMIN_PASSWORD` membatalkan sesi admin lama. Query `serverStatus`, `userLogs`, dan detail `/health` memerlukan token admin yang valid; `logActivity` mengambil identitas pemilik dari token, bukan dari input `userId` klien. Gunakan HTTPS jika aplikasi dibuka melalui jaringan publik.
 

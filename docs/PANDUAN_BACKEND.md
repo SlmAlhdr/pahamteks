@@ -374,7 +374,7 @@ Untuk mengaktifkan admin:
 Login admin memeriksa password akun, email allowlist, dan `ADMIN_PASSWORD` di backend. Login biasa tidak memberikan role admin meski emailnya ada di allowlist. Backend hanya membuat klaim sesi admin setelah ketiga pemeriksaan berhasil, dan menurunkan hak akses jika email tidak lagi ada di allowlist.
 Fingerprint secret admin juga diperiksa pada setiap request; mengganti `ADMIN_PASSWORD` langsung membatalkan sesi admin yang lama.
 
-Buka aplikasi di `http://127.0.0.1:3000`, masuk ke login, lalu pilih **Masuk khusus administrator**. Isi email, password akun, serta password admin. Setelah berhasil, menu **Admin** membuka dashboard visual. Dashboard menampilkan status GraphQL, koneksi database, jumlah kunci Gemini, serta maksimal 100 log terbaru. Semua query tetap diperiksa server; menyembunyikan menu di frontend bukan kontrol akses.
+Buka `http://127.0.0.1:3000/admin`. Jika belum login, halaman menampilkan form admin untuk email, password akun, dan password admin. Setelah berhasil, dashboard menampilkan status GraphQL, koneksi database, jumlah kunci Gemini, serta maksimal 100 log terbaru. Semua query tetap diperiksa server; menyembunyikan menu di frontend bukan kontrol akses.
 
 Setiap resolver root memiliki kebijakan akses eksplisit di `server/src/resolvers/index.js`. `me` memerlukan sesi, `logActivity` mengambil pemilik log dari identitas token, sedangkan `userLogs`, `serverStatus`, dan detail `/health` memerlukan sesi admin. Operasi belajar serta autentikasi tetap publik untuk mendukung pengguna tamu. Log aktivitas tidak dapat dibaca oleh akun biasa.
 

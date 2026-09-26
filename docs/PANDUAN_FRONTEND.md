@@ -179,7 +179,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 
 ### Dashboard administrator
 
-Pada kartu login di layar awal, tombol **Masuk khusus administrator** berada tepat di bawah tombol login pengguna. Klik tombol itu, lalu masukkan email yang terdaftar pada `ADMIN_EMAILS`, password akun pribadi, dan password admin tambahan. Mutasi `adminLogin` meminta backend memverifikasi ketiganya sebelum mengeluarkan token dengan sesi admin. Komponen dashboard menjalankan kueri status server dan log; backend tetap menolak request jika token bukan sesi admin yang valid. Jangan menyimpan `ADMIN_PASSWORD` di kode atau environment variable frontend.
+Buka langsung `http://127.0.0.1:3000/admin`. Jika belum masuk, rute ini menampilkan form login admin. Masukkan email yang terdaftar pada `ADMIN_EMAILS`, password akun pribadi, dan password admin tambahan. Mutasi `adminLogin` meminta backend memverifikasi ketiganya sebelum mengeluarkan token dengan sesi admin. Komponen dashboard menjalankan kueri status server dan log; backend tetap menolak request jika token bukan sesi admin yang valid. Jangan menyimpan `ADMIN_PASSWORD` di kode atau environment variable frontend.
 
 ---
 

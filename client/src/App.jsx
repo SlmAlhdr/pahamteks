@@ -16,13 +16,32 @@ import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTabState] = useState(() => (
+    window.location.pathname.replace(/\/+$/, '') === '/admin' ? 'admin' : 'home'
+  ));
   const [currentLang, setCurrentLang] = useState('id');
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [quizHistory, setQuizHistory] = useState([]);
   const [centerNotice, setCenterNotice] = useState(null);
+
+  // Gunakan URL langsung untuk halaman admin dan root untuk tab aplikasi lainnya.
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    const nextPath = tab === 'admin' ? '/admin' : '/';
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, '', nextPath);
+    }
+  };
+
+  useEffect(() => {
+    const syncTabWithUrl = () => {
+      setActiveTabState(window.location.pathname.replace(/\/+$/, '') === '/admin' ? 'admin' : 'home');
+    };
+    window.addEventListener('popstate', syncTabWithUrl);
+    return () => window.removeEventListener('popstate', syncTabWithUrl);
+  }, []);
 
   // Muat status user & riwayat dari localStorage (akun permanen) atau sessionStorage (guest)
   useEffect(() => {
@@ -222,6 +241,7 @@ export default function App() {
             onAuthSuccess={handleAuthSuccess}
             onGuestLogin={handleGuestLogin}
             onOpenAuthModal={handleOpenAuth}
+            initialTab={activeTab === 'admin' ? 'admin' : 'login'}
             currentLang={currentLang}
             t={t}
           />
