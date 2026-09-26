@@ -78,9 +78,17 @@ Atau jika kamu menggunakan VS Code: klik menu **Terminal > New Terminal** sebany
 ### Langkah 3 — Jalankan Perintah di Masing-Masing Terminal
 
 #### Terminal 1 — Backend Server
-```powershell
-npm --prefix server run dev
-```
+Perhatikan posisi folder prompt di terminal kamu sebelum mengetik:
+* **Jika posisi prompt di folder utama (`PS C:\...\pahamteks>`):**
+  ```powershell
+  npm --prefix server run dev
+  ```
+* **Jika posisi prompt sudah di dalam folder server (`PS C:\...\pahamteks\server>`):**
+  ```powershell
+  npm run dev
+  ```
+  *(Jangan gunakan `--prefix server` jika sudah di dalam folder `server`, agar tidak mencari folder ganda `server\server`)*.
+
 Tunggu sampai muncul pesan seperti:
 ```
 🚀 PahamTeks Server ready at http://localhost:4000
@@ -88,9 +96,16 @@ Tunggu sampai muncul pesan seperti:
 Artinya server backend sudah menyala dan siap melayani data.
 
 #### Terminal 2 — Frontend Web
-```powershell
-npm --prefix client run dev
-```
+Perhatikan posisi folder prompt di terminal kamu:
+* **Jika posisi prompt di folder utama (`PS C:\...\pahamteks>`):**
+  ```powershell
+  npm --prefix client run dev
+  ```
+* **Jika posisi prompt sudah di dalam folder client (`PS C:\...\pahamteks\client>`):**
+  ```powershell
+  npm run dev
+  ```
+
 Tunggu sampai muncul pesan seperti:
 ```
   VITE v6.x.x  ready in xxx ms
@@ -99,6 +114,7 @@ Tunggu sampai muncul pesan seperti:
 Pada titik ini, kamu sudah bisa membuka `http://localhost:3000` di browser laptop dan melihat tampilan PahamTeks. Tapi ini baru bisa diakses dari laptop kamu sendiri.
 
 #### Terminal 3 — Terowongan HTTPS Cloudflare
+Pastikan terminal berada di folder utama `pahamteks>` (tempat file `cloudflared.exe` berada), lalu jalankan:
 ```powershell
 .\cloudflared.exe tunnel --url http://localhost:3000
 ```
@@ -111,9 +127,15 @@ https://random-kata-kata.trycloudflare.com
 ### Langkah 4 — Buka di HP atau Perangkat Lain
 1. Buka browser di HP kamu (Chrome, Safari, atau apa saja).
 2. Tempel (*paste*) link `https://random-kata-kata.trycloudflare.com` di kolom alamat (*address bar*).
-3. Tekan Enter. Tampilan PahamTeks akan muncul persis seperti di laptop kamu.
+3. Tekan Enter. Tampilan PahamTeks akan muncul persis seperti di laptop kamu dengan koneksi HTTPS yang aman dan gembok hijau!
 
-### Langkah 5 — Mematikan Layanan
+### Langkah 5 — Mengakses Dasbor Admin Visual via HTTPS (Opsional)
+Jika kamu ingin memantau kesehatan server, rotasi API Gemini, atau log aktivitas pengguna dari HP / tablet melalui internet:
+1. Klik tab **👑 Admin** di Navbar atas (atau tambahkan `/admin` di belakang link HTTPS kamu: `https://<link-kamu>.trycloudflare.com/admin`).
+2. Masukkan email admin yang terdaftar di `ADMIN_EMAILS`, password akun, dan password admin bersama yang ada di `server/.env`.
+3. Kamu bisa melihat 4 kartu metrik server, status slot 1–9 kunci Gemini, dan tabel log aktivitas pengguna secara realtime langsung dari HP!
+
+### Langkah 6 — Mematikan Layanan
 Setelah selesai uji coba, matikan layanan dengan urutan terbalik:
 1. **Terminal 3** (Cloudflare): Tekan `Ctrl + C`.
 2. **Terminal 2** (Frontend): Tekan `Ctrl + C`.
@@ -206,11 +228,18 @@ Lalu jalankan ulang Terminal 1 dan Terminal 2.
 3. Klik **"Change settings"** > **"Allow another app..."**.
 4. Cari dan tambahkan `node.exe` dari folder instalasi Node.js kamu.
 
+### Masalah 6: Error `ENOENT: no such file or directory, open '...\server\server\package.json'`
+**Penyebab**: Perintah `npm --prefix server run dev` dijalankan ketika terminal kamu **sudah berada di dalam folder `server`** (`PS C:\...\pahamteks\server>`). Akibatnya npm mencari folder `server` di dalam `server`.
+
+**Solusi**:
+* Jika terminal kamu bertuliskan `...\pahamteks\server>`: cukup ketik `npm run dev` (tanpa `--prefix server`).
+* Jika ingin memakai `--prefix server`: ketik `cd ..` terlebih dahulu untuk kembali ke folder utama `pahamteks>`.
+
 ---
 
 ## ⚡ Pintasan Cepat: Pakai `start-dev.bat`
 
-Agar tidak perlu membuka 3 terminal satu per satu secara manual, kamu bisa langsung klik dua kali file **`start-dev.bat`** yang ada di folder proyek. File ini otomatis menyalakan Backend dan Frontend sekaligus dalam jendela terpisah.
+Agar tidak perlu membuka 3 terminal satu per satu secara manual, kamu bisa langsung klik dua kali file **`start-dev.bat`** yang ada di folder proyek. File ini otomatis menyalakan Backend dan Frontend sekaligus dalam jendela terpisah dari folder utama.
 
 Setelah itu, kamu tinggal membuka 1 terminal tambahan untuk Cloudflare:
 ```powershell
@@ -221,12 +250,13 @@ Setelah itu, kamu tinggal membuka 1 terminal tambahan untuk Cloudflare:
 
 ## 📝 Ringkasan Perintah
 
-| Keperluan | Perintah |
-| :--- | :--- |
-| Nyalakan Backend | `npm --prefix server run dev` |
-| Nyalakan Frontend | `npm --prefix client run dev` |
-| Buka Tunnel HTTPS | `.\cloudflared.exe tunnel --url http://localhost:3000` |
-| Unduh Cloudflare Tunnel | `curl.exe -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe` |
-| Cek IP laptop (Wi-Fi lokal) | `ipconfig` |
-| Matikan semua Node.js | `taskkill /F /IM node.exe` |
-| Matikan layanan | `Ctrl + C` di masing-masing terminal |
+| Keperluan | Jika di Folder Utama (`pahamteks>`) | Jika Sudah Masuk ke Folder Bersangkutan |
+| :--- | :--- | :--- |
+| **Nyalakan Backend (Port 4000)** | `npm --prefix server run dev` | `npm run dev` (di folder `server>`) |
+| **Nyalakan Frontend (Port 3000)** | `npm --prefix client run dev` | `npm run dev` (di folder `client>`) |
+| **Buka Tunnel HTTPS Publik** | `.\cloudflared.exe tunnel --url http://localhost:3000` | *(Jalankan dari folder utama)* |
+| **Unduh Cloudflare Tunnel** | `curl.exe -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe` | *(Sekali saja di folder utama)* |
+| **Akses Dasbor Admin via HTTPS** | Buka tab **👑 Admin** di web atau akses `https://<link>.trycloudflare.com/admin` | — |
+| **Cek IP laptop (Wi-Fi lokal)** | `ipconfig` | `ipconfig` |
+| **Matikan semua proses Node.js** | `Get-Process node \| Stop-Process -Force` *(atau `taskkill /F /IM node.exe`)* | — |
+| **Matikan layanan** | Tekan `Ctrl + C` di jendela masing-masing | — |
