@@ -135,9 +135,14 @@ const CODING_CATEGORIES_EN = [
 ];
 
 // Baca progres topik dari penyimpanan akun atau sesi tamu.
-function getSavedProgress(topic) {
+function getProgressStorageKey(progressScope) {
+  return `pahamteks_topic_progress_${progressScope || 'anonymous'}`;
+}
+
+function getSavedProgress(topic, progressScope, isGuest) {
   try {
-    const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress');
+    const storage = isGuest ? sessionStorage : localStorage;
+    const raw = storage.getItem(getProgressStorageKey(progressScope));
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed[topic]) return parsed[topic];
@@ -149,9 +154,11 @@ function getSavedProgress(topic) {
 }
 
 // Simpan bab yang selesai dan bab berikutnya ke penyimpanan browser.
-function saveProgress(topic, unitDone, nextUnit) {
+function saveProgress(topic, unitDone, nextUnit, progressScope, isGuest) {
   try {
-    const raw = localStorage.getItem('pahamteks_topic_progress') || sessionStorage.getItem('pahamteks_topic_progress') || '{}';
+    const storage = isGuest ? sessionStorage : localStorage;
+    const storageKey = getProgressStorageKey(progressScope);
+    const raw = storage.getItem(storageKey) || '{}';
     const parsed = JSON.parse(raw);
     const currentData = parsed[topic] || { currentUnit: 1, completedUnits: [] };
 
@@ -163,14 +170,13 @@ function saveProgress(topic, unitDone, nextUnit) {
       completedUnits: Array.from(completed)
     };
 
-    localStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
-    sessionStorage.setItem('pahamteks_topic_progress', JSON.stringify(parsed));
+    storage.setItem(storageKey, JSON.stringify(parsed));
   } catch (err) {
     console.warn('[QuizProgress] Failed to save progress:', err.message);
   }
 }
 
-export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz }) {
+export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz, progressScope, isGuest = false }) {
   const defaultTopic = mode === 'learn'
     ? (currentLang === 'en' ? 'English (Grammar)' : 'Inggris (Grammar)')
     : 'JavaScript / TypeScript';
@@ -204,10 +210,10 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
 
   // Sinkronisasi progres saat topik berganti
   useEffect(() => {
-    const saved = getSavedProgress(selectedTopic);
+    const saved = getSavedProgress(selectedTopic, progressScope, isGuest);
     setCurrentUnit(saved.currentUnit || 1);
     setCompletedUnits(saved.completedUnits || []);
-  }, [selectedTopic]);
+  }, [selectedTopic, progressScope, isGuest]);
 
   // Reset state saat mode atau bahasa berganti
   useEffect(() => {
@@ -301,7 +307,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
       setIsFinished(true);
       // Simpan progres kelulusan bab
       const nextU = currentUnit < 5 ? currentUnit + 1 : currentUnit;
-      saveProgress(selectedTopic, currentUnit, nextU);
+      saveProgress(selectedTopic, currentUnit, nextU, progressScope, isGuest);
       setCompletedUnits(prev => Array.from(new Set([...prev, currentUnit])));
 
       if (onFinishQuiz) {
@@ -309,8 +315,10 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz 
           topic: selectedTopic,
           unit: currentUnit,
           unitTitle: currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId,
+          answers: userAnswersLog,
           score,
           total: questions.length,
+          level,
           date: new Date().toLocaleDateString()
         });
       }

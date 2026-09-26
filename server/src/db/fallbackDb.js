@@ -32,7 +32,8 @@ const JSON_BACKUP_PATH = path.join(DATA_DIR, 'pahamteks_mem_backup.json');
 const memStore = {
     users: new Map(),
     otp: new Map(),
-    logs: []
+    logs: [],
+    quizHistory: []
 };
 
 function saveMemoryStoreToDisk() {
@@ -40,7 +41,8 @@ function saveMemoryStoreToDisk() {
         const payload = {
             users: Array.from(memStore.users.entries()),
             otp: Array.from(memStore.otp.entries()),
-            logs: memStore.logs.slice(-200)
+            logs: memStore.logs.slice(-200),
+            quizHistory: memStore.quizHistory.slice(-500)
         };
         fs.writeFileSync(JSON_BACKUP_PATH, JSON.stringify(payload), 'utf8');
     } catch (err) {
@@ -65,6 +67,9 @@ function loadMemoryStoreFromDisk() {
             if (Array.isArray(data.logs)) {
                 memStore.logs = data.logs;
             }
+            if (Array.isArray(data.quizHistory)) {
+                memStore.quizHistory = data.quizHistory;
+            }
         }
     } catch (err) {
         console.warn('[SQL FALLBACK] Gagal memuat memory store dari disk (mungkin file korup):', err.message);
@@ -73,6 +78,33 @@ function loadMemoryStoreFromDisk() {
 
 function executeMemorySql(cleanSql, cleanParams) {
     const isSelect = /^\s*SELECT/i.test(cleanSql);
+    if (/quiz_history/i.test(cleanSql)) {
+        if (/INSERT/i.test(cleanSql)) {
+            const [user_id, level, categories, unit, unit_title, answers_json, score, total_questions] = cleanParams;
+            const record = {
+                id: memStore.quizHistory.length + 1,
+                user_id,
+                level,
+                categories,
+                unit,
+                unit_title,
+                answers_json,
+                score,
+                total_questions,
+                created_at: new Date().toISOString()
+            };
+            memStore.quizHistory.unshift(record);
+            saveMemoryStoreToDisk();
+            return [{ insertId: record.id, affectedRows: 1 }, []];
+        }
+        if (/SELECT/i.test(cleanSql)) {
+            const [userId, limit] = cleanParams;
+            const rows = memStore.quizHistory
+                .filter(record => Number(record.user_id) === Number(userId))
+                .slice(0, Number(limit) || 100);
+            return [rows, []];
+        }
+    }
     if (/otp_verifications/i.test(cleanSql)) {
         if (/INSERT/i.test(cleanSql)) {
             const email = String(cleanParams[0] || '').toLowerCase().trim();
@@ -209,6 +241,9 @@ export function initFallbackSqlDb() {
                     user_id INTEGER NULL,
                     level TEXT NOT NULL,
                     categories TEXT NOT NULL,
+                    unit INTEGER NOT NULL DEFAULT 1,
+                    unit_title TEXT NULL,
+                    answers_json TEXT NULL,
                     score INTEGER NOT NULL,
                     total_questions INTEGER NOT NULL,
                     created_at TEXT DEFAULT (datetime('now'))
@@ -241,6 +276,17 @@ export function initFallbackSqlDb() {
                     created_at TEXT DEFAULT (datetime('now'))
                 );
             `);
+
+            const quizColumns = new Set(sqliteDb.prepare('PRAGMA table_info(quiz_history)').all().map(column => column.name));
+            if (!quizColumns.has('unit')) {
+                sqliteDb.exec('ALTER TABLE quiz_history ADD COLUMN unit INTEGER NOT NULL DEFAULT 1');
+            }
+            if (!quizColumns.has('unit_title')) {
+                sqliteDb.exec('ALTER TABLE quiz_history ADD COLUMN unit_title TEXT NULL');
+            }
+            if (!quizColumns.has('answers_json')) {
+                sqliteDb.exec('ALTER TABLE quiz_history ADD COLUMN answers_json TEXT NULL');
+            }
         }
         return sqliteDb;
     } catch (err) {

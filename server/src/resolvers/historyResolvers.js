@@ -32,11 +32,68 @@ export const historyResolvers = {
                 }
             }
             return memLogs.slice(0, safeLimit);
+        },
+
+        myQuizHistory: async (_, { limit = 100 }, context) => {
+            const user = requireAuthenticatedUser(context);
+            const numericUserId = Number(user.id);
+            if (!Number.isSafeInteger(numericUserId) || numericUserId < 1) return [];
+
+            const safeLimit = Math.min(100, Math.max(1, Number.isInteger(limit) ? limit : 100));
+            try {
+                const [rows] = await getDb().execute(
+                    'SELECT id, categories, unit, unit_title, score, total_questions, created_at FROM quiz_history WHERE user_id = ? ORDER BY created_at DESC LIMIT ?',
+                    [numericUserId, safeLimit]
+                );
+                return rows.map(row => ({
+                    id: String(row.id),
+                    topic: row.categories,
+                    unit: Number(row.unit) || 1,
+                    unitTitle: row.unit_title || null,
+                    score: Number(row.score),
+                    total: Number(row.total_questions),
+                    date: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString()
+                }));
+            } catch (err) {
+                console.warn('[Quiz History Query Error]', err.message);
+                return [];
+            }
         }
     },
 
     Mutation: {
         // Simpan aktivitas pengguna tanpa menggagalkan alur utama bila DB gagal.
+        saveQuizScore: async (_, { topic, unit, unitTitle, answersJson, level, score, total }, context) => {
+            const user = requireAuthenticatedUser(context);
+            const numericUserId = Number(user.id);
+            if (!Number.isSafeInteger(numericUserId) || numericUserId < 1) return false;
+            if (typeof topic !== 'string' || !topic.trim() || topic.length > 255) return false;
+            if (typeof level !== 'string' || !level.trim() || level.length > 50) return false;
+            if (!Number.isInteger(unit) || unit < 1 || unit > 5) return false;
+            if (!Number.isInteger(score) || !Number.isInteger(total) || total < 1 || total > 100 || score < 0 || score > total) return false;
+            if (unitTitle != null && (typeof unitTitle !== 'string' || unitTitle.length > 255)) return false;
+            if (typeof answersJson !== 'string' || answersJson.length > 50000) return false;
+            let answers;
+            try {
+                answers = JSON.parse(answersJson);
+            } catch (err) {
+                console.warn('[Save Quiz Score Error] Jawaban kuis bukan JSON valid:', err.message);
+                return false;
+            }
+            if (!Array.isArray(answers) || answers.length !== total) return false;
+
+            try {
+                await getDb().execute(
+                    'INSERT INTO quiz_history (user_id, level, categories, unit, unit_title, answers_json, score, total_questions) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [numericUserId, level.trim(), topic.trim(), unit, unitTitle || null, answersJson, score, total]
+                );
+                return true;
+            } catch (err) {
+                console.warn('[Save Quiz Score Error]', err.message);
+                return false;
+            }
+        },
+
         logActivity: async (_, { action, details }, context) => {
             const user = requireAuthenticatedUser(context);
             // Validasi input dan ambil userId dari token terverifikasi, bukan dari argumen klien.

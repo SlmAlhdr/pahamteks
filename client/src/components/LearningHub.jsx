@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import QuizView from './QuizView';
 
-export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode = 'learn' }) {
+export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode = 'learn', progressScope, isGuest }) {
   const [learningMode, setLearningMode] = useState(initialMode); // 'learn' | 'coding'
 
   return (
@@ -29,6 +29,8 @@ export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode 
         t={t}
         currentLang={currentLang}
         onFinishQuiz={onFinishQuiz}
+        progressScope={progressScope}
+        isGuest={isGuest}
       />
     </div>
   );

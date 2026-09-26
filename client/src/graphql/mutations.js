@@ -159,3 +159,25 @@ export const LOG_ACTIVITY_MUTATION = gql`
     logActivity(action: $action, details: $details)
   }
 `;
+
+export const SAVE_QUIZ_SCORE_MUTATION = gql`
+  mutation SaveQuizScore(
+    $topic: String!
+    $unit: Int!
+    $unitTitle: String
+    $answersJson: String!
+    $level: String!
+    $score: Int!
+    $total: Int!
+  ) {
+    saveQuizScore(
+      topic: $topic
+      unit: $unit
+      unitTitle: $unitTitle
+      answersJson: $answersJson
+      level: $level
+      score: $score
+      total: $total
+    )
+  }
+`;

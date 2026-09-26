@@ -75,3 +75,17 @@ export const GET_ADMIN_USERS = gql`
     }
   }
 `;
+
+export const GET_MY_QUIZ_HISTORY = gql`
+  query MyQuizHistory($limit: Int) {
+    myQuizHistory(limit: $limit) {
+      id
+      topic
+      unit
+      unitTitle
+      score
+      total
+      date
+    }
+  }
+`;

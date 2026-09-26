@@ -16,7 +16,8 @@ const accessPolicies = {
         generateChallenge: 'public',
         me: 'authenticated',
         userLogs: 'admin',
-        adminUsers: 'admin'
+        adminUsers: 'admin',
+        myQuizHistory: 'authenticated'
     },
     Mutation: {
         translate: 'public',
@@ -28,7 +29,8 @@ const accessPolicies = {
         adminLogin: 'public',
         requestPasswordReset: 'public',
         resetPassword: 'public',
-        logActivity: 'authenticated'
+        logActivity: 'authenticated',
+        saveQuizScore: 'authenticated'
     }
 };
 
