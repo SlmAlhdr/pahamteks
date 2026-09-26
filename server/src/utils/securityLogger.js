@@ -133,14 +133,6 @@ export function recordLoginFailure(identifier, ip = 'unknown') {
                 ip,
                 details: `Alamat IP diblokir sementara selama 15 menit setelah ${ipRecord.count} kali kegagalan login lintas akun.`
             });
-        } else {
-            logSecurityEvent({
-                eventType: 'IP_LOGIN_FAILURE',
-                severity: 'WARN',
-                identifier: ipKey,
-                ip,
-                details: `Kegagalan login dari IP ini (${ipRecord.count}/${MAX_IP_LOGIN_ATTEMPTS}).`
-            });
         }
         failedLoginAttempts.set(ipKey, ipRecord);
     }

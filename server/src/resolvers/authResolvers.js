@@ -357,7 +357,7 @@ export const authResolvers = {
             };
         },
 
-        // Opsi B: Admin login menggunakan email allowlist dan kata sandi akun pribadi (adminPassword diabaikan).
+        // Opsi B: Admin login cukup menggunakan email allowlist dan kata sandi akun pribadi.
         adminLogin: async (_, { email, password }, context) => {
             if (!email || !password) {
                 return { success: false, message: 'Email admin dan kata sandi akun wajib diisi!' };

@@ -44,7 +44,7 @@ function saveMemoryStoreToDisk() {
         };
         fs.writeFileSync(JSON_BACKUP_PATH, JSON.stringify(payload), 'utf8');
     } catch (err) {
-        // Filesystem serverless mungkin read-only; abaikan diam-diam hanya saat itu
+        // Filesystem serverless bisa read-only; catat error penyimpanan lainnya.
         if (err.code !== 'EROFS' && err.code !== 'EACCES') {
             console.warn('[SQL FALLBACK] Gagal menyimpan memory store ke disk:', err.message);
         }
