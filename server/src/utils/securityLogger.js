@@ -6,8 +6,10 @@ const otpRequestAttempts = new Map(); // key: email, value: { count, windowStart
 const ipTracker = new Map(); // key: ip, value: { count, windowStart }
 
 const MAX_LOGIN_ATTEMPTS = 5;
+const MAX_IP_LOGIN_ATTEMPTS = 15; // Batas maksimal kegagalan dari 1 alamat IP lintas akun
 const LOGIN_BLOCK_DURATION_MS = 15 * 60 * 1000; // 15 menit
 const MAX_OTP_PER_10_MIN = 3;
+const MAX_OTP_PER_IP_10_MIN = 5; // Batas maksimal pengiriman OTP per IP
 const OTP_WINDOW_MS = 10 * 60 * 1000; // 10 menit
 
 /**
@@ -38,8 +40,26 @@ export async function logSecurityEvent({ eventType, severity = 'INFO', identifie
 /**
  * Cek apakah akun atau IP sedang diblokir karena brute-force login
  */
-// Periksa apakah identitas login masih berada dalam masa blokir.
+// Periksa apakah identitas akun ATAU alamat IP masih berada dalam masa blokir.
 export function checkLoginBruteForce(identifier, ip = 'unknown') {
+    // 1. Cek pemblokiran di tingkat Alamat IP
+    if (ip && ip !== 'unknown') {
+        const ipKey = `ip:${ip}`;
+        const ipRecord = failedLoginAttempts.get(ipKey);
+        if (ipRecord?.blockedUntil && Date.now() < ipRecord.blockedUntil) {
+            const remainingMinutes = Math.ceil((ipRecord.blockedUntil - Date.now()) / (60 * 1000));
+            return {
+                isBlocked: true,
+                remainingMinutes,
+                message: `Alamat IP Anda diblokir sementara karena ${ipRecord.count}x gagal login. Coba lagi dalam ${remainingMinutes} menit demi keamanan.`
+            };
+        }
+        if (ipRecord?.blockedUntil && Date.now() >= ipRecord.blockedUntil) {
+            failedLoginAttempts.delete(ipKey);
+        }
+    }
+
+    // 2. Cek pemblokiran di tingkat Akun (Email/Username)
     const key = (identifier || '').toLowerCase().trim();
     if (!key) return { isBlocked: false };
 
@@ -67,35 +87,55 @@ export function checkLoginBruteForce(identifier, ip = 'unknown') {
 /**
  * Catat kegagalan login dan picu blokir jika melebihi batas
  */
-// Catat kegagalan login dan blokir sementara setelah batas terlampaui.
+// Catat kegagalan login pada akun dan IP, lalu blokir sementara setelah batas terlampaui.
 export function recordLoginFailure(identifier, ip = 'unknown') {
     const key = (identifier || '').toLowerCase().trim();
-    if (!key) return;
+    if (key) {
+        const record = failedLoginAttempts.get(key) || { count: 0, lastAttempt: Date.now(), blockedUntil: null };
+        record.count += 1;
+        record.lastAttempt = Date.now();
 
-    const record = failedLoginAttempts.get(key) || { count: 0, lastAttempt: Date.now(), blockedUntil: null };
-    record.count += 1;
-    record.lastAttempt = Date.now();
+        if (record.count >= MAX_LOGIN_ATTEMPTS) {
+            record.blockedUntil = Date.now() + LOGIN_BLOCK_DURATION_MS;
+            logSecurityEvent({
+                eventType: 'BRUTE_FORCE_TRIGGERED',
+                severity: 'ALERT',
+                identifier: key,
+                ip,
+                details: `Akun diblokir sementara selama 15 menit setelah ${record.count} kali kegagalan login berturut-turut.`
+            });
+        } else {
+            logSecurityEvent({
+                eventType: 'LOGIN_FAILURE',
+                severity: 'WARN',
+                identifier: key,
+                ip,
+                details: `Percobaan login akun gagal (${record.count}/${MAX_LOGIN_ATTEMPTS}).`
+            });
+        }
 
-    if (record.count >= MAX_LOGIN_ATTEMPTS) {
-        record.blockedUntil = Date.now() + LOGIN_BLOCK_DURATION_MS;
-        logSecurityEvent({
-            eventType: 'BRUTE_FORCE_TRIGGERED',
-            severity: 'ALERT',
-            identifier: key,
-            ip,
-            details: `Akun/IP diblokir sementara selama 15 menit setelah ${record.count} kali kegagalan login berturut-turut.`
-        });
-    } else {
-        logSecurityEvent({
-            eventType: 'LOGIN_FAILURE',
-            severity: 'WARN',
-            identifier: key,
-            ip,
-            details: `Percobaan login gagal (${record.count}/${MAX_LOGIN_ATTEMPTS}).`
-        });
+        failedLoginAttempts.set(key, record);
     }
 
-    failedLoginAttempts.set(key, record);
+    // Catat juga pada tingkat Alamat IP untuk menangkal dictionary attack lintas akun
+    if (ip && ip !== 'unknown') {
+        const ipKey = `ip:${ip}`;
+        const ipRecord = failedLoginAttempts.get(ipKey) || { count: 0, lastAttempt: Date.now(), blockedUntil: null };
+        ipRecord.count += 1;
+        ipRecord.lastAttempt = Date.now();
+
+        if (ipRecord.count >= MAX_IP_LOGIN_ATTEMPTS) {
+            ipRecord.blockedUntil = Date.now() + LOGIN_BLOCK_DURATION_MS;
+            logSecurityEvent({
+                eventType: 'IP_BRUTE_FORCE_TRIGGERED',
+                severity: 'ALERT',
+                identifier: ipKey,
+                ip,
+                details: `Alamat IP diblokir sementara selama 15 menit setelah ${ipRecord.count} kali kegagalan login lintas akun.`
+            });
+        }
+        failedLoginAttempts.set(ipKey, ipRecord);
+    }
 }
 
 /**
@@ -106,6 +146,9 @@ export function recordLoginSuccess(identifier, ip = 'unknown', userId = null) {
     const key = (identifier || '').toLowerCase().trim();
     if (key) {
         failedLoginAttempts.delete(key);
+    }
+    if (ip && ip !== 'unknown') {
+        failedLoginAttempts.delete(`ip:${ip}`);
     }
     logSecurityEvent({
         eventType: 'LOGIN_SUCCESS',
@@ -120,11 +163,36 @@ export function recordLoginSuccess(identifier, ip = 'unknown', userId = null) {
 /**
  * Batasi frekuensi permohonan OTP untuk mencegah email bombing / resource exhaustion
  */
-// Batasi pengiriman OTP per email dalam satu jendela waktu.
+// Batasi pengiriman OTP per email dan per IP dalam satu jendela waktu.
 export function checkOtpRateLimit(email, ip = 'unknown') {
     const key = (email || '').toLowerCase().trim();
     const now = Date.now();
 
+    // 1. Cek pembatasan per alamat IP (mencegah penyerang memakai banyak email dari IP yang sama)
+    if (ip && ip !== 'unknown') {
+        const ipKey = `ip:${ip}`;
+        const ipRec = ipTracker.get(ipKey);
+        if (!ipRec || (now - ipRec.windowStart) > OTP_WINDOW_MS) {
+            ipTracker.set(ipKey, { count: 1, windowStart: now });
+        } else if (ipRec.count >= MAX_OTP_PER_IP_10_MIN) {
+            logSecurityEvent({
+                eventType: 'IP_OTP_LIMIT_EXCEEDED',
+                severity: 'WARN',
+                identifier: ipKey,
+                ip,
+                details: `Pengiriman OTP ditolak. Kuota ${MAX_OTP_PER_IP_10_MIN}x per 10 menit dari IP ini terlampaui.`
+            });
+            return {
+                allowed: false,
+                message: 'Terlalu banyak permintaan OTP dari jaringan Anda. Silakan coba lagi setelah beberapa menit.'
+            };
+        } else {
+            ipRec.count += 1;
+            ipTracker.set(ipKey, ipRec);
+        }
+    }
+
+    // 2. Cek pembatasan per email
     const record = otpRequestAttempts.get(key);
     if (!record || (now - record.windowStart) > OTP_WINDOW_MS) {
         otpRequestAttempts.set(key, { count: 1, windowStart: now });

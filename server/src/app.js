@@ -17,6 +17,9 @@ assertJwtSecretConfigured();
 
 const app = express();
 
+// Percayakan reverse proxy (Vercel, Cloudflare) untuk deteksi IP asli client
+app.set('trust proxy', 1);
+
 // 1. Keamanan HTTP Headers dengan Helmet
 app.use(helmet({
     crossOriginEmbedderPolicy: false,
@@ -42,10 +45,13 @@ app.use(cors({
         // Izinkan request tanpa origin (seperti UptimeRobot, server-to-server health probe, mobile/curl)
         if (!origin) return callback(null, true);
 
-        // Izinkan origin lokal, daftar env, Cloudflare tunnel, Vercel, atau mode dev
+        // Izinkan origin lokal, daftar env, Cloudflare tunnel, atau domain Vercel
         const isCloudflareTunnel = /\.trycloudflare\.com$/.test(origin);
-        const isVercel = /\.vercel\.app$/.test(origin);
-        if (allowedOrigins.includes(origin) || isCloudflareTunnel || isVercel || process.env.NODE_ENV !== 'production') {
+        const isVercelHost = Boolean(
+            (process.env.VERCEL_URL && origin === `https://${process.env.VERCEL_URL}`) ||
+            /\.vercel\.app$/.test(origin)
+        );
+        if (allowedOrigins.includes(origin) || isCloudflareTunnel || isVercelHost || process.env.NODE_ENV !== 'production') {
             return callback(null, true);
         }
         return callback(new Error('Akses diblokir oleh kebijakan keamanan CORS PahamTeks.'));
@@ -77,18 +83,32 @@ const server = new ApolloServer({
     resolvers,
     formatError: (formattedError) => {
         console.error('⚠️ [GraphQL Error]:', formattedError.message);
+        // Cegah kebocoran rincian internal database atau koneksi di mode produksi
+        if (process.env.NODE_ENV === 'production') {
+            const msg = formattedError.message || '';
+            if (msg.includes('SQL') || msg.includes('sqlite') || msg.includes('ECONNREFUSED') || msg.includes('ER_')) {
+                return {
+                    message: 'Terjadi kendala pada layanan server. Silakan coba kembali nanti.',
+                    extensions: { code: 'INTERNAL_SERVER_ERROR' }
+                };
+            }
+        }
         return formattedError;
     }
 });
 
 await server.start();
 
-// Sediakan token dan IP client bagi resolver yang memerlukan konteks keamanan.
+// Sediakan token dan IP client terverifikasi bagi resolver yang memerlukan konteks keamanan.
 app.use('/graphql', expressMiddleware(server, {
     context: async ({ req }) => {
         // Identitas hanya berasal dari Bearer token yang lolos verifikasi.
         const user = authenticateRequest(req.headers.authorization);
-        const clientIp = req.ip || req.socket?.remoteAddress || 'unknown';
+        const clientIp = req.headers['cf-connecting-ip']
+            || (req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : null)
+            || req.ip
+            || req.socket?.remoteAddress
+            || 'unknown';
         return { user, clientIp };
     }
 }));
