@@ -93,8 +93,7 @@ export const authResolvers = {
                 try {
                     // Password SAMA SEKALI TIDAK DIAMBIL untuk menjaga keamanan 100%
                     const [rows] = await db.execute(
-                        'SELECT id, email, username, first_name, last_name, created_at FROM users ORDER BY created_at DESC LIMIT ?',
-                        [safeLimit]
+                        `SELECT id, email, username, first_name, last_name, created_at FROM users ORDER BY created_at DESC LIMIT ${safeLimit}`
                     );
                     for (const u of rows) {
                         const cleanEmail = (u.email || '').toLowerCase().trim();

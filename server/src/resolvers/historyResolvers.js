@@ -15,8 +15,7 @@ export const historyResolvers = {
                 const db = getDb();
                 try {
                     const [rows] = await db.execute(
-                        'SELECT id, user_id, action, details, created_at FROM user_activity_logs ORDER BY created_at DESC LIMIT ?',
-                        [safeLimit]
+                        `SELECT id, user_id, action, details, created_at FROM user_activity_logs ORDER BY created_at DESC LIMIT ${safeLimit}`
                     );
                     return rows.map(r => ({
                         id: String(r.id),
