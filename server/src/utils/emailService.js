@@ -4,13 +4,13 @@ import nodemailer from 'nodemailer';
  * Konfigurasi Nodemailer Transporter
  * Mendukung Gmail langsung (dengan App Password) atau custom SMTP host.
  */
-function createTransporter() {
+function createTransporter(preferredPort = null) {
   const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
   const rawPass = (process.env.EMAIL_PASS || process.env.SMTP_PASS || '').trim();
   const pass = rawPass.replace(/\s+/g, ''); // Menghapus spasi otomatis jika pengguna copy-paste dari Sandi Aplikasi Google
   const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 465;
-  const secure = process.env.SMTP_SECURE === 'true' || port === 465;
+  const port = preferredPort || (process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 465);
+  const secure = port === 465;
 
   if (!user || !pass) {
     return null;
@@ -21,16 +21,24 @@ function createTransporter() {
       host,
       port,
       secure,
-      auth: { user, pass }
+      auth: { user, pass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+      pool: false
     });
   }
 
-  // Default menggunakan Gmail SMTP resmi port 465 (SSL langsung)
+  // Default menggunakan Gmail SMTP resmi (port 465 SSL atau port 587 TLS)
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: { user, pass }
+    port,
+    secure,
+    auth: { user, pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+    pool: false
   });
 }
 
@@ -97,11 +105,11 @@ export async function sendOtpEmail(toEmail, otpCode) {
   `;
 
   if (!transporter) {
-    console.error('[EMAIL SERVICE] Gagal: EMAIL_USER dan EMAIL_PASS belum diisi!');
+    console.warn('[EMAIL SERVICE] Gagal: EMAIL_USER dan EMAIL_PASS belum diisi di environment!');
     return {
       success: false,
       delivered: false,
-      message: 'Gagal mengirim: Pengirim email belum diatur (isi EMAIL_USER & EMAIL_PASS di server/.env atau konfigurasi environment hosting).'
+      message: 'Email pengirim belum dikonfigurasi di Vercel. Harap tambahkan EMAIL_USER dan EMAIL_PASS di Vercel Dashboard > Settings > Environment Variables.'
     };
   }
 

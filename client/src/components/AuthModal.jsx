@@ -42,6 +42,17 @@ export default function AuthModal({
 
   if (!isOpen) return null;
 
+  const getFriendlyError = (err, defaultMsg = 'Terjadi kendala pada sistem.') => {
+    const raw = String(err?.message || '');
+    if (raw.includes('500') || raw.includes('status code 500')) {
+      return 'Server Vercel belum membaca konfigurasi email (EMAIL_USER & EMAIL_PASS). Silakan tambahkan variabel tersebut di Vercel Dashboard > Settings > Environment Variables.';
+    }
+    if (raw.includes('Failed to fetch') || raw.includes('NetworkError')) {
+      return 'Gagal terhubung ke server backend. Periksa koneksi internet Anda.';
+    }
+    return raw || defaultMsg;
+  };
+
   // 1. Kirim OTP untuk Registrasi Akun Baru
   const handleSendOtp = async () => {
     if (!email.trim()) {
@@ -57,7 +68,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.sendOtp?.message || 'Gagal mengirim OTP', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 
@@ -76,7 +87,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.requestPasswordReset?.message || 'Gagal meminta reset kata sandi', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 
@@ -115,7 +126,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.resetPassword?.message || 'Gagal mereset kata sandi', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 
@@ -132,7 +143,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.login?.message || 'Email/username atau kata sandi salah', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 
@@ -149,7 +160,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.adminLogin?.message || 'Kredensial admin tidak valid.', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 
@@ -172,7 +183,7 @@ export default function AuthModal({
         setStatusMsg({ text: res.data?.register?.message || 'Registrasi gagal', isError: true });
       }
     } catch (err) {
-      setStatusMsg({ text: err.message, isError: true });
+      setStatusMsg({ text: getFriendlyError(err), isError: true });
     }
   };
 

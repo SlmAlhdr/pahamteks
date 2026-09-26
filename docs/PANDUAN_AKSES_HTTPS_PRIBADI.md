@@ -32,6 +32,8 @@ Sebelum menekan Deploy, buka menu **"Environment Variables"** pada halaman setup
 
 | Nama Variabel (*Key*) | Contoh Nilai (*Value*) | Keterangan |
 | :--- | :--- | :--- |
+| `EMAIL_USER` | `akunpahamteks@gmail.com` | **Email Gmail pengirim OTP** (salin persis dari `server/.env`) |
+| `EMAIL_PASS` | `abcd efgh ijkl mnop` | **16 digit Sandi Aplikasi Google** (salin persis dari `server/.env`) |
 | `GEMINI_API_KEY_1` | `AIzaSy...` | Kunci API Gemini dari Google AI Studio |
 | `ADMIN_EMAILS` | `kamu@email.com,tim1@email.com,tim2@email.com` | **Daftar email admin/tim (pisahkan dengan koma)** yang memiliki hak akses administrator |
 | `JWT_SECRET` | `string-acak-panjang-dan-aman-32-karakter` | Kunci rahasia enkripsi sesi login |

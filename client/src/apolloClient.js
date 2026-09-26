@@ -2,8 +2,10 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 // Arahkan semua operasi GraphQL frontend ke endpoint backend.
+// Mendukung kustomisasi endpoint backend via VITE_GRAPHQL_URI (misal: Cloudflare Tunnel atau Server Pribadi)
+const customUri = import.meta.env.VITE_GRAPHQL_URI;
 const httpLink = createHttpLink({
-  uri: '/graphql',
+  uri: (customUri && customUri.trim()) ? customUri.trim() : '/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
