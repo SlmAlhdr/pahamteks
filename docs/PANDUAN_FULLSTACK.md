@@ -291,14 +291,46 @@ Buat secret acak melalui terminal dengan `node -e "console.log(require('node:cry
 * **Solusi**: Jangan panik, ini adalah fitur keamanan otomatis. Backend tetap berjalan 100% normal menggunakan SQLite lokal.
 
 ### 4. Port Sudah Digunakan: `Error: listen EADDRINUSE: address already in use :::4000`
-* **Penyebab**: Ada proses node server lama yang masih menggantung di background.
+* **Penyebab**: Ada proses node server lama yang masih menggantung di background (misalnya terminal ditutup tanpa `Ctrl + C`).
 * **Solusi di Windows PowerShell**:
-  ```powershell
-  Get-Process node | Stop-Process -Force
-  ```
-  Lalu jalankan ulang `npm --prefix server run dev`.
+  1. Periksa proses yang menduduki port 4000:
+     ```powershell
+     Get-NetTCPConnection -LocalPort 4000 -ErrorAction SilentlyContinue | Format-Table OwningProcess, LocalAddress, LocalPort, State
+     ```
+  2. Hentikan seluruh proses Node.js yang tertinggal sekaligus:
+     ```powershell
+     Get-Process node | Stop-Process -Force
+     ```
+  3. Jalankan ulang server:
+     ```powershell
+     npm --prefix server run dev
+     ```
 
-### 5. Kuota AI Habis: `429 Too Many Requests`
+### 5. Error `ENOENT: no such file or directory, open '...\server\server\package.json'`
+* **Penyebab**: Menjalankan `npm --prefix server run dev` saat posisi terminal **sudah berada di dalam folder `server`** (`PS C:\...\pahamteks\server>`), sehingga npm mencari folder ganda `server\server\package.json`.
+* **Solusi**:
+  - Jika posisi prompt sudah di dalam folder `server>`: Cukup ketik `npm run dev` (tanpa `--prefix server`).
+  - Jika posisi prompt di folder root `pahamteks>`: Baru gunakan `npm --prefix server run dev`.
+
+### 6. Error: `JWT_SECRET must be configured with at least 32 characters`
+* **Penyebab**: Perintah backend dijalankan langsung dari folder root proyek (`c:\Salim\Kerjaan\pahamteks`) tanpa spesifikasi folder server, sehingga pustaka `dotenv` mencari berkas `.env` di folder root dan tidak menemukannya.
+* **Solusi**:
+  1. Selalu jalankan dengan prefix folder server (`npm --prefix server run dev`) atau masuk ke folder server terlebih dahulu (`cd server; npm run dev`).
+  2. Pastikan `JWT_SECRET` di `server/.env` berisi minimal 32 karakter acak (buat instan dengan `node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"`).
+
+### 7. Terminal Kelihatan "Macet / Membeku" Setelah Muncul Error Merah
+* **Penyebab**: Backend dijalankan dengan mode native watcher (`node --watch-path=src src/index.js`). Saat terjadi crash, proses anak mati namun proses watcher tetap berjalan di terminal untuk memantau perubahan berkas. Kursor terminal tidak akan kembali ke prompt biasa sampai proses dihentikan.
+* **Solusi**:
+  - Tekan `Ctrl + C` jika ingin keluar total ke prompt PowerShell.
+  - Perbaiki error lalu simpan file (`Ctrl + S`), watcher akan otomatis merestart server tanpa perlu mengetik ulang perintah.
+
+### 8. Membuka `GET /health` Muncul `{"error":"Autentikasi diperlukan."}`
+* **Penyebab**: Mengira `/health` adalah endpoint publik biasa.
+* **Solusi**:
+  - `/healthz` adalah probe publik (`{"status":"OK"}`) untuk cek hidup/mati server tanpa token.
+  - `/health` adalah telemetri internal khusus admin. Pesan error autentikasi tersebut adalah proteksi keamanan normal, bukan kerusakan server. Buka **Dasbor Admin Visual** di web UI (`http://127.0.0.1:3000/admin`) untuk melihat metrik secara visual.
+
+### 9. Kuota AI Habis: `429 Too Many Requests`
 * **Penyebab**: Akun Google Gemini API sedang kehabisan limit kueri per menit.
 * **Solusi**: Tambahkan kunci API baru di `server/.env` sebagai `GEMINI_API_KEY_2`. Backend otomatis merotasi kunci tanpa mengganggu pengguna.
 

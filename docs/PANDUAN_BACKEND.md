@@ -470,6 +470,29 @@ Jika kamu mendapati terminal backend berhenti, mengeluarkan teks merah, atau apl
   - **`/health` (Telemetri Sensitif Admin)**: Berisi informasi rahasia infrastruktur (status koneksi database, jumlah API key Gemini, dan beban server). Endpoint ini sengaja dikunci demi keamanan dan hanya merespon jika disertai header `Authorization: Bearer <admin-token>`. Munculnya pesan "Autentikasi diperlukan" membuktikan bahwa perisai keamanan bekerja 100% normal.
   - Untuk melihat telemetri tersebut secara visual, cukup gunakan **Dasbor Admin Visual** di web UI (`http://127.0.0.1:3000/admin`).
 
+### 5. Error `ENOENT: no such file or directory, open '...\server\server\package.json'`
+* **Gejala**: Muncul pesan error saat menjalankan perintah:
+  ```text
+  npm error code ENOENT
+  npm error path C:\...\server\server\package.json
+  npm error enoent Could not read package.json: Error: ENOENT: no such file or directory
+  ```
+* **Penyebab**: Perintah `npm --prefix server run dev` dijalankan saat posisi kursor terminal **sudah berada di dalam folder `server`** (`PS C:\...\pahamteks\server>`). Flag `--prefix server` memerintahkan npm mencari folder bernama `server` lagi di dalam lokasi aktif saat ini, sehingga npm mencari file yang tidak ada: `server\server\package.json`.
+* **Solusi**:
+  - **Jika posisi prompt kamu sudah di dalam folder `server>`**:
+    ```powershell
+    npm run dev
+    ```
+    *(Cukup ketik `npm run dev` tanpa `--prefix server`)*
+  - **Jika posisi prompt kamu di folder utama proyek `pahamteks>`**:
+    ```powershell
+    npm --prefix server run dev
+    ```
+  - **Jika ingin kembali ke folder utama**:
+    ```powershell
+    cd ..
+    ```
+
 ---
 
 ## 🚀 Perintah Menjalankan Backend & Utilitas
