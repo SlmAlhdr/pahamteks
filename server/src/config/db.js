@@ -82,6 +82,9 @@ async function ensureMySqlSchema(connection) {
             user_id INT NULL,
             level VARCHAR(50) NOT NULL,
             categories VARCHAR(255) NOT NULL,
+            unit INT NOT NULL DEFAULT 1,
+            unit_title VARCHAR(255) NULL,
+            answers_json JSON NULL,
             score INT NOT NULL,
             total_questions INT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -122,6 +125,18 @@ async function ensureMySqlSchema(connection) {
     const [columns] = await connection.query("SHOW COLUMNS FROM `users` LIKE 'username'");
     if (columns.length === 0) {
         await connection.query("ALTER TABLE `users` ADD COLUMN `username` VARCHAR(100) UNIQUE NULL AFTER `email`");
+    }
+
+    const [quizColumns] = await connection.query('SHOW COLUMNS FROM `quiz_history`');
+    const existingQuizColumns = new Set(quizColumns.map(column => column.Field));
+    if (!existingQuizColumns.has('unit')) {
+        await connection.query('ALTER TABLE `quiz_history` ADD COLUMN `unit` INT NOT NULL DEFAULT 1');
+    }
+    if (!existingQuizColumns.has('unit_title')) {
+        await connection.query('ALTER TABLE `quiz_history` ADD COLUMN `unit_title` VARCHAR(255) NULL');
+    }
+    if (!existingQuizColumns.has('answers_json')) {
+        await connection.query('ALTER TABLE `quiz_history` ADD COLUMN `answers_json` JSON NULL');
     }
 }
 

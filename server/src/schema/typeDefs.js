@@ -57,6 +57,16 @@ export const typeDefs = `#graphql
         createdAt: String!
     }
 
+    type QuizHistoryEntry {
+        id: ID!
+        topic: String!
+        unit: Int!
+        unitTitle: String
+        score: Int!
+        total: Int!
+        date: String!
+    }
+
     type ServerStatus {
         status: String!
         geminiKeysCount: Int!
@@ -80,6 +90,7 @@ export const typeDefs = `#graphql
         me: User
         userLogs(limit: Int): [UserActivityLog!]!
         adminUsers(limit: Int): [User!]!
+        myQuizHistory(limit: Int): [QuizHistoryEntry!]!
     }
 
     type Mutation {
@@ -125,6 +136,15 @@ export const typeDefs = `#graphql
         logActivity(
             action: String!
             details: String
+        ): Boolean!
+        saveQuizScore(
+            topic: String!
+            unit: Int!
+            unitTitle: String
+            answersJson: String!
+            level: String!
+            score: Int!
+            total: Int!
         ): Boolean!
     }
 `;

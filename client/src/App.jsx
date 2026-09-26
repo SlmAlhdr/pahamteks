@@ -14,6 +14,60 @@ import CenterNotificationModal from './components/CenterNotificationModal';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
+import { GET_MY_QUIZ_HISTORY } from './graphql/queries';
+import { SAVE_QUIZ_SCORE_MUTATION } from './graphql/mutations';
+
+const getQuizHistoryStorageKey = (userId) => `pahamteks_logs_${userId}`;
+const getTopicProgressStorageKey = (userId) => `pahamteks_topic_progress_${userId}`;
+
+function restoreProgressFromHistory(history, userId) {
+  const progressByTopic = {};
+  for (const item of history) {
+    if (!item.topic || !Number.isInteger(item.unit) || item.unit < 1 || item.unit > 5) continue;
+    const progress = progressByTopic[item.topic] || { currentUnit: 1, completedUnits: [] };
+    if (!progress.completedUnits.includes(item.unit)) progress.completedUnits.push(item.unit);
+    progressByTopic[item.topic] = progress;
+  }
+
+  for (const progress of Object.values(progressByTopic)) {
+    const highestCompleted = Math.max(...progress.completedUnits);
+    progress.currentUnit = Math.min(highestCompleted + 1, 5);
+  }
+
+  if (Object.keys(progressByTopic).length) {
+    const storageKey = getTopicProgressStorageKey(userId);
+    let localProgress = {};
+    try {
+      const parsed = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) localProgress = parsed;
+    } catch (err) {
+      console.warn('[AppHistory] Failed to parse local topic progress:', err.message);
+    }
+    for (const [topic, remote] of Object.entries(progressByTopic)) {
+      const existing = localProgress[topic] || { currentUnit: 1, completedUnits: [] };
+      const completedUnits = Array.from(new Set([...(existing.completedUnits || []), ...remote.completedUnits]));
+      const highestCompleted = Math.max(...completedUnits);
+      localProgress[topic] = {
+        completedUnits,
+        currentUnit: Math.max(existing.currentUnit || 1, Math.min(highestCompleted + 1, 5))
+      };
+    }
+    localStorage.setItem(storageKey, JSON.stringify(localProgress));
+  }
+}
+
+function refreshQuizHistoryFromServer(userId) {
+  return apolloClient.query({
+    query: GET_MY_QUIZ_HISTORY,
+    variables: { limit: 100 },
+    fetchPolicy: 'network-only'
+  }).then(({ data }) => {
+    const remoteHistory = data?.myQuizHistory || [];
+    localStorage.setItem(getQuizHistoryStorageKey(userId), JSON.stringify(remoteHistory));
+    restoreProgressFromHistory(remoteHistory, userId);
+    return remoteHistory;
+  });
+}
 
 const isAdminPath = (path = window.location.pathname) => (
   path.replace(/\/+$/, '').toLowerCase() === '/admin'
@@ -57,10 +111,15 @@ export default function App() {
         // Sesi lama tanpa token server tidak boleh dianggap sebagai login terverifikasi.
         if (typeof parsedUser?.token === 'string' && parsedUser.token) {
           setUser(parsedUser);
-          const savedLogs = localStorage.getItem('pahamteks_logs');
+          const savedLogs = localStorage.getItem(getQuizHistoryStorageKey(parsedUser.id)) || localStorage.getItem('pahamteks_logs');
           if (savedLogs) {
             setQuizHistory(JSON.parse(savedLogs));
           }
+          refreshQuizHistoryFromServer(parsedUser.id)
+            .then(setQuizHistory)
+            .catch((err) => {
+              console.warn('[AppHistory] Failed to refresh quiz history from server:', err.message);
+            });
           return;
         }
         localStorage.removeItem('pahamteks_user');
@@ -133,7 +192,7 @@ export default function App() {
     sessionStorage.removeItem('pahamteks_guest_user');
 
     // Ambil riwayat tersimpan dari akun permanen
-    const savedLogs = localStorage.getItem('pahamteks_logs');
+    const savedLogs = localStorage.getItem(getQuizHistoryStorageKey(fullUser.id)) || localStorage.getItem('pahamteks_logs');
     if (savedLogs) {
       try {
         setQuizHistory(JSON.parse(savedLogs));
@@ -142,6 +201,11 @@ export default function App() {
         setQuizHistory([]);
       }
     }
+    refreshQuizHistoryFromServer(fullUser.id)
+      .then(setQuizHistory)
+      .catch((err) => {
+        console.warn('[AppHistory] Failed to load quiz history from server:', err.message);
+      });
     setActiveTab(fullUser.role === 'ADMIN' ? 'admin' : 'home');
   };
 
@@ -180,10 +244,24 @@ export default function App() {
         // Simpan hanya di sessionStorage agar hilang saat browser ditutup
         sessionStorage.setItem('pahamteks_guest_logs', JSON.stringify(updated));
       } else {
-        localStorage.setItem('pahamteks_logs', JSON.stringify(updated));
+        const storageKey = getQuizHistoryStorageKey(user?.id || 'account');
+        localStorage.setItem(storageKey, JSON.stringify(updated));
       }
       return updated;
     });
+    if (user && !user.isGuest) {
+      const { topic, unit, unitTitle, answers, level, score, total } = newLog;
+      apolloClient.mutate({
+        mutation: SAVE_QUIZ_SCORE_MUTATION,
+        variables: { topic, unit, unitTitle, answersJson: JSON.stringify(answers || []), level, score, total }
+      }).then(({ data }) => {
+        if (data?.saveQuizScore !== true) {
+          console.warn('[AppHistory] Server did not confirm saving quiz history.');
+        }
+      }).catch((err) => {
+        console.warn('[AppHistory] Failed to save quiz history to server:', err.message);
+      });
+    }
   };
 
   return (
@@ -270,6 +348,8 @@ export default function App() {
                 t={t}
                 currentLang={currentLang}
                 onFinishQuiz={handleFinishQuiz}
+                progressScope={user?.isGuest ? 'guest' : user?.id}
+                isGuest={Boolean(user?.isGuest)}
               />
             )}
             {activeTab === 'dict_trans' && (
@@ -301,6 +381,8 @@ export default function App() {
                 t={t}
                 currentLang={currentLang}
                 onFinishQuiz={handleFinishQuiz}
+                progressScope={user?.isGuest ? 'guest' : user?.id}
+                isGuest={Boolean(user?.isGuest)}
                 initialMode={activeTab === 'coding' ? 'coding' : 'learn'}
               />
             )}
