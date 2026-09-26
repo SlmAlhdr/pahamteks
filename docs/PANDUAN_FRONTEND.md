@@ -91,8 +91,7 @@ main.jsx (Pembungkus ApolloProvider)
         │   └── Translator.jsx (Penerjemah kalimat AI)
         ├── ChallengeView.jsx                 -> Tab "Tantangan Harian"
         ├── DashboardView.jsx                 -> Tab "Statistik & Progres"
-        ├── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
-        └── AdminDashboardView.jsx            -> Tab "👑 Admin" (Metrik server, Gemini pool, audit log)
+        └── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
 ```
 
 ---
@@ -108,8 +107,7 @@ client/
     ├── main.jsx                         <- Titik masuk aplikasi: konfigurasi Apollo Client & Provider
     ├── App.jsx                          <- Pusat kendali tab, sesi login pengguna, dan modal global
     │
-    ├── components/                      <- Seluruh komponen antarmuka pengguna (20 file)
-    │   ├── AdminDashboardView.jsx       <- Layar dasbor status server & audit khusus administrator
+    ├── components/                      <- Seluruh komponen antarmuka pengguna (19 file)
     │   ├── Art2DIcons.jsx               <- Kumpulan ikon SVG 2D kustom
     │   ├── AuthModal.jsx                <- Form modal login, registrasi, OTP, & reset password
     │   ├── BackgroundDrift.jsx          <- Partikel latar belakang animasi ringan
