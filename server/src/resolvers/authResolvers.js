@@ -134,53 +134,61 @@ export const authResolvers = {
             const cleanEmail = email.trim().toLowerCase();
             const clientIp = context?.clientIp || 'unknown';
 
-            // 0. Cek pembatasan frekuensi (Rate Limiting) per email/IP
-            const otpCheck = checkOtpRateLimit(cleanEmail, clientIp);
-            if (!otpCheck.allowed) {
-                return { success: false, message: otpCheck.message };
-            }
+            try {
+                // 0. Cek pembatasan frekuensi (Rate Limiting) per email/IP
+                const otpCheck = checkOtpRateLimit(cleanEmail, clientIp);
+                if (!otpCheck.allowed) {
+                    return { success: false, message: otpCheck.message };
+                }
 
-            // 1. Cek apakah email sudah terdaftar
-            if (isDbConnected()) {
-                const db = getDb();
-                try {
-                    const [existing] = await db.execute('SELECT id FROM users WHERE email = ?', [cleanEmail]);
-                    if (existing.length > 0) {
-                        return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
+                // 1. Cek apakah email sudah terdaftar
+                if (isDbConnected()) {
+                    const db = getDb();
+                    try {
+                        const [existing] = await db.execute('SELECT id FROM users WHERE email = ?', [cleanEmail]);
+                        if (existing && existing.length > 0) {
+                            return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
+                        }
+                    } catch (err) {
+                        console.warn('[DB Check Existing Email]', err.message);
                     }
-                } catch (err) {
-                    console.warn('[DB Check Existing Email]', err.message);
+                } else if (memUsers.has(cleanEmail)) {
+                    return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
                 }
-            } else if (memUsers.has(cleanEmail)) {
-                return { success: false, message: 'Email sudah terdaftar. Silakan Masuk.' };
-            }
 
-            // 2. Generate kode OTP 6-digit acak
-            const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-            const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
+                // 2. Generate kode OTP 6-digit acak
+                const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+                const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
 
-            // 3. Simpan OTP di database dan memori sebagai cadangan
-            memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
+                // 3. Simpan OTP di database dan memori sebagai cadangan
+                memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
 
-            if (isDbConnected()) {
-                const db = getDb();
-                try {
-                    await db.execute(
-                        'INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE otp_code = VALUES(otp_code), expires_at = VALUES(expires_at)',
-                        [cleanEmail, otpCode, expiresAt]
-                    );
-                } catch (err) {
-                    console.warn('[DB Save OTP]', err.message);
+                if (isDbConnected()) {
+                    const db = getDb();
+                    try {
+                        await db.execute(
+                            'INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE otp_code = VALUES(otp_code), expires_at = VALUES(expires_at)',
+                            [cleanEmail, otpCode, expiresAt]
+                        );
+                    } catch (err) {
+                        console.warn('[DB Save OTP]', err.message);
+                    }
                 }
+
+                // 4. Kirim email nyata ke alamat email tujuan
+                const emailResult = await sendOtpEmail(cleanEmail, otpCode);
+
+                return {
+                    success: emailResult.success,
+                    message: emailResult.message
+                };
+            } catch (unhandledErr) {
+                console.error('[sendOtp Resolver Error]:', unhandledErr);
+                return {
+                    success: false,
+                    message: `Gagal memproses permohonan OTP: ${unhandledErr.message}`
+                };
             }
-
-            // 4. Kirim email nyata ke alamat email tujuan
-            const emailResult = await sendOtpEmail(cleanEmail, otpCode);
-
-            return {
-                success: emailResult.success,
-                message: emailResult.message
-            };
         },
 
         // Verifikasi OTP, simpan akun baru, lalu buat sesi pengguna.

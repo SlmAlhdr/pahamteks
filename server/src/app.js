@@ -11,8 +11,15 @@ import { getApiKeyPoolStatus } from './config/gemini.js';
 import { isDbConnected, getDbStatus } from './config/db.js';
 import { assertJwtSecretConfigured, authenticateRequest } from './utils/auth.js';
 
+import path from 'path';
+import fs from 'fs';
+
 dotenv.config();
-// Gagalkan startup jika secret JWT belum disiapkan; jangan pernah memakai nilai default.
+const localServerEnv = path.resolve(process.cwd(), 'server', '.env');
+if (fs.existsSync(localServerEnv)) {
+    dotenv.config({ path: localServerEnv });
+}
+
 assertJwtSecretConfigured();
 
 const app = express();
@@ -155,6 +162,16 @@ app.get('/health', (req, res) => {
         },
         timestamp: new Date().toISOString()
     });
+});
+
+app.use((err, _req, res, _next) => {
+    console.error('💥 [Express Global Error]:', err.message);
+    if (!res.headersSent) {
+        res.status(err.status || 500).json({
+            error: err.message || 'Internal Server Error',
+            extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        });
+    }
 });
 
 export default app;

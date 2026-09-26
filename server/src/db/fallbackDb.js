@@ -1,4 +1,11 @@
-import { DatabaseSync } from 'node:sqlite';
+// Dynamic import DatabaseSync agar kompatibel di semua versi Node
+let DatabaseSyncClass = null;
+try {
+    const sqliteMod = await import('node:sqlite');
+    DatabaseSyncClass = sqliteMod.DatabaseSync || null;
+} catch (_err) {
+    console.warn('⚠️ [SQL FALLBACK] node:sqlite tidak tersedia di runtime ini. Mode memory store aktif.');
+}
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,13 +27,100 @@ const DB_FILE_PATH = path.join(DATA_DIR, 'pahamteks_backup.sqlite');
 
 let sqliteDb = null;
 
+const memStore = {
+    users: new Map(),
+    otp: new Map(),
+    logs: []
+};
+
+function executeMemorySql(cleanSql, cleanParams) {
+    const isSelect = /^\s*SELECT/i.test(cleanSql);
+    if (/otp_verifications/i.test(cleanSql)) {
+        if (/INSERT/i.test(cleanSql)) {
+            const email = String(cleanParams[0] || '').toLowerCase().trim();
+            const otp_code = String(cleanParams[1] || '');
+            const expires_at = String(cleanParams[2] || '');
+            memStore.otp.set(email, { otp_code, expires_at });
+            return [{ insertId: 1, affectedRows: 1 }, []];
+        }
+        if (/SELECT/i.test(cleanSql)) {
+            const email = String(cleanParams[0] || '').toLowerCase().trim();
+            const record = memStore.otp.get(email);
+            return [record ? [{ otp_code: record.otp_code, expires_at: record.expires_at }] : [], []];
+        }
+        if (/DELETE/i.test(cleanSql)) {
+            const email = String(cleanParams[0] || '').toLowerCase().trim();
+            memStore.otp.delete(email);
+            return [{ affectedRows: 1 }, []];
+        }
+    }
+    if (/users/i.test(cleanSql)) {
+        if (/SELECT/i.test(cleanSql)) {
+            if (/WHERE\s+email\s*=/i.test(cleanSql)) {
+                const email = String(cleanParams[0] || '').toLowerCase().trim();
+                const u = memStore.users.get(email);
+                return [u ? [{ ...u }] : [], []];
+            }
+            if (/WHERE\s+username\s*=/i.test(cleanSql)) {
+                const uname = String(cleanParams[0] || '').toLowerCase().trim();
+                let found = null;
+                for (const u of memStore.users.values()) {
+                    if ((u.username || '').toLowerCase() === uname) {
+                        found = u;
+                        break;
+                    }
+                }
+                return [found ? [{ ...found }] : [], []];
+            }
+            const allUsers = Array.from(memStore.users.values()).map(u => ({ ...u }));
+            return [allUsers, []];
+        }
+        if (/INSERT/i.test(cleanSql)) {
+            const email = String(cleanParams[0] || '').toLowerCase().trim();
+            if (memStore.users.has(email)) {
+                const dupErr = new Error('UNIQUE constraint failed: users.email');
+                dupErr.code = 'ER_DUP_ENTRY';
+                throw dupErr;
+            }
+            const newUser = {
+                id: memStore.users.size + 1,
+                email,
+                username: cleanParams[1] || email.split('@')[0],
+                password: cleanParams[2] || '',
+                first_name: cleanParams[3] || '',
+                last_name: cleanParams[4] || '',
+                created_at: new Date().toISOString()
+            };
+            memStore.users.set(email, newUser);
+            return [{ insertId: newUser.id, affectedRows: 1 }, []];
+        }
+    }
+    if (/user_activity_logs/i.test(cleanSql)) {
+        if (/INSERT/i.test(cleanSql)) {
+            memStore.logs.push({
+                id: memStore.logs.length + 1,
+                user_id: cleanParams[0] || null,
+                action: cleanParams[1] || '',
+                details: cleanParams[2] || '',
+                created_at: new Date().toISOString()
+            });
+            return [{ insertId: memStore.logs.length, affectedRows: 1 }, []];
+        }
+        if (/SELECT/i.test(cleanSql)) {
+            return [[...memStore.logs], []];
+        }
+    }
+    return isSelect ? [[], []] : [{ insertId: 0, affectedRows: 0 }, []];
+}
+
+
 /**
  * Inisialisasi Database Cadangan SQL (SQLite)
  */
 export function initFallbackSqlDb() {
     try {
         if (!sqliteDb) {
-            sqliteDb = new DatabaseSync(DB_FILE_PATH);
+            if (DatabaseSyncClass) sqliteDb = new DatabaseSyncClass(DB_FILE_PATH);
             console.log('🛡️ [SQL FALLBACK] Database Cadangan SQL (SQLite) siap pada:', DB_FILE_PATH);
             
             // Inisialisasi skema tabel SQL
@@ -126,7 +220,7 @@ export async function executeFallbackSql(sql, params = []) {
         initFallbackSqlDb();
     }
     if (!sqliteDb) {
-        throw new Error('Database cadangan SQL tidak tersedia.');
+        return executeMemorySql(cleanSql, cleanParams);
     }
 
     const cleanSql = normalizeQueryForSqlite(sql);
