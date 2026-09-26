@@ -21,15 +21,7 @@ async function initDatabase() {
     let connection;
     try {
         // Hubungkan ke MySQL server tanpa database terlebih dahulu
-        const connectionConfig = {
-            host,
-            port,
-            user,
-            password,
-            connectTimeout: 10000,
-            ...(process.env.DB_SSL === 'true' ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } } : {})
-        };
-        connection = await mysql.createConnection(connectionConfig);
+        connection = await mysql.createConnection({ host, port, user, password, connectTimeout: 5000 });
         console.log(`✅ [DB INIT] Terhubung ke MySQL server pada ${host}:${port} sebagai ${user}`);
 
         // Buat database jika belum ada
