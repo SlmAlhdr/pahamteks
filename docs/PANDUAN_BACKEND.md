@@ -376,6 +376,32 @@ Fingerprint secret admin juga diperiksa pada setiap request; mengganti `ADMIN_PA
 
 Buka `http://127.0.0.1:3000/admin`. Jika belum login, halaman menampilkan form admin untuk email, password akun, dan password admin. Setelah berhasil, dashboard menampilkan status GraphQL, koneksi database, jumlah kunci Gemini, serta maksimal 100 log terbaru. Semua query tetap diperiksa server; menyembunyikan menu di frontend bukan kontrol akses.
 
+---
+
+### 5. Dasbor Admin Visual Terintegrasi di Web UI
+
+Untuk mempermudah pemantauan tanpa perlu mengetik kueri GraphQL manual atau perintah `curl`, PahamTeks menyediakan **Dasbor Admin Visual** yang terpasang langsung di antarmuka web:
+
+* **Lokasi Komponen UI**: [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx)
+* **Pintu Masuk Navigasi**: Tab **👑 Admin** di Navbar atas aplikasi (`http://127.0.0.1:3000`) atau akses langsung URL `http://127.0.0.1:3000/admin`.
+* **Fitur-Fitur Utama Dasbor Visual**:
+  1. **4 Kartu Metrik Telemetri Live**:
+     - Status Server Backend (Online / Latensi respon).
+     - Database Aktif (Menampilkan apakah menggunakan MySQL Utama atau SQLite Failover).
+     - Total Slot Kunci AI Gemini yang terkonfigurasi.
+     - Sesi Administrator Terverifikasi.
+  2. **Visualizer Pool Kunci Google Gemini AI (Slot 1–9)**:
+     - Menampilkan indikator grafis status setiap slot kunci API Gemini yang terdaftar di `.env`.
+     - Memberikan sinyal visual apakah pool siap melayani kuis adaptif dan glosarium kamus.
+  3. **Tabel Audit Trail Aktivitas Pengguna (User Activity Logs)**:
+     - Membaca tabel `user_activity_logs` secara realtime (maksimal 50–100 entri terbaru).
+     - Kolom tabel lengkap: ID Log, User ID, Jenis Aksi (LOGIN, QUIZ_COMPLETE, TRANSLATE, dll), Detail payload, dan Waktu Eksekusi.
+     - Tombol **"🔄 Refresh Data"** untuk memuat ulang data telemetri seketika tanpa perlu me-reload halaman browser.
+
+---
+
+### 6. Probe Telemetri Administrator via REST `/health`
+
 Setiap resolver root memiliki kebijakan akses eksplisit di `server/src/resolvers/index.js`. `me` memerlukan sesi, `logActivity` mengambil pemilik log dari identitas token, sedangkan `userLogs`, `serverStatus`, dan detail `/health` memerlukan sesi admin. Operasi belajar serta autentikasi tetap publik untuk mendukung pengguna tamu. Log aktivitas tidak dapat dibaca oleh akun biasa.
 
 Contoh memeriksa health detail setelah memperoleh token admin melalui login:
@@ -388,6 +414,64 @@ Jangan menempelkan token nyata ke dokumentasi, tiket, atau commit.
 
 ---
 
+## 🔍 Diagnosis Terminal & Panduan Mengatasi Masalah Backend (Troubleshooting)
+
+Jika kamu mendapati terminal backend berhenti, mengeluarkan teks merah, atau aplikasi tidak dapat terhubung, berikut panduan diagnosis kasus nyata dan cara cepat mengatasinya:
+
+### 1. Error `JWT_SECRET must be configured with at least 32 characters`
+* **Gejala**: Saat menjalankan `node src/index.js` atau `npm run dev`, terminal langsung berhenti dengan pesan:
+  ```text
+  Error: JWT_SECRET must be configured with at least 32 characters.
+  ```
+* **Penyebab**: Perintah dijalankan dari folder root proyek (`c:\Salim\Kerjaan\pahamteks`), sementara berkas `.env` tersimpan di folder `server/.env`. Pustaka `dotenv` secara default mencari `.env` di direktori kerja aktif (*current working directory*). Jika dieksekusi dari root tanpa flag prefix, variabel lingkungan tidak terbaca (kosong).
+* **Solusi**:
+  1. Selalu jalankan backend menggunakan:
+     ```powershell
+     npm --prefix server run dev
+     ```
+     atau berpindah direktori terlebih dahulu:
+     ```powershell
+     cd server
+     npm run dev
+     ```
+  2. Pastikan berkas `server/.env` sudah memiliki variabel `JWT_SECRET` minimal 32 karakter acak. Kamu bisa membuat secret yang valid secara instan via terminal:
+     ```powershell
+     node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"
+     ```
+
+### 2. Terminal Kelihatan "Membeku / Macet" Setelah Error Merah
+* **Gejala**: Muncul pesan error merah di terminal, tetapi kursor diam dan tidak kembali ke prompt PowerShell biasa (`PS C:\...>`).
+* **Penyebab**: Skrip `npm run dev` menggunakan fitur pemantau bawaan Node.js (`node --watch-path=src src/index.js`). Ketika terjadi kegagalan startup (*fatal uncaught exception*), proses aplikasi berhenti, tetapi **proses watcher tetap aktif berjalan** di background menunggu kamu memperbaiki kode atau konfigurasi. Ini bukan terminal rusak/hang.
+* **Solusi**:
+  - Untuk keluar total ke prompt: Tekan `Ctrl + C` di jendela terminal tersebut.
+  - Untuk memicu restart otomatis: Cukup perbaiki kesalahan (misalnya melengkapi `.env` atau memperbaiki typo kode) lalu simpan file (`Ctrl + S`), watcher akan otomatis memuat ulang server.
+
+### 3. Port 4000 Bentrok: `Error: listen EADDRINUSE: address already in use :::4000`
+* **Gejala**: Backend gagal menyala dengan log `EADDRINUSE`.
+* **Penyebab**: Ada proses Node.js sebelumnya yang masih berjalan di latar belakang (misalnya jendela terminal VS Code ditutup langsung tanpa mematikan server dengan `Ctrl + C`).
+* **Solusi Cepat (PowerShell)**:
+  1. Cek proses yang sedang menduduki Port 4000:
+     ```powershell
+     Get-NetTCPConnection -LocalPort 4000 -ErrorAction SilentlyContinue | Format-Table OwningProcess, LocalAddress, LocalPort, State
+     ```
+  2. Hentikan semua proses Node.js yang menggantung di sistem:
+     ```powershell
+     Get-Process node | Stop-Process -Force
+     ```
+  3. Nyalakan kembali backend dengan bersih:
+     ```powershell
+     npm --prefix server run dev
+     ```
+
+### 4. Perbedaan Endpoint `/healthz` (Publik) vs `/health` (Admin)
+* **Pertanyaan**: Mengapa saat membuka `http://127.0.0.1:4000/health` di browser muncul error `{"error":"Autentikasi diperlukan."}`?
+* **Penjelasan**:
+  - **`/healthz` (Liveness Probe Publik)**: Didesain untuk mengecek apakah server Express hidup (`{"status":"OK"}`). Dapat diakses oleh siapa saja tanpa autentikasi.
+  - **`/health` (Telemetri Sensitif Admin)**: Berisi informasi rahasia infrastruktur (status koneksi database, jumlah API key Gemini, dan beban server). Endpoint ini sengaja dikunci demi keamanan dan hanya merespon jika disertai header `Authorization: Bearer <admin-token>`. Munculnya pesan "Autentikasi diperlukan" membuktikan bahwa perisai keamanan bekerja 100% normal.
+  - Untuk melihat telemetri tersebut secara visual, cukup gunakan **Dasbor Admin Visual** di web UI (`http://127.0.0.1:3000/admin`).
+
+---
+
 ## 🚀 Perintah Menjalankan Backend & Utilitas
 
 ```powershell
@@ -396,6 +480,9 @@ npm --prefix server run dev
 
 # Memeriksa probe publik minimal
 curl http://127.0.0.1:4000/healthz
+
+# Membersihkan proses node yang menggantung di background (jika port 4000 bentrok)
+Get-Process node | Stop-Process -Force
 
 # Mengekspor isi database ke file backup SQL
 node server/src/db/exportSqlBackup.js

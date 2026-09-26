@@ -291,14 +291,44 @@ Buat secret acak melalui terminal dengan `node -e "console.log(require('node:cry
 * **Solusi**: Jangan panik, ini adalah fitur keamanan otomatis. Backend tetap berjalan 100% normal menggunakan SQLite lokal.
 
 ### 4. Port Sudah Digunakan: `Error: listen EADDRINUSE: address already in use :::4000`
-* **Penyebab**: Ada proses node server lama yang masih menggantung di background.
+* **Penyebab**: Ada proses node server lama yang masih menggantung di background (misalnya terminal ditutup tanpa `Ctrl + C`).
 * **Solusi di Windows PowerShell**:
-  ```powershell
-  Get-Process node | Stop-Process -Force
-  ```
-  Lalu jalankan ulang `npm --prefix server run dev`.
+  1. Periksa proses yang menduduki port 4000:
+     ```powershell
+     Get-NetTCPConnection -LocalPort 4000 -ErrorAction SilentlyContinue | Format-Table OwningProcess, LocalAddress, LocalPort, State
+     ```
+  2. Hentikan seluruh proses Node.js yang tertinggal sekaligus:
+     ```powershell
+     Get-Process node | Stop-Process -Force
+     ```
+  3. Jalankan ulang server:
+     ```powershell
+     npm --prefix server run dev
+     ```
 
-### 5. Kuota AI Habis: `429 Too Many Requests`
+### 5. Error: `JWT_SECRET must be configured with at least 32 characters`
+* **Penyebab**: Perintah backend dijalankan langsung dari folder root proyek (`c:\Salim\Kerjaan\pahamteks`) tanpa spesifikasi folder server, sehingga pustaka `dotenv` mencari berkas `.env` di folder root dan tidak menemukannya.
+* **Solusi**:
+  1. Selalu jalankan dengan prefix folder server:
+     ```powershell
+     npm --prefix server run dev
+     ```
+     atau masuk ke folder server terlebih dahulu (`cd server; npm run dev`).
+  2. Pastikan `JWT_SECRET` di `server/.env` berisi minimal 32 karakter acak (buat instan dengan `node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"`).
+
+### 6. Terminal Kelihatan "Macet / Membeku" Setelah Muncul Error Merah
+* **Penyebab**: Backend dijalankan dengan mode native watcher (`node --watch-path=src src/index.js`). Saat terjadi crash, proses anak mati namun proses watcher tetap berjalan di terminal untuk memantau perubahan berkas. Kursor terminal tidak akan kembali ke prompt biasa sampai proses dihentikan.
+* **Solusi**:
+  - Tekan `Ctrl + C` jika ingin keluar total ke prompt PowerShell.
+  - Perbaiki error lalu simpan file (`Ctrl + S`), watcher akan otomatis merestart server tanpa perlu mengetik ulang perintah.
+
+### 7. Membuka `GET /health` Muncul `{"error":"Autentikasi diperlukan."}`
+* **Penyebab**: Mengira `/health` adalah endpoint publik biasa.
+* **Solusi**:
+  - `/healthz` adalah probe publik (`{"status":"OK"}`) untuk cek hidup/mati server tanpa token.
+  - `/health` adalah telemetri internal khusus admin. Pesan error autentikasi tersebut adalah proteksi keamanan normal, bukan kerusakan server. Buka **Dasbor Admin Visual** di web UI (`http://127.0.0.1:3000/admin`) untuk melihat metrik secara visual.
+
+### 8. Kuota AI Habis: `429 Too Many Requests`
 * **Penyebab**: Akun Google Gemini API sedang kehabisan limit kueri per menit.
 * **Solusi**: Tambahkan kunci API baru di `server/.env` sebagai `GEMINI_API_KEY_2`. Backend otomatis merotasi kunci tanpa mengganggu pengguna.
 
@@ -318,19 +348,25 @@ npm --prefix client run dev
 
 Kunjungi alamat:
 * **Aplikasi Web**: `http://127.0.0.1:3000`
-* **Dashboard admin langsung**: `http://127.0.0.1:3000/admin` (login admin bila belum masuk)
+* **Dasbor Admin Visual**: `http://127.0.0.1:3000/admin` atau klik tab **👑 Admin** di Navbar atas
 * **GraphQL Interactive Playground**: `http://127.0.0.1:4000/graphql`
 * **Probe publik minimal**: `http://127.0.0.1:4000/healthz`
 * **Health detail admin**: `http://127.0.0.1:4000/health` dengan `Authorization: Bearer <token-admin>`
 
-### Menyiapkan dan membuka dashboard admin
+### Menyiapkan dan Membuka Dasbor Admin Visual
 
-1. Daftarkan akun pengguna dan verifikasi emailnya.
-2. Masukkan email akun ke `ADMIN_EMAILS` di `server/.env`; beberapa email dipisahkan koma.
-3. Buat `ADMIN_PASSWORD` acak minimal 16 karakter. Ini adalah password tambahan bersama, di samping password akun masing-masing admin.
+Aplikasi PahamTeks menyediakan tampilan panel kontrol khusus administrator secara visual di antarmuka web melalui komponen [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx):
+
+1. Daftarkan akun pengguna di web PahamTeks dan verifikasi emailnya.
+2. Masukkan email akun tersebut ke `ADMIN_EMAILS` di `server/.env` (beberapa email dipisahkan koma).
+3. Buat `ADMIN_PASSWORD` acak minimal 16 karakter di `server/.env`. Ini adalah password tambahan bersama di samping password akun masing-masing admin.
 4. Pastikan `JWT_SECRET` berisi secret acak minimal 32 karakter, lalu restart backend.
-5. Buka `http://127.0.0.1:3000/admin`. Jika belum login, halaman menampilkan form admin: email, password akun, dan password admin.
-6. Setelah login sukses, dashboard status server dan audit log tampil di URL `/admin`. Menu **Admin** juga mengarah ke URL tersebut.
+5. Buka `http://127.0.0.1:3000` lalu klik tab **👑 Admin** di Navbar (atau akses URL `http://127.0.0.1:3000/admin`).
+6. Jika belum login admin, form autentikasi admin akan muncul: masukkan email, password akun, dan password admin bersama.
+7. Setelah berhasil login, Dasbor Admin Visual akan menyajikan:
+   - **4 Kartu Metrik Server Live**: Status backend (Online / Latensi), Database aktif (MySQL Utama vs SQLite Failover), Jumlah API Key Gemini, dan Status Sesi Admin.
+   - **Visualizer Status Slot Kunci AI Gemini**: Pemantauan grafis ketersediaan kunci 1–9.
+   - **Tabel Audit Aktivitas Pengguna (User Activity Logs)**: Menampilkan aksi realtime pengguna beserta tombol **"🔄 Refresh Data"** tanpa perlu me-reload browser.
 
 Backend memberikan klaim admin hanya setelah password akun, allowlist email, dan `ADMIN_PASSWORD` lolos pemeriksaan. Login biasa tidak mengangkat role. Mengubah `ADMIN_PASSWORD` membatalkan sesi admin lama. Query `serverStatus`, `userLogs`, dan detail `/health` memerlukan token admin yang valid; `logActivity` mengambil identitas pemilik dari token, bukan dari input `userId` klien. Gunakan HTTPS jika aplikasi dibuka melalui jaringan publik.
 
