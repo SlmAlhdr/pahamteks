@@ -242,17 +242,6 @@ Lalu jalankan ulang Terminal 1 dan Terminal 2.
 * Konfigurasi ini **sudah otomatis diatasi** di berkas [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) dengan menambahkan `allowedHosts: true`.
 * Jika jendela browser kamu masih menampilkan pesan tersebut, cukup **tekan tombol Refresh (F5)** di browser HP / laptop kamu. Vite otomatis memuat konfigurasi baru tanpa perlu me-restart tunnel.
 
-### Masalah 8: Layar Browser Menampilkan `Error 1033: Cloudflare Tunnel error`
-**Penyebab**:
-1. Tautan yang kamu buka adalah tautan dari sesi Cloudflare sebelumnya yang sudah mati/hangus saat terminal `cloudflared` sempat dimatikan atau di-restart.
-2. Fitur VPN bawaan browser (seperti tombol biru `[ VPN ]` di Opera GX) sedang aktif sehingga mengganggu resolusi rute Cloudflare Tunnel.
-3. Terowongan baru saja dinyalakan dan membutuhkan waktu perambatan DNS (*DNS propagation*) sekitar 15–30 detik.
-
-**Solusi**:
-1. **Buka jendela terminal tempat `cloudflared` berjalan**, lalu salin tautan `https://....trycloudflare.com` yang **paling baru** yang tercantum di dalam kotak.
-2. **Matikan VPN di browser kamu** (jika pakai Opera GX, klik tombol biru `[ VPN ]` di sebelah kiri address bar dan geser ke posisi OFF).
-3. Tunggu sekitar 15 detik lalu tekan tombol **Refresh (F5)**.
-
 ---
 
 ## ⚡ Pintasan Cepat: Pakai `start-dev.bat`

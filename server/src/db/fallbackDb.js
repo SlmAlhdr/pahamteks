@@ -105,7 +105,7 @@ function normalizeQueryForSqlite(sql) {
     // Ubah ON DUPLICATE KEY UPDATE untuk otp_verifications
     if (/INSERT\s+INTO\s+otp_verifications/i.test(normalized) && /ON\s+DUPLICATE\s+KEY\s+UPDATE/i.test(normalized)) {
         normalized = normalized.replace(
-            /ON\s+DUPLICATE\s+KEY\s+UPDATE\s+otp_code\s*=\s*VALUES\(otp_code\),\s*expires_at\s*=\s*VALUES\(expires_at\)/i,
+            /ON\s+DUPLICATE\s+KEY\s+UPDATE.*$/is,
             'ON CONFLICT(email) DO UPDATE SET otp_code=excluded.otp_code, expires_at=excluded.expires_at'
         );
     }
@@ -127,16 +127,33 @@ export async function executeFallbackSql(sql, params = []) {
     const cleanSql = normalizeQueryForSqlite(sql);
     const isSelect = /^\s*SELECT/i.test(cleanSql);
 
+    // Normalisasi parameter agar selalu kompatibel dengan binding tipe data SQLite:
+    // 1. JavaScript Date instance -> ISO 8601 string
+    // 2. undefined -> null
+    // 3. boolean -> 1 atau 0
+    const cleanParams = params.map(p => {
+        if (p instanceof Date) {
+            return p.toISOString();
+        }
+        if (p === undefined) {
+            return null;
+        }
+        if (typeof p === 'boolean') {
+            return p ? 1 : 0;
+        }
+        return p;
+    });
+
     try {
         const stmt = sqliteDb.prepare(cleanSql);
 
         if (isSelect) {
-            const rawRows = stmt.all(...params);
+            const rawRows = stmt.all(...cleanParams);
             // Kembalikan objek row standar
             const rows = rawRows.map(r => ({ ...r }));
             return [rows, []];
         } else {
-            const info = stmt.run(...params);
+            const info = stmt.run(...cleanParams);
             const resultHeader = {
                 insertId: info.lastInsertRowid ? Number(info.lastInsertRowid) : 0,
                 affectedRows: info.changes || 0

@@ -105,7 +105,9 @@ export const authResolvers = {
             const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
 
-            // 3. Simpan OTP di database atau memori
+            // 3. Simpan OTP di database dan memori sebagai cadangan
+            memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
+
             if (isDbConnected()) {
                 const db = getDb();
                 try {
@@ -115,10 +117,7 @@ export const authResolvers = {
                     );
                 } catch (err) {
                     console.warn('[DB Save OTP]', err.message);
-                    memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
                 }
-            } else {
-                memOtp.set(cleanEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
             }
 
             // 4. Kirim email nyata ke alamat email tujuan
@@ -167,19 +166,36 @@ export const authResolvers = {
                         return { success: false, message: 'Email ini sudah terdaftar! Silakan langsung masuk.' };
                     }
 
-                    // Validasi OTP dari Database
-                    const [otpRows] = await db.execute(
-                        'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
-                        [cleanEmail]
-                    );
+                    // Validasi OTP dari Database dengan fallback memori cadangan
+                    let otpRows = [];
+                    try {
+                        const [rows] = await db.execute(
+                            'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
+                            [cleanEmail]
+                        );
+                        otpRows = rows || [];
+                    } catch (err) {
+                        console.warn('[DB Fetch Register OTP]', err.message);
+                    }
 
-                    if (otpRows.length === 0) {
+                    let record = null;
+                    if (otpRows.length > 0) {
+                        record = otpRows[0];
+                    } else if (memOtp.has(cleanEmail)) {
+                        const memRecord = memOtp.get(cleanEmail);
+                        record = {
+                            otp_code: typeof memRecord === 'object' ? memRecord.code : memRecord,
+                            expires_at: typeof memRecord === 'object' ? new Date(memRecord.expiresAt).toISOString() : new Date(Date.now() + 600000).toISOString()
+                        };
+                    }
+
+                    if (!record) {
                         return { success: false, message: 'Kode verifikasi belum dikirim atau sudah kadaluarsa. Silakan kirim ulang.' };
                     }
 
-                    const record = otpRows[0];
                     if (new Date(record.expires_at) < new Date()) {
-                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
+                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]).catch(() => {});
+                        memOtp.delete(cleanEmail);
                         return { success: false, message: 'Kode verifikasi sudah kadaluarsa. Silakan kirim ulang kode baru.' };
                     }
 
@@ -197,7 +213,8 @@ export const authResolvers = {
                     );
 
                     // Hapus OTP setelah berhasil digunakan
-                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]);
+                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [cleanEmail]).catch(() => {});
+                    memOtp.delete(cleanEmail);
 
                     const token = createAccessToken({ id: res.insertId, email: cleanEmail, username: finalUsername });
                     logSecurityEvent({
@@ -518,6 +535,9 @@ export const authResolvers = {
             const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 menit
 
+            // Simpan ke memori dan database sebagai cadangan
+            memOtp.set(targetEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
+
             if (isDbConnected()) {
                 const db = getDb();
                 try {
@@ -527,10 +547,7 @@ export const authResolvers = {
                     );
                 } catch (err) {
                     console.warn('[DB Save Reset OTP]', err.message);
-                    memOtp.set(targetEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
                 }
-            } else {
-                memOtp.set(targetEmail, { code: otpCode, expiresAt: expiresAt.getTime() });
             }
 
             // Kirim email khusus reset password
@@ -571,19 +588,36 @@ export const authResolvers = {
                     }
                     targetEmail = rows[0].email;
 
-                    // 2. Verifikasi OTP dari database
-                    const [otpRows] = await db.execute(
-                        'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
-                        [targetEmail]
-                    );
+                    // 2. Verifikasi OTP dari database dengan fallback memori
+                    let otpRows = [];
+                    try {
+                        const [dbOtp] = await db.execute(
+                            'SELECT otp_code, expires_at FROM otp_verifications WHERE email = ?',
+                            [targetEmail]
+                        );
+                        otpRows = dbOtp || [];
+                    } catch (err) {
+                        console.warn('[DB Fetch Reset OTP]', err.message);
+                    }
 
-                    if (otpRows.length === 0) {
+                    let record = null;
+                    if (otpRows.length > 0) {
+                        record = otpRows[0];
+                    } else if (memOtp.has(targetEmail)) {
+                        const memRecord = memOtp.get(targetEmail);
+                        record = {
+                            otp_code: typeof memRecord === 'object' ? memRecord.code : memRecord,
+                            expires_at: typeof memRecord === 'object' ? new Date(memRecord.expiresAt).toISOString() : new Date(Date.now() + 600000).toISOString()
+                        };
+                    }
+
+                    if (!record) {
                         return { success: false, message: 'Kode reset belum diminta atau sudah tidak berlaku. Silakan kirim ulang.' };
                     }
 
-                    const record = otpRows[0];
                     if (new Date(record.expires_at) < new Date()) {
-                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]);
+                        await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]).catch(() => {});
+                        memOtp.delete(targetEmail);
                         return { success: false, message: 'Kode reset sudah kadaluarsa. Silakan minta kode baru.' };
                     }
 
@@ -599,7 +633,8 @@ export const authResolvers = {
                     await db.execute('UPDATE users SET password = ? WHERE email = ?', [hash, targetEmail]);
 
                     // 5. Hapus OTP yang sudah dipakai
-                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]);
+                    await db.execute('DELETE FROM otp_verifications WHERE email = ?', [targetEmail]).catch(() => {});
+                    memOtp.delete(targetEmail);
 
                     return {
                         success: true,
