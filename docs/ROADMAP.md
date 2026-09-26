@@ -54,7 +54,7 @@ Fase ini berfokus pada kecepatan respon aplikasi, penghapusan hambatan (*frictio
   - Pre-warming definisi istilah populer (seperti `syntax`, `algorithm`, dll.) saat server pertama kali menyala.
   - Cache soal kuis per level dan kategori (`quizCache`) agar sesi belajar tidak boros kuota AI.
 * **Prioritas Model AI Ringan & Cepat**:
-  - Menggunakan `gemini-3.5-flash-lite` sebagai prioritas pertama untuk memangkas waktu tunggu dari 45 detik menjadi belasan detik, bebas dari error *503 High Demand*.
+  - Menggunakan `gemini-3.8-flash` sebagai prioritas pertama, dengan `gemini-3.7-flash` dan `gemini-flash-latest` sebagai model cadangan. Model utama dapat diubah melalui `GEMINI_MODEL`.
 * **Penghapusan Native Alert & Peningkatan Aksesibilitas**:
   - Mengganti semua `alert()` bawaan browser dengan pesan status dan modal yang menyatu dengan tema antarmuka.
   - Standarisasi penanganan error tanpa *swallowed catches*.

@@ -36,7 +36,7 @@ flowchart TD
 
     subgraph AI ["AI Engine (Google Gemini)"]
         KeyPool["Pool Multi-Key Gemini (Round-Robin)"]
-        GeminiAPI["Gemini 2.5 Flash / 1.5"]
+        GeminiAPI["Gemini 3.8 Flash (utama) / 3.7 Flash (cadangan)"]
         KeyPool --> GeminiAPI
     end
 
