@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_SERVER_STATUS, GET_USER_LOGS } from '../graphql/queries';
 
-export default function AdminDashboardView({ user, onBackHome }) {
+export default function AdminDashboardView({ user, onBackHome, onSwitchToAdmin }) {
   const [search, setSearch] = useState('');
 
   // Backend tetap menjadi penjaga utama; jangan jalankan query admin dari UI untuk akun biasa.
@@ -40,8 +40,19 @@ export default function AdminDashboardView({ user, onBackHome }) {
         <div className="admin-dashboard-card admin-access-denied">
           <span className="admin-dashboard-eyebrow">Akses terbatas</span>
           <h1>Dashboard administrator</h1>
-          <p>Masuk melalui alur login administrator untuk membuka data ini.</p>
-          <button className="admin-dashboard-button" onClick={onBackHome}>Kembali</button>
+          <p>Halaman ini dikhususkan untuk administrator. Masuk dengan akun admin untuk membuka data ini.</p>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="admin-dashboard-button" onClick={onBackHome}>Kembali ke Beranda</button>
+            {onSwitchToAdmin && (
+              <button
+                className="admin-dashboard-button"
+                style={{ background: 'var(--btn-cyan, #00b4d8)', borderColor: 'var(--btn-cyan, #00b4d8)' }}
+                onClick={onSwitchToAdmin}
+              >
+                Masuk sebagai Admin
+              </button>
+            )}
+          </div>
         </div>
       </section>
     );

@@ -36,6 +36,7 @@ export default function WelcomePortal({
   onAuthSuccess,
   onGuestLogin,
   initialTab = 'login',
+  onTabChange,
   currentLang,
   t
 }) {
@@ -254,6 +255,11 @@ export default function WelcomePortal({
                 setActiveTab('login');
                 setAdminPassword('');
                 setStatusMsg({ text: '', isError: false });
+                if (onTabChange) {
+                  onTabChange('home');
+                } else if (window.location.pathname.replace(/\/+$/, '').toLowerCase() === '/admin') {
+                  window.history.pushState({}, '', '/');
+                }
               }}
             >
               {t('auth_back_to_login')}
@@ -351,19 +357,6 @@ export default function WelcomePortal({
               {loginLoading ? 'Memproses...' : t('auth_btn_login')}
             </button>
           </form>
-        )}
-
-        {activeTab === 'login' && (
-          <button
-            type="button"
-            className="admin-login-link"
-            onClick={() => {
-              setActiveTab('admin');
-              setStatusMsg({ text: '', isError: false });
-            }}
-          >
-            Masuk khusus administrator
-          </button>
         )}
 
         {activeTab === 'admin' && (

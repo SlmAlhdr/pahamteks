@@ -278,17 +278,6 @@ export default function AuthModal({
                 {t('auth_btn_reg')}
               </span>
             </div>
-
-            <button
-              type="button"
-              className="admin-login-link"
-              onClick={() => {
-                setMode('admin');
-                setStatusMsg({ text: '', isError: false });
-              }}
-            >
-              Masuk khusus administrator
-            </button>
           </form>
         )}
 

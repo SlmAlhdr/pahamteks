@@ -15,9 +15,13 @@ import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
 
+const isAdminPath = (path = window.location.pathname) => (
+  path.replace(/\/+$/, '').toLowerCase() === '/admin'
+);
+
 export default function App() {
   const [activeTab, setActiveTabState] = useState(() => (
-    window.location.pathname.replace(/\/+$/, '') === '/admin' ? 'admin' : 'home'
+    isAdminPath() ? 'admin' : 'home'
   ));
   const [currentLang, setCurrentLang] = useState('id');
   const [user, setUser] = useState(null);
@@ -37,7 +41,7 @@ export default function App() {
 
   useEffect(() => {
     const syncTabWithUrl = () => {
-      setActiveTabState(window.location.pathname.replace(/\/+$/, '') === '/admin' ? 'admin' : 'home');
+      setActiveTabState(isAdminPath() ? 'admin' : 'home');
     };
     window.addEventListener('popstate', syncTabWithUrl);
     return () => window.removeEventListener('popstate', syncTabWithUrl);
@@ -241,6 +245,7 @@ export default function App() {
             onAuthSuccess={handleAuthSuccess}
             onGuestLogin={handleGuestLogin}
             onOpenAuthModal={handleOpenAuth}
+            onTabChange={setActiveTab}
             initialTab={activeTab === 'admin' ? 'admin' : 'login'}
             currentLang={currentLang}
             t={t}
@@ -248,7 +253,14 @@ export default function App() {
         ) : (
           <>
             {activeTab === 'admin' && (
-              <AdminDashboardView user={user} onBackHome={() => setActiveTab('home')} />
+              <AdminDashboardView
+                user={user}
+                onBackHome={() => setActiveTab('home')}
+                onSwitchToAdmin={() => {
+                  handleLogout();
+                  setActiveTab('admin');
+                }}
+              />
             )}
             {activeTab === 'home' && (
               <HomeHero onNavigate={setActiveTab} t={t} currentLang={currentLang} />

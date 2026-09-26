@@ -129,11 +129,13 @@ https://random-kata-kata.trycloudflare.com
 2. Tempel (*paste*) link `https://random-kata-kata.trycloudflare.com` di kolom alamat (*address bar*).
 3. Tekan Enter. Tampilan PahamTeks akan muncul persis seperti di laptop kamu dengan koneksi HTTPS yang aman dan gembok hijau!
 
-### Langkah 5 — Mengakses Dasbor Admin Visual via HTTPS (Opsional)
-Jika kamu ingin memantau kesehatan server, rotasi API Gemini, atau log aktivitas pengguna dari HP / tablet melalui internet:
-1. Klik tab **👑 Admin** di Navbar atas (atau tambahkan `/admin` di belakang link HTTPS kamu: `https://<link-kamu>.trycloudflare.com/admin`).
-2. Masukkan email admin yang terdaftar di `ADMIN_EMAILS`, password akun, dan password admin bersama yang ada di `server/.env`.
-3. Kamu bisa melihat 4 kartu metrik server, status slot 1–9 kunci Gemini, dan tabel log aktivitas pengguna secara realtime langsung dari HP!
+### Langkah 5 — Mengakses Dasbor Admin Visual via HTTPS (Khusus Admin)
+Untuk menjaga keamanan privasi, tombol login admin tidak ditampilkan pada form masuk pengunjung biasa. Akses admin dilakukan langsung melalui URL rahasia:
+1. Buka browser dan tambahkan `/admin` di belakang link HTTPS kamu: `https://<link-kamu>.trycloudflare.com/admin` (atau `http://localhost:3000/admin` jika di laptop).
+2. Form **Portal Khusus Administrator** akan otomatis terbuka.
+3. Masukkan email admin yang terdaftar di `ADMIN_EMAILS`, password akun, dan password admin bersama yang ada di `server/.env`.
+4. Setelah berhasil masuk, kamu akan dialihkan ke Dasbor Admin Visual (dan tab navigasi **👑 Admin** akan muncul di Navbar atas selama sesi aktif).
+5. Kamu bisa melihat 4 kartu metrik server, status slot 1–9 kunci Gemini, dan tabel log aktivitas pengguna secara realtime langsung dari HP!
 
 ### Langkah 6 — Mematikan Layanan
 Setelah selesai uji coba, matikan layanan dengan urutan terbalik:
@@ -263,7 +265,7 @@ Setelah itu, kamu tinggal membuka 1 terminal tambahan untuk Cloudflare:
 | **Nyalakan Frontend (Port 3000)** | `npm --prefix client run dev` | `npm run dev` (di folder `client>`) |
 | **Buka Tunnel HTTPS Publik** | `.\cloudflared.exe tunnel --url http://localhost:3000` | *(Jalankan dari folder utama)* |
 | **Unduh Cloudflare Tunnel** | `curl.exe -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe` | *(Sekali saja di folder utama)* |
-| **Akses Dasbor Admin via HTTPS** | Buka tab **👑 Admin** di web atau akses `https://<link>.trycloudflare.com/admin` | — |
+| **Akses Dasbor Admin via HTTPS** | Buka URL langsung `https://<link>.trycloudflare.com/admin` | — |
 | **Cek IP laptop (Wi-Fi lokal)** | `ipconfig` | `ipconfig` |
 | **Matikan semua proses Node.js** | `Get-Process node \| Stop-Process -Force` *(atau `taskkill /F /IM node.exe`)* | — |
 | **Matikan layanan** | Tekan `Ctrl + C` di jendela masing-masing | — |
