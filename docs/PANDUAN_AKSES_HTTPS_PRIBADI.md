@@ -235,6 +235,13 @@ Lalu jalankan ulang Terminal 1 dan Terminal 2.
 * Jika terminal kamu bertuliskan `...\pahamteks\server>`: cukup ketik `npm run dev` (tanpa `--prefix server`).
 * Jika ingin memakai `--prefix server`: ketik `cd ..` terlebih dahulu untuk kembali ke folder utama `pahamteks>`.
 
+### Masalah 7: Layar Browser Menampilkan `Blocked request. This host ("...trycloudflare.com") is not allowed.`
+**Penyebab**: Vite versi 6 memiliki fitur keamanan validasi domain (*host checking*). Secara default Vite memblokir akses jika nama domain yang diminta di browser berbeda dari `localhost` / `127.0.0.1`.
+
+**Solusi**:
+* Konfigurasi ini **sudah otomatis diatasi** di berkas [`client/vite.config.js`](file:///c:/Salim/Kerjaan/pahamteks/client/vite.config.js) dengan menambahkan `allowedHosts: true`.
+* Jika jendela browser kamu masih menampilkan pesan tersebut, cukup **tekan tombol Refresh (F5)** di browser HP / laptop kamu. Vite otomatis memuat konfigurasi baru tanpa perlu me-restart tunnel.
+
 ---
 
 ## ⚡ Pintasan Cepat: Pakai `start-dev.bat`
