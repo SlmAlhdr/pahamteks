@@ -1,4 +1,4 @@
-# Arsitektur Sistem PahamTeks
+r # Arsitektur Sistem PahamTeks
 
 Dokumen ini adalah cetak biru teknis sistem **PahamTeks**. Ditulis untuk para engineer dan developer di tim agar memahami bagaimana komponen-komponen di aplikasi ini saling terhubung, dari antarmuka React sampai lapisan database ganda.
 
