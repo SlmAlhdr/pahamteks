@@ -11,7 +11,7 @@ Jika kita kembali ke analogi **restoran**:
 * **Backend** adalah dapur tempat koki meracik resep, kompor menyala, dan gudang bahan makanan.
 * **Fullstack** adalah **arsitek dan manajer sistem restoran**: orang yang merancang bagaimana pelayan membawa pesanan dari meja makan ke dapur, memastikan koki menerima tiket pesanan yang benar, mengawasi kasir saat mencatat tagihan, hingga memastikan piring makanan disajikan kembali ke hadapan tamu tanpa tumpah dan tepat waktu.
 
-Sebagai developer fullstack di PahamTeks, kamu memegang gambaran utuh (*big picture*): dari saat tombol diklik di browser pemelajar, terbang melintasi jaringan internet, disaring perisai keamanan Express, diproses oleh kecerdasan buatan Gemini AI atau database MySQL/SQLite, hingga kembali merender tampilan baru di layar pengguna.
+Sebagai developer fullstack di PahamTeks, kamu memahami alur dari aksi pengguna, pemeriksaan Express, Gemini atau database TiDB/SQLite lokal, hingga tampilan diperbarui di browser.
 
 ---
 
@@ -106,13 +106,13 @@ Tabel berikut memetakan setiap fitur di antarmuka pengguna ke berkas backend dan
 | Fitur Aplikasi | Berkas Frontend (`client/`) | Berkas Resolver Backend (`server/`) | Tabel Database / Layanan |
 | :--- | :--- | :--- | :--- |
 | **Kuis Adaptif (Unit 1–5)** | [`client/src/components/QuizView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/QuizView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | Gemini AI + In-Memory Cache |
-| **Kamus Pintar & Glosarium** | [`client/src/components/DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | `dictionary_cache` + Gemini AI |
+| **Kamus Pintar & Glosarium** | [`client/src/components/DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | Gemini AI + cache memori sementara |
 | **Login & Registrasi Akun** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) | `users` (Bcrypt hash) |
 | **Kode OTP Verifikasi Email** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/utils/emailService.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/emailService.js) | `otp_verifications` + Nodemailer |
 | **Riwayat Skor & Statistik** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `quiz_history` (TiDB/local SQLite) |
 | **Log Aktivitas Pengguna** | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `user_activity_logs` |
 | **Maskot Pintar Teksie** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) | Logika state lokal React | Suara Web Speech API |
-| **Monitoring & Status Server** | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) (`/health`) | Endpoint Health JSON |
+| **Monitoring & Status Server** | Dashboard admin | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) (`/healthz`, `/health`) | `/healthz` publik; `/health` admin |
 | **Panel Administrator Visual** | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) | `server/src/resolvers/index.js` & `historyResolvers.js` | `user_activity_logs` + Pool Gemini |
 
 ---
@@ -253,7 +253,7 @@ export function TombolBookmark({ kata, definisi, onSukses }) {
 
 ## 🔑 Referensi Lengkap Variabel Lingkungan (`server/.env`)
 
-Salin berkas `.env.example` menjadi `server/.env`:
+Salin `server/.env.example` menjadi `server/.env` untuk development lokal. Nilai TiDB produksi dimasukkan di dashboard Vercel, bukan di template lokal:
 
 | Nama Variabel | Wajib? | Penjelasan & Contoh Nilai |
 | :--- | :--- | :--- |
@@ -271,11 +271,12 @@ Salin berkas `.env.example` menjadi `server/.env`:
 | `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Alternatif konfigurasi manual | Nama kompatibel untuk provider MySQL lain; `DB_*` diutamakan jika diisi |
 | `DB_SSL` | Opsional | `TIDB_HOST` mengaktifkan TLS otomatis; isi `false` hanya jika memang dikehendaki dan didukung provider. Setup manual dapat memakai `true`. |
 
-Hubungkan TiDB Cloud melalui Vercel Marketplace atau isi variabelnya di **Vercel Project → Settings → Environment Variables** untuk environment yang dipakai, lalu redeploy. File `server/.env` hanya untuk lokal. Vercel tidak menyimpan SQLite `/tmp` secara permanen; jika koneksi database belum siap, operasi penyimpanan produksi akan gagal dan tidak membuat akun sementara di memori.
 | `GEMINI_API_KEY_1` | Untuk fitur AI | Kunci Gemini pertama; isi `_2` sampai `_9` untuk rotasi atau `GEMINI_API_KEY` untuk satu kunci |
 | `EMAIL_USER` | Untuk email OTP | Alamat email pengirim |
 | `EMAIL_PASS` | Untuk email OTP | Gmail App Password atau password SMTP khusus aplikasi |
 | `APOLLO_KEY` | Opsional | Token Rover untuk publish schema; tidak dipakai backend dan jangan commit |
+
+Hubungkan TiDB Cloud melalui Vercel Marketplace atau isi variabelnya di **Vercel Project → Settings → Environment Variables** untuk environment yang dipakai, lalu redeploy. File `server/.env` hanya untuk lokal. Vercel tidak menyimpan SQLite `/tmp` secara permanen; jika koneksi database belum siap, operasi penyimpanan produksi akan gagal dan tidak membuat akun sementara di memori.
 
 Buat secret acak melalui terminal dengan `node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"`, lalu salin nilainya langsung ke `JWT_SECRET` atau `ADMIN_PASSWORD` pada `server/.env`. Perintah ini menghasilkan nilai 32 karakter. Jangan menaruh nilai yang dihasilkan di `.env.example`.
 
@@ -315,9 +316,9 @@ Persyaratan kualitas: akses backend selalu difilter berdasarkan pemilik/kelas; A
 * **Penyebab**: Origin browser berbeda dari origin lokal yang diizinkan server.
 * **Solusi**: Pastikan frontend berjalan di `http://127.0.0.1:3000`. Tambahkan origin ekstra ke `ALLOWED_ORIGINS` hanya jika memang diperlukan.
 
-### 3. Log MySQL gagal terhubung di Vercel
-* **Penyebab**: Kredensial database persisten belum diatur, database belum aktif, atau akses jaringan database belum mengizinkan Vercel.
-* **Solusi**: Isi variabel `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` pada Vercel. SQLite fallback hanya berlaku di development lokal.
+### 3. Log TiDB gagal terhubung di Vercel
+* **Penyebab**: Environment database belum terpasang pada Production/Preview yang tepat, cluster tidak aktif, kredensial salah, atau TLS/koneksi jaringan bermasalah.
+* **Solusi**: Periksa `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE` di Vercel. Untuk setup manual, backend menerima `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME`. Pastikan TLS sesuai dan redeploy setelah perubahan; SQLite hanya fallback development lokal.
 
 ### 4. Port Sudah Digunakan: `Error: listen EADDRINUSE: address already in use :::4000`
 * **Penyebab**: Ada proses node server lama yang masih menggantung di background (misalnya terminal ditutup tanpa `Ctrl + C`).

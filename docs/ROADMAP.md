@@ -85,6 +85,7 @@ Fase ini berfokus pada membuat pengalaman pemelajar lebih hidup, adiktif (dalam 
 
 * **Materi belajar dari folder dokumen (rencana)**:
   - Siswa, mahasiswa, pemelajar, guru, atau dosen memilih kumpulan dokumen sebagai sumber belajar.
+  - Bedakan materi pribadi dari ruang kelas yang dikelola guru/dosen; hanya anggota yang berhak yang dapat mengambil materi.
   - MVP mempertimbangkan PDF berbasis teks, DOCX, dan TXT dengan validasi file, batas ukuran, status pemrosesan, dan penghapusan.
   - AI mengambil potongan dokumen yang relevan untuk membuat rangkuman, kosakata, penjelasan, atau latihan; jawaban menyebut dokumen dan halaman/bagian jika tersedia, serta mengakui bila sumber tidak cukup.
   - File disimpan di object storage persisten, bukan filesystem fungsi Vercel. Metadata, pemilik, dan status dapat disimpan di TiDB. Pilihan object storage dan indeks retrieval belum diputuskan.
@@ -113,7 +114,7 @@ Fase ini dirancang untuk membawa PahamTeks ke ranah publik yang lebih luas dan m
 | Peran | Area Fokus Utama | Tanggung Jawab Harian |
 | :--- | :--- | :--- |
 | **Frontend Engineer** | `client/src/` | Menata komponen React, memperhalus animasi CSS di `index.css`, merawat responsivitas di HP/tablet, dan menghubungkan hooks Apollo Client. |
-| **Backend Engineer** | `server/src/` | Mengelola skema GraphQL, mengoptimalkan query database (MySQL & SQLite), mengatur rotasi API Key AI, dan memastikan latensi server tetap rendah. |
+| **Backend Engineer** | `server/src/` | Mengelola skema GraphQL, mengoptimalkan query TiDB/MySQL, merawat SQLite development, mengatur rotasi API Key AI, dan memastikan API Vercel tetap andal. |
 | **UI/UX & Desain Karakter** | Aset visual & maskot | Merancang ekspresi Teksie, memastikan kontras warna ramah mata, dan merancang micro-interaction yang menyenangkan. |
 | **Kurator Materi Edukasi** | `AZ_DICTIONARY_DATA` & Soal | Menyaring istilah yang relevan di dunia industri saat ini, memastikan akurasi tata bahasa, dan membuat contoh kalimat yang hidup. |
 

@@ -11,7 +11,7 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 | Berkas | Isinya Tentang Apa? | Kapan Harus Dibaca? |
 | :--- | :--- | :--- |
 | 📄 [`PRD.md`](./PRD.md) | Visi produk, kenapa kita buat fitur kuis/kamus begini, profil pemelajar, dan ide yang masih perlu kita obrolkan. | Saat butuh gambaran arah produk atau sebelum mulai bikin fitur baru. |
-| 🏗️ [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Blueprint teknis: alur data React, GraphQL Apollo, integrasi Gemini, dan kenapa kita pakai dua database (MySQL & SQLite). | Saat modifikasi backend, nambah skema GraphQL, atau utak-atik database. |
+| 🏗️ [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Blueprint teknis: React, GraphQL, Gemini, Vercel, TiDB Cloud, dan SQLite lokal untuk development. | Saat modifikasi backend, skema GraphQL, atau database. |
 | 🤖 [`AGENT.md`](./AGENT.md) | Persona karakter maskot Teksie, cara prompt AI merespon pemelajar, dan aturan otomatisasi development. | Saat ngurus AI prompt, copy percakapan, atau nambah respon maskot. |
 | 📋 [`TODO.md`](./TODO.md) | Catatan pekerjaan: yang udah selesai, prioritas sprint minggu ini, dan tumpukan ide liar tim. | Saat meeting sprint planning, evaluasi progress, atau cari tugas berikutnya. |
 | 🧠 [`SKILL.md`](./SKILL.md) | Pemetaan materi yang diajarkan (bahasa pemrograman & bahasa asing) plus standar keamanan yang kita terapkan. | Saat kurasi materi kuis, kamus, atau validasi standar security sistem. |

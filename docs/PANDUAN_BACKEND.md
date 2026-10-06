@@ -15,7 +15,7 @@ Jika diumpamakan sebagai **restoran**:
 
 ## ⚙️ Backend PahamTeks Itu Terdiri dari Apa Saja?
 
-Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama**:
+Di dalam folder `server/`, backend berjalan di lokal atau sebagai fungsi API serverless di Vercel. Ekosistemnya ditopang oleh **8 pilar utama**:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -52,12 +52,13 @@ PahamTeks menggunakan Apollo Server v4 untuk memproses permintaan data. Berbeda 
 * **SQLite (`fallbackDb.js`)**: Hanya dipakai untuk development lokal ketika MySQL tidak tersedia. SQLite dan memori di `/tmp` Vercel tidak permanen dan tidak menyimpan data produksi.
 * **Vercel**: Jika kredensial TiDB tidak ada atau database tidak bisa dihubungi, backend menolak operasi penyimpanan. Jangan isi host localhost pada Production. TLS aktif otomatis saat memakai `TIDB_HOST`, kecuali `DB_SSL=false`.
 
+Integrasi Vercel TiDB untuk framework **General** dapat membuat lima variabel `TIDB_*` otomatis. Periksa nilainya di **Vercel → Project → Settings → Environment Variables** dan redeploy setelah menghubungkan integrasi. File `server/.env` hanya untuk nilai development lokal.
+
 ### 5. Mesin AI Gemini dengan Rotasi Multi-Kunci
 Kuis dinamis dan penjelasan istilah diproduksi oleh Google Gemini AI. Agar aplikasi tidak terhenti saat kuota gratis Google habis, backend memiliki sistem **Round-Robin** yang menggilir hingga 9 kunci API berbeda (`GEMINI_API_KEY_1` s.d. `GEMINI_API_KEY_9`).
 
-### 6. Multi-Tier Cache (Memori Super Cepat)
-* **RAM Cache**: Pertanyaan kamus yang sudah pernah dicari disimpan di memori RAM server. Kueri berikutnya dijawab dalam waktu **`0.04 milidetik`** tanpa perlu memanggil Gemini API lagi.
-* **Database Cache**: Istilah juga disimpan ke tabel `dictionary_cache` agar tidak hilang saat server di-restart.
+### 6. Cache Memori
+Sebagian hasil fitur AI disimpan sementara di memori proses untuk mengurangi pemanggilan ulang. Cache ini bukan penyimpanan persisten: pada Vercel, instance dapat berhenti atau berganti sehingga cache dapat hilang.
 
 ### 7. Autentikasi Pengguna (Bcrypt & JWT)
 * **Bcrypt**: Password pengguna di-acak dengan salt rounds terenkripsi. Teks password asli tidak pernah tersimpan di database.
@@ -97,11 +98,11 @@ server/
     ├── app.js                          <- Inisialisasi Express, CORS, Helmet, Rate Limit, & Apollo
     │
     ├── config/
-    │   ├── db.js                       <- Koneksi MySQL pool, auto-failover, dan auto-migrasi tabel
+    │   ├── db.js                       <- Koneksi TiDB/MySQL, SQLite lokal, dan auto-migrasi tabel
     │   └── gemini.js                   <- Rotasi kunci API Gemini 1-9 & pemilihan model AI
     │
     ├── db/
-    │   ├── fallbackDb.js               <- Mesin SQLite: inisialisasi 6 tabel & fungsi query
+    │   ├── fallbackDb.js               <- SQLite fallback development dan query executor
     │   ├── initDb.js                   <- Skrip inisialisasi awal database
     │   └── exportSqlBackup.js          <- Skrip backup mengekspor data ke file SQL
     │
@@ -130,7 +131,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di backend:
 | **Port listener utama server (Port 4000)** | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
 | **Koneksi TiDB/MySQL, fallback development, & migrasi** | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
 | **Rotasi 1-9 API Key Gemini, pemilihan model AI, & prompt** | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
-| **Skema 6 tabel SQLite lokal & query executor fallback** | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
+| **Skema SQLite development & query executor fallback** | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
 | **File database SQLite lokal tempat data tersimpan** | `server/data/pahamteks_backup.sqlite` |
 | **Skrip ekspor data ke file backup .sql** | [`server/src/db/exportSqlBackup.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/exportSqlBackup.js) |
 | **Kontrak skema GraphQL (Query & Mutation type definitions)** | [`server/src/schema/typeDefs.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/schema/typeDefs.js) |
@@ -329,6 +330,8 @@ curl http://127.0.0.1:4000/healthz
 
 Detail `GET /health` memerlukan header `Authorization: Bearer <token-admin>`.
 
+Untuk deployment Vercel, UptimeRobot diarahkan ke `https://<domain-produksi>/healthz`. Probe ini tidak memeriksa database; lakukan smoke test penyimpanan akun/progres dan gunakan telemetri dashboard admin untuk memeriksa TiDB.
+
 **Contoh Output Balasan:**
 ```json
 {
@@ -397,7 +400,7 @@ Untuk mempermudah pemantauan tanpa perlu mengetik kueri GraphQL manual atau peri
 * **Fitur-Fitur Utama Dasbor Visual**:
   1. **4 Kartu Metrik Telemetri Live**:
      - Status Server Backend (Online / Latensi respon).
-     - Database Aktif (Menampilkan apakah menggunakan MySQL Utama atau SQLite Failover).
+     - Database Aktif (TiDB/MySQL persisten pada hosting atau SQLite fallback lokal saat development).
      - Total Slot Kunci AI Gemini yang terkonfigurasi.
      - Sesi Administrator Terverifikasi.
   2. **Visualizer Pool Kunci Google Gemini AI (Slot 1–9)**:

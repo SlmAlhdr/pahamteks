@@ -99,12 +99,15 @@ Siswa, mahasiswa, pemelajar mandiri, guru, dan dosen dapat memilih atau mengungg
 4. Pengguna meninjau daftar file dan status pemrosesan, lalu dapat menghapus atau mengganti dokumen.
 5. AI mengambil potongan relevan dari dokumen untuk menjawab, membuat latihan, atau menjelaskan kosakata. Jawaban menyertakan nama dokumen dan halaman/bagian jika tersedia.
 
+Rancangan izin perlu membedakan ruang pribadi dan ruang kelas: guru/dosen mengelola materi ruang kelas; peserta hanya dapat melihat materi kelas yang mereka ikuti; pemelajar dapat menyimpan materi pribadi. Berbagi ke luar kelas harus nonaktif secara default dan seluruh akses tetap diperiksa backend.
+
 ### Batasan produk dan mutu
 
 - Fitur masih rancangan; belum ada alur upload, ekstraksi, penyimpanan berkas, indexing, atau tanya-jawab berbasis dokumen di aplikasi.
 - Format awal yang dapat dipertimbangkan: PDF berbasis teks, DOCX, dan TXT. PDF hasil scan perlu OCR sebagai pekerjaan terpisah; jangan mengklaim semua dokumen terbaca sebelum diuji.
 - Jawaban harus membedakan informasi yang ditemukan dalam sumber dan penjelasan tambahan. Jika sumber tidak memuat jawabannya, AI harus menyatakan hal itu dan tidak mengarang rujukan.
 - Sistem harus memisahkan materi berdasarkan pemilik/kelas dan memeriksa otorisasi setiap kali file atau potongan materi diakses.
+- Pengajar harus dapat mengganti/menghapus materi kelas; penghapusan atau perubahan keanggotaan perlu memperbarui akses peserta dan indeks terkait.
 - Dokumen pengguna adalah data privat dan input tak tepercaya. Jangan menjalankan macro/script atau mengikuti prompt yang tertanam di dalamnya. Berikan kebijakan retensi dan penghapusan yang jelas.
 - Rancangan penyimpanan: file di object storage persisten yang sesuai, metadata/status di TiDB, teks hasil ekstraksi disimpan atau diindeks dengan kontrol akses. Jangan menyimpan file di filesystem fungsi Vercel.
 

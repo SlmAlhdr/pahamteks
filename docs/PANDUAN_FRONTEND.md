@@ -2,6 +2,8 @@
 
 Selamat datang rekan tim frontend! Dokumen ini disusun secara lengkap dan mendalam agar siapa pun yang baru bergabung ke tim pengembang antarmuka **PahamTeks** bisa langsung memahami: **apa itu frontend, bagian-bagian penyusunnya, cara kerja komponen, dan alur koding praktis dari nol**.
 
+Di lokal, Vite menyajikan UI pada port 3000 dan mem-proxy `/graphql` ke backend lokal port 4000. Di hosting, Vercel menyajikan `client/dist` dan me-rewrite `/graphql` ke fungsi `api/graphql.js`; browser memakai endpoint relatif `/graphql` secara default. `VITE_GRAPHQL_URI` hanya diisi jika memang memakai backend lain.
+
 ---
 
 ## 💡 Apa Itu Frontend Sebenarnya? (Analogi Sederhana)

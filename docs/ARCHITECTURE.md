@@ -40,7 +40,7 @@ flowchart TD
         KeyPool --> GeminiAPI
     end
 
-    subgraph DataLayer ["Penyimpanan Data Resilien"]
+    subgraph DataLayer ["Penyimpanan Berdasarkan Lingkungan"]
         DBManager["Unified Database Manager (db.js)"]
         TiDB[("TiDB Cloud (kompatibel MySQL, produksi/Vercel)")]
         SQLite[("SQLite lokal (development saja)")]
@@ -113,7 +113,7 @@ Pengguna memilih file/folder
         → jawab dengan rujukan dokumen/halaman
 ```
 
-Jangan menyimpan file upload di disk fungsi Vercel. TiDB menyimpan metadata dan relasi kepemilikan; file asli memerlukan object storage persisten yang dipilih tim, dan pencarian semantik memerlukan evaluasi opsi indeks sebelum diputuskan. Setiap query retrieval wajib memfilter berdasarkan pengguna/kelas yang berwenang. Perlakukan isi dokumen sebagai konten tak tepercaya, bukan instruksi sistem. Jawaban harus merujuk dokumen dan bagian/halaman yang tersedia, serta menyatakan jika informasi tidak ditemukan.
+Jangan menyimpan file upload di disk fungsi Vercel. TiDB menyimpan metadata, status, dan relasi kepemilikan; file asli memerlukan object storage persisten yang dipilih tim. Rancangan izin membedakan ruang pribadi dan ruang kelas yang dikelola guru/dosen. Pencarian semantik memerlukan evaluasi opsi indeks sebelum diputuskan. Setiap query retrieval wajib memfilter berdasarkan pengguna/kelas yang berwenang. Perlakukan isi dokumen sebagai konten tak tepercaya, bukan instruksi sistem. Jawaban harus merujuk dokumen dan bagian/halaman yang tersedia, serta menyatakan jika informasi tidak ditemukan.
 
 ---
 
