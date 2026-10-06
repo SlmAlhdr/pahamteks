@@ -47,7 +47,21 @@ Kita tidak ingin AI di PahamTeks bersikap seperti mesin pemeriksa kuis yang kaku
 ## 4. Keandalan Rekayasa Sistem (DevSecOps)
 
 Sistem PahamTeks dipersenjatai kemampuan teknis tingkat produksi:
-- **Failover Database Otomatis**: Backend tidak pernah tumbang hanya karena MySQL lokal mati; sistem otomatis memakai SQLite lokal sebagai penyelamat.
+- **Penyimpanan sesuai lingkungan**: TiDB Cloud menyimpan data persisten produksi; SQLite fallback digunakan hanya pada development lokal bila MySQL lokal tidak tersedia. Ini bukan failover Vercel.
 - **Proteksi Brute-Force**: Memblokir serangan tebak kata sandi secara otomatis setelah 5 kali percobaan gagal.
 - **Proteksi Email & Server**: Membatasi laju request (*Rate Limiter*) dan menahan upaya spam OTP email.
-- **Pemantauan Uptime**: Menyediakan endpoint `/health` siap pakai untuk telemetri dan integrasi pemantau eksternal.
+- **Pemantauan Uptime**: Endpoint publik `/healthz` untuk probe UptimeRobot; `/health` adalah telemetri sensitif yang dibatasi untuk admin.
+
+## 5. Rencana Kompetensi: Belajar dari Materi Pengguna
+
+Fitur unggah materi dari folder masih dirancang. Tujuannya memberi konteks belajar personal/kelas kepada AI, bukan melatih ulang model Gemini.
+
+### Kompetensi yang perlu dirancang
+
+- **Literasi sumber**: AI membedakan isi eksplisit materi dari pengetahuan umum, menampilkan nama dokumen dan halaman/bagian jika metadata tersedia, serta mengakui bila materi tidak menjawab pertanyaan.
+- **Penyusunan latihan**: Guru/dosen atau pemelajar dapat meminta kosakata, ringkasan, pertanyaan pemahaman, dialog, atau latihan bahasa yang tingkat kesulitannya dapat ditentukan.
+- **Kurasi dan validasi**: Pengajar/kurator meninjau contoh jawaban, tingkat bahasa, kecocokan dengan tujuan belajar, dan kualitas rujukan sebelum materi dipakai luas.
+- **Privasi dan hak akses**: Materi dapat bersifat personal atau milik kelas. Retrieval wajib dibatasi ke anggota yang berhak; pengguna harus dapat menghapus materi dan hasil ekstraknya sesuai kebijakan.
+- **Keamanan konten**: File dianggap input tak tepercaya. Instruksi berbahaya yang ditemukan di dalam dokumen tidak boleh mengganti instruksi AI, mengungkap materi lain, atau memicu eksekusi kode.
+
+Format dan fitur belum diputuskan. MVP dapat mengevaluasi PDF berbasis teks, DOCX, dan TXT; PDF scan/OCR, audio/video, serta berbagi kelas lanjutan memerlukan tahap terpisah. Lihat `PRD.md` dan `ROADMAP.md`.

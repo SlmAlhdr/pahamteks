@@ -32,10 +32,10 @@ Menjadi platform pembelajaran dwidomain (Bahasa Dunia & Logika Pemrograman) yang
 ---
 
 ### ✅ Fase 1: Fondasi Inti & Ketahanan Sistem (Status: Selesai)
-Fase ini berfokus pada fondasi teknis agar aplikasi bisa berjalan stabil di berbagai perangkat developer tanpa kendala ketergantungan server luar.
+Fase ini berfokus pada fondasi teknis aplikasi untuk development lokal dan hosting Vercel.
 
 * **Arsitektur Full-Stack Modern**: Frontend React 18 dengan Vite 6, Backend Node.js ESM dengan Express dan Apollo Server v4 (GraphQL).
-* **Dual Database Failover**: Primary MySQL dengan otomatisasi beralih ke SQLite lokal (`pahamteks_backup.sqlite`) jika MySQL mati atau pengembang belum memasang XAMPP/MariaDB.
+* **Database sesuai lingkungan**: TiDB Cloud yang kompatibel MySQL untuk penyimpanan persisten produksi; SQLite fallback hanya untuk development lokal. SQLite bukan cadangan produksi Vercel.
 * **Integrasi Multi-Key AI Gemini**: Sistem rotasi kunci (Round-Robin 1 s/d 9) agar kuota API gratis tidak cepat habis saat pengujian intensif.
 * **Fitur Edukasi Utama**:
   - Kuis Berjenjang (Bab 1 sampai Bab 5) untuk bahasa dunia dan logika coding.
@@ -43,6 +43,8 @@ Fase ini berfokus pada fondasi teknis agar aplikasi bisa berjalan stabil di berb
   - Kamus Pintar Generatif berbasis AI.
   - Maskot Teksie dengan sintesis suara (Web Speech API).
 * **Akses Publik Mandiri**: Dukungan Cloudflare Tunnel lokal (`cloudflared.exe`) agar web bisa didemokan langsung dari laptop ke handphone tanpa perlu hosting berbayar.
+
+* **Hosting dan pemantauan**: Vercel menjadi platform hosting; UptimeRobot digunakan untuk memantau endpoint publik `/healthz`. Status pemasangan monitor dan penerima alert tetap perlu diverifikasi di dashboard layanan.
 
 ---
 
@@ -81,6 +83,13 @@ Fase ini berfokus pada membuat pengalaman pemelajar lebih hidup, adiktif (dalam 
   - Bahasa Asing: Menambah kosakata percakapan praktis untuk Bahasa Jerman, Arab, dan Mandarin.
   - Pemrograman: Menambah materi modern seperti TypeScript lanjut, Docker dasar, dan Git collaboration.
 
+* **Materi belajar dari folder dokumen (rencana)**:
+  - Siswa, mahasiswa, pemelajar, guru, atau dosen memilih kumpulan dokumen sebagai sumber belajar.
+  - MVP mempertimbangkan PDF berbasis teks, DOCX, dan TXT dengan validasi file, batas ukuran, status pemrosesan, dan penghapusan.
+  - AI mengambil potongan dokumen yang relevan untuk membuat rangkuman, kosakata, penjelasan, atau latihan; jawaban menyebut dokumen dan halaman/bagian jika tersedia, serta mengakui bila sumber tidak cukup.
+  - File disimpan di object storage persisten, bukan filesystem fungsi Vercel. Metadata, pemilik, dan status dapat disimpan di TiDB. Pilihan object storage dan indeks retrieval belum diputuskan.
+  - Wajib ada pemisahan akses per pengguna/kelas, pemeriksaan keamanan, kebijakan retensi/penghapusan, dan pertahanan terhadap instruksi berbahaya di dalam dokumen.
+
 ---
 
 ### 🌐 Fase 4: Kolaborasi & Skalabilitas Komunitas (Status: Rencana Jangka Panjang)
@@ -107,6 +116,8 @@ Fase ini dirancang untuk membawa PahamTeks ke ranah publik yang lebih luas dan m
 | **Backend Engineer** | `server/src/` | Mengelola skema GraphQL, mengoptimalkan query database (MySQL & SQLite), mengatur rotasi API Key AI, dan memastikan latensi server tetap rendah. |
 | **UI/UX & Desain Karakter** | Aset visual & maskot | Merancang ekspresi Teksie, memastikan kontras warna ramah mata, dan merancang micro-interaction yang menyenangkan. |
 | **Kurator Materi Edukasi** | `AZ_DICTIONARY_DATA` & Soal | Menyaring istilah yang relevan di dunia industri saat ini, memastikan akurasi tata bahasa, dan membuat contoh kalimat yang hidup. |
+
+Untuk fitur materi dokumen, tetapkan pemilik backend (upload, ekstraksi, retrieval, akses), frontend (pemilihan file, status, rujukan), kurator/pengajar (validasi materi), dan QA (format, privasi, batas, serta isolasi akses). Jangan masukkan ke sprint sebelum pemilik, kriteria selesai, dan keputusan storage/retensi disepakati.
 
 ---
 

@@ -21,15 +21,15 @@ flowchart LR
    npm --prefix client install
    ```
 2. **Setup File Environment**:
-   Salin template [`.env.example`](file:///c:/Salim/Kerjaan/pahamteks/.env.example) ke `server/.env`. Masukkan Gemini API Key kamu.
+   Salin `server/.env.example` ke `server/.env` untuk pengembangan lokal, lalu isi variabel yang dibutuhkan. Jangan menyalin rahasia produksi ke template atau Git.
 3. **Inisialisasi Database (Opsional)**:
    ```bash
    npm --prefix server run init-db
    ```
-   *Catatan: SQLite fallback hanya untuk development lokal. Di Vercel, isi variabel database dengan kredensial MySQL cloud persisten; SQLite di `/tmp` tidak menyimpan data antar-instance.*
+   *Catatan: SQLite fallback hanya untuk development lokal. Hosting produksi menggunakan Vercel dan TiDB Cloud persisten; filesystem fungsi Vercel tidak boleh dipakai menyimpan akun/progres.*
 4. **Jalankan Aplikasi**:
    * Terminal 1 (Backend): `npm --prefix server run dev` (port 4000)
-   * Terminal 2 (Frontend): `npm --prefix client run dev` (port 5173)
+   * Terminal 2 (Frontend): `npm --prefix client run dev` (port 3000)
 
 ---
 
@@ -57,8 +57,8 @@ Setiap kali kamu (atau AI asistenmu) selesai membuat fitur baru atau memperbaiki
    git push origin main
                │
                ▼
-5. Deployment Publik Sementara Nonaktif
-   Jalankan backend dan frontend secara lokal. Jika perlu demo dari internet, nyalakan Cloudflare Tunnel hanya selama sesi demo.
+5. Deployment Vercel
+   Setelah commit dan push ke branch yang terhubung, periksa deployment di Vercel. Cloudflare Tunnel hanya untuk demo lokal sementara.
 ```
 
 ### 🛑 Pantangan Keras (Zero Leak Policy):
@@ -85,12 +85,16 @@ npm --prefix server run backup-db
 
 Jika tiba-tiba web lambat, ada laporan kuis gagal dimuat, atau server down:
 
-1. **Buka Endpoint Kesehatan Server**:
-   Akses `https://<domain-backend>/health` di browser.
+1. **Periksa UptimeRobot dan endpoint liveness**:
+   Pastikan monitor mengarah ke `https://<domain-produksi>/healthz`. Endpoint ini publik dan mengembalikan status proses/rute, bukan status database.
 2. **Periksa Status Komponen**:
-   * **Jika status database `connected: false` di Vercel**:
-     Periksa `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` di Vercel Project Settings → Environment Variables. Deploy ulang setelah memperbarui variabel.
+   * **Jika TiDB tidak tersambung**:
+     Periksa `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE` di Vercel Project Settings → Environment Variables. Backend juga menerima `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` untuk konfigurasi manual. Pastikan cluster aktif dan redeploy setelah perubahan.
    * **Jika kuota Gemini limit (429)**:
      Cek `geminiKeysRegistered`. Tambahkan satu API key gratis cadangan di `server/.env` (`GEMINI_API_KEY_2=...`).
-   * **Jika RAM server melonjak tinggi**:
-     Cek `memoryUsageMB`. Lakukan restart service backend.
+   * **Jika fungsi error**:
+     Periksa Vercel → Project → Logs. Fungsi Vercel berjalan per invocation; jangan gunakan metrik RAM invocation sebagai pemantauan server permanen.
+
+## 5. Rencana fitur materi dari folder dokumen
+
+Upload materi belum tersedia di aplikasi. Sebelum dikembangkan, sepakati format dan batas file, pemeriksaan keamanan, penyimpanan file di object storage persisten, akses per pengguna/kelas, kebijakan retensi/penghapusan, serta cara AI mengambil potongan sumber dan menampilkan rujukan. Jangan menyimpan upload di filesystem fungsi Vercel atau mengikuti instruksi yang tertanam di dokumen. Detail rancangan ada di `PRD.md` dan `ARCHITECTURE.md`.

@@ -302,3 +302,18 @@ npm --prefix client run dev
 npm --prefix client run build
 ```
 Buka browser di alamat: `http://127.0.0.1:3000`. Server dev terikat ke loopback dan tidak menerima koneksi dari perangkat lain di jaringan.
+
+---
+
+## 📚 Rencana UI: Materi Belajar dari Folder Dokumen
+
+Pemilihan dan upload dokumen belum tersedia di UI. Rancangan berikut menjadi acuan ketika fitur disetujui untuk dibangun:
+
+- Pengguna memilih file/folder secara eksplisit lewat file picker browser; browser tidak boleh diasumsikan dapat membaca seluruh folder tanpa izin.
+- Tampilkan nama ruang materi, pemilik atau kelas, daftar berkas, ukuran, format, status unggah/ekstraksi, dan alasan file ditolak.
+- Sediakan progres, batal/retry, hapus file, dan konfirmasi sebelum menghapus seluruh materi.
+- Saat AI menjawab, tampilkan sumber yang digunakan (nama dokumen dan halaman/bagian jika ada) serta penanda ketika sumber tidak cukup. Bedakan konten dokumen dari penjelasan tambahan AI.
+- Jangan tampilkan materi kelas kepada pengguna yang tidak berwenang. UI bukan batas keamanan: backend tetap harus memverifikasi izin untuk semua operasi.
+- Hindari menampilkan data pribadi atau isi dokumen penuh di log/notifikasi. Jangan menaruh dokumen atau URL object storage privat di `localStorage`.
+
+Format MVP, batas file, akses kelas, dan kebijakan retensi harus disepakati bersama backend, QA, kurator, dan pengajar. Detail produk ada di `PRD.md`; alur teknis ada di `PANDUAN_FULLSTACK.md`.

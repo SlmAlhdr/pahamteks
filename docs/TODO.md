@@ -4,7 +4,7 @@ Dokumen ini adalah papan catatan bersama untuk memantau apa yang sudah beres, ap
 
 ---
 
-## 1. ✅ Sudah Beres & Aktif di Produksi
+## 1. ✅ Kapabilitas Aplikasi yang Sudah Tersedia
 
 ### Antarmuka & Frontend
 - [x] Migrasi ke React 18 & Vite bundler (ringan dan build cepat).
@@ -21,7 +21,7 @@ Dokumen ini adalah papan catatan bersama untuk memantau apa yang sudah beres, ap
 - [x] Rotasi multi-kunci Gemini API (*Round-Robin*) agar kuota gratis tidak gampang limit.
 - [x] Kuis adaptif 5 Bab (Unit 1–5) dengan fitur penjelas "Kenapa Salah?".
 - [x] Transkripsi audio mikrofon (*voice-to-text*) dengan AI Gemini.
-- [x] Sistem database ganda (*Dual Database Failover*): MySQL utama dengan SQLite otomatis sebagai cadangan jika MySQL offline.
+- [x] SQLite fallback lokal untuk development; produksi memakai database cloud persisten kompatibel MySQL (TiDB Cloud). SQLite bukan failover produksi.
 - [x] Skrip ekspor snapshot database manual (`npm --prefix server run backup-db`).
 
 ### Keamanan Sistem
@@ -45,7 +45,8 @@ Daftar di bawah adalah usulan untuk diprioritaskan bersama, belum menjadi komitm
    - Catat langkah reproduksi, dampak, pemilik perbaikan, dan status setiap bug.
    - Tambahkan tes otomatis bertahap untuk logika kuis, API penting, dan alur pengguna yang paling sering dipakai.
 2. **Pemantauan dan kesiapan pemulihan**:
-   - Daftarkan endpoint `/health` ke pemantau eksternal dan sepakati siapa yang menerima notifikasi.
+   - Pastikan monitor UptimeRobot memakai `https://<domain-produksi>/healthz` (endpoint publik HTTP 200), bukan `/health` yang dilindungi admin.
+   - Tetapkan penerima alert dan uji notifikasi.
    - Dokumentasikan backup serta uji pemulihan data secara berkala.
    - Catat langkah rollback dan respons ketika layanan atau penyedia AI bermasalah.
 3. **Validasi mutu materi**:
@@ -58,6 +59,10 @@ Daftar di bawah adalah usulan untuk diprioritaskan bersama, belum menjadi komitm
 5. **Pilih fitur belajar setelah fondasi disepakati**:
    - Bahas EXP/streak dan penyempurnaan dashboard riwayat.
    - Pilih satu fokus terlebih dahulu berdasarkan kebutuhan pengguna dan kesiapan data.
+6. **Rancang MVP materi dari folder dokumen**:
+   - Sepakati format/batas upload, object storage, retensi dan penghapusan, serta materi personal vs kelas.
+   - Siapkan dokumen uji dan rubrik untuk menilai rujukan, ketepatan, jawaban saat sumber kurang, dan isolasi antar pengguna.
+   - Fitur belum diimplementasikan; jangan tandai selesai sebelum kode, pengujian, dan kebijakan privasi tersedia.
 
 ### Keputusan yang Dicari dalam Rapat
 
@@ -66,17 +71,19 @@ Daftar di bawah adalah usulan untuk diprioritaskan bersama, belum menjadi komitm
 - Pemilik bergilir untuk pemantauan, backup, dan prosedur rilis.
 - Kesepakatan alur Git tim, terutama penggunaan auto-sync yang dapat commit/push langsung ke `main` setelah jeda tanpa edit.
 
-## 3. ⏳ Prioritas Sprint Saat Ini (Perlu Kita Bahas Bareng)
+## 3. ⏳ Prioritas Sprint (Perlu Dikonfirmasi Bersama)
 
 Daftar ini adalah prioritas yang sudah tercatat sebelumnya. Urutan dan statusnya perlu dikonfirmasi bersama usulan QA, pemulihan, dan validasi materi di bagian atas; jangan anggap semua item otomatis masuk sprint berikutnya.
 
-1. **Daftarkan Endpoint `/health` ke Pemantau Eksternal (UptimeRobot / BetterStack)**:
-   - Endpoint `/health` backend kita sudah lengkap dengan data RAM, status database, dan pool key.
-   - Daftarkan URL health publik setelah deployment diaktifkan kembali agar gangguan server dapat memberi notifikasi Telegram atau email.
-2. **Sistem Gamifikasi: Streak Belajar & EXP**:
+1. **Verifikasi integrasi Vercel + TiDB Cloud**:
+   - Pastikan variabel `TIDB_*` tersedia untuk Production dan aplikasi berhasil menyimpan akun serta progres ke database persisten.
+   - Uji kembali alur registrasi/login setelah redeploy.
+2. **UptimeRobot**:
+   - Pastikan monitor `/healthz`, kontak notifikasi, interval pemeriksaan, dan uji alert sudah disiapkan tim.
+3. **Sistem Gamifikasi: Streak Belajar & EXP**:
    - Menghitung hari belajar berturut-turut dengan ikon api (🔥) agar pemelajar terpacu buka web setiap hari.
    - Reward EXP setiap kali menyelesaikan 1 kuis unit.
-3. **Penyempurnaan Dasbor Riwayat**:
+4. **Penyempurnaan Dasbor Riwayat**:
    - Menampilkan grafik akurasi belajar mingguan pemelajar.
    - Rekomendasi materi belajar berikutnya berdasarkan topik kuis yang paling sering dijawab keliru.
 
@@ -96,3 +103,5 @@ Ini ide-ide jangka panjang yang menurut saya sangat menarik jika PahamTeks sudah
   Poin belajar pemelajar bisa dipakai untuk mendandani Teksie (beri topi koding, kacamata pintar, atau warna bulu baru).
 - [ ] **Sertifikat Kelulusan Digital**:
   Pemelajar yang menyelesaikan seluruh Unit 1–5 di satu topik bisa mengunduh sertifikat digital kelulusan PDF untuk portofolio mereka.
+- [ ] **Ruang Materi dari Folder Dokumen**:
+  Pengguna memilih dokumen yang berhak mereka gunakan; PahamTeks mengekstrak dan mengindeks isi, lalu AI membantu belajar dengan rujukan sumber. Status: rancangan/backlog, belum menjadi fitur aplikasi.

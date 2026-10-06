@@ -1,6 +1,6 @@
 # Panduan Lengkap Pengembangan Backend PahamTeks
 
-Selamat datang rekan tim backend! Dokumen ini disusun secara lengkap dan mendalam agar siapa pun yang baru bergabung ke tim server **PahamTeks** bisa langsung memahami: **apa itu backend, bagian-bagian penyusunnya, cara kerja GraphQL, sistem database failover ganda, hingga rotasi multi-kunci AI Gemini**.
+Selamat datang rekan tim backend! Dokumen ini membantu memahami backend PahamTeks: Express, GraphQL, TiDB Cloud di produksi, SQLite lokal untuk development, dan rotasi multi-kunci Gemini.
 
 ---
 
@@ -24,9 +24,9 @@ Di dalam folder `server/`, ekosistem backend kita ditopang oleh **8 pilar utama*
 │ 1. HTTP WEB SERVER    : Express.js (Menjalankan listener di port 4000) │
 │ 2. PERISAI KEAMANAN   : Helmet, CORS Whitelist, Rate Limiter, Brute-G  │
 │ 3. RUNTIME GRAPHQL    : Apollo Server v4 (Skema typeDefs & resolvers)  │
-│ 4. DATABASE           : MySQL Cloud + SQLite Lokal untuk Development    │
+│ 4. DATABASE           : TiDB Cloud kompatibel MySQL + SQLite Lokal      │
 │ 5. MESIN AI GEMINI    : Google GenAI SDK + Rotasi Multi-Kunci 1–9     │
-│ 6. MULTI-TIER CACHE   : RAM Memory Cache (0.04 ms) + Database Cache    │
+│ 6. CACHE              : Cache memori sementara untuk sebagian hasil AI  │
 │ 7. AUTENTIKASI        : Enkripsi Bcrypt + Token JWT Sesi 7-Hari        │
 │ 8. LAYANAN EMAIL OTP  : Nodemailer SMTP untuk kode verifikasi 6-digit   │
 └────────────────────────────────────────────────────────────────────────┘
@@ -48,9 +48,9 @@ Sebelum request diizinkan masuk ke logika aplikasi, Express menyaringnya melalui
 PahamTeks menggunakan Apollo Server v4 untuk memproses permintaan data. Berbeda dengan REST API konvensional yang memiliki puluhan URL terpisah (`/api/login`, `/api/quiz`, `/api/dictionary`), di GraphQL hanya ada **satu pintu tunggal** yaitu `/graphql`.
 
 ### 4. Database produksi dan fallback lokal
-* **MySQL cloud persisten**: Wajib dikonfigurasi untuk production dan Vercel melalui `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME`. Tabel dibuat otomatis ketika koneksi pertama berhasil.
+* **TiDB Cloud persisten**: Wajib untuk production/Vercel. Integrasi Vercel menyediakan `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, `TIDB_DATABASE`; `db.js` juga mendukung nama `DB_*` untuk konfigurasi manual. Tabel dibuat saat koneksi berhasil.
 * **SQLite (`fallbackDb.js`)**: Hanya dipakai untuk development lokal ketika MySQL tidak tersedia. SQLite dan memori di `/tmp` Vercel tidak permanen dan tidak menyimpan data produksi.
-* **Vercel**: Jika kredensial database tidak ada atau database tidak bisa dihubungi, backend menolak menyimpan akun. Gunakan MySQL cloud yang dapat diakses dari Vercel dan jangan isi `DB_HOST=localhost` pada Production.
+* **Vercel**: Jika kredensial TiDB tidak ada atau database tidak bisa dihubungi, backend menolak operasi penyimpanan. Jangan isi host localhost pada Production. TLS aktif otomatis saat memakai `TIDB_HOST`, kecuali `DB_SSL=false`.
 
 ### 5. Mesin AI Gemini dengan Rotasi Multi-Kunci
 Kuis dinamis dan penjelasan istilah diproduksi oleh Google Gemini AI. Agar aplikasi tidak terhenti saat kuota gratis Google habis, backend memiliki sistem **Round-Robin** yang menggilir hingga 9 kunci API berbeda (`GEMINI_API_KEY_1` s.d. `GEMINI_API_KEY_9`).
@@ -128,7 +128,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di backend:
 | **Port server, CORS, Rate Limit, Helmet, & endpoint health** | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) |
 | **Verifikasi JWT dan role admin berbasis email allowlist** | [`server/src/utils/auth.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/auth.js) |
 | **Port listener utama server (Port 4000)** | [`server/src/index.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/index.js) |
-| **Koneksi MySQL, deteksi failover ke SQLite, & migrasi** | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
+| **Koneksi TiDB/MySQL, fallback development, & migrasi** | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
 | **Rotasi 1-9 API Key Gemini, pemilihan model AI, & prompt** | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
 | **Skema 6 tabel SQLite lokal & query executor fallback** | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
 | **File database SQLite lokal tempat data tersimpan** | `server/data/pahamteks_backup.sqlite` |
@@ -145,9 +145,9 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di backend:
 
 ---
 
-## 🗄️ Skema Lengkap Tabel Database (6 Tabel Inti)
+## 🗄️ Tabel Database yang Digunakan Aplikasi
 
-Baik di MySQL maupun di SQLite fallback, kita menggunakan skema 6 tabel yang sama:
+Skema saat ini dibuat pada TiDB/MySQL produksi dan SQLite lokal. Daftar berikut mencerminkan tabel yang dibuat oleh konfigurasi database saat ini; perubahan skema perlu diterapkan pada kedua lingkungan:
 
 ```text
   ┌──────────────┐         ┌───────────────────┐
@@ -170,21 +170,31 @@ Baik di MySQL maupun di SQLite fallback, kita menggunakan skema 6 tabel yang sam
                            └───────────────────────┘
 
   ┌────────────────────────┐      ┌────────────────────────┐
-  │    otp_verifications   │      │    dictionary_cache    │
+  │    otp_verifications   │      │   quiz_explanations   │
   ├────────────────────────┤      ├────────────────────────┤
-  │ email (PK)             │      │ keyword (PK)           │
-  │ otp_code               │      │ lang                   │
-  │ expires_at             │      │ result (Markdown AI)   │
-  │ created_at             │      │ created_at             │
+  │ email (PK)             │      │ question               │
+  │ otp_code               │      │ user_answer            │
+  │ expires_at             │      │ correct_answer         │
+  │ created_at             │      │ explanation            │
+  └────────────────────────┘      └────────────────────────┘
+
+  ┌────────────────────────┐      ┌────────────────────────┐
+  │     search_history     │      │      translations      │
+  ├────────────────────────┤      ├────────────────────────┤
+  │ user_id                │      │ user_id                │
+  │ keyword                │      │ source_text            │
+  │ result                 │      │ translated_text        │
+  │ created_at             │      │ source/target_lang     │
   └────────────────────────┘      └────────────────────────┘
 ```
 
-1. **`users`**: Menyimpan kredensial akun pemelajar, status email, dan profil.
+1. **`users`**: Menyimpan email, username, password hash, dan nama profil.
 2. **`otp_verifications`**: Tempat menyimpan kode OTP 6-digit acak yang memiliki masa kedaluwarsa 10 menit.
 3. **`quiz_history`**: Mencatat setiap riwayat penyelesaian kuis (unit, skor yang diraih, jawaban detail dalam format JSON, waktu pengerjaan).
 4. **`user_activity_logs`**: Log jejak audit keamanan (kapan user login, ganti password, atau mengerjakan tes).
-5. **`dictionary_cache`**: Menyimpan jawaban kamus AI secara permanen agar pencarian kata yang sama tidak membuang kuota Gemini.
-6. **`security_events`**: Mencatat IP dan aktivitas mencurigakan yang diblokir oleh sistem keamanan.
+5. **`quiz_explanations`**: Menyimpan penjelasan jawaban kuis.
+6. **`search_history`**: Menyimpan riwayat pencarian pengguna.
+7. **`translations`**: Menyimpan riwayat terjemahan.
 
 ---
 
@@ -197,14 +207,14 @@ Request GraphQL Masuk (Express / Vercel Function)
     [ Panggil db.js ]
               │
               ▼
-   Memeriksa koneksi MySQL cloud?
+   Memeriksa koneksi TiDB Cloud?
               │
      ┌────────┴────────┐
      ▼                 ▼
   [SUKSES]       [Belum siap]
      │                 │
   Gunakan           Produksi: tolak penyimpanan akun
-  MySQL Cloud       Lokal: gunakan SQLite fallback
+  TiDB Cloud        Lokal: gunakan SQLite fallback
      │                 │
      └────────┬────────┘
               │
@@ -510,3 +520,19 @@ Get-Process node | Stop-Process -Force
 # Mengekspor isi database ke file backup SQL
 node server/src/db/exportSqlBackup.js
 ```
+
+---
+
+## 📚 Rencana Backend: Materi Belajar dari Folder Dokumen
+
+Fitur upload dan AI berbasis dokumen **belum tersedia**. Jangan mengiklankan, membuka endpoint, atau menyimpan file seolah pipeline ini sudah dibangun. Rancangan alur backend yang perlu dibahas sebelum implementasi:
+
+1. Terima daftar file yang dipilih sadar oleh pengguna; validasi autentikasi, izin, jumlah, ukuran, dan tipe berdasarkan isi file.
+2. Simpan file asli ke object storage persisten dengan key privat; simpan metadata (pemilik/kelas, status, tipe, ukuran, waktu unggah, kebijakan retensi) di TiDB. Jangan menulis file upload ke disk fungsi Vercel.
+3. Jalankan ekstraksi teks untuk format yang disepakati (MVP dapat mengevaluasi PDF berbasis teks, DOCX, TXT). OCR untuk scan adalah ruang lingkup terpisah. Batasi jumlah halaman, panjang teks, arsip terkompresi, dan waktu kerja.
+4. Normalisasi dan pecah teks menjadi chunks dengan metadata sumber seperti file, halaman, judul, dan urutan. Pilihan indeks retrieval/embedding belum ditetapkan; ukur biaya dan kebutuhan sebelum memilih teknologi.
+5. Saat sesi belajar, filter retrieval berdasarkan kepemilikan/kelas, kirim hanya chunks relevan ke Gemini, dan minta jawaban menyertakan rujukan. Jika bukti tidak ada, model harus berkata tidak ditemukan.
+6. Perlakukan dokumen sebagai input tak tepercaya: prompt injection di dalam file tidak boleh mengganti system prompt, membocorkan data pengguna lain, memanggil tool, atau menjalankan kode.
+7. Sediakan status pemrosesan, retry yang aman, penghapusan yang mencakup file/teks/index, audit akses, serta kebijakan retensi.
+
+Rencana ini membutuhkan review keamanan, privasi, kapasitas Vercel, storage, dan kurator materi sebelum masuk sprint. Lihat juga `PRD.md`, `ARCHITECTURE.md`, dan `WORKFLOW.md`.

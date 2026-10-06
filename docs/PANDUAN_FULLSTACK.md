@@ -27,8 +27,8 @@ Arsitektur fullstack kita disatukan oleh **6 jembatan penghubung utama**:
 │ 2. KONTRAK DATA       : Skema GraphQL (typeDefs.js) sebagai Bahasa Satu│
 │ 3. SIKLUS REQUEST     : 8 Tahap interaksi data dari klik sampai render │
 │ 4. SINKRONISASI CACHE : Apollo Cache di Client vs Memory Cache Server  │
-│ 5. PENGATURAN LINGKUNGAN: Variabel .env terpusat & Zero Leak Policy    │
-│ 6. OTOMASI GIT PUSH   : Verifikasi build & push otomatis ke GitHub     │
+│ 5. HOSTING & DATABASE : Vercel + TiDB Cloud persisten                │
+│ 6. OPERASIONAL        : UptimeRobot, Zero Leak, dan alur Git           │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -54,10 +54,14 @@ Aplikasi kita sangat cepat karena menerapkan strategi caching di dua sisi:
 * **Sisi Client (Apollo In-Memory Cache)**: Mencegah browser mengirim kueri berulang jika data baru saja diambil.
 * **Sisi Server (RAM Cache & Database Cache)**: Hasil komputasi AI Gemini disimpan di memori server agar respon dapat dikembalikan dalam waktu **`0.04 ms`**.
 
-### 5. Pengaturan Lingkungan Terpusat (`.env`)
+### 5. Hosting dan Database Persisten
+
+Vercel menjalankan frontend dan API serverless; TiDB Cloud menjadi database produksi. Integrasi TiDB dapat membuat variabel `TIDB_*` dan backend menerima nama tersebut langsung. SQLite hanya fallback development lokal. UptimeRobot sebaiknya memantau `https://<domain-produksi>/healthz`; endpoint ini memeriksa respons rute, bukan koneksi database.
+
+### 6. Pengaturan Lingkungan Terpusat (`.env`)
 Nilai rahasia disimpan di `server/.env`, yang tidak boleh di-commit. Repositori privat membatasi akses sesuai izin GitHub, tetapi bukan brankas rahasia: tetap jangan simpan kredensial di Git, dokumentasi, atau kode frontend.
 
-### 6. Standar Kualitas & Otomatisasi Git
+### 7. Standar Kualitas & Otomatisasi Git
 Setiap perubahan kode wajib lolos verifikasi build frontend (`npm --prefix client run build`) dan dipush ke GitHub secara otomatis.
 
 ---
@@ -83,8 +87,8 @@ Berikut alur lengkap yang terjadi di balik layar saat seorang pemelajar menyeles
 [5. JWT Verification] Server memverifikasi tanda tangan, issuer, audience, dan masa berlaku token sebelum mengambil identitas akun.
         │
         ▼
-[6. Database Logic]   historyResolvers.js menyimpan skor ke MySQL cloud persisten.
-        │             SQLite hanya dipakai untuk development lokal, bukan sebagai storage Vercel.
+[6. Database Logic]   historyResolvers.js menyimpan skor ke TiDB Cloud persisten.
+        │             SQLite hanya dipakai untuk development lokal, bukan storage Vercel.
         │
         ▼
 [7. JSON Response]    Apollo Server mengirim balasan: { data: { saveQuizScore: { success: true } } }.
@@ -105,7 +109,7 @@ Tabel berikut memetakan setiap fitur di antarmuka pengguna ke berkas backend dan
 | **Kamus Pintar & Glosarium** | [`client/src/components/DictionaryView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DictionaryView.jsx) | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) | `dictionary_cache` + Gemini AI |
 | **Login & Registrasi Akun** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) | `users` (Bcrypt hash) |
 | **Kode OTP Verifikasi Email** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) | [`server/src/utils/emailService.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/utils/emailService.js) | `otp_verifications` + Nodemailer |
-| **Riwayat Skor & Statistik** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `quiz_history` (MySQL/SQLite) |
+| **Riwayat Skor & Statistik** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `quiz_history` (TiDB/local SQLite) |
 | **Log Aktivitas Pengguna** | [`client/src/App.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/App.jsx) | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) | `user_activity_logs` |
 | **Maskot Pintar Teksie** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) | Logika state lokal React | Suara Web Speech API |
 | **Monitoring & Status Server** | [`client/src/graphql/queries.js`](file:///c:/Salim/Kerjaan/pahamteks/client/src/graphql/queries.js) | [`server/src/app.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/app.js) (`/health`) | Endpoint Health JSON |
@@ -135,7 +139,7 @@ Gunakan tabel direktori ini sebagai panduan cepat menemukan berkas apa pun di se
 | **Backend** | Logika eksekusi autentikasi & JWT | [`server/src/resolvers/authResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/authResolvers.js) |
 | **Backend** | Logika kuis AI, kamus, & RAM cache | [`server/src/resolvers/geminiResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/geminiResolvers.js) |
 | **Backend** | Logika riwayat skor kuis & audit logs | [`server/src/resolvers/historyResolvers.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/resolvers/historyResolvers.js) |
-| **Backend** | Koneksi MySQL & logika failover ke SQLite | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
+| **Backend** | Koneksi TiDB/MySQL dan fallback SQLite development | [`server/src/config/db.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/db.js) |
 | **Backend** | Mesin database cadangan SQLite lokal | [`server/src/db/fallbackDb.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/db/fallbackDb.js) |
 | **Backend** | Berkas biner database SQLite lokal | `server/data/pahamteks_backup.sqlite` |
 | **Backend** | Rotasi API key Gemini 1–9 & prompt AI | [`server/src/config/gemini.js`](file:///c:/Salim/Kerjaan/pahamteks/server/src/config/gemini.js) |
@@ -259,15 +263,15 @@ Salin berkas `.env.example` menjadi `server/.env`:
 | `JWT_SECRET` | Ya | Secret acak minimal 32 karakter; server menolak nilai kosong/pendek dan penggantian secret membatalkan sesi lama |
 | `ADMIN_EMAILS` | Tidak | Email akun terverifikasi yang diberi role admin, dipisahkan koma; kosong berarti belum ada admin |
 | `ADMIN_PASSWORD` | Saat admin diaktifkan | Password tambahan bersama, minimal 16 karakter acak; tim admin tetap login dengan password akun masing-masing |
-| `DB_HOST` | Wajib di production/Vercel | Host MySQL cloud persisten; `localhost` hanya untuk development lokal |
-| `DB_PORT` | Wajib di production/Vercel | Port MySQL cloud, umumnya `3306` |
-| `DB_USER` | Wajib di production/Vercel | Pengguna database MySQL cloud |
-| `DB_PASSWORD` | Wajib di production/Vercel | Password database cloud, disimpan sebagai Environment Variable rahasia |
-| `DB_NAME` | Wajib di production/Vercel | Nama database yang sudah dibuat oleh penyedia MySQL cloud |
-| `DB_SSL` | Opsional | Isi `true` jika penyedia MySQL mewajibkan TLS/SSL |
+| `TIDB_HOST` | Wajib di Vercel bila memakai integrasi TiDB | Hostname dari integrasi TiDB Cloud; backend langsung menerima nama variabel ini |
+| `TIDB_PORT` | Wajib di Vercel bila memakai integrasi TiDB | Port yang diberikan TiDB; salin nilai dari integration/environment, jangan menebak |
+| `TIDB_USER` | Wajib di Vercel bila memakai integrasi TiDB | Username TiDB Cloud |
+| `TIDB_PASSWORD` | Wajib di Vercel bila memakai integrasi TiDB | Password TiDB Cloud; simpan sebagai secret environment |
+| `TIDB_DATABASE` | Wajib di Vercel bila memakai integrasi TiDB | Database yang dipilih/dibuat di TiDB Cloud |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Alternatif konfigurasi manual | Nama kompatibel untuk provider MySQL lain; `DB_*` diutamakan jika diisi |
+| `DB_SSL` | Opsional | `TIDB_HOST` mengaktifkan TLS otomatis; isi `false` hanya jika memang dikehendaki dan didukung provider. Setup manual dapat memakai `true`. |
 
-Vercel tidak menyimpan SQLite `/tmp` secara permanen. Hubungkan MySQL cloud dari **Vercel Project → Settings → Environment Variables** untuk Production dan Preview, lalu lakukan deployment baru. Jika koneksi database belum siap, registrasi akan ditolak dan tidak membuat akun sementara di memori.
-| `DB_NAME` | Opsional | Nama database (default `pahamteks_db`) |
+Hubungkan TiDB Cloud melalui Vercel Marketplace atau isi variabelnya di **Vercel Project → Settings → Environment Variables** untuk environment yang dipakai, lalu redeploy. File `server/.env` hanya untuk lokal. Vercel tidak menyimpan SQLite `/tmp` secara permanen; jika koneksi database belum siap, operasi penyimpanan produksi akan gagal dan tidak membuat akun sementara di memori.
 | `GEMINI_API_KEY_1` | Untuk fitur AI | Kunci Gemini pertama; isi `_2` sampai `_9` untuk rotasi atau `GEMINI_API_KEY` untuk satu kunci |
 | `EMAIL_USER` | Untuk email OTP | Alamat email pengirim |
 | `EMAIL_PASS` | Untuk email OTP | Gmail App Password atau password SMTP khusus aplikasi |
@@ -277,6 +281,27 @@ Buat secret acak melalui terminal dengan `node -e "console.log(require('node:cry
 
 > [!CAUTION]
 > **Zero Leak Policy**: Berkas `server/.env` dan database `server/data/*.sqlite` **TIDAK BOLEH PERNAH DI-PUSH** ke GitHub!
+
+---
+
+## 📚 Rencana Fitur Fullstack: Belajar dari Folder Dokumen
+
+Fitur ini baru berupa rancangan; belum ada upload, parser, object storage, indexing, atau retrieval dokumen di aplikasi.
+
+```text
+Pemilih file oleh pengguna
+  → UI menampilkan daftar dan persetujuan
+  → API memeriksa identitas, akses, tipe, dan batas file
+  → berkas masuk ke object storage privat dan persisten
+  → worker/layanan ekstraksi membuat teks + metadata halaman
+  → potongan sumber dan status terkait diindeks; metadata/izin dicatat di TiDB
+  → saat belajar, retrieval mencari potongan sesuai ruang/kelas yang diizinkan
+  → Gemini membuat penjelasan/kuis dengan rujukan dokumen
+```
+
+Keputusan yang harus dibuat sebelum implementasi: object storage dan signed URL; apakah MVP mendukung PDF berbasis teks, DOCX, TXT; batas ukuran/jumlah/halaman; ekstraksi sinkron atau antrean; dukungan OCR; struktur ruang personal/kelas; serta masa retensi dan penghapusan. Jangan menyimpan berkas di disk fungsi Vercel.
+
+Persyaratan kualitas: akses backend selalu difilter berdasarkan pemilik/kelas; AI hanya menerima chunks relevan; jawaban menyebut dokumen dan halaman/bagian jika ada; model mengakui jika sumber tidak mencukupi; konten file diperlakukan sebagai input tak tepercaya (prompt injection tidak boleh mengubah instruksi sistem atau membuka data lain); hapus berkas, ekstrak, dan indeks sesuai kebijakan yang disepakati. Libatkan backend, frontend, QA, kurator, serta guru/dosen untuk validasi.
 
 ---
 

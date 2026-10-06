@@ -1,6 +1,6 @@
-r # Arsitektur Sistem PahamTeks
+# Arsitektur Sistem PahamTeks
 
-Dokumen ini adalah cetak biru teknis sistem **PahamTeks**. Ditulis untuk para engineer dan developer di tim agar memahami bagaimana komponen-komponen di aplikasi ini saling terhubung, dari antarmuka React sampai lapisan database ganda.
+Dokumen ini adalah cetak biru teknis sistem **PahamTeks**. Dokumen menjelaskan hubungan React, API serverless Vercel, Gemini, TiDB Cloud, dan SQLite lokal untuk development.
 
 ---
 
@@ -26,7 +26,7 @@ flowchart TD
     subgraph Backend ["Backend Engine (Node.js ESM)"]
         Express["Express.js Server"]
         GraphQL["Apollo Server v4 (/graphql)"]
-        HealthEndpoint["Endpoint Monitoring (/health)"]
+        HealthEndpoint["Public probe (/healthz) & admin health (/health)"]
         Resolvers["Resolvers (Auth, Gemini, History)"]
         
         Express --> GraphQL
@@ -42,10 +42,10 @@ flowchart TD
 
     subgraph DataLayer ["Penyimpanan Data Resilien"]
         DBManager["Unified Database Manager (db.js)"]
-        MySQL[("MySQL Cloud Persisten (produksi/Vercel)")]
+        TiDB[("TiDB Cloud (kompatibel MySQL, produksi/Vercel)")]
         SQLite[("SQLite lokal (development saja)")]
         
-        DBManager -->|Produksi| MySQL
+        DBManager -->|Produksi| TiDB
         DBManager -->|Fallback lokal saja| SQLite
     end
 
@@ -86,21 +86,38 @@ Backend kita bangun dengan **Node.js (ES Modules)**:
      - `authResolvers.js`: Registrasi, login, reset password, OTP email.
      - `geminiResolvers.js`: Pembuatan soal kuis dinamis, evaluasi "Kenapa Salah?", kamus AI, dan terjemahan suara.
      - `historyResolvers.js`: Pencatatan log aktivitas dan skor kuis pemelajar.
-2. **Monitoring Endpoint (`GET /health`)**:
-   - Endpoint REST yang mengecek kesehatan sistem: status database utama, status database cadangan, jumlah API key Gemini yang aktif, pemakaian RAM, dan uptime server.
-   - Siap dipantau oleh UptimeRobot atau BetterStack.
+2. **Monitoring Endpoint (`GET /healthz`)**:
+   - Endpoint publik ringan yang mengembalikan HTTP 200 dan `{ "status": "OK" }` untuk liveness check UptimeRobot.
+   - `GET /health` menampilkan telemetri internal dan memerlukan token admin; jangan daftarkan endpoint ini sebagai monitor publik.
 
 ---
 
-## 4. Kenapa Kita Pakai Dua Database? (Dual Database Strategy)
+## 4. Database Berdasarkan Lingkungan
 
-MySQL cloud menjadi penyimpanan persisten untuk produksi. Pada Vercel, koneksi dibuka saat request pertama karena handler GraphQL berjalan sebagai fungsi serverless. Skema tabel dibuat saat koneksi berhasil.
+TiDB Cloud menjadi penyimpanan persisten untuk produksi dan kompatibel dengan driver `mysql2`. Integrasi Vercel dapat mengisi `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE`; `server/src/config/db.js` menerima nama-nama itu langsung serta tetap mendukung `DB_*`. Saat memakai `TIDB_HOST`, koneksi TLS diaktifkan otomatis kecuali `DB_SSL=false`. Pada Vercel, koneksi dibuka secara lazy saat ada request dan skema tabel disiapkan ketika koneksi berhasil.
 
-SQLite hanya dipakai sebagai fallback development lokal. Filesystem fungsi Vercel, termasuk `/tmp`, bersifat sementara dan tidak boleh dipakai untuk menyimpan akun atau progres. Jika database cloud belum dikonfigurasi atau sedang tidak bisa dihubungi, operasi akun di produksi gagal dengan pesan layanan database tidak siap; backend tidak menganggap data memori sebagai data tersimpan.
+SQLite hanya dipakai sebagai fallback development lokal. Filesystem fungsi Vercel, termasuk `/tmp`, bersifat sementara dan tidak boleh dipakai untuk menyimpan akun atau progres. Jika TiDB belum dikonfigurasi atau tidak dapat dihubungi, operasi penyimpanan di produksi gagal; backend tidak menganggap data memori sebagai data tersimpan.
+
+## 5. Rencana Arsitektur Materi dari Dokumen Pengguna
+
+Fitur ini belum diimplementasikan. Alur yang direncanakan:
+
+```text
+Pengguna memilih file/folder
+        → validasi akses, tipe, ukuran, dan keamanan
+        → simpan file ke object storage persisten
+        → ekstrak teks dan pecah menjadi potongan berindeks
+        → simpan metadata/izin/status di TiDB
+        → cari potongan relevan saat sesi belajar
+        → kirim konteks terbatas ke Gemini
+        → jawab dengan rujukan dokumen/halaman
+```
+
+Jangan menyimpan file upload di disk fungsi Vercel. TiDB menyimpan metadata dan relasi kepemilikan; file asli memerlukan object storage persisten yang dipilih tim, dan pencarian semantik memerlukan evaluasi opsi indeks sebelum diputuskan. Setiap query retrieval wajib memfilter berdasarkan pengguna/kelas yang berwenang. Perlakukan isi dokumen sebagai konten tak tepercaya, bukan instruksi sistem. Jawaban harus merujuk dokumen dan bagian/halaman yang tersedia, serta menyatakan jika informasi tidak ditemukan.
 
 ---
 
-## 5. Rotasi Kunci AI (Gemini Round-Robin)
+## 6. Rotasi Kunci AI (Gemini Round-Robin)
 
 Untuk mencegah kuota gratisan Google Gemini habis di tengah jalan saat banyak pemelajar mengakses kuis bersamaan:
 - Sistem mendukung multi-key: `GEMINI_API_KEY`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, dst.
@@ -109,7 +126,7 @@ Untuk mencegah kuota gratisan Google Gemini habis di tengah jalan saat banyak pe
 
 ---
 
-## 6. Standar Keamanan Sistem
+## 7. Standar Keamanan Sistem
 
 - **Helmet**: Mengamankan header HTTP terhadap clickjacking, MIME sniffing, dan XSS.
 - **CORS Whitelist**: Membatasi akses API ke origin lokal, daftar `ALLOWED_ORIGINS`, dan Cloudflare Tunnel saat digunakan.

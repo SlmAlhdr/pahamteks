@@ -18,10 +18,11 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 | ⚙️ [`WORKFLOW.md`](./WORKFLOW.md) | Alur kerja harian: setup lokal, aturan branching Git, backup data, dan langkah darurat saat server error. | Wajib dibaca pas onboarding pertama kali dan sebelum push ke repo. |
 | 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | Standar kebersihan kode agar tidak ada kode sampah AI, cara cek lokal, dan aturan CI GitHub Actions. | Wajib dicek saat nulis kode pakai AI assistant (Cursor, Antigravity, dll). |
 | 🤖 [`AGENT_ADAPTATION.md`](./AGENT_ADAPTATION.md) | Panduan adaptasi otomatis untuk AI Agent rekan tim/teman saat membuka folder PahamTeks. | Wajib dibaca oleh asisten AI baru agar langsung paham arsitektur sistem. |
-| 🌐 [`PANDUAN_AKSES_HTTPS_PRIBADI.md`](./PANDUAN_AKSES_HTTPS_PRIBADI.md) | Cara membuka akses sementara ke internet/HP via Cloudflare Tunnel. | Saat butuh demo langsung dari laptop atau menguji fitur via HP di luar jaringan. |
+| 🌐 [`PANDUAN_AKSES_HTTPS_PRIBADI.md`](./PANDUAN_AKSES_HTTPS_PRIBADI.md) | Deployment utama Vercel, koneksi TiDB Cloud, UptimeRobot, serta tunnel lokal opsional. | Saat menyiapkan hosting, database, pemantauan, atau demo. |
 | 💻 [`PANDUAN_FRONTEND.md`](./PANDUAN_FRONTEND.md) | Panduan lengkap frontend: analogi ruang makan, 7 pilar penyusun, pohon komponen, 19 file UI, sistem audio, token auth, dan styling pure CSS. | Saat membuat/memodifikasi komponen antarmuka pengguna di React atau mengatur tampilan. |
-| ⚙️ [`PANDUAN_BACKEND.md`](./PANDUAN_BACKEND.md) | Panduan lengkap backend: analogi dapur, 8 pilar penyusun, Apollo GraphQL vs REST, skema 6 tabel, failover SQLite, dan rotasi AI Gemini. | Saat membuat kueri/mutasi baru, resolver, skema database, atau konfigurasi keamanan. |
+| ⚙️ [`PANDUAN_BACKEND.md`](./PANDUAN_BACKEND.md) | Panduan backend: GraphQL, TiDB Cloud untuk produksi, SQLite lokal, Gemini, autentikasi, dan keamanan. | Saat membuat resolver, skema database, integrasi AI, atau konfigurasi server. |
 | 🔄 [`PANDUAN_FULLSTACK.md`](./PANDUAN_FULLSTACK.md) | Panduan lengkap fullstack: analogi manajer restoran, 6 jembatan penghubung, siklus hidup request 8 tahap, tutorial end-to-end, & kamus troubleshooting. | Saat menghubungkan fitur baru dari UI hingga ke database/AI atau mengatasi error integrasi. |
+| 📚 Materi dari folder dokumen | Rancangan fitur agar siswa, mahasiswa, guru, atau dosen dapat mengunggah kumpulan dokumen sebagai sumber belajar AI. | Saat merancang kurasi materi, alur upload, keamanan berkas, retrieval, dan evaluasi jawaban. Statusnya masih rencana, belum tersedia di aplikasi. |
 
 
 ---
@@ -31,7 +32,7 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 ### 1. Kebutuhan Dasar
 * Node.js v18 atau yang lebih baru (disarankan v20 LTS).
 * Git.
-* (Opsional) MySQL lokal seperti XAMPP / MariaDB. Kalau malas install MySQL, tenang saja: backend kita otomatis pakai SQLite cadangan tanpa setup apa pun!
+* Untuk deployment Vercel: akun TiDB Cloud dan database persisten. Saat development lokal, backend dapat memakai SQLite sebagai fallback.
 
 ### 2. Langkah Setup Cepat
 ```bash
@@ -39,8 +40,8 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 git clone https://github.com/slmalhadar-lab/pahamteks.git
 cd pahamteks
 
-# 2. Salin env example
-cp .env.example server/.env
+# 2. Salin template environment backend
+cp server/.env.example server/.env
 
 # 3. Masukkan Gemini API Key kamu di server/.env:
 # GEMINI_API_KEY=AIzaSy...
@@ -51,23 +52,31 @@ npm --prefix client install
 
 # 5. Jalankan backend (Terminal 1)
 npm --prefix server run dev
-# Aktif di: http://localhost:4000/graphql dan http://localhost:4000/health
+# GraphQL: http://127.0.0.1:4000/graphql | health publik: /healthz
 
 # 6. Jalankan frontend (Terminal 2)
 npm --prefix client run dev
-# Aktif di: http://localhost:5173
+# Aktif di: http://127.0.0.1:3000
 ```
 
 ---
 
 ## 💡 Ringkasan: Yang Sudah Jadi vs Ide Diskusi
 
-### Sudah Siap & Aktif di Produksi:
+### Fitur aplikasi yang sudah tersedia:
 * **Frontend**: Antarmuka React 18 responsif, navigasi tab terpusat, balon Kamus Pintar mengambang, modal notifikasi tengah layar, dan maskot interaktif Teksie yang reaktif (tidur saat idle, respon saat disentuh).
 * **Backend & AI**: Apollo Server GraphQL, rotasi multi-kunci Gemini API (*Round-Robin*) agar kuota tidak jebol, kuis adaptif Unit 1–5, kamus instan, dan transkripsi audio.
-* **Keamanan & Kehandalan**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, dan failover ganda otomatis (MySQL ke SQLite).
+* **Keamanan & Kehandalan**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, MySQL/TiDB persisten di hosting, dan SQLite fallback lokal untuk development.
 
-### Ide Diskusi Lanjutan (Cek detailnya di [`TODO.md`](./TODO.md)):
+### Hosting dan operasional
+
+Vercel menjadi platform hosting aplikasi. TiDB Cloud menjadi database MySQL-compatible persisten; integrasi Vercel menyediakan variabel `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE`, yang didukung langsung backend. UptimeRobot dipakai untuk memantau `https://<domain-produksi>/healthz`; endpoint `/health` berisi telemetri sensitif dan hanya untuk admin. Status deployment dan monitor perlu diperiksa di dashboard masing-masing, bukan diasumsikan dari dokumen.
+
+### Rencana fitur materi dari folder dokumen
+
+Fitur ini masih tahap perencanaan. Pengajar atau pemelajar nantinya dapat mengunggah dokumen yang mereka miliki, lalu AI memakai isi dokumen tersebut sebagai sumber untuk membuat penjelasan atau latihan bahasa. Sistem harus membatasi jenis/ukuran file, memisahkan materi antar akun, memberi rujukan halaman/bagian, dan tidak menganggap instruksi yang tertulis dalam dokumen sebagai instruksi sistem AI. Lihat PRD, ROADMAP, dan panduan backend/fullstack untuk rancangan.
+
+### Ide Pengembangan Lanjutan (Cek detailnya di [`TODO.md`](./TODO.md)):
 1. **Audio Pengucapan Asli** untuk kosakata bahasa asing dan penjelasan kuis.
 2. **Gamifikasi Streak Belajar & EXP**: Menjaga motivasi belajar setiap hari.
 3. **PWA (Progressive Web App)**: Supaya PahamTeks bisa di-install langsung di layar HP pengguna tanpa repot masuk app store.

@@ -1,185 +1,90 @@
-# Panduan Akses Web HTTPS Pribadi — PahamTeks
+# Hosting, Database, dan Pemantauan PahamTeks
 
-Halo rekan tim! Dokumen ini menjelaskan cara membuka akses web **PahamTeks** agar bisa dibuka dari HP, tablet, maupun laptop lain melalui internet secara aman (HTTPS). Panduan ini ditulis selangkah demi selangkah agar siapa pun—bahkan yang belum pernah mengetik perintah di terminal—bisa mengikutinya dengan mudah.
+Panduan operasional ini memakai **Vercel** untuk hosting aplikasi, **TiDB Cloud** untuk database persisten, dan **UptimeRobot** untuk memantau endpoint kesehatan publik. Cloudflare Tunnel hanya pilihan demo lokal sementara.
 
----
+> Jangan menaruh nilai rahasia di dokumen, source code, atau Git. Isi kredensial langsung di Vercel Environment Variables atau `server/.env` lokal.
 
-## 🤔 Kenapa Kita Perlu Ini?
+## 1. Deploy aplikasi ke Vercel
 
-Saat kamu menjalankan PahamTeks di laptop secara lokal, aplikasinya hanya bisa diakses dari laptop itu sendiri (`http://localhost:3000`). Artinya, HP kamu, teman satu tim, atau penguji di luar laptop kamu tidak bisa membukanya.
+1. Push branch deployment ke GitHub dan impor repositori PahamTeks ke Vercel.
+2. Pastikan Root Directory memakai root repo. Konfigurasi repo menjalankan `npm install --include=dev`, `npm --prefix client run build`, menghasilkan `client/dist`, dan me-rewrite `/graphql`, `/health`, serta `/healthz` ke fungsi `api/graphql.js`.
+3. Sebelum deploy pertama, hubungkan TiDB Cloud (bagian 2) dan isi environment variables backend (bagian 3).
+4. Pilih Production untuk domain produksi. Atur Preview terpisah bila diperlukan; jangan arahkan Preview ke database produksi tanpa persetujuan tim.
+5. Deploy, lalu periksa halaman utama, `/healthz`, registrasi/login, dan penyimpanan progres. Push ke branch yang terhubung akan memicu deployment sesuai pengaturan proyek Vercel.
 
-Panduan ini menyediakan **3 cara** praktis sesuai kebutuhan kamu:
+## 2. Hubungkan TiDB Cloud
 
-| Cara | Butuh Internet? | Perlu Laptop Nyala? | Cocok Untuk |
-| :--- | :---: | :---: | :--- |
-| **A. Deploy ke Vercel (Rekomendasi Utama)** | Ya | **Tidak** | Akses kapan saja dari HP/laptop tanpa menyalakan terminal/laptop. Link HTTPS permanen resmi. |
-| **B. Cloudflare Tunnel** | Ya | Ya (3 Terminal) | Uji coba langsung kode lokal di laptop ke HP sebelum di-deploy. |
-| **C. Satu Jaringan Wi-Fi** | Tidak | Ya (2 Terminal) | Testing cepat di HP sendiri dalam satu jaringan Wi-Fi lokal rumah/kampus. |
+Integrasi Vercel Marketplace adalah cara yang disarankan untuk TiDB Cloud Starter/Essential:
 
----
+1. Buka [TiDB Cloud di Vercel Marketplace](https://vercel.com/marketplace/tidb-cloud) dan pilih **Add Integration**.
+2. Pilih scope dan project Vercel PahamTeks, lalu lanjutkan ke TiDB Cloud.
+3. Pilih organisasi/project TiDB, tipe koneksi **Cluster**, lalu pilih atau buat cluster dan database.
+4. Pilih framework **General** agar integrasi menyediakan variabel `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE`.
+5. Kembali ke Vercel → project → **Settings → Environment Variables**. Pastikan kelima variabel tersebut tersedia untuk environment yang akan dideploy.
+6. Redeploy setelah variabel tersedia. Backend saat ini menerima `TIDB_*` langsung dan mengaktifkan TLS ketika menggunakan `TIDB_HOST` (kecuali `DB_SSL=false`).
 
-## 🌐 Cara A: Deploy ke Vercel (Akses Pribadi & Permanen Tanpa Perlu Laptop Menyala)
+Nilai hostname, username, password, port, dan nama database dibuat oleh TiDB Cloud. Jangan menebak atau memakai nilai placeholder. Jika koneksi diatur manual, ambil detail di TiDB Cloud → resource/cluster → **Connect**. Backend mendukung `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`; `DB_SSL=true` dapat dipakai jika provider memerlukannya.
 
-Ini adalah **cara paling praktis dan direkomendasikan**. Web PahamTeks akan di-hosting secara cloud di Vercel, sehingga kamu bisa membuka website dan login ke Dasbor Admin langsung dari HP kapan pun dan di mana pun, bahkan saat laptop kamu mati!
+### Environment variables produksi
 
-### Langkah 1 — Sambungkan Repositori GitHub ke Vercel
-1. Buka [vercel.com](https://vercel.com) dan masuk menggunakan akun GitHub kamu.
-2. Klik tombol **"Add New..."** > pilih **"Project"**.
-3. Cari repositori **`pahamteks`** (atau nama repositori GitHub kamu), lalu klik tombol **"Import"**.
+| Key | Sumber / aturan |
+| --- | --- |
+| `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, `TIDB_DATABASE` | Dibuat oleh integrasi TiDB untuk framework General; rahasiakan kredensial. Alternatif manual memakai nama `DB_*`. |
+| `JWT_SECRET` | Secret acak privat minimal 32 karakter. Mengubahnya membatalkan sesi yang sudah terbit. |
+| `GEMINI_API_KEY_1` | Kunci API Gemini untuk fitur AI; `_2`–`_9` opsional untuk rotasi. |
+| `EMAIL_USER`, `EMAIL_PASS` | Kredensial SMTP/App Password untuk OTP, bila fitur akun email dipakai. |
+| `ADMIN_EMAILS`, `ADMIN_PASSWORD` | Opsional, untuk admin; jangan pernah menaruh `ADMIN_PASSWORD` di frontend. |
+| `ALLOWED_ORIGINS` | Opsional untuk origin tambahan; isi hanya origin frontend yang diperlukan. |
 
-### Langkah 2 — Atur Environment Variables di Vercel Dashboard
-Sebelum menekan Deploy, buka menu **"Environment Variables"** pada halaman setup Vercel dan tambahkan variabel-variabel penting berikut:
+`server/.env` lokal tetap untuk development. Gunakan `DB_HOST=localhost` hanya bila memang MySQL lokal tersedia. File tersebut tidak disalin ke Vercel dan tidak boleh dipush.
 
-| Nama Variabel (*Key*) | Contoh Nilai (*Value*) | Keterangan |
-| :--- | :--- | :--- |
-| `EMAIL_USER` | `akunpahamteks@gmail.com` | **Email Gmail pengirim OTP** (salin persis dari `server/.env`) |
-| `EMAIL_PASS` | `abcd efgh ijkl mnop` | **16 digit Sandi Aplikasi Google** (salin persis dari `server/.env`) |
-| `GEMINI_API_KEY_1` | `AIzaSy...` | Kunci API Gemini dari Google AI Studio |
-| `ADMIN_EMAILS` | `kamu@email.com,tim1@email.com,tim2@email.com` | **Daftar email admin/tim (pisahkan dengan koma)** yang memiliki hak akses administrator |
-| `JWT_SECRET` | `string-acak-panjang-dan-aman-32-karakter` | Kunci rahasia enkripsi sesi login |
-| `NODE_ENV` | `production` | Mode produksi |
+## 3. Pasang UptimeRobot
 
-> **Catatan**: Jika kamu punya database MySQL online (seperti TiDB, PlanetScale, atau Aiven), kamu juga bisa menambahkan `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Jika tidak diisi, backend otomatis menggunakan fallback SQLite aman di serverless.
+`GET /healthz` adalah probe publik ringan dan saat ini mengembalikan HTTP 200 dengan `{ "status": "OK" }`. Endpoint ini memeriksa bahwa rute fungsi merespons; ia **tidak** membuktikan bahwa TiDB, Gemini, email, atau seluruh alur aplikasi berfungsi.
 
-### Langkah 3 — Klik Deploy
-1. Klik tombol **"Deploy"**.
-2. Tunggu 1–2 menit sementara Vercel menginstal dependensi dan membangun frontend serta serverless API.
-3. Setelah selesai, Vercel akan memberikan link resmi kamu, misalnya:
-   ```text
-   https://pahamteks.vercel.app
-   ```
-   *(atau nama domain acak yang diberikan Vercel).*
+1. Buat HTTP(S) monitor di [UptimeRobot](https://uptimerobot.com/).
+2. Isi URL dengan `https://<domain-produksi>/healthz` (contoh format: `https://pahamteks.vercel.app/healthz`; gunakan domain aktual project Anda).
+3. Atur nama monitor, interval sesuai paket/kebutuhan, lokasi pemeriksaan, dan kontak notifikasi (email atau saluran tim yang sudah dikonfigurasi).
+4. Simpan monitor lalu uji penerimaan notifikasi menggunakan fitur test UptimeRobot jika tersedia.
+5. Tulis pemilik monitor dan langkah eskalasi di catatan operasional tim.
 
-### Langkah 4 — Membuka Web di HP / Perangkat Lain
-* **Halaman Pengguna**: Buka `https://pahamteks.vercel.app` di browser HP kamu. Web akan langsung terbuka dengan aman (HTTPS dan gembok hijau).
-* **Akses Khusus Admin**: Buka link langsung berakhiran `/admin`:
-  ```text
-  https://pahamteks.vercel.app/admin
-  ```
-  Masukkan email admin yang terdaftar di `ADMIN_EMAILS` dan kata sandi akun pribadi kamu. Kamu akan langsung dialihkan ke **Dasbor Administrator** visual!
+Jangan gunakan `/health` sebagai monitor publik: endpoint itu memerlukan Bearer token admin dan menampilkan telemetri internal. Untuk memeriksa fungsi penuh, lakukan smoke test berkala: masuk/daftar akun uji, simpan progres, dan periksa status database lewat dashboard admin atau log Vercel. Jangan menaruh token admin ke konfigurasi monitor bersama.
 
-### 👥 Cara Menambahkan Anggota Tim sebagai Admin (Sistem Opsi B: Email Allowlist)
-Kamu tidak perlu membagikan password master server kepada siapa pun! Sistem login admin PahamTeks menggunakan sistem **Allowlist Email**:
-1. **Tambahkan Email Tim**: Buka dashboard Vercel proyek kamu > **Settings** > **Environment Variables** > edit `ADMIN_EMAILS` dan tambahkan email anggota tim (pisahkan dengan koma), contoh:
-   ```text
-   owner@gmail.com,teman1@gmail.com,teman2@perusahaan.com
-   ```
-2. **Anggota Tim Mendaftar Akun**: Minta anggota tim membuka web PahamTeks dan mendaftarkan akun menggunakan alamat email mereka sendiri serta membuat kata sandi mereka sendiri.
-3. **Login Sebagai Admin**: Anggota tim langsung login di halaman `/admin` (atau form login biasa) dengan email dan password pribadi mereka. Sistem secara otomatis mendeteksi email mereka di daftar `ADMIN_EMAILS` dan memberikan peran `ADMIN`.
-4. **Mencabut Hak Akses**: Jika anggota tim sudah tidak bertugas, kamu cukup menghapus email mereka dari `ADMIN_EMAILS` di Vercel. Hak akses administrator mereka akan langsung dicabut seketika!
+## 4. Pemeriksaan setelah deploy atau perubahan environment
 
-### Langkah 5 — Otomatisasi Pembaruan (Auto-Deploy)
-Setiap kali kamu mengupdate kode di laptop lalu menjalankan perintah:
-```powershell
-git push origin main
-```
-Vercel akan secara otomatis mendeteksi perubahan tersebut dan memperbarui web kamu dalam hitungan detik tanpa perlu setup ulang!
+- Pastikan deployment Production terbaru berstatus Ready di Vercel.
+- Buka domain dan `/healthz`; pastikan respons HTTP sukses.
+- Coba registrasi/login dengan akun uji, verifikasi email bila SMTP aktif, dan periksa bahwa data bertahan setelah membuka sesi baru.
+- Periksa log fungsi Vercel untuk kegagalan koneksi. Pastikan variabel TiDB ada di environment yang benar dan lakukan redeploy jika nilainya baru diubah.
+- Pastikan UptimeRobot mengirim notifikasi melalui uji terkontrol yang disetujui tim.
+- Jangan menganggap status `/healthz` sebagai bukti database sehat; gunakan pemeriksaan alur aplikasi dan telemetri admin.
 
----
+## 5. Demo lokal melalui HTTPS (opsional)
 
-## 🚀 Cara B: Cloudflare Tunnel (Uji Coba Langsung Server Laptop via Internet)
+Untuk melihat kode lokal dari perangkat lain tanpa deploy, jalankan backend dan frontend di dua terminal, lalu buka tunnel ke Vite:
 
-Gunakan cara ini jika kamu ingin menguji fitur baru yang sedang kamu ubah di laptop dan ingin langsung melihat efeknya di HP tanpa perlu melakukan commit / push ke Vercel terlebih dahulu.
-
-### Langkah 1 — Unduh Cloudflare Tunnel (Cukup Sekali)
-Jika file `cloudflared.exe` belum ada di folder utama `pahamteks`, unduh dengan perintah ini:
-```powershell
-curl.exe -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
-```
-
-### Langkah 2 — Nyalakan 3 Jendela Terminal
-Buka 3 jendela terminal di folder `pahamteks`:
-
-#### Terminal 1 — Backend Server
-* **Jika prompt di folder utama (`PS C:\...\pahamteks>`):**
-  ```powershell
-  npm --prefix server run dev
-  ```
-* Tunggu sampai muncul: `🚀 [PahamTeks Backend] Berjalan di http://127.0.0.1:4000`
-
-#### Terminal 2 — Frontend Web
-* **Jika prompt di folder utama (`PS C:\...\pahamteks>`):**
-  ```powershell
-  npm --prefix client run dev
-  ```
-* Tunggu sampai muncul: `➜ Local: http://localhost:3000/`
-
-#### Terminal 3 — Terowongan HTTPS Cloudflare
-* Jalankan di folder utama `pahamteks>`:
-  ```powershell
-  .\cloudflared.exe tunnel --url http://localhost:3000
-  ```
-* Tunggu 5-10 detik sampai muncul link seperti:
-  ```text
-  https://random-kata-kata.trycloudflare.com
-  ```
-
-### Langkah 3 — Buka di HP
-* Salin link `https://random-kata-kata.trycloudflare.com` ke browser HP kamu.
-* Untuk akses admin: Buka `https://random-kata-kata.trycloudflare.com/admin`.
-
-### Langkah 4 — Mematikan Layanan
-Setelah selesai uji coba, tekan `Ctrl + C` di masing-masing jendela terminal (Terminal 3, Terminal 2, lalu Terminal 1).
-
----
-
-## 📱 Cara C: Satu Jaringan Wi-Fi (Tanpa Internet)
-
-Syaratnya: **HP dan laptop harus terhubung ke jaringan Wi-Fi yang sama** (misalnya Wi-Fi rumah atau hotspot).
-
-### Langkah 1 — Nyalakan Backend & Frontend (2 Terminal)
 ```powershell
 npm --prefix server run dev
 npm --prefix client run dev
 ```
 
-### Langkah 2 — Cari Alamat IP Laptop Kamu
-Buka terminal baru dan ketik:
+Pada terminal ketiga, jalankan Cloudflare Tunnel jika `cloudflared.exe` tersedia:
+
 ```powershell
-ipconfig
-```
-Cari baris **IPv4 Address** pada Wi-Fi adapter kamu, misalnya: `192.168.1.15`.
-
-### Langkah 3 — Buka di Browser HP
-Ketik di browser HP:
-```text
-http://192.168.1.15:3000
-```
-*(Ganti `192.168.1.15` dengan alamat IP laptop kamu).*
-
----
-
-## 🔧 Panduan Mengatasi Masalah Umum
-
-### Masalah 1: Vercel Menampilkan Error 404 pada Rute `/admin`
-**Penyebab**: Konfigurasi rewrite SPA di `vercel.json` belum menangani routing client.
-**Solusi**: Pastikan berkas [`vercel.json`](file:///c:/Salim/Kerjaan/pahamteks/vercel.json) berisi rule `{"source": "/(.*)", "destination": "/index.html"}`. Ini sudah terpasang otomatis di repositori.
-
-### Masalah 2: `cloudflared.exe` tidak ditemukan
-**Solusi**: Unduh ulang file binary:
-```powershell
-curl.exe -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
+.\cloudflared.exe tunnel --url http://localhost:3000
 ```
 
-### Masalah 3: Port 3000 atau 4000 sudah dipakai proses lain
-**Solusi**: Matikan proses Node.js yang tertinggal di background:
-```powershell
-Get-Process node | Stop-Process -Force
-```
-*(Atau `taskkill /F /IM node.exe`)*.
+Gunakan URL `trycloudflare.com` yang ditampilkan hanya selama sesi demo. Laptop dan server lokal harus tetap menyala; jangan gunakan tunnel sebagai hosting produksi atau membagikan data/akun nyata saat demo.
 
-### Masalah 4: Layar Browser Menampilkan `Blocked request. This host is not allowed.`
-**Solusi**: Fitur keamanan Vite 6 sudah disesuaikan di `client/vite.config.js` dengan `allowedHosts: true`. Cukup tekan **Refresh (F5)** pada browser HP kamu.
+## 6. Troubleshooting ringkas
 
----
+| Gejala | Periksa |
+| --- | --- |
+| `/healthz` 404 | Rewrite pada `vercel.json`, fungsi `api/graphql.js`, dan deployment aktif. |
+| Database tidak tersambung | Environment `TIDB_*` atau `DB_*`, database/cluster aktif, kredensial, TLS, dan log fungsi Vercel. Jangan gunakan localhost di Vercel. |
+| Akun tidak tersimpan | Pastikan koneksi TiDB berhasil; produksi tidak memakai SQLite sementara sebagai penyimpanan. |
+| UptimeRobot menyatakan DOWN padahal browser normal | Periksa URL canonical HTTPS, status code, metode HEAD/GET, redirect, dan apakah WAF/rate limit memblokir monitor. |
+| Halaman `/admin` 404 | Periksa SPA rewrite di `vercel.json`, lalu redeploy. |
+| OTP tidak masuk | Periksa `EMAIL_USER`, `EMAIL_PASS`, log Vercel, dan folder spam. Jangan tempel kredensial SMTP ke tiket/chat. |
 
-## 📝 Ringkasan Perintah Penting
-
-| Keperluan | Perintah PowerShell |
-| :--- | :--- |
-| **Deploy Otomatis ke Vercel** | `git push origin main` *(setelah `git add` & `git commit`)* |
-| **Nyalakan Backend Lokal (Port 4000)** | `npm --prefix server run dev` |
-| **Nyalakan Frontend Lokal (Port 3000)** | `npm --prefix client run dev` |
-| **Buka Tunnel HTTPS Cloudflare** | `.\cloudflared.exe tunnel --url http://localhost:3000` |
-| **Verifikasi Build Frontend** | `npm --prefix client run build` |
-| **Matikan Semua Proses Node.js Lokal** | `Get-Process node \| Stop-Process -Force` |
+Referensi teknis: [Integrasi TiDB Cloud–Vercel](https://docs.pingcap.com/tidbcloud/integrate-tidbcloud-with-vercel/), [UptimeRobot Help Center](https://help.uptimerobot.com/en/articles/11358364-how-to-create-your-first-monitor-on-uptimerobot-quick-setup-guide), dan [`WORKFLOW.md`](./WORKFLOW.md).

@@ -123,3 +123,10 @@ jobs:
    - Kalau ada fungsi yang di-copas: pindahkan ke `client/src/utils/`.
    - Kalau ada komentar tutorial yang bertele-tele: hapus atau persingkat.
 4. Commit dan push ulang!
+
+## 7. Ketepatan Dokumentasi dan Materi Pengguna
+
+- Bedakan fitur yang sudah ada dengan rencana. Upload folder, ekstraksi dokumen, dan retrieval materi belum menjadi fitur aplikasi hanya karena tercantum di roadmap.
+- Dokumentasi deployment harus mencerminkan Vercel + TiDB Cloud; SQLite fallback hanya berlaku untuk development lokal. UptimeRobot memeriksa `/healthz`, sedangkan `/health` khusus admin.
+- Jangan menulis hostname, password, API key, token, data akun, atau contoh rahasia nyata ke dokumen dan log.
+- Bila fitur materi dokumen dibangun, perlakukan file dan isinya sebagai input tak tepercaya; jangan membuat AI mengikuti prompt injection atau memberi jawaban tanpa rujukan yang dapat diverifikasi.
