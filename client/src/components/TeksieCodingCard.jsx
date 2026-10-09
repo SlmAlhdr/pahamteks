@@ -1,58 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TeksieFox } from './MiniCharacters';
 
-function TeksieSleepingPose() {
-  return (
-    <svg className="teksie-sleeping-character" viewBox="0 0 160 160" role="img" aria-label="Teksie tidur meringkuk di samping laptop">
-      <defs>
-        <radialGradient id="teksieSleepFur" cx="38%" cy="28%" r="78%">
-          <stop offset="0" stopColor="#ffb866" />
-          <stop offset=".62" stopColor="#f97316" />
-          <stop offset="1" stopColor="#a83a0a" />
-        </radialGradient>
-        <linearGradient id="teksieSleepBelly" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fffaf2" />
-          <stop offset="1" stopColor="#fbd5b5" />
-        </linearGradient>
-      </defs>
-
-      <ellipse cx="82" cy="148" rx="62" ry="6" fill="#020617" fillOpacity=".34" />
-
-      {/* Ekor melingkar di belakang tubuh saat Teksie rebah. */}
-      <path d="M106 118 C126 94 151 100 151 117 C151 135 134 141 118 132 C111 128 107 123 106 118Z" fill="url(#teksieSleepFur)" />
-      <path d="M137 119 C146 117 151 123 146 130 C141 136 132 133 130 128 C129 124 132 121 137 119Z" fill="#fff7ed" />
-
-      {/* Tubuh turun ke lantai dan kepala bertumpu pada kaki depan. */}
-      <ellipse cx="93" cy="123" rx="48" ry="25" fill="url(#teksieSleepFur)" />
-      <ellipse cx="91" cy="130" rx="29" ry="15" fill="url(#teksieSleepBelly)" />
-      <ellipse cx="79" cy="139" rx="18" ry="8" fill="#f97316" />
-      <ellipse cx="78" cy="138" rx="12" ry="4" fill="#ffedd5" />
-
-      {/* Kepala miring ke samping dengan telinga rileks. */}
-      <g transform="rotate(-12 53 101)">
-        <path d="M37 88 C30 75 27 65 29 61 C36 66 45 75 48 84Z" fill="#c65312" />
-        <path d="M37 81 C33 73 31 68 31 66 C36 70 41 76 43 82Z" fill="#fb7185" />
-        <path d="M59 84 C65 73 73 67 77 68 C77 77 72 87 66 93Z" fill="#c65312" />
-        <path d="M64 84 C69 77 72 74 74 73 C72 80 68 86 64 89Z" fill="#fb7185" />
-        <ellipse cx="53" cy="101" rx="29" ry="25" fill="url(#teksieSleepFur)" />
-        <path d="M30 101 C34 91 44 91 53 96 C62 90 73 92 77 101 C77 113 67 121 53 121 C39 121 30 113 30 101Z" fill="#fffaf2" />
-        <ellipse cx="38" cy="107" rx="5" ry="3" fill="#fb7185" fillOpacity=".55" />
-        <ellipse cx="69" cy="107" rx="5" ry="3" fill="#fb7185" fillOpacity=".55" />
-        <ellipse cx="44" cy="100" rx="11" ry="12" fill="#ffffff" fillOpacity=".16" stroke="#0284c7" strokeWidth="3.5" />
-        <ellipse cx="63" cy="100" rx="11" ry="12" fill="#ffffff" fillOpacity=".16" stroke="#0284c7" strokeWidth="3.5" />
-        <path d="M54 100 H53" stroke="#0284c7" strokeWidth="3.5" strokeLinecap="round" />
-        <path d="M37 101 Q44 107 51 101 M56 101 Q63 107 70 101" fill="none" stroke="#7c2d12" strokeWidth="2.4" strokeLinecap="round" />
-        <path d="M50 110 Q53 113 56 110" fill="none" stroke="#7c2d12" strokeWidth="1.8" strokeLinecap="round" />
-      </g>
-
-      <g className="teksie-sleeping-marks" fill="#dbeafe" fontFamily="Nunito, sans-serif" fontWeight="900">
-        <text className="teksie-sleep-z teksie-sleep-z-one" x="91" y="73" fontSize="15">z</text>
-        <text className="teksie-sleep-z teksie-sleep-z-two" x="104" y="61" fontSize="11">z</text>
-      </g>
-    </svg>
-  );
-}
-
 export default function TeksieCodingCard({
   greetingTitle = 'Halo!',
   greetingSubtitle = 'Aku Teksie',
@@ -60,7 +8,7 @@ export default function TeksieCodingCard({
   tipsTitle = 'Tips Hari Ini',
   tipsDesc = 'Mulai dari bahasa yang kamu sukai, lalu jelajahi lainnya.'
 }) {
-  const [isAsleep, setIsAsleep] = useState(false);
+  const [sleepPhase, setSleepPhase] = useState('awake');
   const [isCheering, setIsCheering] = useState(false);
   const [message, setMessage] = useState('');
   const [gaze, setGaze] = useState({ x: 0, y: 0 });
@@ -69,19 +17,25 @@ export default function TeksieCodingCard({
   const stageRef = useRef(null);
   const messageTimer = useRef(null);
   const cheerTimer = useRef(null);
+  const phaseTimer = useRef(null);
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
 
     const sleepTimer = window.setInterval(() => {
       if (mascotRef.current?.matches(':hover, :focus-within')) return;
-      setIsAsleep(true);
+      setSleepPhase((phase) => phase === 'awake' ? 'falling-asleep' : phase);
+      window.clearTimeout(phaseTimer.current);
+      phaseTimer.current = window.setTimeout(() => {
+        setSleepPhase((phase) => phase === 'falling-asleep' ? 'asleep' : phase);
+      }, 850);
     }, 15000);
 
     return () => {
       window.clearInterval(sleepTimer);
       window.clearTimeout(messageTimer.current);
       window.clearTimeout(cheerTimer.current);
+      window.clearTimeout(phaseTimer.current);
     };
   }, []);
 
@@ -91,13 +45,20 @@ export default function TeksieCodingCard({
       'Aku siap bantu kamu memilih bahasa.',
       'Klik laptopnya, lalu mulai petualangan coding!'
     ];
-    setIsAsleep(false);
-    setIsCheering(true);
+    const isSleeping = sleepPhase !== 'awake';
+    window.clearTimeout(phaseTimer.current);
+    if (isSleeping) {
+      setSleepPhase('waking');
+      phaseTimer.current = window.setTimeout(() => setSleepPhase('awake'), 850);
+      setIsCheering(false);
+    } else {
+      setIsCheering(true);
+      window.clearTimeout(cheerTimer.current);
+      cheerTimer.current = window.setTimeout(() => setIsCheering(false), 700);
+    }
     setMessage(phrases[phraseIndex.current % phrases.length]);
     phraseIndex.current += 1;
     window.clearTimeout(messageTimer.current);
-    window.clearTimeout(cheerTimer.current);
-    cheerTimer.current = window.setTimeout(() => setIsCheering(false), 700);
     messageTimer.current = window.setTimeout(() => setMessage(''), 3200);
   };
 
@@ -113,12 +74,14 @@ export default function TeksieCodingCard({
     });
   };
 
+  const isAsleep = sleepPhase === 'falling-asleep' || sleepPhase === 'asleep';
+
   return (
     <aside className="teksie-sidebar-card">
       <div className="teksie-companion-box">
         <button
           type="button"
-          className={`teksie-owl-wrapper${isAsleep ? ' is-dozing' : ''}${isCheering ? ' is-cheering' : ''}`}
+          className={`teksie-owl-wrapper${sleepPhase !== 'awake' ? ` is-${sleepPhase}` : ''}${isCheering ? ' is-cheering' : ''}`}
           ref={mascotRef}
           aria-label={isAsleep ? 'Bangunkan Teksie' : 'Ajak Teksie bicara'}
           onPointerMove={followPointer}
@@ -126,11 +89,14 @@ export default function TeksieCodingCard({
           onClick={wakeTeksie}
         >
           <div className="teksie-card-stage" ref={stageRef}>
-            {isAsleep ? (
-              <TeksieSleepingPose />
-            ) : (
-              <TeksieFox size={138} className="teksie-card-character" lookDirection="laptop" gazeX={gaze.x} gazeY={gaze.y} />
-            )}
+            <TeksieFox
+              size={138}
+              className="teksie-card-character"
+              lookDirection="laptop"
+              gazeX={gaze.x}
+              gazeY={gaze.y}
+              asleep={isAsleep}
+            />
             <svg className="teksie-card-laptop" viewBox="0 0 100 64" aria-hidden="true">
               <defs>
                 <linearGradient id="teksieScreenShade" x1="0" y1="0" x2="1" y2="1">

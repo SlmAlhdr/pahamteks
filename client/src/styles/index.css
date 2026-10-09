@@ -3801,6 +3801,7 @@ textarea {
     transform-box: fill-box;
     transform-origin: center;
     animation: teksieCardBlink 5.5s ease-in-out infinite;
+    transition: opacity 0.7s ease;
 }
 
 .teksie-card-character .teksie-pupils {
@@ -3809,27 +3810,53 @@ textarea {
     transition: transform 140ms ease-out;
 }
 
-.teksie-sleeping-character {
-    display: block;
-    width: 138px;
-    height: 138px;
-    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));
-    transform-origin: center bottom;
-    animation: teksieSleepingBreath 2.2s ease-in-out infinite;
+.teksie-card-character .teksie-closed-eyes,
+.teksie-card-character .teksie-sleep-yawn,
+.teksie-card-character .teksie-sleep-marks {
+    opacity: 0;
+    transition: opacity 0.7s ease;
 }
 
-.teksie-sleeping-marks {
+.teksie-card-character .teksie-awake-mouth {
+    opacity: 1;
+    transition: opacity 0.45s ease;
+}
+
+.teksie-card-character.is-asleep .teksie-open-eyes,
+.teksie-card-character.is-asleep .teksie-awake-mouth {
+    opacity: 0;
+}
+
+.teksie-card-character.is-asleep .teksie-closed-eyes,
+.teksie-card-character.is-asleep .teksie-sleep-yawn,
+.teksie-card-character.is-asleep .teksie-sleep-marks {
+    opacity: 1;
+}
+
+.teksie-card-character .teksie-sleep-marks {
     pointer-events: none;
 }
 
-.teksie-sleep-z {
+.teksie-card-character .teksie-sleep-z {
     transform-box: fill-box;
     transform-origin: center;
-    animation: teksieSleepFloat 2.2s ease-in-out infinite;
+    animation: teksieSleepFloat 2.4s cubic-bezier(0.42, 0, 0.58, 1) infinite;
 }
 
-.teksie-sleep-z-two {
-    animation-delay: 0.65s;
+.teksie-card-character .teksie-sleep-z-two {
+    animation-delay: 1.15s;
+}
+
+.teksie-owl-wrapper.is-falling-asleep .teksie-card-character {
+    animation: teksieFallAsleep 0.85s ease-in-out both;
+}
+
+.teksie-owl-wrapper.is-asleep .teksie-card-character {
+    animation: teksieSleepIdle 2.4s ease-in-out infinite;
+}
+
+.teksie-owl-wrapper.is-waking .teksie-card-character {
+    animation: teksieWakeUp 0.85s cubic-bezier(0.2, 0.8, 0.3, 1.15) both;
 }
 
 .teksie-speech-bubble {
@@ -3867,18 +3894,6 @@ textarea {
     transform: rotate(45deg);
 }
 
-.teksie-card-character.is-asleep {
-    animation: teksieCardDoze 2.8s ease-in-out both;
-}
-
-.teksie-card-character .teksie-closed-eyes {
-    animation: teksieSleepEyes 2.8s ease-in-out both;
-}
-
-.teksie-card-character .teksie-sleep-marks {
-    animation: teksieSleepMarks 2.8s ease-in-out both;
-}
-
 @keyframes teksieCardIdle {
     0%, 100% { transform: translateY(0) rotate(0); }
     50% { transform: translateY(-3px) rotate(1deg); }
@@ -3895,35 +3910,29 @@ textarea {
     93% { transform: scaleY(0.08); }
 }
 
-@keyframes teksieCardDoze {
-    0% { transform: translateY(-2px) rotate(1deg); }
-    32% { transform: translateY(3px) rotate(4deg); }
-    55%, 82% { transform: translateY(4px) rotate(3deg); }
-    100% { transform: translateY(0) rotate(1deg); }
+@keyframes teksieFallAsleep {
+    0% { transform: translateY(-2px) rotate(1deg) scale(1); }
+    55% { transform: translateY(3px) rotate(3deg) scale(0.98); }
+    100% { transform: translateY(2px) rotate(2deg) scale(0.985); }
 }
 
-@keyframes teksieSleepEyes {
-    0%, 25% { opacity: 0; }
-    42%, 82% { opacity: 1; }
-    100% { opacity: 0; }
+@keyframes teksieSleepIdle {
+    0%, 100% { transform: translateY(2px) rotate(2deg) scale(0.985, 1); }
+    50% { transform: translateY(1px) rotate(2deg) scale(1, 1.01); }
 }
 
-@keyframes teksieSleepMarks {
-    0%, 35% { opacity: 0; transform: translateY(5px); }
-    55%, 80% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-4px); }
-}
-
-@keyframes teksieSleepingBreath {
-    0%, 100% { transform: translateY(1px) scaleY(1); }
-    50% { transform: translateY(-1px) scaleY(1.025); }
+@keyframes teksieWakeUp {
+    0% { transform: translateY(2px) rotate(2deg) scale(0.985, 1); }
+    42% { transform: translateY(-7px) rotate(-3deg) scale(1.04); }
+    72% { transform: translateY(2px) rotate(2deg) scale(0.98); }
+    100% { transform: translateY(0) rotate(0) scale(1); }
 }
 
 @keyframes teksieSleepFloat {
-    0% { opacity: 0; transform: translate(0, 5px) scale(0.85); }
-    20% { opacity: 1; }
-    70% { opacity: 0.9; }
-    100% { opacity: 0; transform: translate(5px, -13px) scale(1.08); }
+    0% { opacity: 0; transform: translate(0, 2px) scale(0.82); }
+    14% { opacity: 0.9; }
+    72% { opacity: 0.85; }
+    100% { opacity: 0; transform: translate(7px, -16px) scale(1.08); }
 }
 
 @keyframes teksieSpeechPop {
@@ -3937,19 +3946,13 @@ textarea {
     .teksie-owl-wrapper.is-cheering .teksie-card-character {
         animation: none;
     }
-    .teksie-card-character .teksie-open-eyes,
-    .teksie-card-character .teksie-closed-eyes,
-    .teksie-card-character .teksie-sleep-marks {
+    .teksie-card-character .teksie-sleep-z {
         animation: none;
     }
     .teksie-card-character .teksie-pupils {
         transition: none;
     }
-    .teksie-sleeping-character,
     .teksie-speech-bubble {
-        animation: none;
-    }
-    .teksie-sleep-z {
         animation: none;
     }
 }

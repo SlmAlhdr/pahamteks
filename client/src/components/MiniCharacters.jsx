@@ -153,14 +153,11 @@ export function TeksieFox({ size = 120, className = '', lookDirection = 'forward
       <polygon points="76,82 84,82 80,87" fill="#0f172a" />
       <circle cx="79" cy="82.5" r="0.8" fill="#ffffff" />
 
-      {asleep ? (
-        <ellipse cx="80" cy="91" rx="3.5" ry="5" fill="#881337" />
-      ) : (
-        <>
-          <path d="M75 88C77 93 83 93 85 88Z" fill="#881337" />
-          <path d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z" fill="#fb7185" />
-        </>
-      )}
+      <g className="teksie-awake-mouth">
+        <path d="M75 88C77 93 83 93 85 88Z" fill="#881337" />
+        <path d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z" fill="#fb7185" />
+      </g>
+      <ellipse className="teksie-sleep-yawn" cx="80" cy="91" rx="3.5" ry="5" fill="#881337" />
 
       {/* Kacamata Cerdas Cyan 3D Tebal */}
       <circle cx="62" cy="68" r="16" stroke="url(#tfGlasses)" strokeWidth="4" fill="rgba(56, 189, 248, 0.16)" />
@@ -170,13 +167,11 @@ export function TeksieFox({ size = 120, className = '', lookDirection = 'forward
       <path d="M90 58C94 55 102 55 106 60" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
 
       {/* Arah pupil mengikuti layar laptop tanpa mengubah wajah maskot utama. */}
-      {asleep ? (
-        <g className="teksie-closed-eyes" stroke="#7c2d12" strokeWidth="3" strokeLinecap="round" fill="none">
+      <g className="teksie-closed-eyes" stroke="#7c2d12" strokeWidth="3" strokeLinecap="round" fill="none">
           <path d="M53 69 Q62 77 71 69" />
           <path d="M89 69 Q98 77 107 69" />
-        </g>
-      ) : (
-        <g className="teksie-open-eyes">
+      </g>
+      <g className="teksie-open-eyes">
           <g className="teksie-pupils" style={{ transform: `translate(${gazeOffsetX}px, ${gazeOffsetY}px)` }}>
             <circle cx="62" cy="68" r="8" fill="#172033" />
             <circle cx="98" cy="68" r="8" fill="#172033" />
@@ -185,15 +180,12 @@ export function TeksieFox({ size = 120, className = '', lookDirection = 'forward
             <circle cx="65" cy="71" r="1.6" fill="#ffffff" />
             <circle cx="101" cy="71" r="1.6" fill="#ffffff" />
           </g>
-        </g>
-      )}
+      </g>
 
-      {asleep && (
-        <g className="teksie-sleep-marks" fill="#dbeafe" fontFamily="Nunito, sans-serif" fontWeight="900">
-          <text x="118" y="30" fontSize="13">z</text>
-          <text x="128" y="20" fontSize="10">z</text>
-        </g>
-      )}
+      <g className="teksie-sleep-marks" fill="#dbeafe" fontFamily="Nunito, sans-serif" fontWeight="900">
+        <text className="teksie-sleep-z teksie-sleep-z-one" x="118" y="30" fontSize="13">z</text>
+        <text className="teksie-sleep-z teksie-sleep-z-two" x="128" y="20" fontSize="10">z</text>
+      </g>
       </g>
 
       {/* Kaki Depan Gembul Halus */}
