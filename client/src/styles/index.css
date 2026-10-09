@@ -3759,6 +3759,30 @@ textarea {
     animation: teksieCardIdle 3.2s ease-in-out infinite;
 }
 
+.teksie-card-stage {
+    position: relative;
+    width: 138px;
+    height: 138px;
+}
+
+.teksie-card-laptop {
+    position: absolute;
+    z-index: 2;
+    width: 76px;
+    height: 49px;
+    right: -5px;
+    bottom: 1px;
+    overflow: visible;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.38));
+    transform-origin: 65% 100%;
+    transition: transform 0.25s ease;
+}
+
+.teksie-owl-wrapper:hover .teksie-card-laptop,
+.teksie-owl-wrapper:focus-visible .teksie-card-laptop {
+    transform: translate(2px, -2px) rotate(2deg);
+}
+
 .teksie-owl-wrapper:hover .teksie-card-character,
 .teksie-owl-wrapper:focus-visible .teksie-card-character {
     animation: teksieCardCheer 0.65s cubic-bezier(0.2, 0.8, 0.3, 1.2);
@@ -3766,17 +3790,18 @@ textarea {
 
 @keyframes teksieCardIdle {
     0%, 100% { transform: translateY(0) rotate(0); }
-    50% { transform: translateY(-3px) rotate(-1deg); }
+    50% { transform: translateY(-3px) rotate(1deg); }
 }
 
 @keyframes teksieCardCheer {
     0%, 100% { transform: translateY(0) rotate(0) scale(1); }
-    35% { transform: translateY(-9px) rotate(-5deg) scale(1.04); }
-    70% { transform: translateY(1px) rotate(3deg) scale(0.98); }
+    35% { transform: translateY(-9px) rotate(4deg) scale(1.04); }
+    70% { transform: translateY(1px) rotate(-2deg) scale(0.98); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .teksie-card-character,
+    .teksie-card-laptop,
     .teksie-owl-wrapper:hover .teksie-card-character,
     .teksie-owl-wrapper:focus-visible .teksie-card-character {
         animation: none;
