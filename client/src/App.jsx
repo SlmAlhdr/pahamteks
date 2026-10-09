@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import HomeHero from './components/HomeHero';
-import WelcomePortal from './components/WelcomePortal';
-import LearningHub from './components/LearningHub';
-import CombinedDictTranslator from './components/CombinedDictTranslator';
-import DashboardView from './components/DashboardView';
-import AdminDashboardView from './components/AdminDashboardView';
-import KamusFloating from './components/KamusFloating';
-import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
-import CenterNotificationModal from './components/CenterNotificationModal';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
 import { GET_MY_QUIZ_HISTORY } from './graphql/queries';
 import { SAVE_QUIZ_SCORE_MUTATION } from './graphql/mutations';
+
+const HomeHero = lazy(() => import('./components/HomeHero'));
+const WelcomePortal = lazy(() => import('./components/WelcomePortal'));
+const LearningHub = lazy(() => import('./components/LearningHub'));
+const CombinedDictTranslator = lazy(() => import('./components/CombinedDictTranslator'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
+const AdminDashboardView = lazy(() => import('./components/AdminDashboardView'));
+const KamusFloating = lazy(() => import('./components/KamusFloating'));
+const AuthModal = lazy(() => import('./components/AuthModal'));
+const CenterNotificationModal = lazy(() => import('./components/CenterNotificationModal'));
 
 const getQuizHistoryStorageKey = (userId) => `pahamteks_logs_${userId}`;
 const getTopicProgressStorageKey = (userId) => `pahamteks_topic_progress_${userId}`;
@@ -316,7 +317,15 @@ export default function App() {
       />
 
       {/* Main Content Pages */}
-      <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <Suspense fallback={
+        <div
+          role="status"
+          style={{ width: '100%', minHeight: '45vh', display: 'grid', placeItems: 'center', color: 'var(--text-muted)' }}
+        >
+          {currentLang === 'en' ? 'Loading page...' : 'Memuat halaman...'}
+        </div>
+      }>
+        <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
         {!user ? (
           <WelcomePortal
             onAuthSuccess={handleAuthSuccess}
@@ -397,31 +406,38 @@ export default function App() {
             )}
           </>
         )}
-      </main>
+        </main>
+      </Suspense>
 
       {/* Floating Kamus AI HANYA muncul jika sudah login atau masuk sebagai guest */}
-      {user && <KamusFloating t={t} currentLang={currentLang} />}
+      {user && <Suspense fallback={null}><KamusFloating t={t} currentLang={currentLang} /></Suspense>}
 
       {/* Modal Autentikasi Pop-up */}
-      <AuthModal
-        isOpen={isAuthOpen}
-        initialMode={authInitialMode}
-        onClose={() => setIsAuthOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
-        onGuestLogin={handleGuestLogin}
-        t={t}
-      />
+      {isAuthOpen && (
+        <Suspense fallback={null}>
+          <AuthModal
+            isOpen={isAuthOpen}
+            initialMode={authInitialMode}
+            onClose={() => setIsAuthOpen(false)}
+            onAuthSuccess={handleAuthSuccess}
+            onGuestLogin={handleGuestLogin}
+            t={t}
+          />
+        </Suspense>
+      )}
 
       {/* Modal Notifikasi di Tengah Layar (Pengganti alert pop-up atas) */}
       {centerNotice?.isOpen && (
-        <CenterNotificationModal
-          isOpen={centerNotice.isOpen}
-          onClose={() => setCenterNotice(null)}
-          title={centerNotice.title}
-          message={centerNotice.message}
-          icon={centerNotice.icon}
-          buttonText={centerNotice.buttonText}
-        />
+        <Suspense fallback={null}>
+          <CenterNotificationModal
+            isOpen={centerNotice.isOpen}
+            onClose={() => setCenterNotice(null)}
+            title={centerNotice.title}
+            message={centerNotice.message}
+            icon={centerNotice.icon}
+            buttonText={centerNotice.buttonText}
+          />
+        </Suspense>
       )}
 
       {/* Watermark Footer */}
