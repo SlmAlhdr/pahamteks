@@ -3977,3 +3977,334 @@ textarea {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   TAMPILAN BARU 2-KOLOM: PEMILIHAN BAHASA & TEKSIE CODING COMPANION
+   Sesuai desain mock-up presisi
+   ========================================================================== */
+
+.coding-selection-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 1150px;
+    margin: 10px auto 60px;
+    align-items: start;
+    animation: fadeIn 0.35s ease-out;
+}
+
+@media (max-width: 960px) {
+    .coding-selection-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* SIDEBAR KIRI: KARTU TEKSIE & TIPS */
+.teksie-sidebar-card {
+    background: rgba(11, 26, 22, 0.85);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 20px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.teksie-companion-box {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.teksie-owl-wrapper {
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.teksie-owl-wrapper:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+.teksie-greeting-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.teksie-greeting-header {
+    display: flex;
+    flex-direction: column;
+}
+
+.teksie-greeting-hello {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.teksie-greeting-name {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #34d399;
+    margin: 2px 0 6px 0;
+    line-height: 1.2;
+}
+
+.teksie-greeting-desc {
+    font-size: 0.84rem;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.45;
+    margin: 0;
+}
+
+.teksie-tips-box {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: background 0.2s;
+}
+
+.teksie-tips-box:hover {
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.teksie-tips-icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.teksie-tips-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.teksie-tips-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+}
+
+.teksie-tips-desc {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* KOLOM KANAN: KARTU UTAMA PEMILIHAN BAHASA */
+.coding-main-card {
+    background: rgba(11, 26, 22, 0.85);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 20px;
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.coding-main-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.coding-main-header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(16, 185, 129, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #34d399;
+    font-size: 1.25rem;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.coding-main-header-text h2 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.3px;
+}
+
+.coding-main-header-text p {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+}
+
+/* ACCORDION GROUPS */
+.coding-accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.coding-accordion-group {
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.coding-accordion-group.expanded {
+    border-color: rgba(16, 185, 129, 0.28);
+}
+
+.coding-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.coding-accordion-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.coding-accordion-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.coding-accordion-chevron {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+}
+
+.coding-accordion-chevron.up {
+    transform: rotate(180deg);
+}
+
+.coding-accordion-body {
+    padding: 10px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* LANG LIST ITEM */
+.coding-lang-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.coding-lang-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateX(2px);
+}
+
+.coding-lang-item.active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: #10b981;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4);
+}
+
+.coding-radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.coding-lang-item.active .coding-radio-circle {
+    border-color: #10b981;
+}
+
+.coding-radio-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.coding-lang-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.coding-lang-name {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #ffffff;
+    flex: 1;
+}
+
+.coding-popular-badge {
+    border: 1px solid #10b981;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.14);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    text-transform: capitalize;
+}
+
+/* ACTION BUTTON MULAI LATIHAN DI BAWAH KARTU */
+.coding-start-action-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
