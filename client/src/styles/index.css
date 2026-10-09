@@ -4053,35 +4053,13 @@ textarea {
     flex-shrink: 0;
 }
 
-.teksie-fox-laptop > svg {
+.teksie-at-laptop {
     overflow: visible;
 }
-
-.teksie-laptop-base {
-    position: absolute;
-    left: 20%;
-    right: 20%;
-    bottom: 5%;
-    height: 9px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    border-radius: 3px 3px 8px 8px;
-    background: linear-gradient(90deg, #334155, #0f172a);
-}
-
-.teksie-laptop-screen {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 100%;
-    height: 18px;
-    display: grid;
-    place-items: center;
-    border: 1px solid #475569;
-    border-radius: 3px 3px 0 0;
-    background: #0f172a;
-    color: #fb923c;
-    font-size: 6px;
-    font-weight: 800;
+.teksie-at-laptop {
+    display: block;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));
 }
 
 .teksie-greeting-content {
