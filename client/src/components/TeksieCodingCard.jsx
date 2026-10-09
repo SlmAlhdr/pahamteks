@@ -41,9 +41,9 @@ export function TeksieAtLaptop({ size = 160 }) {
         </linearGradient>
         {/* Kacamata Oranye Bulat Cemerlang 3D (Persis Gambar 2) */}
         <linearGradient id="tkGlasses" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fb923c" />
-          <stop offset="60%" stopColor="#ea580c" />
-          <stop offset="100%" stopColor="#c2410c" />
+          <stop offset="10%" stopColor="#11100f" />
+          <stop offset="50%" stopColor="#db2222" />
+          <stop offset="100%" stopColor="#e74a0c" />
         </linearGradient>
         {/* Paruh Keemasan Segitiga Imut */}
         <linearGradient id="tkBeak" x1="0" y1="0" x2="0" y2="1">
@@ -86,7 +86,7 @@ export function TeksieAtLaptop({ size = 160 }) {
       />
 
       {/* === 2. KEPALA BUNDAR GEMBUL UTAMA (PERSIS PROPORSI GAMBAR 2) === */}
-      <ellipse cx="100" cy="86" rx="58" ry="52" fill="url(#tkFurMain)" />
+      <ellipse cx="100" cy="90" rx="58" ry="55" fill="url(#tkFurMain)" />
 
       {/* Rumbai Bulu Pipi Luar Kiri & Kanan */}
       <path d="M44 90 C36 95 34 102 38 108 C46 110 52 102 52 94 Z" fill="url(#tkFurDark)" />
