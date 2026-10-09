@@ -24,7 +24,7 @@ import {
 /**
  * Maskot Utama: "Teksie" Si Musang Cerdas
  */
-export function TeksieFox({ size = 120, className = '' }) {
+export function TeksieFox({ size = 120, className = '', lookDirection = 'forward', asleep = false }) {
   return (
     <svg
       width={size}
@@ -32,7 +32,7 @@ export function TeksieFox({ size = 120, className = '' }) {
       viewBox="0 0 160 160"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`${className}${asleep ? ' is-asleep' : ''}`}
       style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.35))' }}
     >
       <defs>
@@ -128,6 +128,7 @@ export function TeksieFox({ size = 120, className = '' }) {
       </g>
 
       {/* Kepala Bulat Menggemaskan 3D */}
+      <g transform={lookDirection === 'laptop' ? 'rotate(3 80 74)' : undefined}>
       <ellipse cx="80" cy="74" rx="42" ry="36" fill="url(#tfFurHead)" />
       <path
         d="M58 46C70 40 90 40 102 46C92 42 68 42 58 46Z"
@@ -149,15 +150,14 @@ export function TeksieFox({ size = 120, className = '' }) {
       <polygon points="76,82 84,82 80,87" fill="#0f172a" />
       <circle cx="79" cy="82.5" r="0.8" fill="#ffffff" />
 
-      {/* Mulut Senyum Terbuka Ceria (^w^) */}
-      <path
-        d="M75 88C77 93 83 93 85 88Z"
-        fill="#881337"
-      />
-      <path
-        d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z"
-        fill="#fb7185"
-      />
+      {asleep ? (
+        <ellipse cx="80" cy="91" rx="3.5" ry="5" fill="#881337" />
+      ) : (
+        <>
+          <path d="M75 88C77 93 83 93 85 88Z" fill="#881337" />
+          <path d="M77 90C79 92 81 92 83 90C82 92 78 92 77 90Z" fill="#fb7185" />
+        </>
+      )}
 
       {/* Kacamata Cerdas Cyan 3D Tebal */}
       <circle cx="62" cy="68" r="16" stroke="url(#tfGlasses)" strokeWidth="4" fill="rgba(56, 189, 248, 0.16)" />
@@ -166,13 +166,30 @@ export function TeksieFox({ size = 120, className = '' }) {
       <path d="M54 58C58 55 66 55 70 60" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
       <path d="M90 58C94 55 102 55 106 60" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
 
-      {/* Mata Berkilau Cerdas Penuh Semangat (Duolingo Style Eyes) */}
-      <circle cx="62" cy="68" r="8" fill="#0f172a" />
-      <circle cx="98" cy="68" r="8" fill="#0f172a" />
-      <circle cx="60" cy="65" r="3.2" fill="#ffffff" />
-      <circle cx="96" cy="65" r="3.2" fill="#ffffff" />
-      <circle cx="65" cy="71" r="1.6" fill="#ffffff" />
-      <circle cx="101" cy="71" r="1.6" fill="#ffffff" />
+      {/* Arah pupil mengikuti layar laptop tanpa mengubah wajah maskot utama. */}
+      {asleep ? (
+        <g className="teksie-closed-eyes" stroke="#7c2d12" strokeWidth="3" strokeLinecap="round" fill="none">
+          <path d="M53 69 Q62 77 71 69" />
+          <path d="M89 69 Q98 77 107 69" />
+        </g>
+      ) : (
+        <g className="teksie-open-eyes">
+          <circle cx={lookDirection === 'laptop' ? 65 : 62} cy={lookDirection === 'laptop' ? 71 : 68} r="8" fill="#172033" />
+          <circle cx={lookDirection === 'laptop' ? 101 : 98} cy={lookDirection === 'laptop' ? 71 : 68} r="8" fill="#172033" />
+          <circle cx={lookDirection === 'laptop' ? 63 : 60} cy={lookDirection === 'laptop' ? 68 : 65} r="3.2" fill="#ffffff" />
+          <circle cx={lookDirection === 'laptop' ? 99 : 96} cy={lookDirection === 'laptop' ? 68 : 65} r="3.2" fill="#ffffff" />
+          <circle cx={lookDirection === 'laptop' ? 68 : 65} cy={lookDirection === 'laptop' ? 74 : 71} r="1.6" fill="#ffffff" />
+          <circle cx={lookDirection === 'laptop' ? 104 : 101} cy={lookDirection === 'laptop' ? 74 : 71} r="1.6" fill="#ffffff" />
+        </g>
+      )}
+
+      {asleep && (
+        <g className="teksie-sleep-marks" fill="#dbeafe" fontFamily="Nunito, sans-serif" fontWeight="900">
+          <text x="118" y="30" fontSize="13">z</text>
+          <text x="128" y="20" fontSize="10">z</text>
+        </g>
+      )}
+      </g>
 
       {/* Kaki Depan Gembul Halus */}
       <ellipse cx="64" cy="144" rx="12" ry="8" fill="url(#tfFurBody)" />
