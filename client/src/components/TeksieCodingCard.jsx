@@ -79,7 +79,7 @@ export function TeksieAtLaptop({ size = 160 }) {
       <path d="M54 55 C46 45 41 35 40 27 C46 34 52 43 59 50 Z" fill="#fb7185" opacity="0.82" />
 
       {/* === 3. BADAN GEMBUL MUSANG MENGHADAP SUDUT KANAN === */}
-      <path d="M54 150 C56 131 70 119 91 119 C116 117 139 130 147 148 C151 160 140 172 122 176 C99 181 68 174 57 163 C54 160 53 155 54 150 Z" fill="url(#tkFurBody3D)" />
+      <ellipse cx="98" cy="148" rx="48" ry="34" fill="url(#tkFurBody3D)" />
       {/* Perut Krem Menghadap Kanan Depan */}
       <ellipse cx="106" cy="146" rx="28" ry="22" fill="url(#tkBelly3D)" stroke="#ea580c" strokeWidth="2.5" />
       {/* Aksen Lengkungan Lembut di Perut */}
@@ -87,15 +87,15 @@ export function TeksieAtLaptop({ size = 160 }) {
       <path d="M94 148 C100 154 116 154 122 148" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* === 4. KEPALA GEMAS MUSANG MENOLEH KE SUDUT KANAN === */}
-      <path d="M51 78 C52 51 71 36 99 35 C127 33 151 48 160 70 C167 90 156 111 139 122 C126 131 106 133 87 128 C65 122 51 104 50 87 C50 84 50 81 51 78 Z" fill="url(#tkFurHead3D)" />
-
       {/* Telinga Kanan Musang (Di Depan / Lebih Dominan) */}
       <path d="M132 53 C143 39 151 25 157 16 C160 12 163 14 163 20 C163 39 153 58 139 70 Z" fill="url(#tkFurDark3D)" />
       <path d="M139 51 C147 39 153 29 157 22 C156 35 150 48 141 59 Z" fill="#fb7185" opacity="0.82" />
 
+      <ellipse cx="106" cy="84" rx="54" ry="48" fill="url(#tkFurHead3D)" />
+
       {/* Topeng Wajah Putih Bersih Membulat (Menghadap Sudut Kanan) */}
       <path
-        d="M57 78 C60 68 70 62 81 64 C94 65 103 72 111 77 C118 71 128 64 140 65 C151 66 158 73 158 84 C158 101 149 114 137 117 C126 120 118 114 111 108 C104 116 96 121 85 118 C67 114 56 99 57 78 Z"
+        d="M62 76 C60 96 70 114 90 116 C100 117 108 111 114 105 C120 111 128 116 138 114 C152 110 158 92 154 74 C150 60 138 62 130 66 C124 70 118 71 114 67 C110 71 104 69 96 65 C86 60 66 60 62 76 Z"
         fill="#ffffff"
         style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))' }}
       />
@@ -192,7 +192,7 @@ export default function TeksieCodingCard({
     <aside className="teksie-sidebar-card">
       <div className="teksie-companion-box">
         <div className="teksie-owl-wrapper">
-          <TeksieAtLaptop size={160} />
+          <TeksieAtLaptop size={138} />
         </div>
         <div className="teksie-greeting-content">
           <div className="teksie-greeting-header">
