@@ -7,63 +7,148 @@ export function TeksieAtLaptop({ size = 130 }) {
       className="teksie-at-laptop"
       width={size}
       height={size}
-      viewBox="0 0 160 150"
+      viewBox="0 0 160 160"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Teksie, musang oranye yang sedang menggunakan laptop"
+      aria-label="Teksie, maskot burung hantu oranye dengan laptop"
+      style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.45))', overflow: 'visible' }}
     >
       <defs>
-        <radialGradient id="teksieDeskFur" cx="42%" cy="25%" r="78%">
-          <stop offset="0%" stopColor="#ffbd70" />
-          <stop offset="58%" stopColor="#f97316" />
-          <stop offset="100%" stopColor="#b43a06" />
+        {/* Gradasi Bulu Oranye Teksie */}
+        <radialGradient id="teksieOwlFur" cx="45%" cy="32%" r="70%">
+          <stop offset="0%" stopColor="#ff9a3c" />
+          <stop offset="60%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#c2410c" />
         </radialGradient>
-        <linearGradient id="teksieDeskScreen" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#263d46" />
-          <stop offset="100%" stopColor="#07151b" />
+        {/* Gradasi Bayangan Bulu Luar */}
+        <linearGradient id="teksieDarkFur" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ea580c" />
+          <stop offset="100%" stopColor="#9a3412" />
+        </linearGradient>
+        {/* Gradasi Perut Krem */}
+        <linearGradient id="teksieBelly" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fffbeb" />
+          <stop offset="100%" stopColor="#fed7aa" />
+        </linearGradient>
+        {/* Gradasi Laptop Navy Modern */}
+        <linearGradient id="teksieLaptopBack" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#253342" />
+          <stop offset="100%" stopColor="#15202b" />
+        </linearGradient>
+        {/* Bingkai Kacamata Oranye Cerah */}
+        <linearGradient id="teksieGlasses" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fb923c" />
+          <stop offset="100%" stopColor="#ea580c" />
         </linearGradient>
       </defs>
 
-      <ellipse cx="80" cy="143" rx="55" ry="5" fill="#02090d" fillOpacity=".4" />
+      {/* Bayangan Meja Halus */}
+      <ellipse cx="80" cy="148" rx="60" ry="7" fill="#000000" fillOpacity=".35" />
 
-      {/* Telinga dan kepala musang. */}
-      <path d="M47 49 24 7C17 34 23 59 43 72L55 61Z" fill="#c2410c" />
-      <path d="m43 49-14-29c-1 20 5 35 17 44l5-7Z" fill="#fb7185" />
-      <path d="m113 49 23-42c7 27 1 52-19 65l-12-11Z" fill="#c2410c" />
-      <path d="m117 49 14-29c1 20-5 35-17 44l-5-7Z" fill="#fb7185" />
-      <ellipse cx="80" cy="71" rx="46" ry="39" fill="url(#teksieDeskFur)" />
-      <path d="M38 79c2-11 12-17 23-12 8 4 12 9 19 9s11-5 19-9c11-5 21 1 23 12-2 17-19 26-42 26S40 96 38 79Z" fill="#fff7ed" />
-      <ellipse cx="47" cy="83" rx="7" ry="4" fill="#fb7185" fillOpacity=".55" />
-      <ellipse cx="113" cy="83" rx="7" ry="4" fill="#fb7185" fillOpacity=".55" />
+      {/* === 1. TELINGA BURUNG HANTU LANCIP (KIRI & KANAN) === */}
+      {/* Telinga Kiri */}
+      <path d="M37 54C33 34 32 18 36 14C44 20 54 36 57 50Z" fill="url(#teksieDarkFur)" />
+      <path d="M38 46C37 32 37 22 40 19C45 25 50 36 52 46Z" fill="#fed7aa" />
 
-      {/* Kacamata bulat khas Teksie. */}
-      <circle cx="62" cy="67" r="19" fill="#f8fafc" stroke="#18343d" strokeWidth="3" />
-      <circle cx="98" cy="67" r="19" fill="#f8fafc" stroke="#18343d" strokeWidth="3" />
-      <circle cx="62" cy="67" r="14" fill="#38bdf8" />
-      <circle cx="98" cy="67" r="14" fill="#38bdf8" />
-      <path d="M79 66h2" stroke="#18343d" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="63" cy="68" r="8" fill="#172b32" />
-      <circle cx="99" cy="68" r="8" fill="#172b32" />
-      <circle cx="60" cy="64" r="3.4" fill="#fff" />
-      <circle cx="96" cy="64" r="3.4" fill="#fff" />
-      <path d="m76 82 4 3 4-3" fill="#7c2d12" stroke="#7c2d12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Telinga Kanan */}
+      <path d="M123 54C127 34 128 18 124 14C116 20 106 36 103 50Z" fill="url(#teksieDarkFur)" />
+      <path d="M122 46C123 32 123 22 120 19C115 25 110 36 108 46Z" fill="#fed7aa" />
 
-      {/* Badan duduk dan cakar terlihat di sisi laptop. */}
-      <ellipse cx="80" cy="117" rx="43" ry="25" fill="url(#teksieDeskFur)" />
-      <ellipse cx="80" cy="115" rx="24" ry="19" fill="#ffedd5" />
-      <ellipse cx="43" cy="119" rx="15" ry="10" fill="#ea580c" transform="rotate(-22 43 119)" />
-      <ellipse cx="117" cy="119" rx="15" ry="10" fill="#ea580c" transform="rotate(22 117 119)" />
-      <path d="M47 110c8 0 13 4 17 9M113 110c-8 0-13 4-17 9" stroke="#c2410c" strokeWidth="6" strokeLinecap="round" />
+      {/* === 2. KEPALA UTAMA BULAT GEMAS === */}
+      <ellipse cx="80" cy="65" rx="46" ry="43" fill="url(#teksieOwlFur)" />
 
-      {/* Laptop berada di depan badan Teksie. */}
-      <path d="m42 96 76 0 9 35H33l9-35Z" fill="url(#teksieDeskScreen)" stroke="#647782" strokeWidth="2" />
-      <path d="M29 131h102l-7 7H36l-7-7Z" fill="#263943" stroke="#71838b" strokeWidth="1.5" />
-      <path d="M75 133h10" stroke="#a5b4bb" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M80 105c-5 5-3 12 0 14 4-3 5-9 0-14Z" fill="#2dd4bf" />
+      {/* Rumbai Bulu Pipi Luar Kiri & Kanan */}
+      <path d="M34 68C28 72 26 78 30 83C36 84 40 78 40 72Z" fill="url(#teksieDarkFur)" />
+      <path d="M126 68C132 72 134 78 130 83C124 84 120 78 120 72Z" fill="url(#teksieDarkFur)" />
 
-      {/* Garis ekspresi kecil seperti pada maskot referensi. */}
-      <path d="M137 55h8M135 62l7 3M135 48l7-3" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+      {/* === 3. TOPENG WAJAH PUTIH MEMBULAT (FACIAL DISC) === */}
+      <path
+        d="M45 54C43 68 48 83 62 86C70 87 76 82 80 78C84 82 90 87 98 86C112 83 117 68 115 54C113 42 101 44 94 48C88 52 82 53 80 50C78 53 72 52 66 48C59 44 47 42 45 54Z"
+        fill="#ffffff"
+        style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.06))' }}
+      />
+
+      {/* === 4. TUBUH & PERUT ORANYE KREM === */}
+      <ellipse cx="80" cy="118" rx="42" ry="28" fill="url(#teksieOwlFur)" />
+      {/* Perut Krem Berbingkai Melengkung */}
+      <ellipse cx="80" cy="116" rx="26" ry="20" fill="url(#teksieBelly)" stroke="#ea580c" strokeWidth="2.5" />
+      {/* Pola Tetesan/Bulu Dada Khas Burung Hantu */}
+      <path d="M72 108C75 112 85 112 88 108" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M68 118C73 122 87 122 92 118" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* === 5. SAYAP KIRI MEMELUK KE DEPAN & BULU JARI SAYAP === */}
+      <path
+        d="M38 102C32 105 24 112 22 119C20 126 26 131 34 128C44 124 49 116 52 109C48 104 42 102 38 102Z"
+        fill="url(#teksieOwlFur)"
+      />
+      {/* 3 Lekukan Bulu Jemari Sayap Kiri */}
+      <path d="M22 121C26 124 33 123 37 120" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" />
+      <path d="M26 127C30 129 36 128 40 124" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" />
+
+      {/* === 6. LAPTOP TERBUKA MENGHADAP KE KANAN DEPAN === */}
+      {/* Punggung Layar Laptop */}
+      <path
+        d="M75 106L87 97H146L135 137H73L75 106Z"
+        fill="url(#teksieLaptopBack)"
+        stroke="#475569"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      {/* Base Bawah Keyboard Laptop */}
+      <path
+        d="M48 135H125L120 143H42L48 135Z"
+        fill="#0f172a"
+        stroke="#334155"
+        strokeWidth="1.8"
+      />
+      <rect x="58" y="138" width="16" height="2.5" rx="1.2" fill="#475569" />
+
+      {/* Logo Tunas/Daun Toska Menyala di Punggung Laptop */}
+      <g transform="translate(110, 114) scale(0.9)">
+        <path d="M-6 -4C-2 1 -3 7 -7 9C-9 7 -10 1 -6 -4Z" fill="#2dd4bf" />
+        <path d="M2 -5C6 -1 5 6 1 8C-1 6 0 0 2 -5Z" fill="#14b8a6" />
+        <circle cx="-2" cy="7" r="1.5" fill="#5eead4" />
+      </g>
+
+      {/* Sayap Kanan Mengetik di Balik Layar */}
+      <ellipse cx="106" cy="100" rx="12" ry="7" fill="url(#teksieDarkFur)" transform="rotate(-15 106 100)" />
+
+      {/* === 7. KACAMATA BUNDAR TEBAL ORANYE CERAH === */}
+      {/* Bingkai Kacamata Kiri */}
+      <circle cx="61" cy="62" r="19" stroke="url(#teksieGlasses)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
+      {/* Bingkai Kacamata Kanan */}
+      <circle cx="99" cy="62" r="19" stroke="url(#teksieGlasses)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
+      {/* Jembatan Kacamata Melengkung di Tengah */}
+      <path d="M78 61C80 57 80 57 82 61" stroke="url(#teksieGlasses)" strokeWidth="5.5" strokeLinecap="round" />
+
+      {/* === 8. MATA BULAT HITAM BESAR BERKILAU (CUTE ANIME EYES) === */}
+      {/* Pupil Hitam Besar */}
+      <circle cx="61" cy="62" r="12.5" fill="#0f172a" />
+      <circle cx="99" cy="62" r="12.5" fill="#0f172a" />
+
+      {/* Kilau Cahaya (Catchlight) Mata Kiri */}
+      <circle cx="58" cy="58" r="4.8" fill="#ffffff" />
+      <circle cx="66" cy="65" r="2.2" fill="#ffffff" />
+
+      {/* Kilau Cahaya (Catchlight) Mata Kanan */}
+      <circle cx="96" cy="58" r="4.8" fill="#ffffff" />
+      <circle cx="104" cy="65" r="2.2" fill="#ffffff" />
+
+      {/* === 9. PARUH SEGITIGA EMAS & SENYUM KECIL === */}
+      <polygon points="80,68 74,79 86,79" fill="#f59e0b" />
+      <polygon points="80,71 76,78 84,78" fill="#fbbf24" />
+      <path d="M75 79C78 85 82 85 85 79" fill="#9a3412" opacity=".4" />
+
+      {/* === 10. TIGA GARIS KILAU CERIA KARTUN DI KANAN ATAS === */}
+      <g stroke="#f59e0b" strokeWidth="3" strokeLinecap="round">
+        {/* Garis Miring Atas */}
+        <line x1="126" y1="36" x2="137" y2="30" />
+        {/* Garis Horizontal Tengah */}
+        <line x1="130" y1="44" x2="143" y2="44" />
+        {/* Garis Miring Bawah */}
+        <line x1="127" y1="52" x2="138" y2="58" />
+      </g>
     </svg>
   );
 }
