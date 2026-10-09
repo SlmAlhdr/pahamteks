@@ -4,7 +4,8 @@ import {
   Book2DIcon,
   Search2DIcon,
   Globe2DIcon,
-  Analytics2DIcon
+  Analytics2DIcon,
+  User2DIcon
 } from './Art2DIcons';
 
 export default function Navbar({
@@ -39,7 +40,11 @@ export default function Navbar({
             <button
               className={`btn-nav ${activeTab === 'home' ? 'active' : ''}`}
               onClick={() => setActiveTab('home')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3.5 10.5 12 4l8.5 6.5V20h-6v-6h-5v6h-6v-9.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              </svg>
               {t('nav_home')}
             </button>
             <button
@@ -55,7 +60,7 @@ export default function Navbar({
               onClick={() => setActiveTab('dict_trans')}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <Search2DIcon size={16} />
+              <Search2DIcon size={14} />
               <span>{t('nav_dict_trans')}</span>
             </button>
             {user?.role === 'ADMIN' && (
@@ -64,6 +69,7 @@ export default function Navbar({
                 onClick={() => setActiveTab('admin')}
                 title="Buka dashboard administrator"
               >
+                <Analytics2DIcon size={14} />
                 Admin
               </button>
             )}
@@ -73,7 +79,7 @@ export default function Navbar({
               title="Ubah Bahasa / Switch Language"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <Globe2DIcon size={16} />
+              <Globe2DIcon size={14} />
               <span>{currentLang.toUpperCase()}</span>
             </button>
           </div>
@@ -90,7 +96,7 @@ export default function Navbar({
               title="Buka Data Akun & Pelacakan Belajar"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <Analytics2DIcon size={16} />
+              <User2DIcon size={14} />
               <span>{user?.username ? `@${user.username}` : user?.name}</span>
             </button>
             <button className="btn-logout" onClick={onLogout}>
@@ -104,7 +110,7 @@ export default function Navbar({
             title="Ubah Bahasa / Switch Language"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            <Globe2DIcon size={16} />
+            <Globe2DIcon size={14} />
             <span>{currentLang.toUpperCase()}</span>
           </button>
         ) : null}

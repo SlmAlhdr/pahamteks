@@ -75,11 +75,14 @@ body {
 /* NAVBAR */
 .navbar { 
     width: 100%; 
-    padding: 14px 36px; 
+    padding: 10px 28px;
     display: flex; 
     align-items: center; 
     justify-content: space-between; 
     margin: 0 0 10px; 
+    min-height: 62px;
+    background: rgba(3, 17, 19, 0.92);
+    border-bottom: 1px solid rgba(126, 242, 224, 0.12);
     z-index: 10; 
     position: relative;
     box-sizing: border-box;
@@ -105,9 +108,6 @@ body {
 
 /* Nav links wrapper tepat di tengah layar */
 .nav-links-wrapper { 
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -121,7 +121,7 @@ body {
 .nav-links { 
     display: flex; 
     gap: 4px; 
-    background: rgba(0,0,0,0.38); 
+    background: rgba(7, 34, 35, 0.92);
     padding: 5px 8px; 
     border-radius: 30px; 
     align-items: center; 
@@ -146,7 +146,7 @@ body {
 }
 
 .btn-nav.active { 
-    background: rgba(255,255,255,0.18); 
+    background: rgba(126, 242, 224, 0.16);
     color: white; 
 }
 .btn-nav:hover:not(.active) { color: white; }
@@ -215,7 +215,7 @@ body {
 .btn-logout:hover { background: #e84118; }
 
 /* Responsive Navbar untuk Layar Sedang / Laptop Kecil */
-@media (max-width: 1100px) { 
+@media (max-width: 960px) {
     .navbar { 
         padding: 12px 20px; 
         flex-wrap: wrap; 
@@ -1455,10 +1455,10 @@ textarea {
 .guest-top-banner {
     width: 100%;
     box-sizing: border-box;
-    background: linear-gradient(90deg, #ff9f43, #ee5253);
-    color: #000;
-    padding: 8px 36px;
-    font-size: 0.85rem;
+    background: linear-gradient(90deg, #735319, #51401c);
+    color: #f9e9bb;
+    padding: 5px 24px;
+    font-size: 0.72rem;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -1466,16 +1466,30 @@ textarea {
     gap: 16px;
     position: relative;
     z-index: 100;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .guest-top-banner-text {
     display: flex;
     align-items: center;
-    color: #111;
-    font-size: 0.86rem;
+    color: #f9e9bb;
+    font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.2px;
+}
+
+.guest-notice-mark {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #facc15;
+    color: #493613;
+    font-size: 0.62rem;
+    font-weight: 900;
 }
 
 .guest-top-banner-actions {
@@ -1498,9 +1512,9 @@ textarea {
 }
 
 .btn-banner-upgrade {
-    background: #000;
+    background: rgba(6, 20, 24, 0.85);
     color: #fff;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 14px;
     padding: 6px 14px;
     font-size: 0.82rem;
@@ -1515,9 +1529,9 @@ textarea {
 }
 
 .btn-banner-logout {
-    background: #c0392b;
-    color: #fff;
-    border: none;
+    background: rgba(6, 20, 24, 0.85);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 14px;
     padding: 6px 14px;
     font-size: 0.82rem;

@@ -271,6 +271,7 @@ export default function App() {
       {user?.isGuest && (
         <div className="guest-top-banner">
           <div className="guest-top-banner-text">
+            <span className="guest-notice-mark" aria-hidden="true">i</span>
             <span>{t('guest_notice_bar')}</span>
           </div>
           <div className="guest-top-banner-actions">

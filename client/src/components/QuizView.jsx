@@ -6,6 +6,7 @@ import HumanFormattedText from './HumanFormattedText';
 import { LETTERS, cleanOptionText, isOptionCorrect } from '../utils/quizUtils';
 import { speakText } from '../utils/speechUtils';
 import TeksieCodingCard from './TeksieCodingCard';
+import { getTopicIcon } from './TechLogos';
 
 export { LETTERS, cleanOptionText, isOptionCorrect };
 
@@ -438,6 +439,10 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                               {/* Custom Radio Button */}
                               <div className="coding-radio-circle">
                                 {isSelected && <div className="coding-radio-dot" />}
+                              </div>
+
+                              <div className="coding-lang-icon-wrap" aria-hidden="true">
+                                {getTopicIcon(item, 28)}
                               </div>
 
                               {/* Nama Bahasa */}
