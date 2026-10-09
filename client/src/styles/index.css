@@ -4045,18 +4045,8 @@ textarea {
     transform: translateY(-3px) scale(1.03);
 }
 
-.teksie-fox-laptop {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 .teksie-at-laptop {
     overflow: visible;
-}
-.teksie-at-laptop {
     display: block;
     flex: 0 0 auto;
     filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));

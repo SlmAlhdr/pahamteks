@@ -38,14 +38,16 @@ export function TeksieAtLaptop({ size = 130 }) {
       <ellipse cx="113" cy="83" rx="7" ry="4" fill="#fb7185" fillOpacity=".55" />
 
       {/* Kacamata bulat khas Teksie. */}
-      <circle cx="62" cy="67" r="17" fill="#f8fafc" stroke="#18343d" strokeWidth="4" />
-      <circle cx="98" cy="67" r="17" fill="#f8fafc" stroke="#18343d" strokeWidth="4" />
+      <circle cx="62" cy="67" r="19" fill="#f8fafc" stroke="#18343d" strokeWidth="3" />
+      <circle cx="98" cy="67" r="19" fill="#f8fafc" stroke="#18343d" strokeWidth="3" />
+      <circle cx="62" cy="67" r="14" fill="#38bdf8" />
+      <circle cx="98" cy="67" r="14" fill="#38bdf8" />
       <path d="M79 66h2" stroke="#18343d" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="63" cy="68" r="9" fill="#172b32" />
-      <circle cx="99" cy="68" r="9" fill="#172b32" />
-      <circle cx="60" cy="64" r="3" fill="#fff" />
-      <circle cx="96" cy="64" r="3" fill="#fff" />
-      <path d="m76 82 4 3 4-3" stroke="#7c2d12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="63" cy="68" r="8" fill="#172b32" />
+      <circle cx="99" cy="68" r="8" fill="#172b32" />
+      <circle cx="60" cy="64" r="3.4" fill="#fff" />
+      <circle cx="96" cy="64" r="3.4" fill="#fff" />
+      <path d="m76 82 4 3 4-3" fill="#7c2d12" stroke="#7c2d12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Badan duduk dan cakar terlihat di sisi laptop. */}
       <ellipse cx="80" cy="117" rx="43" ry="25" fill="url(#teksieDeskFur)" />
@@ -58,7 +60,10 @@ export function TeksieAtLaptop({ size = 130 }) {
       <path d="m42 96 76 0 9 35H33l9-35Z" fill="url(#teksieDeskScreen)" stroke="#647782" strokeWidth="2" />
       <path d="M29 131h102l-7 7H36l-7-7Z" fill="#263943" stroke="#71838b" strokeWidth="1.5" />
       <path d="M75 133h10" stroke="#a5b4bb" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M80 105c-5 5-3 12 0 14 4-3 5-9 0-14Z" fill="#fb923c" />
+      <path d="M80 105c-5 5-3 12 0 14 4-3 5-9 0-14Z" fill="#2dd4bf" />
+
+      {/* Garis ekspresi kecil seperti pada maskot referensi. */}
+      <path d="M137 55h8M135 62l7 3M135 48l7-3" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
