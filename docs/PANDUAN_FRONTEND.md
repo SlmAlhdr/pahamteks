@@ -54,17 +54,14 @@ Frontend tidak menggunakan `axios` atau `fetch` manual yang berserakan. Semua pe
 
 ### 4. Desain & Estetika (Pure CSS di `index.css`)
 Seluruh tampilan grafis diatur di satu berkas terpusat: `client/src/styles/index.css`:
-* **Kenapa tidak pakai Tailwind atau Bootstrap?** Karena CSS murni membuat bundle aplikasi sangat kecil (~59 KB) dan loading secepat kilat (*zero runtime bloat*).
+* **Kenapa tidak pakai Tailwind atau Bootstrap?** CSS murni menjaga sistem styling ringan tanpa runtime framework CSS tambahan. Ukuran build dapat berubah; gunakan hasil Vite terbaru sebagai ukuran acuan.
 * Memakai variabel warna global di blok `:root` sehingga tema aplikasi sangat mudah diganti secara seragam.
 
 ### 5. Sintesis Audio Alami (Web Speech API)
 Untuk fitur belajar bahasa asing (Inggris, Prancis, Jepang, Jerman), pemelajar perlu mendengar cara pengucapan kata yang tepat. Frontend memanfaatkan mesin suara native browser melalui utilitas bersama `client/src/utils/speechUtils.js`.
 
-### 6. Sahabat Maskot Interaktif (Teksie)
-PahamTeks memiliki maskot pintar bernama **Teksie** (`TeksieMascotCompanion.jsx`). Teksie bukan gambar mati; dia memiliki mesin *state* internal:
-* Jika pengguna diam selama beberapa puluh detik: Teksie masuk mode tidur (*idle state*).
-* Jika pengguna menjawab kuis dengan benar: Teksie melompat gembira.
-* Jika pengguna salah menjawab: Teksie memberikan ekspresi ramah yang menyemangati.
+### 6. Maskot Teksie
+Teksie ditampilkan di panel pemilihan materi melalui `TeksieCodingCard.jsx` dan di cluster karakter beranda melalui `MiniCharacters.jsx`. Panel belajar memakai ilustrasi musang oranye di belakang laptop. Teksie bukan lagi companion global yang melayang, tidur saat idle, atau dapat dipindah dengan drag.
 
 ### 7. Modal & Notifikasi Terpadu
 Untuk menjaga pengalaman pengguna tetap profesional, PahamTeks **mengharamkan popup `alert()` bawaan browser** yang kaku. Seluruh pesan sukses, konfirmasi, atau error disajikan via `CenterNotificationModal.jsx`.
@@ -80,18 +77,16 @@ main.jsx (Pembungkus ApolloProvider)
 └── App.jsx (Navigasi Tab Utama, State Autentikasi, & Notifikasi)
     ├── Navbar.jsx (Header atas, profil pengguna, tombol ganti tab)
     ├── BackgroundDrift.jsx (Efek latar belakang melayang halus)
-    ├── TeksieMascotCompanion.jsx (Maskot mengambang interaktif)
     ├── KamusFloating.jsx (Tombol akses cepat kamus pintar di sudut layar)
     ├── AuthModal.jsx (Popup login, register, OTP email, reset password)
     ├── CenterNotificationModal.jsx (Popup notifikasi informasi/error)
     │
-    └── [ LAYAR AKTIF BERDASARKAN TAB ]
+    └── [ Halaman aktif, dimuat saat diperlukan dengan React.lazy/Suspense ]
         ├── WelcomePortal.jsx / HomeHero.jsx  -> Tab "Beranda"
         ├── QuizView.jsx                      -> Tab "Belajar Kuis" (Unit 1–5)
         ├── CombinedDictTranslator.jsx        -> Tab "Kamus & Terjemahan"
         │   ├── DictionaryView.jsx (Kamus Pintar & Glosarium A-Z)
         │   └── Translator.jsx (Penerjemah kalimat AI)
-        ├── ChallengeView.jsx                 -> Tab "Tantangan Harian"
         ├── DashboardView.jsx                 -> Tab "Statistik & Progres"
         └── LanguageInsights.jsx              -> Tab "Wawasan Bahasa"
 ```
@@ -109,12 +104,11 @@ client/
     ├── main.jsx                         <- Titik masuk aplikasi: konfigurasi Apollo Client & Provider
     ├── App.jsx                          <- Pusat kendali tab, sesi login pengguna, dan modal global
     │
-    ├── components/                      <- Seluruh komponen antarmuka pengguna (19 file)
+    ├── components/                      <- Komponen antarmuka aktif
     │   ├── Art2DIcons.jsx               <- Kumpulan ikon SVG 2D kustom
     │   ├── AuthModal.jsx                <- Form modal login, registrasi, OTP, & reset password
     │   ├── BackgroundDrift.jsx          <- Partikel latar belakang animasi ringan
     │   ├── CenterNotificationModal.jsx  <- Modal tengah layar pengganti alert()
-    │   ├── ChallengeView.jsx            <- Layar tantangan koding & kuis harian
     │   ├── CombinedDictTranslator.jsx   <- Wadah penyatu kamus dan translator
     │   ├── DashboardView.jsx            <- Layar progres skor dan statistik belajar
     │   ├── DictionaryView.jsx           <- Layar kamus AI dan glosarium A–Z
@@ -124,9 +118,10 @@ client/
     │   ├── LanguageInsights.jsx         <- Layar eksplorasi wawasan dan tips bahasa
     │   ├── LearningHub.jsx              <- Pusat materi teori pembelajaran
     │   ├── MiniCharacters.jsx           <- Ilustrasi grafis 2D pendukung materi
+    │   ├── TechLogos.jsx                <- Logo teknologi dan bendera bahasa
     │   ├── Navbar.jsx                   <- Navigasi atas dan status akun pengguna
     │   ├── QuizView.jsx                 <- Layar kuis adaptif utama (Unit 1–5)
-    │   ├── TeksieMascotCompanion.jsx    <- Maskot pintar interaktif Teksie
+    │   ├── TeksieCodingCard.jsx         <- Panel belajar dengan ilustrasi Teksie
     │   ├── Translator.jsx               <- Layar penerjemah teks multi-bahasa
     │   └── WelcomePortal.jsx            <- Portal pemilihan jalur belajar (Bahasa vs Koding)
     │
@@ -157,7 +152,7 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 | **Wadah gabungan tab kamus dan tab penerjemah** | [`client/src/components/CombinedDictTranslator.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/CombinedDictTranslator.jsx) |
 | **Fitur penerjemah teks multi-bahasa AI** | [`client/src/components/Translator.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Translator.jsx) |
 | **Tombol balon mengambang di pojok kanan bawah** | [`client/src/components/KamusFloating.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/KamusFloating.jsx) |
-| **Maskot pintar Teksie (animasi tidur, reaktif, balon dialog)** | [`client/src/components/TeksieMascotCompanion.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieMascotCompanion.jsx) |
+| **Panel karakter Teksie pada materi koding** | [`client/src/components/TeksieCodingCard.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/TeksieCodingCard.jsx) |
 | **Modal login, registrasi, OTP email, & reset password** | [`client/src/components/AuthModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AuthModal.jsx) |
 | **Modal notifikasi tengah layar pengganti `alert()`** | [`client/src/components/CenterNotificationModal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/CenterNotificationModal.jsx) |
 | **Navbar atas (logo, tombol ganti tab, tombol logout)** | [`client/src/components/Navbar.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/Navbar.jsx) |
@@ -165,7 +160,6 @@ Gunakan tabel kompas ini jika kamu mencari letak berkas spesifik di frontend:
 | **Portal pemilihan jalur awal belajar (Bahasa vs Koding)** | [`client/src/components/WelcomePortal.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/WelcomePortal.jsx) |
 | **Dasbor akun pemelajar (riwayat kuis pribadi & statistik)** | [`client/src/components/DashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/DashboardView.jsx) |
 | **Dashboard visual dan log audit khusus admin** | [`client/src/components/AdminDashboardView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/AdminDashboardView.jsx) |
-| **Layar tantangan harian koding & kuis cepat** | [`client/src/components/ChallengeView.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/ChallengeView.jsx) |
 | **Layar wawasan linguistik dan perbandingan bahasa** | [`client/src/components/LanguageInsights.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LanguageInsights.jsx) |
 | **Pusat materi belajar terpadu** | [`client/src/components/LearningHub.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/LearningHub.jsx) |
 | **Perender teks markdown jawaban AI agar rapi** | [`client/src/components/HumanFormattedText.jsx`](file:///c:/Salim/Kerjaan/pahamteks/client/src/components/HumanFormattedText.jsx) |

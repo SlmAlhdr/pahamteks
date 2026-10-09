@@ -1,0 +1,27 @@
+version: 1
+
+ci:
+  failBelow: 80
+  format: json
+
+telemetry:
+  enabled: false
+
+exclude:
+  - '**/node_modules/**'
+  - '**/client/dist/**'
+  - '**/client/build/**'
+  - '**/server/data/**'
+  - '**/server/backups/**'
+  - '**/*.min.js'
+  - '**/*.bundle.js'
+  - '**/coverage/**'
+  - '**/.git/**'
+
+rules:
+  ai-slop/swallowed-exception: error
+  ai-slop/hallucinated-import: error
+  ai-slop/hidden-fallback: warning
+  ai-slop/narrative-comment: warning
+  ai-slop/todo-stub: warning
+  code-quality/duplicate-block: warning

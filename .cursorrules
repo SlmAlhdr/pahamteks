@@ -1,13 +1,1 @@
-# Cursor Rules for PahamTeks
-
-You are working on PahamTeks, an education platform for Human Languages and Programming Logic.
-
-Key guidelines:
-1. Frontend: React 18, Vite, Apollo Client, pure CSS (`client/src/styles/index.css`).
-2. Backend: Node.js (ESM), Apollo Server (`/graphql`), REST (`/health`), MySQL with auto-failover to SQLite.
-3. Zero AI Slop: Always use try-catch with meaningful logging. Never leave empty catch blocks.
-4. Always reuse `client/src/utils/speechUtils.js` for speech audio and `client/src/utils/quizUtils.js` for quiz logic.
-5. Always test build: `npm --prefix client run build`.
-6. Keep `.env` and `server/.env` completely private.
-7. Read `docs/AGENT_ADAPTATION.md` for in-depth architecture details.
-
+PahamTeks is a React 18 + Vite frontend and a Node.js ESM + Express/Apollo GraphQL backend. Read the root AGENTS.md first; it is the canonical instruction file. Check docs/ARCHITECTURE.md for current deployment and database behavior. Document/folder learning is planned, not implemented. Reuse shared speech and quiz utilities, avoid empty or swallowed catch blocks and browser alert(), protect secrets and local databases, and run `npm --prefix client run build` for frontend changes. Teksie is not a globally floating companion.

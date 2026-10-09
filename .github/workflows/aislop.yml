@@ -1,0 +1,23 @@
+name: AI Code Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    name: Scan code quality and AI slop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run aislop quality gate
+        uses: scanaislop/aislop@v1
+        with:
+          version: latest

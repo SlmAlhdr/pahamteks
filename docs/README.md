@@ -12,14 +12,14 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 | :--- | :--- | :--- |
 | 📄 [`PRD.md`](./PRD.md) | Visi produk, kenapa kita buat fitur kuis/kamus begini, profil pemelajar, dan ide yang masih perlu kita obrolkan. | Saat butuh gambaran arah produk atau sebelum mulai bikin fitur baru. |
 | 🏗️ [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Blueprint teknis: React, GraphQL, Gemini, Vercel, TiDB Cloud, dan SQLite lokal untuk development. | Saat modifikasi backend, skema GraphQL, atau database. |
-| 🤖 [`AGENT.md`](./AGENT.md) | Persona karakter maskot Teksie, cara prompt AI merespon pemelajar, dan aturan otomatisasi development. | Saat ngurus AI prompt, copy percakapan, atau nambah respon maskot. |
+| 🤖 [`AGENT.md`](./AGENT.md) | Perilaku fitur AI yang sudah ada, karakter Teksie saat ini, dan batas fitur materi dokumen yang masih direncanakan. | Saat mengubah prompt atau tampilan Teksie. |
 | 📋 [`TODO.md`](./TODO.md) | Catatan pekerjaan: yang udah selesai, prioritas sprint minggu ini, dan tumpukan ide liar tim. | Saat meeting sprint planning, evaluasi progress, atau cari tugas berikutnya. |
 | 🧠 [`SKILL.md`](./SKILL.md) | Pemetaan materi yang diajarkan (bahasa pemrograman & bahasa asing) plus standar keamanan yang kita terapkan. | Saat kurasi materi kuis, kamus, atau validasi standar security sistem. |
 | ⚙️ [`WORKFLOW.md`](./WORKFLOW.md) | Alur kerja harian: setup lokal, aturan branching Git, backup data, dan langkah darurat saat server error. | Wajib dibaca pas onboarding pertama kali dan sebelum push ke repo. |
-| 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | Standar kebersihan kode agar tidak ada kode sampah AI, cara cek lokal, dan aturan CI GitHub Actions. | Wajib dicek saat nulis kode pakai AI assistant (Cursor, Antigravity, dll). |
-| 🤖 [`AGENT_ADAPTATION.md`](./AGENT_ADAPTATION.md) | Panduan adaptasi otomatis untuk AI Agent rekan tim/teman saat membuka folder PahamTeks. | Wajib dibaca oleh asisten AI baru agar langsung paham arsitektur sistem. |
+| 🛡️ [`AI_SLOP.md`](./AI_SLOP.md) | Konfigurasi scanner aislop, perintah lokal, dan quality gate GitHub Actions yang aktif. | Saat memeriksa code quality atau CI. |
+| 🤖 [`AGENT_ADAPTATION.md`](./AGENT_ADAPTATION.md) | Peta arsitektur dan standar coding agent terkini. Root `AGENTS.md` adalah sumber instruksi utama. | Saat onboarding AI coding assistant atau kontributor. |
 | 🌐 [`PANDUAN_AKSES_HTTPS_PRIBADI.md`](./PANDUAN_AKSES_HTTPS_PRIBADI.md) | Deployment utama Vercel, koneksi TiDB Cloud, UptimeRobot, serta tunnel lokal opsional. | Saat menyiapkan hosting, database, pemantauan, atau demo. |
-| 💻 [`PANDUAN_FRONTEND.md`](./PANDUAN_FRONTEND.md) | Panduan lengkap frontend: analogi ruang makan, 7 pilar penyusun, pohon komponen, 19 file UI, sistem audio, token auth, dan styling pure CSS. | Saat membuat/memodifikasi komponen antarmuka pengguna di React atau mengatur tampilan. |
+| 💻 [`PANDUAN_FRONTEND.md`](./PANDUAN_FRONTEND.md) | Panduan frontend: arsitektur komponen terkini, sistem audio, token auth, dan styling pure CSS. | Saat membuat atau memodifikasi komponen antarmuka React. |
 | ⚙️ [`PANDUAN_BACKEND.md`](./PANDUAN_BACKEND.md) | Panduan backend: GraphQL, TiDB Cloud untuk produksi, SQLite lokal, Gemini, autentikasi, dan keamanan. | Saat membuat resolver, skema database, integrasi AI, atau konfigurasi server. |
 | 🔄 [`PANDUAN_FULLSTACK.md`](./PANDUAN_FULLSTACK.md) | Panduan lengkap fullstack: analogi manajer restoran, 6 jembatan penghubung, siklus hidup request 8 tahap, tutorial end-to-end, & kamus troubleshooting. | Saat menghubungkan fitur baru dari UI hingga ke database/AI atau mengatasi error integrasi. |
 | 📚 Materi dari folder dokumen | Rancangan fitur agar siswa, mahasiswa, guru, atau dosen dapat mengunggah kumpulan dokumen sebagai sumber belajar AI. | Saat merancang kurasi materi, alur upload, keamanan berkas, retrieval, dan evaluasi jawaban. Statusnya masih rencana, belum tersedia di aplikasi. |
@@ -30,7 +30,7 @@ Silakan baca dokumen sesuai topik yang sedang kamu kerjakan:
 ## 💻 Panduan Menjalankan di Laptop Developer
 
 ### 1. Kebutuhan Dasar
-* Node.js v18 atau yang lebih baru (disarankan v20 LTS).
+* Node.js v20 atau yang lebih baru, sesuai `engines` pada `package.json`.
 * Git.
 * Untuk deployment Vercel: akun TiDB Cloud dan database persisten. Saat development lokal, backend dapat memakai SQLite sebagai fallback.
 
@@ -64,7 +64,7 @@ npm --prefix client run dev
 ## 💡 Ringkasan: Yang Sudah Jadi vs Ide Diskusi
 
 ### Fitur aplikasi yang sudah tersedia:
-* **Frontend**: Antarmuka React 18 responsif, navigasi tab terpusat, balon Kamus Pintar mengambang, modal notifikasi tengah layar, dan maskot interaktif Teksie yang reaktif (tidur saat idle, respon saat disentuh).
+* **Frontend**: Antarmuka React 18 responsif dengan halaman yang di-lazy-load, navigasi tab, Kamus Pintar mengambang, modal notifikasi, panel belajar Teksie, dan karakter berinteraksi di beranda.
 * **Backend & AI**: Apollo Server GraphQL, rotasi multi-kunci Gemini API (*Round-Robin*) agar kuota tidak jebol, kuis adaptif Unit 1–5, kamus instan, dan transkripsi audio.
 * **Keamanan & Kehandalan**: Proteksi *Brute Force*, *Rate Limiting*, proteksi *Email Bombing*, MySQL/TiDB persisten di hosting, dan SQLite fallback lokal untuk development.
 

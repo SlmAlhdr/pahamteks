@@ -1,132 +1,36 @@
-# Standar Kebersihan Kode & AI Slop Quality Gate (AI_SLOP.md)
+# Code quality and AI slop checks
 
-Dokumen ini adalah panduan kebersihan kode di PahamTeks. Karena kita sering mengembangkan fitur bersama AI (*AI pair-programming / vibe coding* menggunakan Cursor, Antigravity, Claude Code, Copilot, dll.), kita memasang "satpam otomatis" bernama [`aislop`](https://github.com/marketplace/actions/aislop-ai-code-quality-gate) untuk memastikan kode tetap rapi, modular, dan berstandar insinyur manusia.
+PahamTeks uses `aislop` as a deterministic code quality scanner. It reports patterns such as swallowed exceptions, undeclared imports, hidden fallbacks, repetitive code, dead code, and comments that merely narrate the implementation. Its score is a heuristic signal, not proof that code is correct, secure, or human-written. Review each finding in context.
 
----
+## Project policy
 
-## 1. Apa Itu "AI Slop" & Kenapa Kita Peduli?
+The tracked configuration is [`.aislop/config.yml`](../.aislop/config.yml). It excludes dependency folders, generated builds, local database data, and backups. Telemetry is disabled. The CI score threshold is 80; severity `error` rules also fail the gate.
 
-Asisten AI sangat pintar menulis kode dengan cepat, tetapi sering kali menyisakan kebiasaan buruk yang disebut **AI Slop**:
-1. **Error Ditelan Diam-diam (*Swallowed Exceptions*)**:
-   Blok `catch (e) {}` yang dibiarkan kosong melompong. Ini sangat berbahaya di PahamTeks karena kalau database atau Gemini API error, errornya hilang ditelan bumi dan kita bingung mencari letak bug-nya.
-2. **Fungsi Duplikat (*Duplicate Helpers*)**:
-   AI sering membuat ulang fungsi yang sama di 4-5 komponen berbeda (misal fungsi pemutar suara atau fungsi pembersih teks) alih-alih meletakkannya di folder `utils/`.
-3. **Dependensi Hantu (*Ghost Dependencies*)**:
-   Menyarankan install paket yang sebenarnya tidak pernah di-import (contohnya kemarin sempat ada `jquery` di `client/package.json`).
-4. **Komentar Naratif Bertele-tele**:
-   Komentar bergaya tutorial yang menjelaskan hal sepele yang sudah jelas terlihat dari kodenya.
+The GitHub Actions workflow is [`.github/workflows/aislop.yml`](../.github/workflows/aislop.yml). It runs for pushes and pull requests targeting `main` and uses the maintained [`scanaislop/aislop` GitHub Action](https://github.com/scanaislop/aislop/blob/main/action.yml). The action runs `aislop ci`, which reads `.aislop/config.yml`; do not pass the obsolete `fail-below` action input.
 
----
-
-## 2. Memahami Sistem Skor (0 s/d 100)
-
-Banyak yang bertanya: *apakah angka 100 artinya sangat AI atau sangat Manusia?*
-
-* **100 / 100 = HUMAN-ENGINEER GRADE (Sangat Bersih & Sehat)** 🌟:
-  Artinya kode **bebas dari residu AI (*Zero AI Slop*)**. Kodenya rapi, modular, transparan dalam menangani error, selayaknya ditulis oleh Software Engineer berpengalaman.
-* **0 / 100 = FULL AI SLOP (Sangat Rusak / Penuh Kode Sampah)** ⚠️:
-  Artinya kode dipenuhi blok catch kosong, fungsi duplikat copas, dan rentan crash di produksi.
-* **Ambang Batas Kita (Fail Below: 80)**:
-  Di file [`.aislop/config.yml`](file:///c:/Salim/Kerjaan/pahamteks/.aislop/config.yml), kita pasang batas minimal **80**. Kalau skor di bawah 80, GitHub Actions langsung menolak merge (tanda merah).
-* **Target Kita**: **≥ 95 / 100** (Grade A+).
-
----
-
-## 3. Cara Cek Mandiri di Laptop (Sebelum Push)
-
-Sebelum kamu push ke GitHub, kamu bisa scan apakah kodemu ada jejak AI Slop:
+## Run locally
 
 ```bash
-# 1. Scan seluruh kode di proyek
-npx aislop@latest scan
+# Full project scan
+npx --yes aislop@latest scan .
 
-# 2. Scan HANYA file-file yang baru saja kamu ubah (paling cepat!)
-npx aislop@latest scan --changes --base origin/main
+# CI-equivalent quality gate
+npx --yes aislop@latest ci .
 
-# 3. Cek apakah lulus standar CI (skor >= 80)
-npx aislop@latest ci
-
-# 4. Bersihkan komentar berlebih secara otomatis
-npx aislop@latest fix
+# Scan changed files against main (origin/main must exist locally)
+npx --yes aislop@latest ci . --changes --base origin/main
 ```
 
----
+Review automated fixes manually before applying them. Do not run a bulk fix command over the repository without inspecting its proposed changes.
 
-## 4. Konfigurasi Khusus PahamTeks (`.aislop/config.yml`)
+## Respond to findings
 
-Agar `aislop` tidak memeriksa folder hasil build atau database lokal, kita atur pengecualian di `.aislop/config.yml`:
+- For swallowed exceptions, decide whether to report the error to the caller, show a user-facing error state, retry safely, or log useful context and take an explicit recovery path.
+- Reuse shared helpers where doing so reduces real duplication; do not create abstractions solely to improve a scanner score.
+- Remove genuinely unused files and imports only after confirming references and product intent.
+- Keep comments focused on non-obvious decisions, constraints, and security behavior.
+- If suppressing a valid finding, use the scanner's documented inline suppression with a short reason and keep the scope narrow.
 
-```yaml
-version: 1
+## GitHub Actions behavior
 
-ci:
-  failBelow: 80         # Minimal skor kelulusan pipeline CI
-  maxWarnings: 15       # Batas maksimal toleransi warning
-
-exclude:
-  - '**/node_modules/**'
-  - '**/client/dist/**'
-  - '**/client/build/**'
-  - '**/server/data/**'           # Direktori SQLite lokal
-  - '**/server/backups/**'        # Snapshot database
-  - '**/*.min.js'
-  - '**/.git/**'
-
-rules:
-  swallowed-exceptions: error     # Dilarang keras menelan error tanpa logging
-  hallucinated-imports: error     # Dilarang pakai import fiktif
-  hidden-fallbacks: error         # Dilarang menyembunyikan kegagalan tanpa warning
-  duplicate-helpers: warning      # Peringatan jika membuat fungsi copas berulang kali
-  narrative-comments: warning     # Peringatan untuk komentar bergaya obrolan AI
-  todo-stubs: warning             # Peringatan untuk TODO yang ditinggalkan
-```
-
----
-
-## 5. Otomatisasi GitHub Actions (`.github/workflows/aislop.yml`)
-
-Setiap kali ada commit atau Pull Request ke branch `main`, GitHub Actions otomatis menjalankan pengecekan ini:
-
-```yaml
-name: AI Code Quality Gate (aislop)
-
-on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main, dev ]
-
-jobs:
-  ai-quality-gate:
-    name: Scan AI Slop & Code Health
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: scanaislop/aislop@v1
-        with:
-          fail-below: 80
-```
-
----
-
-## 6. Apa yang Harus Dilakukan Jika CI Menolak (Merah)?
-
-1. Buka tab **Actions** di GitHub untuk melihat baris mana yang kena tegur.
-2. Jalankan `npx aislop@latest scan --changes --base origin/main` di laptopmu.
-3. Perbaiki masalahnya:
-   - Kalau ada `catch` kosong: beri `console.warn('[NamaModul] Galat:', err.message)`.
-   - Kalau ada fungsi yang di-copas: pindahkan ke `client/src/utils/`.
-   - Kalau ada komentar tutorial yang bertele-tele: hapus atau persingkat.
-4. Commit dan push ulang!
-
-## 7. Ketepatan Dokumentasi dan Materi Pengguna
-
-- Bedakan fitur yang sudah ada dengan rencana. Upload folder, ekstraksi dokumen, dan retrieval materi belum menjadi fitur aplikasi hanya karena tercantum di roadmap.
-- Dokumentasi deployment harus mencerminkan Vercel + TiDB Cloud; SQLite fallback hanya berlaku untuk development lokal. UptimeRobot memeriksa `/healthz`, sedangkan `/health` khusus admin.
-- Jangan menulis hostname, password, API key, token, data akun, atau contoh rahasia nyata ke dokumen dan log.
-- Bila fitur materi dokumen dibangun, perlakukan file dan isinya sebagai input tak tepercaya; jangan membuat AI mengikuti prompt injection atau memberi jawaban tanpa rujukan yang dapat diverifikasi.
+The workflow checks the repository state on `main` pushes and pull requests. A failure means the configured score threshold was missed or an error-severity finding was reported. Inspect the workflow log, reproduce locally with `aislop ci`, fix the underlying issue, then commit and push the reviewed change.

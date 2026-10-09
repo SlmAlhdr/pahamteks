@@ -1,18 +1,12 @@
-# CLAUDE.md — PahamTeks Project Guidelines
+# Claude Code instructions
 
-## Commands
-- Run Frontend: `npm --prefix client run dev` (Port 5173)
-- Run Backend: `npm --prefix server run dev` (Port 4000)
-- Build Frontend: `npm --prefix client run build`
-- Backup Database: `npm --prefix server run backup-db`
-- Initialize DB: `npm --prefix server run init-db`
+Follow [`AGENTS.md`](./AGENTS.md) as the canonical project guidance and [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for current system details. Do not rely on duplicated or stale architecture summaries.
 
-## Architecture & Code Standards
-- **Stack**: React 18 + Vite, Apollo GraphQL Client/Server, Express.js, MySQL + SQLite failover (`node:sqlite`).
-- **Zero AI Slop**: No empty `catch (e) {}` blocks, no duplicate helpers, no hallucinated imports.
-- **Shared Utilities**:
-  - `client/src/utils/speechUtils.js` for Web Speech synthesis
-  - `client/src/utils/quizUtils.js` for quiz normalization and option validation
-- **Documentation**: Kept locally in `docs/` (refer to `docs/AGENT_ADAPTATION.md`).
-- **Security**: Never expose `.env` credentials or commit local `.sqlite` databases.
+Useful commands:
 
+- Frontend development: `npm --prefix client run dev`
+- Backend development: `npm --prefix server run dev`
+- Frontend build: `npm --prefix client run build`
+- Database initialization: `npm --prefix server run init-db`
+
+The active frontend is React/Vite, while the API is Express/Apollo GraphQL. Production uses TiDB; SQLite is local-development fallback. Document-folder learning is planned only. Do not commit environment secrets or local databases.

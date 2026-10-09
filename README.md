@@ -11,7 +11,7 @@ Kebanyakan orang belajar bahasa asing di satu aplikasi (seperti Duolingo) dan be
 Di PahamTeks, pemelajar di Indonesia bisa mengasah keduanya sekaligus:
 1. **Bahasa Dunia**: Mulai dari kosakata sehari-hari, grammar, sampai percakapan di puluhan bahasa dunia.
 2. **Bahasa Pemrograman**: Memahami konsep algoritma, JavaScript, Python, Web, SQL, dan struktur data tanpa intimidasi teknis.
-3. **Didampingi Teman Belajar (Teksie)**: Maskot musang 2D interaktif yang menemani, memberi semangat, dan reaktif saat kita sedang idle atau salah menjawab.
+3. **Karakter Teksie**: Maskot musang 2D oranye yang tampil pada panel pembelajaran koding dan ilustrasi beranda.
 
 ---
 
@@ -35,11 +35,11 @@ Semua catatan perencanaan, arsitektur, panduan teknis, dan roadmap tersimpan len
 - 🎨 **[Panduan Tim Frontend](./docs/PANDUAN_FRONTEND.md)**: Struktur komponen React 18, styling CSS murni, audio speech, dan standar antarmuka bebas alert.
 - 🌐 **[Panduan Akses HTTPS Pribadi](./docs/PANDUAN_AKSES_HTTPS_PRIBADI.md)**: Tutorial membuka akses publik via Cloudflare Tunnel untuk uji coba di HP atau bersama tim.
 - 📄 **[PRD (Product Requirement)](./docs/PRD.md)**: Visi produk, persona pengguna, dan ide fitur yang siap didiskusikan bersama tim.
-- 🏗️ **[Arsitektur Sistem](./docs/ARCHITECTURE.md)**: Diagram aliran data React 18, Apollo GraphQL, Gemini AI, dan mekanisme failover database.
-- 🤖 **[Pedoman Karakter & AI Agent](./docs/AGENT.md)**: Persona maskot Teksie, gaya bahasa mentor, dan aturan otomatisasi development.
+- 🏗️ **[Arsitektur Sistem](./docs/ARCHITECTURE.md)**: Diagram React, Apollo GraphQL, Gemini, Vercel, dan TiDB Cloud.
+- 🤖 **[Pedoman Karakter & AI](./docs/AGENT.md)**: Perilaku fitur AI yang berjalan, karakter Teksie, dan batas fitur materi dokumen.
 - 📋 **[Backlog & TODO Tim](./docs/TODO.md)**: Catatan backlog teknis dan ide-ide masa depan.
 - 🧠 **[Matriks Domain Materi](./docs/SKILL.md)**: Silabus bahasa pemrograman dan linguistik yang diajarkan di PahamTeks.
-- 🛡️ **[AI Quality Gate](./docs/AI_SLOP.md)**: Standar kebersihan kode, aturan anti-AI-slop, dan pipeline CI GitHub Actions.
+- 🛡️ **[AI Quality Gate](./docs/AI_SLOP.md)**: Konfigurasi scanner `aislop`, perintah lokal, dan pipeline GitHub Actions.
 
 ---
 
