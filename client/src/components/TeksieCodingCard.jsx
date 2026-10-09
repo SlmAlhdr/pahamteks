@@ -68,16 +68,14 @@ export function TeksieAtLaptop({ size = 130 }) {
       {/* Bayangan Meja Halus */}
       <ellipse cx="80" cy="148" rx="60" ry="7" fill="#000000" fillOpacity=".38" />
 
-      {/* === 1. TELINGA MUSANG IKONIK 3D (KIRI & KANAN) === */}
+      {/* === 1. TELINGA MUSANG IKONIK 3D (KIRI & KANAN) LEBIH RAPI & HALUS === */}
       {/* Telinga Kiri Musang */}
-      <path d="M50 48L18 10C12 30 20 62 44 74L50 48Z" fill="url(#mkFurDark3D)" />
-      <path d="M46 46L24 18C20 32 26 56 42 66L46 46Z" fill="#fb7185" opacity="0.85" />
-      <path d="M28 32L36 40" stroke="#ffedd5" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+      <path d="M48 52L22 14C16 32 22 58 44 70L48 52Z" fill="url(#mkFurDark3D)" />
+      <path d="M44 49L27 21C23 34 27 53 40 63L44 49Z" fill="#fb7185" opacity="0.85" />
 
-      {/* Telinga Kanan Musang */}
-      <path d="M110 48L142 10C148 30 140 62 116 74L110 48Z" fill="url(#mkFurDark3D)" />
-      <path d="M114 46L136 18C140 32 134 56 118 66L114 46Z" fill="#fb7185" opacity="0.85" />
-      <path d="M132 32L124 40" stroke="#ffedd5" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+      {/* Telinga Kanan Musang (Bersih tanpa 3 garis kilau) */}
+      <path d="M112 52L138 14C144 32 138 58 116 70L112 52Z" fill="url(#mkFurDark3D)" />
+      <path d="M116 49L133 21C137 34 133 53 120 63L116 49Z" fill="#fb7185" opacity="0.85" />
 
       {/* === 2. EKOR MUSANG LEBAT BERUJUNG PUTIH (MENGINTIP DI KANAN) === */}
       <g>
@@ -86,67 +84,62 @@ export function TeksieAtLaptop({ size = 130 }) {
       </g>
 
       {/* === 3. BADAN GEMBUL MUSANG 3D === */}
-      <ellipse cx="80" cy="118" rx="40" ry="28" fill="url(#mkFurBody3D)" />
-      <ellipse cx="80" cy="116" rx="24" ry="19" fill="url(#mkBelly3D)" />
-
-      {/* Syal Hijau Cerdas Khas PahamTeks */}
-      <path d="M52 102C62 112 98 112 108 102C112 110 104 120 80 120C56 120 48 110 52 102Z" fill="url(#mkScarf3D)" />
-      <ellipse cx="80" cy="112" rx="5" ry="3.5" fill="#22c55e" />
-      <circle cx="80" cy="111.5" r="1.5" fill="#ffffff" />
+      <ellipse cx="80" cy="118" rx="42" ry="28" fill="url(#mkFurBody3D)" />
+      {/* Perut Krem Berbingkai Lembut Seperti di Gambar 2 */}
+      <ellipse cx="80" cy="116" rx="26" ry="20" fill="url(#mkBelly3D)" stroke="#ea580c" strokeWidth="2.5" />
+      {/* Aksen Lengkungan Dada */}
+      <path d="M72 108C75 112 85 112 88 108" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M68 118C73 122 87 122 92 118" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* === 4. KEPALA BULAT GEMAS MUSANG 3D === */}
-      <ellipse cx="80" cy="72" rx="44" ry="37" fill="url(#mkFurHead3D)" />
-      {/* Kilau 3D atas kepala */}
-      <path d="M58 44C70 38 90 38 102 44C92 40 68 40 58 44Z" fill="#ffffff" opacity="0.35" />
+      <ellipse cx="80" cy="68" rx="46" ry="40" fill="url(#mkFurHead3D)" />
 
-      {/* Pipi Putih Gembul Khas Musang */}
+      {/* Bulu Pipi Halus Kiri & Kanan Khas Gambar 2 */}
+      <path d="M34 68C28 72 26 78 30 83C36 84 40 78 40 72Z" fill="url(#mkFurDark3D)" />
+      <path d="M126 68C132 72 134 78 130 83C124 84 120 78 120 72Z" fill="url(#mkFurDark3D)" />
+
+      {/* Topeng Pipi Wajah Putih Membulat Halus (Sesuai Lekukan Gambar 2) */}
       <path
-        d="M36 76C36 94 54 102 80 102C106 102 124 94 124 76C124 68 116 64 104 68C94 72 88 76 80 76C72 76 66 72 56 68C44 64 36 68 36 76Z"
+        d="M45 56C43 70 48 84 62 87C70 88 76 83 80 79C84 83 90 88 98 87C112 84 117 70 115 56C113 44 101 46 94 50C88 54 82 55 80 52C78 55 72 54 66 50C59 46 47 44 45 56Z"
         fill="#ffffff"
         style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))' }}
       />
 
       {/* Rona Pipi Pink Gemas (Blush) */}
-      <ellipse cx="46" cy="82" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.65" />
-      <ellipse cx="114" cy="82" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.65" />
+      <ellipse cx="48" cy="80" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.65" />
+      <ellipse cx="112" cy="80" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.65" />
 
-      {/* Hidung Hitam 3D Musang */}
-      <polygon points="76,80 84,80 80,85" fill="#0f172a" />
-      <circle cx="79" cy="80.8" r="0.8" fill="#ffffff" />
+      {/* Hidung & Moncong Imut */}
+      <polygon points="77,75 83,75 80,79" fill="#0f172a" />
+      <circle cx="79" cy="75.6" r="0.7" fill="#ffffff" />
+      {/* Mulut Senyum Manis */}
+      <path d="M75 80C77 83 79 83 80 81C81 83 83 83 85 80" stroke="#9a3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
 
-      {/* Mulut Senyum Imut Musang (^w^) */}
-      <path d="M74 86C76 90 79 90 80 88C81 90 84 90 86 86" stroke="#9a3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-      {/* === 5. KACAMATA PINTAR BULAT ORANYE IKONIK === */}
+      {/* === 5. KACAMATA PINTAR BULAT ORANYE IKONIK (PERSIS GAMBAR 2) === */}
       {/* Bingkai Kacamata Kiri */}
-      <circle cx="60" cy="62" r="18.5" stroke="url(#mkGlasses3D)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
+      <circle cx="61" cy="62" r="19" stroke="url(#mkGlasses3D)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
       {/* Bingkai Kacamata Kanan */}
-      <circle cx="100" cy="62" r="18.5" stroke="url(#mkGlasses3D)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
+      <circle cx="99" cy="62" r="19" stroke="url(#mkGlasses3D)" strokeWidth="5.5" fill="#ffffff" fillOpacity=".12" />
       {/* Jembatan Kacamata */}
       <path d="M78 61C80 57 80 57 82 61" stroke="url(#mkGlasses3D)" strokeWidth="5.5" strokeLinecap="round" />
 
-      {/* === 6. MATA BULAT HITAM BERKILAU 3D (ANIME SHINY EYES) === */}
-      <circle cx="60" cy="62" r="12" fill="#0f172a" />
-      <circle cx="100" cy="62" r="12" fill="#0f172a" />
+      {/* === 6. MATA BULAT HITAM BERKILAU 3D (ANIME SHINY EYES PERSIS GAMBAR 2) === */}
+      <circle cx="61" cy="62" r="12.5" fill="#0f172a" />
+      <circle cx="99" cy="62" r="12.5" fill="#0f172a" />
       {/* Double Catchlight */}
-      <circle cx="57" cy="58" r="4.6" fill="#ffffff" />
-      <circle cx="65" cy="65" r="2.2" fill="#ffffff" />
-      <circle cx="97" cy="58" r="4.6" fill="#ffffff" />
-      <circle cx="105" cy="65" r="2.2" fill="#ffffff" />
+      <circle cx="58" cy="58" r="4.8" fill="#ffffff" />
+      <circle cx="66" cy="65" r="2.2" fill="#ffffff" />
+      <circle cx="96" cy="58" r="4.8" fill="#ffffff" />
+      <circle cx="104" cy="65" r="2.2" fill="#ffffff" />
 
-      {/* Kumis Halus Musang */}
-      <line x1="38" y1="80" x2="24" y2="78" stroke="#ffedd5" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
-      <line x1="38" y1="84" x2="26" y2="86" stroke="#ffedd5" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
-      <line x1="122" y1="80" x2="136" y2="78" stroke="#ffedd5" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
-      <line x1="122" y1="84" x2="134" y2="86" stroke="#ffedd5" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
-
-      {/* === 7. CAKAR / TANGAN MUSANG DI LAPTOP === */}
+      {/* === 7. TANGAN / SAYAP MUSANG MEMELUK LAPTOP DENGAN LEKUKAN PERSIS GAMBAR 2 === */}
       <path
         d="M38 102C32 105 24 112 22 119C20 126 26 131 34 128C44 124 49 116 52 109C48 104 42 102 38 102Z"
         fill="url(#mkFurBody3D)"
       />
-      <circle cx="28" cy="122" r="2.5" fill="#ffedd5" />
-      <circle cx="33" cy="125" r="2.5" fill="#ffedd5" />
+      {/* Garis Jari Bulu Cakar Halus */}
+      <path d="M24 121C28 124 34 123 38 120" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" />
+      <path d="M28 127C32 129 37 128 41 124" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" />
 
       {/* === 8. LAPTOP TERBUKA 3D DENGAN LOGO PAHAMTEKS === */}
       {/* Punggung Layar Laptop */}
@@ -175,13 +168,6 @@ export function TeksieAtLaptop({ size = 130 }) {
 
       {/* Tangan Kanan Musang Mengetik di Balik Layar */}
       <ellipse cx="106" cy="100" rx="12" ry="7" fill="url(#mkFurDark3D)" transform="rotate(-15 106 100)" />
-
-      {/* === 9. TIGA GARIS KILAU CERIA KARTUN DI KANAN ATAS === */}
-      <g stroke="#f59e0b" strokeWidth="3" strokeLinecap="round">
-        <line x1="126" y1="36" x2="137" y2="30" />
-        <line x1="130" y1="44" x2="143" y2="44" />
-        <line x1="127" y1="52" x2="138" y2="58" />
-      </g>
     </svg>
   );
 }
