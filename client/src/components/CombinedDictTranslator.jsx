@@ -14,19 +14,19 @@ export default function CombinedDictTranslator({ t, currentLang, initialSubTab =
           className={`sub-tab-btn ${subTab === 'dict' ? 'active' : ''}`}
           onClick={() => setSubTab('dict')}
         >
-          📖 {t('tab_dict')}
+          {t('tab_dict')}
         </button>
         <button
           className={`sub-tab-btn ${subTab === 'trans' ? 'active' : ''}`}
           onClick={() => setSubTab('trans')}
         >
-          🌐 {t('tab_trans')}
+          {t('tab_trans')}
         </button>
         <button
           className={`sub-tab-btn ${subTab === 'insights' ? 'active' : ''}`}
           onClick={() => setSubTab('insights')}
         >
-          💡 {t('tab_insights')}
+          {t('tab_insights')}
         </button>
       </div>
 
@@ -43,4 +43,3 @@ export default function CombinedDictTranslator({ t, currentLang, initialSubTab =
     </div>
   );
 }
-

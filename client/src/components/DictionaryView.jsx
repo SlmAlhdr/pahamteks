@@ -186,7 +186,7 @@ export default function DictionaryView({ t, currentLang }) {
         setResult(res.data.dictionary.error);
       }
     } catch (err) {
-      setResult('⚠️ AI Error: ' + err.message);
+      setResult('AI Error: ' + err.message);
     }
   };
 
@@ -263,7 +263,7 @@ export default function DictionaryView({ t, currentLang }) {
               onClick={() => speakText(result, currentLang)}
               title={currentLang === 'en' ? 'Listen to Definition' : 'Dengarkan Arti'}
             >
-              🔊
+              Dengarkan
             </button>
             <div style={{ paddingRight: '45px' }}>
               <HumanFormattedText content={result} />

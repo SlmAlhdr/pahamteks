@@ -9,7 +9,7 @@ export default function CenterNotificationModal({
   onClose,
   title = 'Pemberitahuan',
   message = '',
-  icon = '✨',
+  icon,
   buttonText = 'OK, Mengerti'
 }) {
   const confirmBtnRef = useRef(null);
@@ -73,7 +73,7 @@ export default function CenterNotificationModal({
           position: 'relative'
         }}
       >
-        {/* Tombol Silang Kecil di Pojok Kanan Atas */}
+        {/* Tombol untuk menutup notifikasi. */}
         <button
           onClick={onClose}
           style={{
@@ -90,7 +90,7 @@ export default function CenterNotificationModal({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '1rem',
+            fontSize: '0.72rem',
             transition: '0.2s'
           }}
           onMouseEnter={(e) => {
@@ -102,12 +102,12 @@ export default function CenterNotificationModal({
             e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
           }}
           title="Tutup"
+          aria-label="Tutup pemberitahuan"
         >
-          ✕
+          Tutup
         </button>
 
-        {/* Badge Ikon Bulat */}
-        <div
+        {icon && <div
           style={{
             width: '68px',
             height: '68px',
@@ -122,7 +122,7 @@ export default function CenterNotificationModal({
           }}
         >
           {icon}
-        </div>
+        </div>}
 
         {/* Judul Notifikasi */}
         <h3
@@ -184,4 +184,3 @@ export default function CenterNotificationModal({
     </div>
   );
 }
-

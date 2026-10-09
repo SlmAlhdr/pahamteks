@@ -6,14 +6,12 @@ import HumanFormattedText from './HumanFormattedText';
 import { LETTERS, cleanOptionText, isOptionCorrect } from '../utils/quizUtils';
 import { speakText } from '../utils/speechUtils';
 import TeksieCodingCard from './TeksieCodingCard';
-import { getTopicIcon } from './TechLogos';
 
 export { LETTERS, cleanOptionText, isOptionCorrect };
 
 export const LANGUAGE_UNITS = [
   {
     unit: 1,
-    icon: '🌱',
     level: 'Pemula',
     titleId: 'Bab 1: Fondasi & Kosakata Esensial',
     titleEn: 'Unit 1: Foundations & Essential Vocab',
@@ -22,7 +20,6 @@ export const LANGUAGE_UNITS = [
   },
   {
     unit: 2,
-    icon: '🧱',
     level: 'Pemula',
     titleId: 'Bab 2: Struktur Kalimat & Tata Bahasa Inti',
     titleEn: 'Unit 2: Sentence Structure & Core Grammar',
@@ -31,7 +28,6 @@ export const LANGUAGE_UNITS = [
   },
   {
     unit: 3,
-    icon: '💬',
     level: 'Menengah',
     titleId: 'Bab 3: Situasi Nyata & Percakapan Tematik',
     titleEn: 'Unit 3: Real Situations & Everyday Dialogue',
@@ -40,7 +36,6 @@ export const LANGUAGE_UNITS = [
   },
   {
     unit: 4,
-    icon: '🎭',
     level: 'Menengah',
     titleId: 'Bab 4: Idiom, Slang & Nuansa Budaya',
     titleEn: 'Unit 4: Idioms, Slang & Cultural Nuance',
@@ -49,7 +44,6 @@ export const LANGUAGE_UNITS = [
   },
   {
     unit: 5,
-    icon: '👑',
     level: 'Mahir',
     titleId: 'Bab 5: Penguasaan Mahir & Analisis Teks',
     titleEn: 'Unit 5: Advanced Mastery & Complex Nuance',
@@ -61,7 +55,6 @@ export const LANGUAGE_UNITS = [
 export const CODING_UNITS = [
   {
     unit: 1,
-    icon: '⚡',
     level: 'Pemula',
     titleId: 'Bab 1: Sintaksis, Variabel & Tipe Data',
     titleEn: 'Unit 1: Syntax, Variables & Data Types',
@@ -70,7 +63,6 @@ export const CODING_UNITS = [
   },
   {
     unit: 2,
-    icon: '🔄',
     level: 'Pemula',
     titleId: 'Bab 2: Kontrol Alur & Logika Perulangan',
     titleEn: 'Unit 2: Control Flow & Looping Logic',
@@ -79,7 +71,6 @@ export const CODING_UNITS = [
   },
   {
     unit: 3,
-    icon: '📦',
     level: 'Menengah',
     titleId: 'Bab 3: Fungsi, Koleksi Data & Modularitas',
     titleEn: 'Unit 3: Functions, Collections & Modularity',
@@ -88,7 +79,6 @@ export const CODING_UNITS = [
   },
   {
     unit: 4,
-    icon: '🔍',
     level: 'Menengah',
     titleId: 'Bab 4: Logika Algoritma & Debugging Nyata',
     titleEn: 'Unit 4: Algorithm Logic & Code Debugging',
@@ -97,7 +87,6 @@ export const CODING_UNITS = [
   },
   {
     unit: 5,
-    icon: '🚀',
     level: 'Mahir',
     titleId: 'Bab 5: Arsitektur, Best Practice & Optimasi',
     titleEn: 'Unit 5: Architecture, Patterns & Optimization',
@@ -123,17 +112,17 @@ const LEARN_CATEGORIES_EN = [
 ];
 
 const CODING_CATEGORIES_ID = [
-  { name: 'Situs & Naskah', icon: '🌐', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
-  { name: 'Aplikasi & Framework', icon: '📄', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
-  { name: 'Sistem & Perangkat Lunak', icon: '💻', items: ['Rust', 'C#', 'Struktur Data (Array, Tree)', 'Machine Learning'] },
-  { name: 'Teori & Algoritma', icon: '⚙️', items: ['Algoritma Sorting', 'Kriptografi & Keamanan', 'Design Patterns (OOP)', 'API & GraphQL'] }
+  { name: 'Situs & Naskah', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
+  { name: 'Aplikasi & Framework', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
+  { name: 'Sistem & Perangkat Lunak', items: ['Rust', 'C#', 'Struktur Data (Array, Tree)', 'Machine Learning'] },
+  { name: 'Teori & Algoritma', items: ['Algoritma Sorting', 'Kriptografi & Keamanan', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
 const CODING_CATEGORIES_EN = [
-  { name: 'Web & Scripting', icon: '🌐', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
-  { name: 'Apps & Frameworks', icon: '📄', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
-  { name: 'Systems & Software', icon: '💻', items: ['Rust', 'C#', 'Data Structures (Array, Tree)', 'Machine Learning'] },
-  { name: 'Theory & Algorithms', icon: '⚙️', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
+  { name: 'Web & Scripting', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
+  { name: 'Apps & Frameworks', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
+  { name: 'Systems & Software', items: ['Rust', 'C#', 'Data Structures (Array, Tree)', 'Machine Learning'] },
+  { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
 // Baca progres topik dari penyimpanan akun atau sesi tamu.
@@ -262,7 +251,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
       }
     } catch (err) {
       console.warn('[QuizView] Gagal memuat soal:', err.message);
-      setLoadError(currentLang === 'en' ? ('⚠️ Failed to load questions: ' + err.message) : ('⚠️ Gagal memuat soal: ' + err.message));
+      setLoadError(currentLang === 'en' ? ('Failed to load questions: ' + err.message) : ('Gagal memuat soal: ' + err.message));
     }
   };
 
@@ -354,7 +343,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
         setExplanation(res.data.explainAnswer.error);
       }
     } catch (err) {
-      setExplanation((currentLang === 'en' ? '⚠️ Failed: ' : '⚠️ Gagal: ') + err.message);
+      setExplanation((currentLang === 'en' ? 'Failed: ' : 'Gagal: ') + err.message);
     } finally {
       setExplaining(false);
     }
@@ -377,7 +366,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
       {/* 1. SETUP VIEW (TAMPILAN 2-KOLOM SESUAI MOCK-UP) */}
       {questions.length === 0 && (
         <div className="coding-selection-layout">
-          {/* SISI KIRI: KARTU TEKSIE BURUNG HANTU + LAPTOP & TIPS */}
+          {/* Sisi kiri menampilkan Teksie dan tips belajar. */}
           <TeksieCodingCard
             greetingTitle={currentLang === 'en' ? 'Hello!' : 'Halo!'}
             greetingSubtitle={currentLang === 'en' ? "I'm Teksie" : 'Aku Teksie'}
@@ -402,9 +391,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
           <main className="coding-main-card">
             {/* Header Kartu Utama */}
             <div className="coding-main-header">
-              <div className="coding-main-header-icon">
-                {mode === 'coding' ? '</>' : '🌐'}
-              </div>
               <div className="coding-main-header-text">
                 <h2>{mode === 'learn' ? t('setup_lang_title') : t('setup_code_title')}</h2>
                 <p>{mode === 'learn' ? t('setup_lang_desc') : t('setup_code_desc')}</p>
@@ -420,15 +406,20 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                     {/* Header Accordion */}
                     <div
                       className="coding-accordion-header"
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isExpanded}
                       onClick={() => setOpenGroup(isExpanded ? -1 : idx)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setOpenGroup(isExpanded ? -1 : idx);
+                        }
+                      }}
                     >
                       <div className="coding-accordion-title">
-                        <span>{cat.icon || '🌐'}</span>
                         <span>{cat.name}</span>
                       </div>
-                      <span className={`coding-accordion-chevron ${isExpanded ? 'up' : ''}`}>
-                        {isExpanded ? '▲' : '▼'}
-                      </span>
                     </div>
 
                     {/* Isi Accordion (List Bahasa) */}
@@ -447,11 +438,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                               {/* Custom Radio Button */}
                               <div className="coding-radio-circle">
                                 {isSelected && <div className="coding-radio-dot" />}
-                              </div>
-
-                              {/* Icon Resmi Bahasa / Topik */}
-                              <div className="coding-lang-icon-wrap">
-                                {getTopicIcon(item, 26)}
                               </div>
 
                               {/* Nama Bahasa */}
@@ -477,7 +463,6 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             <div className="unit-roadmap-section" style={{ marginTop: '10px' }}>
               <div className="unit-roadmap-header">
                 <h4>
-                  <span>🗺️</span>
                   <span>{t('roadmap_title')}</span>
                   <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 800, marginLeft: 'auto' }}>
                     {selectedTopic}
@@ -506,10 +491,12 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                     >
                       <div>
                         <div className="unit-card-header">
-                          <span className="unit-card-icon">{u.icon}</span>
-                          <span className={`unit-pill-badge ${isDone ? 'completed' : isCurrent ? 'active' : 'locked'}`}>
-                            {isDone ? `✓ ${t('unit_badge_completed')}` : isCurrent ? `⭐ ${t('unit_badge_current')}` : u.level}
-                          </span>
+                          <span className="unit-level-label">{u.level}</span>
+                          {(isDone || isCurrent) && (
+                            <span className={`unit-pill-badge ${isDone ? 'completed' : 'active'}`}>
+                              {isDone ? t('unit_badge_completed') : t('unit_badge_current')}
+                            </span>
+                          )}
                         </div>
                         <h5 className="unit-card-title">
                           {currentLang === 'en' ? u.titleEn : u.titleId}
@@ -577,7 +564,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
               >
                 {quizLoading
                   ? (currentLang === 'en' ? 'Preparing Questions...' : 'Menyiapkan Soal...')
-                  : `🚀 ${currentLang === 'en' ? 'START' : 'MULAI'} ${selectedTopic} (${activeUnitObj.icon} Bab ${currentUnit})`}
+                  : `${currentLang === 'en' ? 'START' : 'MULAI'} ${selectedTopic} (Bab ${currentUnit})`}
               </button>
             </div>
           </main>
@@ -592,10 +579,10 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             <div className="quiz-header-badge-row">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <span className="unit-indicator-pill">
-                  {activeUnitObj.icon} {currentLang === 'en' ? `Chapter ${currentUnit}` : `Bab ${currentUnit}`}: {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId}
+                  {currentLang === 'en' ? `Chapter ${currentUnit}` : `Bab ${currentUnit}`}: {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId}
                 </span>
                 <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-                  • {selectedTopic} ({currentIndex + 1}/{questions.length})
+                  {selectedTopic} ({currentIndex + 1}/{questions.length})
                 </span>
               </div>
               <span style={{ color: 'var(--btn-green)', fontWeight: 800, fontSize: '1rem' }}>
@@ -621,7 +608,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             {/* Multiple Choice Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {currentQ.options.map((opt, i) => {
-                const letter = LETTERS[i] || '•';
+                const letter = LETTERS[i] || String.fromCharCode(65 + i);
                 const text = cleanOptionText(opt);
                 let btnClass = 'mc-btn';
 
@@ -656,14 +643,14 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                   onClick={handleAskWhyWrong}
                   disabled={explaining}
                 >
-                  {explaining ? (currentLang === 'en' ? 'Preparing explanation...' : 'Menyiapkan penjelasan...') : `💡 ${t('btn_why_wrong')}`}
+                  {explaining ? (currentLang === 'en' ? 'Preparing explanation...' : 'Menyiapkan penjelasan...') : t('btn_why_wrong')}
                 </button>
 
                 {explanation && (
                   <div className="quiz-explanation-box">
                     <div className="explanation-header">
                       <div className="explanation-title">
-                        💡 {t('explanation_title')}
+                        {t('explanation_title')}
                       </div>
                       <button
                         className="btn-speak"
@@ -671,7 +658,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                         onClick={() => speakText(explanation, currentLang)}
                         title={currentLang === 'en' ? 'Listen to Explanation' : 'Dengarkan Penjelasan'}
                       >
-                        🔊
+                        {currentLang === 'en' ? 'Listen' : 'Dengarkan'}
                       </button>
                     </div>
                     <div className="explanation-content">
@@ -698,17 +685,11 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
       {isFinished && (
         <div className="quiz-container">
           <div className="result-box">
-            {/* Mascot Celebration Row */}
-            <div className="result-mascot-row">
-              <span style={{ fontSize: '2.5rem' }}>{activeUnitObj.icon}</span>
-              <span style={{ fontSize: '2.5rem' }}>🎉</span>
-            </div>
-
             <h2 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>
               {currentLang === 'en' ? 'Chapter Complete!' : 'Bab Selesai!'}
             </h2>
             <p style={{ color: 'var(--btn-cyan)', fontWeight: 800, fontSize: '1.1rem', marginBottom: '18px' }}>
-              {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId} • {selectedTopic}
+              {currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId} {selectedTopic}
             </p>
 
             <div className="score-circle">
@@ -741,7 +722,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                   <span>
                     {quizLoading
                       ? (currentLang === 'en' ? 'Preparing Next Chapter...' : 'Menyiapkan Bab Selanjutnya...')
-                      : `🚀 ${t('btn_continue_unit')} ${nextUnitObj.unit}: ${currentLang === 'en' ? nextUnitObj.titleEn : nextUnitObj.titleId}`}
+                      : `${t('btn_continue_unit')} ${nextUnitObj.unit}: ${currentLang === 'en' ? nextUnitObj.titleEn : nextUnitObj.titleId}`}
                   </span>
                 </button>
               ) : (
@@ -753,7 +734,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                   <span>
                     {quizLoading
                       ? (currentLang === 'en' ? 'Preparing Review...' : 'Menyiapkan Ulasan...')
-                      : (currentLang === 'en' ? '🏆 Review Full Track (Fresh AI Questions)' : '🏆 Ulas Seluruh Bab (Variasi AI Segar)')}
+                      : (currentLang === 'en' ? 'Review Full Track (Fresh Questions)' : 'Ulas Seluruh Bab (Variasi Soal Baru)')}
                   </span>
                 </button>
               )}
@@ -767,7 +748,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                 <span>
                   {quizLoading
                     ? (currentLang === 'en' ? 'Generating Fresh Set...' : 'Membuat Soal Baru...')
-                    : `🔄 ${t('btn_fresh_questions')}`}
+                    : t('btn_fresh_questions')}
                 </span>
               </button>
 
@@ -776,7 +757,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                 className="btn-return-roadmap"
                 onClick={() => setQuestions([])}
               >
-                <span>🗺️ {t('btn_choose_chapter')}</span>
+                <span>{t('btn_choose_chapter')}</span>
               </button>
             </div>
           </div>

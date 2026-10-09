@@ -844,128 +844,128 @@ const CHARACTER_INFO = {
     name: 'Teksie',
     titleId: 'Si Musang Cerdas (Maskot Utama)',
     titleEn: 'The Smart Civet (Main Mascot)',
-    avatar: '🦊',
+    avatar: '',
     color: '#ea580c',
     glowColor: 'rgba(234, 88, 12, 0.45)',
     quotesId: [
-      'Halo! Aku Teksie si Musang Cerdas! Siap asah otak & belajar bareng hari ini? 🐾',
-      'Di PahamTeks, belajar bahasa dan koding dibuat 100% interaktif & seru! ✨',
-      'Tahu nggak? Kamu bisa tahan klik mouse padaku untuk mengangkat dan memindahkanku ke mana saja! 🚀'
+      'Halo! Aku Teksie si Musang Cerdas! Siap asah otak dan belajar bareng hari ini?',
+      'Di PahamTeks, belajar bahasa dan koding dibuat interaktif dan seru!',
+      'Kamu bisa memilih bahasa dan koding untuk belajar di sini.'
     ],
     quotesEn: [
-      'Hi! I’m Teksie the Smart Civet! Ready to boost your brain with me today? 🐾',
-      'At PahamTeks, learning languages and coding is 100% interactive & fun! ✨',
-      'Fun tip: Hold your mouse down on me to pick me up and carry me anywhere! 🚀'
+      'Hi! I’m Teksie the Smart Civet! Ready to boost your brain with me today?',
+      'At PahamTeks, learning languages and coding is interactive and fun!',
+      'Choose a language or coding topic to study here.'
     ]
   },
   desk: {
     name: 'Meja Belajar Teksie',
     titleId: 'Laptop Koding & Glosarium A-Z',
     titleEn: 'Teksie’s Coding & Study Desk',
-    avatar: '💻',
+    avatar: '',
     color: '#38bdf8',
     glowColor: 'rgba(56, 189, 248, 0.45)',
     quotesId: [
-      'Laptop koding Teksie aktif: "console.log(PahamTeks)" siap memproses tantanganmu! 💻✨',
-      'Tumpukan buku glosarium A - Z siap membantumu mencari arti kata & istilah kapan saja! 📚',
-      'Tips belajar: Latihan konsisten 15 menit setiap hari melatih memori jangka panjang jauh lebih kuat! ☕'
+      'Laptop koding Teksie siap memproses tantanganmu.',
+      'Glosarium A sampai Z siap membantumu mencari arti kata dan istilah.',
+      'Latihan konsisten 15 menit setiap hari membantu memperkuat ingatan.'
     ],
     quotesEn: [
-      'Teksie’s laptop is live: "console.log(PahamTeks)" is ready to debug and code! 💻✨',
-      'Stack of A - Z glossaries ready to decode any word or syntax in a flash! 📚',
-      'Study tip: 15 minutes of daily practice trains long-term memory best! ☕'
+      'Teksie’s laptop is ready for coding challenges.',
+      'The A to Z glossary can help you look up words and syntax.',
+      'Practice for 15 minutes each day to strengthen your memory.'
     ]
   },
   globe: {
     name: 'HoloGlobe Dunia',
     titleId: 'Eksplorasi 50+ Bahasa Dunia',
     titleEn: '50+ World Languages HoloGlobe',
-    avatar: '🌐',
+    avatar: '',
     color: '#10b981',
     glowColor: 'rgba(16, 185, 129, 0.45)',
     quotesId: [
-      'Menjelajahi 50+ bahasa dunia dari Tokyo, Paris, Kairo, Madrid, hingga Berlin! 🌍✈️',
-      'Setiap kosakata baru adalah paspor emas untuk terhubung dengan dunia luas! 🎌',
-      'Pilihlah bahasa yang kamu minati dan raih skor akurasi terbaik di kuis interaktif! 🚀'
+      'Jelajahi lebih dari 50 bahasa dunia dari berbagai negara.',
+      'Setiap kosakata baru membantu kamu terhubung dengan lebih banyak orang.',
+      'Pilih bahasa yang kamu minati dan berlatih melalui kuis.'
     ],
     quotesEn: [
-      'Exploring 50+ world languages across Tokyo, Paris, Cairo, Madrid, and Berlin! 🌍✈️',
-      'Each new vocabulary word is a golden passport to connect with the globe! 🎌',
-      'Pick a language you love and hit top accuracy scores in smart quizzes! 🚀'
+      'Explore more than 50 languages from countries around the world.',
+      'Each new word helps you connect with more people.',
+      'Choose a language you like and practice with quizzes.'
     ]
   },
   aki: {
     name: 'Aki',
     titleId: 'Kucing Penjelajah Bahasa',
     titleEn: 'Polyglot Explorer Cat',
-    avatar: '🐱',
+    avatar: '',
     color: '#059669',
     glowColor: 'rgba(5, 150, 105, 0.45)',
     quotesId: [
-      'Nyaa~ Bonjour! Aku Aki, siap menemanimu menjelajahi 50+ bahasa dunia! 🐱🌍',
-      'Konnichiwa! Kuasai kosakata baru setiap hari dan raih skor akurasi tinggi! 🎌',
-      'Setiap bahasa baru membuka pintu pertemanan baru di seluruh dunia! ✨'
+      'Bonjour! Aku Aki, siap menemanimu menjelajahi lebih dari 50 bahasa dunia.',
+      'Kuasai kosakata baru setiap hari dan tingkatkan akurasi.',
+      'Setiap bahasa baru membuka kesempatan untuk berteman di seluruh dunia.'
     ],
     quotesEn: [
-      'Nyaa~ Bonjour! I’m Aki, ready to explore 50+ world languages with you! 🐱🌍',
-      'Konnichiwa! Master new vocabulary daily and hit top accuracy scores! 🎌',
-      'Every new language opens a brand new door to the world! ✨'
+      'Bonjour! I’m Aki, ready to explore more than 50 languages with you.',
+      'Master new vocabulary daily and improve your accuracy.',
+      'Every new language creates opportunities to connect with people.'
     ]
   },
   luki: {
     name: 'Luki',
     titleId: 'Luwak Mentor Berprestasi',
     titleEn: 'Wise Civet Mentor',
-    avatar: '🦡',
+    avatar: '',
     color: '#d97706',
     glowColor: 'rgba(217, 119, 6, 0.45)',
     quotesId: [
-      'Luar biasa! 🏆 Aku Luki si mentor bijak. Konsisten 5 menit sehari, kamu pasti makin mahir! 👍',
-      'Piala emas ini untukmu! Terus kumpulkan poin dan raih hasil belajar terbaikmu! 🌟',
-      'Jangan takut salah saat kuis! Dari koreksi itulah pemahamanmu semakin matang! 🏅'
+      'Luar biasa! Aku Luki si mentor bijak. Latihan lima menit sehari agar makin mahir.',
+      'Terus kumpulkan poin dan raih hasil belajar terbaikmu.',
+      'Jangan takut salah saat kuis. Koreksi membantu pemahamanmu semakin matang.'
     ],
     quotesEn: [
-      'Awesome! 🏆 I’m Luki the mentor. Practice 5 minutes daily and level up! 👍',
-      'This golden trophy is waiting for you! Keep earning points and reach your personal best! 🌟',
-      'Never fear mistakes in quizzes! Review the explanations to level up fast! 🏅'
+      'Awesome! I’m Luki the mentor. Practice five minutes daily and keep improving.',
+      'Keep earning points and reach your personal best.',
+      'Mistakes are part of learning. Review the explanations to improve.'
     ]
   },
   bitto: {
     name: 'Bitto',
     titleId: 'Robot Logika & Koding',
     titleEn: 'Quantum Logic Bot',
-    avatar: '🤖',
+    avatar: '',
     color: '#0284c7',
     glowColor: 'rgba(2, 132, 199, 0.45)',
     quotesId: [
-      'BEEP BOOP! 🤖 Aku Bitto! Mari pecahkan logika algoritma koding bersama! 💻⚡',
-      'logic.solve("Kamu Pasti Paham") == True! Koding itu asik dan mudah dipelajari! 🚀',
-      'Sintaks koding adalah bahasa masa depan. Ayo kita tulis kode pertamamu! 💡'
+      'Aku Bitto. Mari pecahkan logika algoritma koding bersama!',
+      'logic.solve("Kamu Pasti Paham") == True! Koding itu asik dan mudah dipelajari.',
+      'Sintaks koding adalah bahasa masa depan. Ayo kita tulis kode pertamamu.'
     ],
     quotesEn: [
-      'BEEP BOOP! 🤖 I’m Bitto! Let’s solve algorithms and coding logic together! 💻⚡',
-      'logic.solve("You Got This") == True! Coding is fun and easy to master! 🚀',
-      'Code syntax is the language of the future. Let’s build your first script! 💡'
+      'I’m Bitto. Let’s solve algorithms and coding logic together.',
+      'logic.solve("You Got This") == True! Coding is fun and easy to master.',
+      'Code syntax is the language of the future. Let’s build your first script.'
     ]
   }
 };
 
 const BUBBLE_FACTS = {
   jp: {
-    id: '🇯🇵 "Konnichiwa" adalah sapaan ramah dalam bahasa Jepang yang berarti "Halo / Selamat Siang"!',
-    en: '🇯🇵 "Konnichiwa" is a warm Japanese greeting meaning "Hello / Good Day"!'
+    id: '"Konnichiwa" adalah sapaan ramah dalam bahasa Jepang yang berarti "Halo / Selamat Siang"!',
+    en: '"Konnichiwa" is a warm Japanese greeting meaning "Hello / Good Day"!'
   },
   fr: {
-    id: '🇫🇷 "Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
-    en: '🇫🇷 "Bonjour" is a French greeting meaning "Hello / Good Morning"!'
+    id: '"Bonjour" adalah sapaan bahasa Prancis yang berarti "Halo / Selamat Pagi"!',
+    en: '"Bonjour" is a French greeting meaning "Hello / Good Morning"!'
   },
   code: {
-    id: '💻 logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
-    en: '💻 logic.solve("Paham!") is a logic programming call that successfully returns true!'
+    id: 'logic.solve("Paham!") adalah sintaks fungsi pemrograman logika yang mengembalikan status sukses!',
+    en: 'logic.solve("Paham!") is a logic programming call that successfully returns true!'
   },
   ar: {
-    id: '🇸🇦 "Marhaban" (مرحباً) adalah sapaan bahasa Arab yang ramah bermakna "Selamat Datang"!',
-    en: '🇸🇦 "Marhaban" (مرحباً) is an Arabic greeting meaning "Welcome"!'
+    id: '"Marhaban" (مرحباً) adalah sapaan bahasa Arab yang ramah bermakna "Selamat Datang"!',
+    en: '"Marhaban" (مرحباً) is an Arabic greeting meaning "Welcome"!'
   }
 };
 
@@ -1047,7 +1047,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
               onClick={() => setActiveSpeaker(null)}
               title="Tutup Balon"
             >
-              ×
+              Tutup
             </button>
           </div>
           <p className="speaker-bubble-body">&quot;{currentQuote}&quot;</p>
@@ -1060,10 +1060,10 @@ export function CharacterCluster({ currentLang = 'id' }) {
                 setQuoteIndex((prev) => (prev + 1) % currentQuotes.length);
               }}
             >
-              💬 {currentLang === 'en' ? 'Next Quote' : 'Kata Lainnya'}
+              {currentLang === 'en' ? 'Next Quote' : 'Kata Lainnya'}
             </button>
             <span className="speaker-hint">
-              {currentLang === 'en' ? 'Click character again for reaction!' : 'Klik karakter lagi untuk reaksi! ✨'}
+              {currentLang === 'en' ? 'Click character again for reaction!' : 'Klik karakter lagi untuk reaksi!'}
             </span>
           </div>
         </div>
@@ -1079,7 +1079,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
             onClick={() => setBubbleFact(null)}
             title="Tutup"
           >
-            ×
+            Tutup
           </button>
         </div>
       )}
@@ -1122,7 +1122,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <AkiCat size={108} />
         <span className="cluster-hover-badge badge-aki">
-          🐱 {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
+          {currentLang === 'en' ? 'Aki (Click me!)' : 'Aki (Klik aku!)'}
         </span>
       </div>
 
@@ -1134,7 +1134,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <TeksieDeskKit size={100} />
         <span className="cluster-hover-badge badge-desk">
-          💻 {currentLang === 'en' ? 'Teksie’s Study Kit' : 'Meja Belajar Teksie'}
+          {currentLang === 'en' ? 'Teksie’s Study Kit' : 'Meja Belajar Teksie'}
         </span>
       </div>
 
@@ -1146,7 +1146,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <TeksieFox size={140} />
         <span className="cluster-hover-badge badge-teksie">
-          🦊 {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
+          {currentLang === 'en' ? 'Teksie (Click me!)' : 'Teksie (Klik aku!)'}
         </span>
       </div>
 
@@ -1158,7 +1158,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <HoloGlobeDesk size={86} />
         <span className="cluster-hover-badge badge-globe">
-          🌐 {currentLang === 'en' ? '50+ World Languages' : '50+ Bahasa Dunia'}
+          {currentLang === 'en' ? '50+ World Languages' : '50+ Bahasa Dunia'}
         </span>
       </div>
 
@@ -1170,7 +1170,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <LukiCivet size={112} />
         <span className="cluster-hover-badge badge-luki">
-          🦡 {currentLang === 'en' ? 'Luki Mentor 🏆' : 'Luki Mentor 🏆'}
+          {currentLang === 'en' ? 'Luki Mentor' : 'Luki Mentor'}
         </span>
       </div>
 
@@ -1182,7 +1182,7 @@ export function CharacterCluster({ currentLang = 'id' }) {
       >
         <BittoBot size={94} />
         <span className="cluster-hover-badge badge-bitto">
-          🤖 {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}
+          {currentLang === 'en' ? 'Bitto (Click me!)' : 'Bitto (Klik aku!)'}
         </span>
       </div>
 

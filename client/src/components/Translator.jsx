@@ -53,7 +53,7 @@ export default function Translator({ t, currentLang }) {
         setTargetText(res.data.translate.error);
       }
     } catch (err) {
-      setTargetText('⚠️ AI Error: ' + err.message);
+      setTargetText('AI Error: ' + err.message);
     }
   };
 
@@ -118,19 +118,19 @@ export default function Translator({ t, currentLang }) {
               setSourceText(text);
               handleTranslate(text);
             } else if (res.data?.transcribeAudio?.error) {
-              setMicStatus('⚠️ ' + res.data.transcribeAudio.error);
+              setMicStatus(res.data.transcribeAudio.error);
             }
           } catch (err) {
-            setMicStatus((currentLang === 'en' ? '⚠️ Voice transcription failed: ' : '⚠️ Gagal transkripsi suara: ') + err.message);
+            setMicStatus((currentLang === 'en' ? 'Voice transcription failed: ' : 'Gagal transkripsi suara: ') + err.message);
           }
         };
       };
 
       recorder.start();
       setIsRecording(true);
-      setMicStatus(currentLang === 'id' ? '🎙️ Sedang mendengarkan suara Anda...' : '🎙️ Listening to your voice...');
+      setMicStatus(currentLang === 'id' ? 'Sedang mendengarkan suara Anda...' : 'Listening to your voice...');
     } catch (err) {
-      setMicStatus((currentLang === 'en' ? '⚠️ Unable to access microphone: ' : '⚠️ Tidak dapat mengakses mikrofon: ') + err.message);
+      setMicStatus((currentLang === 'en' ? 'Unable to access microphone: ' : 'Tidak dapat mengakses mikrofon: ') + err.message);
     }
   };
 
@@ -177,7 +177,7 @@ export default function Translator({ t, currentLang }) {
                   title={isRecording ? t('trans_mic_listening') : t('trans_mic_start')}
                   type="button"
                 >
-                  🎤
+                  {isRecording ? 'Berhenti' : 'Rekam'}
                 </button>
                 <button
                   className="btn-speak"
@@ -185,7 +185,7 @@ export default function Translator({ t, currentLang }) {
                   title={currentLang === 'en' ? 'Listen to Audio' : 'Dengarkan Suara'}
                   type="button"
                 >
-                  🔊
+                  Dengarkan
                 </button>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function Translator({ t, currentLang }) {
               onClick={handleSwap}
               title={currentLang === 'en' ? 'Swap Languages' : 'Tukar Bahasa'}
             >
-              ⇄
+              Tukar
             </button>
           </div>
 
@@ -226,7 +226,7 @@ export default function Translator({ t, currentLang }) {
                   title={copied ? (currentLang === 'en' ? 'Copied!' : 'Tersalin!') : (currentLang === 'en' ? 'Copy Text' : 'Salin Teks')}
                   type="button"
                 >
-                  {copied ? '✓' : '📋'}
+                  {copied ? 'Tersalin' : 'Salin'}
                 </button>
                 <button
                   className="btn-speak"
@@ -234,7 +234,7 @@ export default function Translator({ t, currentLang }) {
                   title={currentLang === 'en' ? 'Listen to Audio' : 'Dengarkan Suara'}
                   type="button"
                 >
-                  🔊
+                  Dengarkan
                 </button>
               </div>
             </div>

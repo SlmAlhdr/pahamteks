@@ -430,8 +430,8 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
     let msg = '';
     if (activeTab === 'home') {
       msg = currentLang === 'en'
-        ? 'Welcome back! Ready for a quiz? ✨'
-        : 'Halo! Siap asah otak hari ini? ✨';
+        ? 'Welcome back! Ready for a quiz?'
+        : 'Halo! Siap asah otak hari ini?';
     } else if (activeTab === 'learning') {
       msg = currentLang === 'en'
         ? 'Choose: World Languages or Coding Logic!'
@@ -465,8 +465,8 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       if (isSleepingRef.current) {
         setIsSleeping(false);
         const wakeMsg = currentLang === 'en'
-          ? 'Yawn... ready to study again! ✨'
-          : 'Hoam... lanjut belajar lagi yuk! ✨';
+          ? 'Yawn... ready to study again!'
+          : 'Hoam... lanjut belajar lagi yuk!';
         setSpeech(wakeMsg);
         setTimeout(() => setSpeech(''), 3000);
       }
@@ -524,15 +524,15 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
     setIsSleeping(false); // Bangun seketika saat diangkat!
 
     const liftQuotes = currentLang === 'en' ? [
-      'Waaa! I’m being carried! 🐾',
-      'Wheee! Where are we moving? 🚀',
-      'Hold on tight! ✨',
-      'Finding a cozy new spot! 🎒'
+      'Waaa! I’m being carried!',
+      'Wheee! Where are we moving?',
+      'Hold on tight!',
+      'Finding a cozy new spot!'
     ] : [
-      'Waaa! Aku diangkat! 🐾',
-      'Wheee! Mau dipindahin ke mana nih? 🚀',
-      'Pegang yang erat ya! ✨',
-      'Cari spot belajar baru yang asik! 🎒'
+      'Waaa! Aku diangkat!',
+      'Wheee! Mau dipindahin ke mana nih?',
+      'Pegang yang erat ya!',
+      'Cari spot belajar baru yang asik!'
     ];
     setSpeech(liftQuotes[Math.floor(Math.random() * liftQuotes.length)]);
   };
@@ -582,13 +582,13 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
         setTimeout(() => setIsLanding(false), 500);
 
         const landQuotes = currentLang === 'en' ? [
-          'Hap! Landed safely. Comfy spot! 🐾',
-          'Nice view here! Let’s keep learning! ✨',
-          'Plop! I love this new position! 🌟'
+          'Hap! Landed safely. Comfy spot!',
+          'Nice view here! Let’s keep learning!',
+          'Plop! I love this new position!'
         ] : [
-          'Hap! Mendarat mulus. Nyaman di sini! 🐾',
-          'Pemandangan bagus! Lanjut belajar yuk! ✨',
-          'Plop! Suka banget posisi baru ini! 🌟'
+          'Hap! Mendarat mulus. Nyaman di sini!',
+          'Pemandangan bagus! Lanjut belajar yuk!',
+          'Plop! Suka banget posisi baru ini!'
         ];
         setSpeech(landQuotes[Math.floor(Math.random() * landQuotes.length)]);
         setTimeout(() => setSpeech(''), 3500);
@@ -625,7 +625,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       'Jangan takut salah saat kuis! Dari koreksi itulah otakmu berkembang pesat.',
       'Kombinasi bahasa manusia dan bahasa koding membuat pikiranmu semakin tajam!',
       'Teksie selalu siap menemanimu belajar di PahamTeks!',
-      'Tip: Tahan klik mouse untuk mengangkat dan memindahkan aku ke mana saja! 🐾',
+      'Tip: Tahan klik mouse untuk mengangkat dan memindahkan aku ke mana saja!',
       'Tip: Klik 2x pada Teksie untuk mengembalikanku ke pojok awal.'
     ];
     const tipsEn = [
@@ -634,7 +634,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       'Mistakes are proof you are learning. Review the explanations!',
       'Combining world languages and code logic supercharges your mind!',
       'Teksie is always here cheering for your success!',
-      'Tip: Hold mouse down to lift and move me anywhere on screen! 🐾',
+      'Tip: Hold mouse down to lift and move me anywhere on screen!',
       'Tip: Double-click Teksie to reset back to the cozy corner.'
     ];
 
@@ -653,8 +653,8 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
       console.warn('[TeksieCompanion] Failed to remove stored position:', err.message);
     }
     const resetMsg = currentLang === 'en'
-      ? 'Back home to my cozy corner! 🐾'
-      : 'Kembali ke pojok santai kesukaanku! 🐾';
+      ? 'Back home to my cozy corner!'
+      : 'Kembali ke pojok santai kesukaanku!';
     setSpeech(resetMsg);
     setTimeout(() => setSpeech(''), 3000);
   };
@@ -691,7 +691,6 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
           zIndex: 990
         }}
       >
-        <span className="minimized-avatar">🦡</span>
         <span className="minimized-label">Panggil Teksie</span>
       </button>
     );
@@ -723,7 +722,7 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
           setIsHovered(true);
           if (isSleeping && !isDragging) {
             setIsSleeping(false);
-            setSpeech(currentLang === 'en' ? 'Hmm? Did you call me? 🐾' : 'Hmm? Kamu manggil aku ya? 🐾');
+            setSpeech(currentLang === 'en' ? 'Hmm? Did you call me?' : 'Hmm? Kamu manggil aku ya?');
           }
         }}
         onMouseLeave={() => {
@@ -747,17 +746,8 @@ export default function TeksieMascotCompanion({ activeTab, currentLang }) {
               }}
               title="Tutup Balon Kata"
             >
-              ×
+              Tutup
             </button>
-          </div>
-        )}
-
-        {/* Huruf Zzz Melayang Saat Tertidur */}
-        {isSleeping && !isDragging && (
-          <div className="teksie-sleep-zzz-container" title="Teksie sedang tidur pulas (Zzz...)">
-            <span className="teksie-zzz z1">Z</span>
-            <span className="teksie-zzz z2">z</span>
-            <span className="teksie-zzz z3">z</span>
           </div>
         )}
 

@@ -211,7 +211,7 @@ export default function AuthModal({
             {getModalTitle()}
           </h2>
           <button className="modal-close-btn" onClick={onClose} title="Tutup / Close">
-            ✕
+            Tutup
           </button>
         </div>
 

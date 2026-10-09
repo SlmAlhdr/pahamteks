@@ -316,7 +316,7 @@ export default function LanguageInsights({ t, currentLang }) {
         setAiAnalysis(res.data.dictionary.error);
       }
     } catch (err) {
-      setAiAnalysis('⚠️ Error: ' + err.message);
+      setAiAnalysis('Error: ' + err.message);
     }
   };
 
@@ -341,13 +341,13 @@ export default function LanguageInsights({ t, currentLang }) {
           className={`sub-tab-btn ${insightMode === 'human' ? 'active' : ''}`}
           onClick={() => handleModeChange('human')}
         >
-          🌐 {t('insights_mode_human')}
+          {t('insights_mode_human')}
         </button>
         <button
           className={`sub-tab-btn ${insightMode === 'code' ? 'active' : ''}`}
           onClick={() => handleModeChange('code')}
         >
-          💻 {t('insights_mode_code')}
+          {t('insights_mode_code')}
         </button>
       </div>
 
@@ -492,8 +492,8 @@ export default function LanguageInsights({ t, currentLang }) {
           {aiLoading
             ? (currentLang === 'en' ? 'Comparing Languages...' : 'Sedang Membandingkan...')
             : (currentLang === 'en'
-                ? `✨ Let's Compare (${getLangName(lang1)} vs ${getLangName(lang2)})`
-                : `✨ Mari Kita Bandingkan (${lang1} vs ${lang2})`)}
+                ? `Let's Compare (${getLangName(lang1)} vs ${getLangName(lang2)})`
+                : `Mari Kita Bandingkan (${lang1} vs ${lang2})`)}
         </button>
       </div>
 
@@ -503,8 +503,8 @@ export default function LanguageInsights({ t, currentLang }) {
           <div className="ai-result-title">
             <span>
               {currentLang === 'en'
-                ? `🔍 Comparison Breakdown: ${getLangName(lang1)} & ${getLangName(lang2)}`
-                : `🔍 Hasil Perbandingan: ${lang1} & ${lang2}`}
+                ? `Comparison Breakdown: ${getLangName(lang1)} & ${getLangName(lang2)}`
+                : `Hasil Perbandingan: ${lang1} & ${lang2}`}
             </span>
           </div>
           <div className="ai-result-content">

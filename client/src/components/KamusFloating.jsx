@@ -29,7 +29,7 @@ export default function KamusFloating({ t, currentLang }) {
         setResult(res.data.dictionary.error);
       }
     } catch (err) {
-      setResult('⚠️ AI Error: ' + err.message);
+      setResult('AI Error: ' + err.message);
     }
   };
 
@@ -44,7 +44,6 @@ export default function KamusFloating({ t, currentLang }) {
     <>
       {/* Floating Button di Bawah Kanan */}
       <div className="floating-kamus-btn" onClick={() => setIsOpen(!isOpen)}>
-        <span>📖</span>
         <span className="kamus-text">{t('dict_btn_float')}</span>
       </div>
 
@@ -126,7 +125,7 @@ export default function KamusFloating({ t, currentLang }) {
                   onClick={() => speakText(result, currentLang)}
                   title={currentLang === 'en' ? 'Listen to definition' : 'Baca Hasil'}
                 >
-                  🔊
+                  Dengarkan
                 </button>
               </div>
             )}

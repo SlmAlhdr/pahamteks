@@ -3467,9 +3467,11 @@ textarea {
     margin-bottom: 8px;
 }
 
-.unit-card-icon {
-    font-size: 1.6rem;
-    line-height: 1;
+.unit-level-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
 }
 
 .unit-pill-badge {
@@ -4004,7 +4006,7 @@ textarea {
 /* SIDEBAR KIRI: KARTU TEKSIE & TIPS */
 .teksie-sidebar-card {
     background: rgba(11, 26, 22, 0.85);
-    border: 1px solid rgba(16, 185, 129, 0.22);
+    border: 1px solid rgba(249, 115, 22, 0.3);
     border-radius: 20px;
     padding: 22px 20px;
     display: flex;
@@ -4029,6 +4031,45 @@ textarea {
     transform: translateY(-3px) scale(1.03);
 }
 
+.teksie-fox-laptop {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.teksie-fox-laptop > svg {
+    overflow: visible;
+}
+
+.teksie-laptop-base {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 5%;
+    height: 9px;
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    border-radius: 3px 3px 8px 8px;
+    background: linear-gradient(90deg, #334155, #0f172a);
+}
+
+.teksie-laptop-screen {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #475569;
+    border-radius: 3px 3px 0 0;
+    background: #0f172a;
+    color: #fb923c;
+    font-size: 6px;
+    font-weight: 800;
+}
+
 .teksie-greeting-content {
     display: flex;
     flex-direction: column;
@@ -4050,7 +4091,7 @@ textarea {
 .teksie-greeting-name {
     font-size: 1.35rem;
     font-weight: 900;
-    color: #34d399;
+    color: #fb923c;
     margin: 2px 0 6px 0;
     line-height: 1.2;
 }
@@ -4063,8 +4104,8 @@ textarea {
 }
 
 .teksie-tips-box {
-    background: rgba(16, 185, 129, 0.08);
-    border: 1px solid rgba(16, 185, 129, 0.22);
+    background: rgba(249, 115, 22, 0.08);
+    border: 1px solid rgba(249, 115, 22, 0.22);
     border-radius: 14px;
     padding: 14px 16px;
     display: flex;
@@ -4074,18 +4115,7 @@ textarea {
 }
 
 .teksie-tips-box:hover {
-    background: rgba(16, 185, 129, 0.12);
-}
-
-.teksie-tips-icon-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(16, 185, 129, 0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    background: rgba(249, 115, 22, 0.12);
 }
 
 .teksie-tips-content {
@@ -4125,20 +4155,6 @@ textarea {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-}
-
-.coding-main-header-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: rgba(16, 185, 129, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #34d399;
-    font-size: 1.25rem;
-    font-weight: 900;
-    flex-shrink: 0;
 }
 
 .coding-main-header-text h2 {
@@ -4197,16 +4213,6 @@ textarea {
     font-size: 1.02rem;
     font-weight: 800;
     color: #ffffff;
-}
-
-.coding-accordion-chevron {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    transition: transform 0.25s ease;
-}
-
-.coding-accordion-chevron.up {
-    transform: rotate(180deg);
 }
 
 .coding-accordion-body {
@@ -4307,4 +4313,3 @@ textarea {
     padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-

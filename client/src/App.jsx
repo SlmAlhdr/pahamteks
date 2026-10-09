@@ -9,7 +9,6 @@ import AdminDashboardView from './components/AdminDashboardView';
 import KamusFloating from './components/KamusFloating';
 import AuthModal from './components/AuthModal';
 import BackgroundDrift from './components/BackgroundDrift';
-import TeksieMascotCompanion from './components/TeksieMascotCompanion';
 import CenterNotificationModal from './components/CenterNotificationModal';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
@@ -231,7 +230,6 @@ export default function App() {
       message: wasGuest
         ? (currentLang === 'id' ? 'Sesi tamu telah diakhiri. Data sementara telah dibersihkan.' : 'Guest session ended. Temporary data cleared.')
         : (currentLang === 'id' ? 'Anda berhasil keluar dari akun.' : 'Successfully logged out.'),
-      icon: wasGuest ? '👋' : '✨',
       buttonText: currentLang === 'id' ? 'OK, Mengerti' : 'OK, Got It'
     });
   };
@@ -402,14 +400,6 @@ export default function App() {
 
       {/* Floating Kamus AI HANYA muncul jika sudah login atau masuk sebagai guest */}
       {user && <KamusFloating t={t} currentLang={currentLang} />}
-
-      {/* Maskot Teman Belajar Interaktif Teksie di Setiap Halaman */}
-      {user && (
-        <TeksieMascotCompanion
-          activeTab={activeTab}
-          currentLang={currentLang}
-        />
-      )}
 
       {/* Modal Autentikasi Pop-up */}
       <AuthModal

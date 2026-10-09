@@ -12,13 +12,13 @@ export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode 
           className={`sub-tab-btn ${learningMode === 'learn' ? 'active' : ''}`}
           onClick={() => setLearningMode('learn')}
         >
-          🌐 {t('tab_world_lang')}
+          {t('tab_world_lang')}
         </button>
         <button
           className={`sub-tab-btn ${learningMode === 'coding' ? 'active' : ''}`}
           onClick={() => setLearningMode('coding')}
         >
-          &lt;/&gt; {t('tab_programming')}
+          {t('tab_programming')}
         </button>
       </div>
 

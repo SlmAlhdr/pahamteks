@@ -18,7 +18,7 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
       <div className="account-info-card" style={{ marginBottom: '25px' }}>
         <div className="account-avatar-col">
           <div className="account-avatar-icon">
-            {user?.isGuest ? '👤' : '⭐'}
+            {user?.name?.slice(0, 1)?.toUpperCase() || user?.username?.slice(0, 1)?.toUpperCase() || (currentLang === 'en' ? 'U' : 'P')}
           </div>
         </div>
         <div className="account-details-col">
@@ -42,7 +42,7 @@ export default function DashboardView({ t, user, history = [], onOpenAuth, onBac
                 style={{ padding: '8px 18px', fontSize: '0.85rem' }}
                 onClick={() => onOpenAuth('register')}
               >
-                🚀 {t('guest_upgrade_btn')}
+                {t('guest_upgrade_btn')}
               </button>
             </div>
           )}

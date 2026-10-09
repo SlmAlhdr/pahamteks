@@ -163,7 +163,7 @@ export default function AdminDashboardView({ user, onBackHome, onSwitchToAdmin }
             className={`admin-tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
             onClick={() => { setActiveTab('logs'); setSearch(''); }}
           >
-            🛡️ Log Aktivitas & Login ({logsQuery.data?.userLogs?.length || 0})
+            Log Aktivitas & Login ({logsQuery.data?.userLogs?.length || 0})
           </button>
         </nav>
 
@@ -217,7 +217,7 @@ export default function AdminDashboardView({ user, onBackHome, onSwitchToAdmin }
                         <td>{row.email}</td>
                         <td>
                           {row.role === 'ADMIN' ? (
-                            <span className="admin-badge-admin">👑 ADMIN</span>
+                            <span className="admin-badge-admin">ADMIN</span>
                           ) : (
                             <span className="admin-badge-user">USER</span>
                           )}

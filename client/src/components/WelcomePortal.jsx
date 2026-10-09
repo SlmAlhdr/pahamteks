@@ -645,21 +645,18 @@ export default function WelcomePortal({
             </div>
             <div className="flashcards-mockup">
               <div className="mock-card card-jp">
-                <span className="mock-flag">🇯🇵</span>
                 <div className="mock-text">
                   <strong>ありがとう (Arigatou)</strong>
                   <span>Terima kasih / Thank you</span>
                 </div>
               </div>
               <div className="mock-card card-es">
-                <span className="mock-flag">🇪🇸</span>
                 <div className="mock-text">
                   <strong>¡Hola, amigo!</strong>
                   <span>Halo teman! / Hello friend!</span>
                 </div>
               </div>
               <div className="mock-card card-ar">
-                <span className="mock-flag">🇸🇦</span>
                 <div className="mock-text">
                   <strong>صباح الخير (Sabah al-khair)</strong>
                   <span>Selamat pagi / Good morning</span>
@@ -707,7 +704,7 @@ export default function WelcomePortal({
               <span className="code-lang-pill">Python 3</span>
             </div>
             <pre className="code-snippet-box">
-              <code>{`def cek_logika(pemahaman):\n    if pemahaman == "PahamTeks":\n        return "Level Up! ⚡"\n    return "Lanjut Belajar!"\n\n# Output: "Level Up! ⚡"`}</code>
+              <code>{`def cek_logika(pemahaman):\n    if pemahaman == "PahamTeks":\n        return "Level Up!"\n    return "Lanjut Belajar!"\n\n# Output: "Level Up!"`}</code>
             </pre>
             <div className="code-test-result">
               <span className="test-check">✓</span> 3/3 Test Cases Passed! (+15 Poin)
@@ -802,10 +799,6 @@ export default function WelcomePortal({
                 <div className="progress-fill" style={{ width: '85%' }} />
               </div>
               <div className="leaderboard-avatars-grid">
-                <div className="avatar-chip chip-fox" title="Teksie">🦊</div>
-                <div className="avatar-chip chip-bot" title="Bitto">🤖</div>
-                <div className="avatar-chip chip-cat" title="Aki">🐱</div>
-                <div className="avatar-chip chip-mentor" title="Luki">🦡</div>
               </div>
               <div className="podium-banner-gold">
                 <span className="podium-number">#1</span>
