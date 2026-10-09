@@ -3750,7 +3750,37 @@ textarea {
 }
 
 .teksie-owl-wrapper:hover {
-    transform: translateY(-3px) scale(1.03);
+    transform: translateY(-4px) scale(1.04);
+}
+
+.teksie-card-character {
+    display: block;
+    transform-origin: center bottom;
+    animation: teksieCardIdle 3.2s ease-in-out infinite;
+}
+
+.teksie-owl-wrapper:hover .teksie-card-character,
+.teksie-owl-wrapper:focus-visible .teksie-card-character {
+    animation: teksieCardCheer 0.65s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+@keyframes teksieCardIdle {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-3px) rotate(-1deg); }
+}
+
+@keyframes teksieCardCheer {
+    0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+    35% { transform: translateY(-9px) rotate(-5deg) scale(1.04); }
+    70% { transform: translateY(1px) rotate(3deg) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .teksie-card-character,
+    .teksie-owl-wrapper:hover .teksie-card-character,
+    .teksie-owl-wrapper:focus-visible .teksie-card-character {
+        animation: none;
+    }
 }
 
 .teksie-at-laptop {
