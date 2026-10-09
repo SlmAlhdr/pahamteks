@@ -5,7 +5,7 @@ export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode 
   const [learningMode, setLearningMode] = useState(initialMode); // 'learn' | 'coding'
 
   return (
-    <div className="page" style={{ width: '100%', maxWidth: '1050px' }}>
+    <div className="page" style={{ width: '100%', maxWidth: '1200px' }}>
       {/* Sub-Navigasi Pemilihan Opsi Pembelajaran Bahasa */}
       <div className="sub-tabs-container" style={{ margin: '10px auto 25px' }}>
         <button
@@ -18,7 +18,7 @@ export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode 
           className={`sub-tab-btn ${learningMode === 'coding' ? 'active' : ''}`}
           onClick={() => setLearningMode('coding')}
         >
-          💻 {t('tab_programming')}
+          &lt;/&gt; {t('tab_programming')}
         </button>
       </div>
 

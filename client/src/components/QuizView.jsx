@@ -5,6 +5,8 @@ import { EXPLAIN_ANSWER_MUTATION } from '../graphql/mutations';
 import HumanFormattedText from './HumanFormattedText';
 import { LETTERS, cleanOptionText, isOptionCorrect } from '../utils/quizUtils';
 import { speakText } from '../utils/speechUtils';
+import TeksieCodingCard from './TeksieCodingCard';
+import { getTopicIcon } from './TechLogos';
 
 export { LETTERS, cleanOptionText, isOptionCorrect };
 
@@ -121,17 +123,17 @@ const LEARN_CATEGORIES_EN = [
 ];
 
 const CODING_CATEGORIES_ID = [
-  { name: 'Situs & Naskah', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
-  { name: 'Sistem & Perangkat Lunak', items: ['C / C++', 'Rust', 'Go (Golang)', 'Java', 'C#'] },
-  { name: 'Data & Basis Data', items: ['SQL Database', 'NoSQL MongoDB', 'Struktur Data (Array, Tree)', 'Machine Learning'] },
-  { name: 'Teori & Algoritma', items: ['Algoritma Sorting', 'Kriptografi & Keamanan', 'Design Patterns (OOP)', 'API & GraphQL'] }
+  { name: 'Situs & Naskah', icon: '🌐', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
+  { name: 'Aplikasi & Framework', icon: '📄', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
+  { name: 'Sistem & Perangkat Lunak', icon: '💻', items: ['Rust', 'C#', 'Struktur Data (Array, Tree)', 'Machine Learning'] },
+  { name: 'Teori & Algoritma', icon: '⚙️', items: ['Algoritma Sorting', 'Kriptografi & Keamanan', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
 const CODING_CATEGORIES_EN = [
-  { name: 'Web & Scripting', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
-  { name: 'Systems & Software', items: ['C / C++', 'Rust', 'Go (Golang)', 'Java', 'C#'] },
-  { name: 'Data & Databases', items: ['SQL Database', 'NoSQL MongoDB', 'Data Structures (Array, Tree)', 'Machine Learning'] },
-  { name: 'Theory & Algorithms', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
+  { name: 'Web & Scripting', icon: '🌐', items: ['HTML & CSS', 'JavaScript / TypeScript', 'Python', 'PHP', 'Ruby'] },
+  { name: 'Apps & Frameworks', icon: '📄', items: ['React', 'Node.js', 'Flutter', 'Go (Golang)', 'Java', 'C / C++', 'SQL Database'] },
+  { name: 'Systems & Software', icon: '💻', items: ['Rust', 'C#', 'Data Structures (Array, Tree)', 'Machine Learning'] },
+  { name: 'Theory & Algorithms', icon: '⚙️', items: ['Sorting Algorithms', 'Cryptography & Security', 'Design Patterns (OOP)', 'API & GraphQL'] }
 ];
 
 // Baca progres topik dari penyimpanan akun atau sesi tamu.
@@ -360,154 +362,225 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
 
   const nextUnitObj = unitsList.find(u => u.unit === currentUnit + 1);
 
+  const POPULAR_ITEMS = new Set([
+    'HTML & CSS',
+    'JavaScript / TypeScript',
+    'Python',
+    'React',
+    'Inggris (Grammar)',
+    'Indonesia (Baku)',
+    'Jepang'
+  ]);
+
   return (
-    <div className="page" style={{ width: '100%', maxWidth: '880px' }}>
-      {/* 1. SETUP VIEW */}
+    <div className="page" style={{ width: '100%', maxWidth: '1150px' }}>
+      {/* 1. SETUP VIEW (TAMPILAN 2-KOLOM SESUAI MOCK-UP) */}
       {questions.length === 0 && (
-        <div className="setup-container">
-          {/* Topic / Category Selector */}
-          <div className="input-group">
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '1.15rem' }}>
-              {mode === 'learn' ? t('setup_lang_title') : t('setup_code_title')}
-            </h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '15px' }}>
-              {mode === 'learn' ? t('setup_lang_desc') : t('setup_code_desc')}
-            </p>
+        <div className="coding-selection-layout">
+          {/* SISI KIRI: KARTU TEKSIE BURUNG HANTU + LAPTOP & TIPS */}
+          <TeksieCodingCard
+            greetingTitle={currentLang === 'en' ? 'Hello!' : 'Halo!'}
+            greetingSubtitle={currentLang === 'en' ? "I'm Teksie" : 'Aku Teksie'}
+            greetingDesc={mode === 'coding'
+              ? (currentLang === 'en'
+                  ? 'Ready to accompany you to practice and boost your coding skills!'
+                  : 'Siap menemani kamu berlatih dan meningkatkan kemampuan coding!')
+              : (currentLang === 'en'
+                  ? 'Ready to accompany you to practice and master world languages!'
+                  : 'Siap menemani kamu berlatih dan menguasai berbagai bahasa dunia!')}
+            tipsTitle={currentLang === 'en' ? "Today's Tip" : 'Tips Hari Ini'}
+            tipsDesc={mode === 'coding'
+              ? (currentLang === 'en'
+                  ? 'Start from the language you like best, then explore others.'
+                  : 'Mulai dari bahasa yang kamu sukai, lalu jelajahi lainnya.')
+              : (currentLang === 'en'
+                  ? 'Practice consistently every day to build intuitive fluency.'
+                  : 'Latihan konsisten setiap hari untuk membangun kefasihan alami.')}
+          />
 
-            {categoriesData.map((cat, idx) => (
-              <div key={idx}>
-                <div
-                  className="lang-option"
-                  onClick={() => setOpenGroup(openGroup === idx ? -1 : idx)}
-                >
-                  <span>🌐 {cat.name}</span>
-                  <span>{openGroup === idx ? '▲' : '▼'}</span>
-                </div>
-
-                {openGroup === idx && (
-                  <div className="sub-menu">
-                    {cat.items.map((item, iIdx) => (
-                      <label key={iIdx} className="sub-option">
-                        <input
-                          type="radio"
-                          name="quiz_topic"
-                          checked={selectedTopic === item}
-                          onChange={() => setSelectedTopic(item)}
-                        />
-                        <span>{item}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
+          {/* SISI KANAN: KARTU UTAMA PEMILIHAN BAHASA & ACCORDION */}
+          <main className="coding-main-card">
+            {/* Header Kartu Utama */}
+            <div className="coding-main-header">
+              <div className="coding-main-header-icon">
+                {mode === 'coding' ? '</>' : '🌐'}
               </div>
-            ))}
-          </div>
-
-          {/* Unit / Chapter Roadmap (Alur Bab Pembelajaran) */}
-          <div className="unit-roadmap-section">
-            <div className="unit-roadmap-header">
-              <h4>
-                <span>🗺️</span>
-                <span>{t('roadmap_title')}</span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--btn-cyan)', fontWeight: 700, marginLeft: 'auto' }}>
-                  {selectedTopic}
-                </span>
-              </h4>
-              <p>{t('roadmap_subtitle')}</p>
+              <div className="coding-main-header-text">
+                <h2>{mode === 'learn' ? t('setup_lang_title') : t('setup_code_title')}</h2>
+                <p>{mode === 'learn' ? t('setup_lang_desc') : t('setup_code_desc')}</p>
+              </div>
             </div>
 
-            <div className="unit-roadmap-grid">
-              {unitsList.map((u) => {
-                const isCurrent = currentUnit === u.unit;
-                const isDone = completedUnits.includes(u.unit);
-
-                let cardClass = 'unit-card';
-                if (isCurrent) cardClass += ' active';
-                if (isDone) cardClass += ' completed';
-
+            {/* Accordion Daftar Bahasa / Topik */}
+            <div className="coding-accordion-container">
+              {categoriesData.map((cat, idx) => {
+                const isExpanded = openGroup === idx;
                 return (
-                  <div
-                    key={u.unit}
-                    className={cardClass}
-                    onClick={() => {
-                      setCurrentUnit(u.unit);
-                      setLevel(u.level);
-                    }}
-                  >
-                    <div>
-                      <div className="unit-card-header">
-                        <span className="unit-card-icon">{u.icon}</span>
-                        <span className={`unit-pill-badge ${isDone ? 'completed' : isCurrent ? 'active' : 'locked'}`}>
-                          {isDone ? `✓ ${t('unit_badge_completed')}` : isCurrent ? `⭐ ${t('unit_badge_current')}` : u.level}
-                        </span>
+                  <div key={idx} className={`coding-accordion-group ${isExpanded ? 'expanded' : ''}`}>
+                    {/* Header Accordion */}
+                    <div
+                      className="coding-accordion-header"
+                      onClick={() => setOpenGroup(isExpanded ? -1 : idx)}
+                    >
+                      <div className="coding-accordion-title">
+                        <span>{cat.icon || '🌐'}</span>
+                        <span>{cat.name}</span>
                       </div>
-                      <h5 className="unit-card-title">
-                        {currentLang === 'en' ? u.titleEn : u.titleId}
-                      </h5>
+                      <span className={`coding-accordion-chevron ${isExpanded ? 'up' : ''}`}>
+                        {isExpanded ? '▲' : '▼'}
+                      </span>
                     </div>
-                    <p className="unit-card-desc">
-                      {currentLang === 'en' ? u.descEn : u.descId}
-                    </p>
+
+                    {/* Isi Accordion (List Bahasa) */}
+                    {isExpanded && (
+                      <div className="coding-accordion-body">
+                        {cat.items.map((item, iIdx) => {
+                          const isSelected = selectedTopic === item;
+                          const isPopular = POPULAR_ITEMS.has(item);
+
+                          return (
+                            <div
+                              key={iIdx}
+                              className={`coding-lang-item ${isSelected ? 'active' : ''}`}
+                              onClick={() => setSelectedTopic(item)}
+                            >
+                              {/* Custom Radio Button */}
+                              <div className="coding-radio-circle">
+                                {isSelected && <div className="coding-radio-dot" />}
+                              </div>
+
+                              {/* Icon Resmi Bahasa / Topik */}
+                              <div className="coding-lang-icon-wrap">
+                                {getTopicIcon(item, 26)}
+                              </div>
+
+                              {/* Nama Bahasa */}
+                              <span className="coding-lang-name">{item}</span>
+
+                              {/* Badge Populer */}
+                              {isPopular && (
+                                <span className="coding-popular-badge">
+                                  {currentLang === 'en' ? 'Popular' : 'Populer'}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
-          </div>
 
-          {/* Level Selector */}
-          <div className="input-group">
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.05rem', color: 'var(--text-muted)' }}>
-              {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
-            </h3>
-            <select
-              className="styled-select"
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-            >
-              <option value="Pemula">{t('opt_level_1')}</option>
-              <option value="Menengah">{t('opt_level_2')}</option>
-              <option value="Mahir">{t('opt_level_3')}</option>
-            </select>
-          </div>
+            {/* Unit / Chapter Roadmap (Alur Bab Pembelajaran) */}
+            <div className="unit-roadmap-section" style={{ marginTop: '10px' }}>
+              <div className="unit-roadmap-header">
+                <h4>
+                  <span>🗺️</span>
+                  <span>{t('roadmap_title')}</span>
+                  <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 800, marginLeft: 'auto' }}>
+                    {selectedTopic}
+                  </span>
+                </h4>
+                <p>{t('roadmap_subtitle')}</p>
+              </div>
 
-          {/* Error Banner */}
-          {loadError && (
-            <div style={{
-              padding: '12px 16px',
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '12px',
-              color: '#fca5a5',
-              marginBottom: '15px',
-              fontSize: '0.92rem',
-              textAlign: 'center',
-              fontWeight: 600
-            }}>
-              {loadError}
+              <div className="unit-roadmap-grid">
+                {unitsList.map((u) => {
+                  const isCurrent = currentUnit === u.unit;
+                  const isDone = completedUnits.includes(u.unit);
+
+                  let cardClass = 'unit-card';
+                  if (isCurrent) cardClass += ' active';
+                  if (isDone) cardClass += ' completed';
+
+                  return (
+                    <div
+                      key={u.unit}
+                      className={cardClass}
+                      onClick={() => {
+                        setCurrentUnit(u.unit);
+                        setLevel(u.level);
+                      }}
+                    >
+                      <div>
+                        <div className="unit-card-header">
+                          <span className="unit-card-icon">{u.icon}</span>
+                          <span className={`unit-pill-badge ${isDone ? 'completed' : isCurrent ? 'active' : 'locked'}`}>
+                            {isDone ? `✓ ${t('unit_badge_completed')}` : isCurrent ? `⭐ ${t('unit_badge_current')}` : u.level}
+                          </span>
+                        </div>
+                        <h5 className="unit-card-title">
+                          {currentLang === 'en' ? u.titleEn : u.titleId}
+                        </h5>
+                      </div>
+                      <p className="unit-card-desc">
+                        {currentLang === 'en' ? u.descEn : u.descId}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          )}
 
-          {/* Start Buttons */}
-          <div className="action-row">
-            <button
-              className="btn-huge btn-green"
-              onClick={() => handleStart({ unitToLoad: currentUnit, forceRefresh: false })}
-              disabled={quizLoading || challengeLoading}
-            >
-              {quizLoading
-                ? (currentLang === 'en' ? 'Preparing Questions...' : 'Menyiapkan Soal AI...')
-                : `🚀 ${currentLang === 'en' ? 'START' : 'MULAI'} ${activeUnitObj.icon} ${currentLang === 'en' ? activeUnitObj.titleEn : activeUnitObj.titleId}`}
-            </button>
-            <button
-              className="btn-huge btn-cyan"
-              onClick={() => handleStart({ isChallengeMode: true })}
-              disabled={quizLoading || challengeLoading}
-            >
-              {challengeLoading
-                ? (currentLang === 'en' ? 'Preparing Challenge...' : 'Menyiapkan...')
-                : t('btn_challenge')}
-            </button>
-          </div>
+            {/* Tingkat Kesulitan */}
+            <div className="input-group" style={{ padding: '16px 20px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '0.98rem', color: 'var(--text-muted)' }}>
+                {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
+              </h3>
+              <select
+                className="styled-select"
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+              >
+                <option value="Pemula">{t('opt_level_1')}</option>
+                <option value="Menengah">{t('opt_level_2')}</option>
+                <option value="Mahir">{t('opt_level_3')}</option>
+              </select>
+            </div>
+
+            {/* Error Banner */}
+            {loadError && (
+              <div style={{
+                padding: '12px 16px',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                borderRadius: '12px',
+                color: '#fca5a5',
+                fontSize: '0.92rem',
+                textAlign: 'center',
+                fontWeight: 600
+              }}>
+                {loadError}
+              </div>
+            )}
+
+            {/* Tombol Aksi Mulai */}
+            <div className="coding-start-action-row">
+              <button
+                className="btn-huge btn-cyan"
+                style={{ minWidth: '180px' }}
+                onClick={() => handleStart({ isChallengeMode: true })}
+                disabled={quizLoading || challengeLoading}
+              >
+                {challengeLoading
+                  ? (currentLang === 'en' ? 'Preparing Challenge...' : 'Menyiapkan...')
+                  : t('btn_challenge')}
+              </button>
+
+              <button
+                className="btn-huge btn-green"
+                style={{ flex: 1, minWidth: '220px' }}
+                onClick={() => handleStart({ unitToLoad: currentUnit, forceRefresh: false })}
+                disabled={quizLoading || challengeLoading}
+              >
+                {quizLoading
+                  ? (currentLang === 'en' ? 'Preparing Questions...' : 'Menyiapkan Soal...')
+                  : `🚀 ${currentLang === 'en' ? 'START' : 'MULAI'} ${selectedTopic} (${activeUnitObj.icon} Bab ${currentUnit})`}
+              </button>
+            </div>
+          </main>
         </div>
       )}
 
