@@ -24,7 +24,10 @@ import {
 /**
  * Maskot Utama: "Teksie" Si Musang Cerdas
  */
-export function TeksieFox({ size = 120, className = '', lookDirection = 'forward', asleep = false }) {
+export function TeksieFox({ size = 120, className = '', lookDirection = 'forward', asleep = false, gazeX = 0, gazeY = 0 }) {
+  const gazeOffsetX = Math.max(-3, Math.min(3, (lookDirection === 'laptop' ? 1.5 : 0) + gazeX));
+  const gazeOffsetY = Math.max(-3, Math.min(3, (lookDirection === 'laptop' ? 1.5 : 0) + gazeY));
+
   return (
     <svg
       width={size}
@@ -174,12 +177,14 @@ export function TeksieFox({ size = 120, className = '', lookDirection = 'forward
         </g>
       ) : (
         <g className="teksie-open-eyes">
-          <circle cx={lookDirection === 'laptop' ? 65 : 62} cy={lookDirection === 'laptop' ? 71 : 68} r="8" fill="#172033" />
-          <circle cx={lookDirection === 'laptop' ? 101 : 98} cy={lookDirection === 'laptop' ? 71 : 68} r="8" fill="#172033" />
-          <circle cx={lookDirection === 'laptop' ? 63 : 60} cy={lookDirection === 'laptop' ? 68 : 65} r="3.2" fill="#ffffff" />
-          <circle cx={lookDirection === 'laptop' ? 99 : 96} cy={lookDirection === 'laptop' ? 68 : 65} r="3.2" fill="#ffffff" />
-          <circle cx={lookDirection === 'laptop' ? 68 : 65} cy={lookDirection === 'laptop' ? 74 : 71} r="1.6" fill="#ffffff" />
-          <circle cx={lookDirection === 'laptop' ? 104 : 101} cy={lookDirection === 'laptop' ? 74 : 71} r="1.6" fill="#ffffff" />
+          <g className="teksie-pupils" style={{ transform: `translate(${gazeOffsetX}px, ${gazeOffsetY}px)` }}>
+            <circle cx="62" cy="68" r="8" fill="#172033" />
+            <circle cx="98" cy="68" r="8" fill="#172033" />
+            <circle cx="60" cy="65" r="3.2" fill="#ffffff" />
+            <circle cx="96" cy="65" r="3.2" fill="#ffffff" />
+            <circle cx="65" cy="71" r="1.6" fill="#ffffff" />
+            <circle cx="101" cy="71" r="1.6" fill="#ffffff" />
+          </g>
         </g>
       )}
 

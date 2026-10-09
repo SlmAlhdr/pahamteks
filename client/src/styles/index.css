@@ -3745,12 +3745,23 @@ textarea {
 }
 
 .teksie-owl-wrapper {
+    position: relative;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    background: transparent;
     flex-shrink: 0;
+    cursor: pointer;
     transition: transform 0.25s ease;
 }
 
-.teksie-owl-wrapper:hover {
-    transform: translateY(-4px) scale(1.04);
+.teksie-owl-wrapper:focus-visible {
+    outline: 2px solid #fb923c;
+    outline-offset: 4px;
+    border-radius: 12px;
 }
 
 .teksie-card-character {
@@ -3778,13 +3789,11 @@ textarea {
     transition: transform 0.25s ease;
 }
 
-.teksie-owl-wrapper:hover .teksie-card-laptop,
-.teksie-owl-wrapper:focus-visible .teksie-card-laptop {
+.teksie-owl-wrapper.is-cheering .teksie-card-laptop {
     transform: translate(2px, -2px) rotate(2deg);
 }
 
-.teksie-owl-wrapper:hover .teksie-card-character,
-.teksie-owl-wrapper:focus-visible .teksie-card-character {
+.teksie-owl-wrapper.is-cheering .teksie-card-character {
     animation: teksieCardCheer 0.65s cubic-bezier(0.2, 0.8, 0.3, 1.2);
 }
 
@@ -3792,6 +3801,70 @@ textarea {
     transform-box: fill-box;
     transform-origin: center;
     animation: teksieCardBlink 5.5s ease-in-out infinite;
+}
+
+.teksie-card-character .teksie-pupils {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 140ms ease-out;
+}
+
+.teksie-sleeping-character {
+    display: block;
+    width: 138px;
+    height: 138px;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));
+    transform-origin: center bottom;
+    animation: teksieSleepingBreath 2.2s ease-in-out infinite;
+}
+
+.teksie-sleeping-marks {
+    pointer-events: none;
+}
+
+.teksie-sleep-z {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: teksieSleepFloat 2.2s ease-in-out infinite;
+}
+
+.teksie-sleep-z-two {
+    animation-delay: 0.65s;
+}
+
+.teksie-speech-bubble {
+    position: absolute;
+    z-index: 4;
+    top: -12px;
+    left: 50%;
+    width: max-content;
+    max-width: 205px;
+    padding: 8px 12px;
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    border-radius: 14px;
+    color: #15231f;
+    background: #fffaf2;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+    transform: translate(-50%, -100%);
+    animation: teksieSpeechPop 0.22s ease-out both;
+    pointer-events: none;
+}
+
+.teksie-speech-bubble::after {
+    position: absolute;
+    bottom: -6px;
+    left: calc(50% - 6px);
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid rgba(249, 115, 22, 0.35);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.35);
+    background: #fffaf2;
+    content: '';
+    transform: rotate(45deg);
 }
 
 .teksie-card-character.is-asleep {
@@ -3841,16 +3914,42 @@ textarea {
     100% { opacity: 0; transform: translateY(-4px); }
 }
 
+@keyframes teksieSleepingBreath {
+    0%, 100% { transform: translateY(1px) scaleY(1); }
+    50% { transform: translateY(-1px) scaleY(1.025); }
+}
+
+@keyframes teksieSleepFloat {
+    0% { opacity: 0; transform: translate(0, 5px) scale(0.85); }
+    20% { opacity: 1; }
+    70% { opacity: 0.9; }
+    100% { opacity: 0; transform: translate(5px, -13px) scale(1.08); }
+}
+
+@keyframes teksieSpeechPop {
+    from { opacity: 0; transform: translate(-50%, -90%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .teksie-card-character,
     .teksie-card-laptop,
-    .teksie-owl-wrapper:hover .teksie-card-character,
-    .teksie-owl-wrapper:focus-visible .teksie-card-character {
+    .teksie-owl-wrapper.is-cheering .teksie-card-character {
         animation: none;
     }
     .teksie-card-character .teksie-open-eyes,
     .teksie-card-character .teksie-closed-eyes,
     .teksie-card-character .teksie-sleep-marks {
+        animation: none;
+    }
+    .teksie-card-character .teksie-pupils {
+        transition: none;
+    }
+    .teksie-sleeping-character,
+    .teksie-speech-bubble {
+        animation: none;
+    }
+    .teksie-sleep-z {
         animation: none;
     }
 }
