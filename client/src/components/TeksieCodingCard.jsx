@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Teksie si musang cerdas duduk di belakang laptop menghadap ke kanan (perspektif 3D).
+// Ilustrasi vektor Teksie dengan siluet lembut agar tetap tajam pada berbagai ukuran.
 export function TeksieAtLaptop({ size = 160 }) {
   return (
     <svg
@@ -16,11 +16,10 @@ export function TeksieAtLaptop({ size = 160 }) {
     >
       <defs>
         {/* Gradasi 3D Bulu Musang Oranye Hangat (Cahaya dari kanan atas) */}
-        <radialGradient id="tkFurHead3D" cx="58%" cy="30%" r="65%">
-          <stop offset="0%" stopColor="#ffbe7b" />
-          <stop offset="55%" stopColor="#f97316" />
-          <stop offset="85%" stopColor="#ea580c" />
-          <stop offset="100%" stopColor="#9a3412" />
+        <radialGradient id="tkFurHead3D" cx="48%" cy="28%" r="75%">
+          <stop offset="0%" stopColor="#ffb15e" />
+          <stop offset="58%" stopColor="#f8791c" />
+          <stop offset="100%" stopColor="#c94b0b" />
         </radialGradient>
         <radialGradient id="tkFurBody3D" cx="60%" cy="35%" r="65%">
           <stop offset="0%" stopColor="#ffb066" />
@@ -60,27 +59,27 @@ export function TeksieAtLaptop({ size = 160 }) {
       </defs>
 
       {/* Bayangan Meja Halus di Bawah */}
-      <ellipse cx="106" cy="184" rx="76" ry="8.5" fill="#000000" fillOpacity=".4" />
+      <ellipse cx="106" cy="184" rx="76" ry="8.5" fill="#000000" fillOpacity=".32" />
 
       {/* === 1. EKOR MUSANG LEBAT BERUJUNG PUTIH (DI BELAKANG KIRI) === */}
       <g>
         <path
-          d="M58 132 C32 118 18 138 24 162 C30 178 54 176 72 160 C80 152 74 138 58 132 Z"
+          d="M60 134 C48 126 34 128 27 138 C18 151 23 165 33 169 C43 173 59 165 70 155 C77 148 72 138 60 134 Z"
           fill="url(#tkFurBody3D)"
         />
         <path
-          d="M26 154 C18 162 24 174 36 172 C44 170 48 162 44 154 C38 148 30 148 26 154 Z"
+          d="M25 153 C19 159 22 168 29 170 C36 172 43 167 45 160 C47 154 42 150 36 150 C31 150 28 151 25 153 Z"
           fill="url(#tkTailTip3D)"
         />
       </g>
 
       {/* === 2. TELINGA MUSANG 3D (KIRI LEBIH KECIL, KANAN LEBIH DEKAT) === */}
       {/* Telinga Kiri Musang (Di Belakang Kepala) */}
-      <path d="M58 54 L36 18 C30 36 38 64 56 74 Z" fill="url(#tkFurDark3D)" />
-      <path d="M54 52 L40 26 C36 38 42 58 54 66 Z" fill="#fb7185" opacity="0.85" />
+      <path d="M58 65 C48 56 37 39 35 24 C34 18 36 16 40 21 C50 32 59 43 68 51 Z" fill="url(#tkFurDark3D)" />
+      <path d="M54 55 C46 45 41 35 40 27 C46 34 52 43 59 50 Z" fill="#fb7185" opacity="0.82" />
 
       {/* === 3. BADAN GEMBUL MUSANG MENGHADAP SUDUT KANAN === */}
-      <ellipse cx="98" cy="148" rx="48" ry="34" fill="url(#tkFurBody3D)" />
+      <path d="M54 150 C56 131 70 119 91 119 C116 117 139 130 147 148 C151 160 140 172 122 176 C99 181 68 174 57 163 C54 160 53 155 54 150 Z" fill="url(#tkFurBody3D)" />
       {/* Perut Krem Menghadap Kanan Depan */}
       <ellipse cx="106" cy="146" rx="28" ry="22" fill="url(#tkBelly3D)" stroke="#ea580c" strokeWidth="2.5" />
       {/* Aksen Lengkungan Lembut di Perut */}
@@ -88,22 +87,22 @@ export function TeksieAtLaptop({ size = 160 }) {
       <path d="M94 148 C100 154 116 154 122 148" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* === 4. KEPALA GEMAS MUSANG MENOLEH KE SUDUT KANAN === */}
-      <ellipse cx="106" cy="84" rx="54" ry="48" fill="url(#tkFurHead3D)" />
+      <path d="M51 78 C52 51 71 36 99 35 C127 33 151 48 160 70 C167 90 156 111 139 122 C126 131 106 133 87 128 C65 122 51 104 50 87 C50 84 50 81 51 78 Z" fill="url(#tkFurHead3D)" />
 
       {/* Telinga Kanan Musang (Di Depan / Lebih Dominan) */}
-      <path d="M136 50 L158 12 C164 32 154 62 134 72 Z" fill="url(#tkFurDark3D)" />
-      <path d="M138 48 L152 20 C156 34 150 56 136 64 Z" fill="#fb7185" opacity="0.85" />
+      <path d="M132 53 C143 39 151 25 157 16 C160 12 163 14 163 20 C163 39 153 58 139 70 Z" fill="url(#tkFurDark3D)" />
+      <path d="M139 51 C147 39 153 29 157 22 C156 35 150 48 141 59 Z" fill="#fb7185" opacity="0.82" />
 
       {/* Topeng Wajah Putih Bersih Membulat (Menghadap Sudut Kanan) */}
       <path
-        d="M62 76 C60 96 70 114 90 116 C100 117 108 111 114 105 C120 111 128 116 138 114 C152 110 158 92 154 74 C150 60 138 62 130 66 C124 70 118 71 114 67 C110 71 104 69 96 65 C86 60 66 60 62 76 Z"
+        d="M57 78 C60 68 70 62 81 64 C94 65 103 72 111 77 C118 71 128 64 140 65 C151 66 158 73 158 84 C158 101 149 114 137 117 C126 120 118 114 111 108 C104 116 96 121 85 118 C67 114 56 99 57 78 Z"
         fill="#ffffff"
         style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))' }}
       />
 
       {/* Rona Pipi Pink Gemas (Blush) */}
-      <ellipse cx="68" cy="94" rx="7" ry="4.5" fill="#fb7185" opacity="0.65" />
-      <ellipse cx="144" cy="94" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.65" />
+      <ellipse cx="68" cy="96" rx="6.5" ry="3.5" fill="#fb7185" opacity="0.48" />
+      <ellipse cx="145" cy="96" rx="7" ry="3.8" fill="#fb7185" opacity="0.48" />
 
       {/* Hidung Hitam & Mulut Imut Musang (Menghadap Kanan) */}
       <polygon points="112,88 118,88 115,93" fill="#0f172a" />
