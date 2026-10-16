@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import QuizView from './QuizView';
 
 export default function LearningHub({ t, currentLang, onFinishQuiz, initialMode = 'learn', progressScope, isGuest }) {
   const [learningMode, setLearningMode] = useState(initialMode); // 'learn' | 'coding'
+
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem('pahamteks_lazy_chunk_retry');
+    } catch (error) {
+      console.warn('[LearningHub] Tidak bisa menghapus status pemulihan chunk:', error.message);
+    }
+  }, []);
 
   return (
     <div className="page" style={{ width: '100%', maxWidth: '1200px' }}>

@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import LearningHub from './components/LearningHub';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
@@ -9,6 +8,7 @@ import { SAVE_QUIZ_SCORE_MUTATION } from './graphql/mutations';
 
 const HomeHero = lazy(() => import('./components/HomeHero'));
 const WelcomePortal = lazy(() => import('./components/WelcomePortal'));
+const LearningHub = lazy(() => import('./components/LearningHub'));
 const CombinedDictTranslator = lazy(() => import('./components/CombinedDictTranslator'));
 const DashboardView = lazy(() => import('./components/DashboardView'));
 const AdminDashboardView = lazy(() => import('./components/AdminDashboardView'));
@@ -25,6 +25,20 @@ class MainContentErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('[MainContent] Halaman gagal dirender:', error, errorInfo);
+
+    const message = String(error?.message || error);
+    const isChunkLoadFailure = /dynamically imported module|importing a module script failed|loading chunk .* failed|failed to preload/i.test(message);
+    if (!isChunkLoadFailure) return;
+
+    const retryKey = 'pahamteks_lazy_chunk_retry';
+    try {
+      if (!sessionStorage.getItem(retryKey)) {
+        sessionStorage.setItem(retryKey, '1');
+        window.location.reload();
+      }
+    } catch (storageError) {
+      console.warn('[MainContent] Tidak bisa menyimpan status pemulihan chunk:', storageError.message);
+    }
   }
 
   render() {
