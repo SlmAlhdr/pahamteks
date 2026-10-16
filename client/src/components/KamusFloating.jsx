@@ -43,13 +43,24 @@ export default function KamusFloating({ t, currentLang }) {
   return (
     <>
       {/* Floating Button di Bawah Kanan */}
-      <div className="floating-kamus-btn" onClick={() => setIsOpen(!isOpen)}>
+      <button
+        type="button"
+        className="floating-kamus-btn"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={t('dict_btn_float')}
+        aria-expanded={isOpen}
+        aria-controls="floating-kamus-panel"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          <path d="M4 5.5v16M8 7h8M8 11h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
         <span className="kamus-text">{t('dict_btn_float')}</span>
-      </div>
+      </button>
 
       {/* Floating Kamus Modal */}
       {isOpen && (
-        <div className="kamus-modal" style={{ display: 'flex' }}>
+        <div className="kamus-modal" id="floating-kamus-panel" style={{ display: 'flex' }}>
           <div className="kamus-header">
             <span>{t('dict_title')}</span>
             <span

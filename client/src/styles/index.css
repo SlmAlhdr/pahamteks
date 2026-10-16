@@ -29,6 +29,7 @@
     --btn-green: #347a16;
     --btn-cyan: #087e73;
     --btn-grey: #d7d7d7;
+    --warning-orange: #b45309;
 }
 
 * { 
@@ -821,6 +822,7 @@ textarea {
     bottom: 60px; 
     right: 30px; 
     background: rgba(15, 23, 42, 0.7); 
+    appearance: none;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     color: white; 
@@ -1113,9 +1115,17 @@ textarea {
         text-align: center;
     }
     .nav-right-balancer { 
-        display: none; 
+        display: flex;
+        order: 3;
+        width: 100%;
+        margin: 0 auto;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        flex: none;
     }
     .nav-links-wrapper { 
+        order: 2;
         position: static;
         transform: none;
         width: 100%; 
@@ -4508,6 +4518,10 @@ textarea {
 
 :root[data-theme="light"] .coding-lang-item {
     color: var(--text-main);
+}
+
+:root[data-theme="light"] .coding-radio-circle {
+    border-color: #89989d;
 }
 
 :root[data-theme="light"] .text-yellow {
