@@ -145,6 +145,15 @@ body {
     white-space: nowrap;
 }
 
+.nav-links-admin {
+    gap: 8px;
+    padding-inline: 10px;
+}
+
+.nav-links-admin .admin-nav-link {
+    margin-left: 3px;
+}
+
 .btn-nav { 
     background: transparent; 
     border: none; 

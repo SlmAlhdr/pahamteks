@@ -38,7 +38,7 @@ export default function Navbar({
       {/* Sisi Tengah: Menu Navigasi tepat di tengah pas */}
       {user ? (
         <div className="nav-links-wrapper">
-          <div className="nav-links">
+          <div className={`nav-links ${user?.role === 'ADMIN' ? 'nav-links-admin' : ''}`}>
             <button
               className={`btn-nav ${activeTab === 'home' ? 'active' : ''}`}
               onClick={() => setActiveTab('home')}
