@@ -53,6 +53,12 @@ Thumbs.db
 # Agent configuration
 .agent/
 
+# Keep local-only tooling, archived files, and env template out of GitHub
+/.aislop/
+/archive/
+/.env.example
+/.github/workflows/
+
 # Executables & tools
 *.exe
 
