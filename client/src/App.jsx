@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import LearningHub from './components/LearningHub';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
@@ -8,13 +9,46 @@ import { SAVE_QUIZ_SCORE_MUTATION } from './graphql/mutations';
 
 const HomeHero = lazy(() => import('./components/HomeHero'));
 const WelcomePortal = lazy(() => import('./components/WelcomePortal'));
-const LearningHub = lazy(() => import('./components/LearningHub'));
 const CombinedDictTranslator = lazy(() => import('./components/CombinedDictTranslator'));
 const DashboardView = lazy(() => import('./components/DashboardView'));
 const AdminDashboardView = lazy(() => import('./components/AdminDashboardView'));
 const KamusFloating = lazy(() => import('./components/KamusFloating'));
 const AuthModal = lazy(() => import('./components/AuthModal'));
 const CenterNotificationModal = lazy(() => import('./components/CenterNotificationModal'));
+
+class MainContentErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('[MainContent] Halaman gagal dirender:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const isEnglish = this.props.currentLang === 'en';
+      return (
+        <main style={{ flex: 1, width: '100%', display: 'grid', placeItems: 'center', padding: '32px 20px' }}>
+          <section
+            role="alert"
+            style={{ maxWidth: '620px', padding: '28px', textAlign: 'center', background: 'var(--card-bg)', color: 'var(--text-main)', border: '1px solid var(--card-border)', borderRadius: '18px' }}
+          >
+            <h2>{isEnglish ? 'This page could not be opened' : 'Halaman ini gagal dibuka'}</h2>
+            <p>{isEnglish ? 'Reload the page to try again.' : 'Muat ulang halaman untuk mencoba kembali.'}</p>
+            <button className="btn-huge btn-cyan" onClick={() => window.location.reload()}>
+              {isEnglish ? 'Reload page' : 'Muat ulang halaman'}
+            </button>
+          </section>
+        </main>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const getQuizHistoryStorageKey = (userId) => `pahamteks_logs_${userId}`;
 const getTopicProgressStorageKey = (userId) => `pahamteks_topic_progress_${userId}`;
@@ -342,16 +376,17 @@ export default function App() {
       />
 
       {/* Main Content Pages */}
-      <Suspense fallback={
-        <div
-          role="status"
-          style={{ width: '100%', minHeight: '45vh', display: 'grid', placeItems: 'center', color: 'var(--text-muted)' }}
-        >
-          {currentLang === 'en' ? 'Loading page...' : 'Memuat halaman...'}
-        </div>
-      }>
-        <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-        {!user ? (
+      <MainContentErrorBoundary currentLang={currentLang}>
+        <Suspense fallback={
+          <div
+            role="status"
+            style={{ width: '100%', minHeight: '45vh', display: 'grid', placeItems: 'center', color: 'var(--text-muted)' }}
+          >
+            {currentLang === 'en' ? 'Loading page...' : 'Memuat halaman...'}
+          </div>
+        }>
+          <main style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
+          {!user ? (
           <WelcomePortal
             onAuthSuccess={handleAuthSuccess}
             onGuestLogin={handleGuestLogin}
@@ -431,8 +466,9 @@ export default function App() {
             )}
           </>
         )}
-        </main>
-      </Suspense>
+          </main>
+        </Suspense>
+      </MainContentErrorBoundary>
 
       {/* Floating Kamus AI HANYA muncul jika sudah login atau masuk sebagai guest */}
       {user && <Suspense fallback={null}><KamusFloating t={t} currentLang={currentLang} /></Suspense>}
