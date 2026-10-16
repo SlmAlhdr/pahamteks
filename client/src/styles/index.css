@@ -4466,3 +4466,160 @@ textarea {
 :root[data-theme="light"] .text-yellow {
     color: #806000;
 }
+
+:root[data-theme="light"] .welcome-cta-banner h3,
+:root[data-theme="light"] .welcome-cta-banner p {
+    color: #171717;
+}
+
+:root[data-theme="light"] .floating-kamus-btn {
+    background: #edf1f2;
+    border-color: #cbd3d6;
+    color: #171717;
+}
+
+:root[data-theme="light"] .watermark-box {
+    color: #555555;
+}
+
+:root[data-theme="light"] .modal-box h1,
+:root[data-theme="light"] .modal-box h2,
+:root[data-theme="light"] .modal-box h3,
+:root[data-theme="light"] .modal-box p,
+:root[data-theme="light"] .modal-box label,
+:root[data-theme="light"] .auth-divider {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .modal-close-btn,
+:root[data-theme="light"] .btn-guest {
+    background: #edf1f2;
+    border-color: #cbd3d6;
+    color: #171717;
+}
+
+:root[data-theme="light"] .btn-swap,
+:root[data-theme="light"] .btn-speak,
+:root[data-theme="light"] .btn-copy,
+:root[data-theme="light"] .btn-mic:not(.listening) {
+    background: #edf1f2;
+    border-color: #cbd3d6;
+    color: #171717;
+}
+
+:root[data-theme="light"] .guest-warning-box {
+    background: #fff7e8;
+    color: #674414;
+}
+
+:root[data-theme="light"] .guest-warning-box .guest-title {
+    color: #9a4a00;
+}
+
+:root[data-theme="light"] .kamus-header,
+:root[data-theme="light"] .human-code-header {
+    background: #edf1f2;
+    color: #171717;
+    border-color: #d4dadd;
+}
+
+:root[data-theme="light"] .mc-btn {
+    background: #f2f4f5;
+    border-color: #cbd3d6;
+    color: #171717;
+}
+
+:root[data-theme="light"] .mc-btn.correct,
+:root[data-theme="light"] .mc-btn.correct strong {
+    background: #e5f5dc;
+    color: #245e10;
+}
+
+:root[data-theme="light"] .mc-btn.wrong,
+:root[data-theme="light"] .mc-btn.wrong strong {
+    background: #fde8e9;
+    color: #a51f2d;
+}
+
+:root[data-theme="light"] .sub-tabs-container {
+    background: #edf1f2;
+}
+
+:root[data-theme="light"] .sub-tab-btn:hover,
+:root[data-theme="light"] .sub-tab-btn.active {
+    background: #dce8e8;
+    border-color: #c4d4d4;
+    color: #171717;
+}
+
+:root[data-theme="light"] .account-info-card,
+:root[data-theme="light"] .comparison-col,
+:root[data-theme="light"] .ai-comparison-result-card {
+    background: #ffffff;
+    border-color: #d4dadd;
+    color: #171717;
+}
+
+:root[data-theme="light"] .account-user-name,
+:root[data-theme="light"] .comparison-item p,
+:root[data-theme="light"] .comparison-badge,
+:root[data-theme="light"] .ai-result-content,
+:root[data-theme="light"] .az-word-title,
+:root[data-theme="light"] .unit-roadmap-header h4,
+:root[data-theme="light"] .unit-card-title,
+:root[data-theme="light"] .unit-level-label,
+:root[data-theme="light"] .coding-main-header-text h2,
+:root[data-theme="light"] .coding-main-header-text p,
+:root[data-theme="light"] .coding-accordion-title,
+:root[data-theme="light"] .coding-lang-item .coding-lang-name,
+:root[data-theme="light"] .teksie-greeting-hello,
+:root[data-theme="light"] .teksie-tips-title {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .comparison-badge {
+    background: #edf1f2;
+}
+
+:root[data-theme="light"] .unit-pill-badge.locked {
+    background: #e9edef;
+    color: #555555;
+}
+
+:root[data-theme="light"] .coding-accordion-header,
+:root[data-theme="light"] .coding-accordion-header:hover,
+:root[data-theme="light"] .coding-lang-item,
+:root[data-theme="light"] .coding-lang-item:hover {
+    background: #f1f4f4;
+    color: #171717;
+    border-color: #d4dadd;
+}
+
+:root[data-theme="light"] .teksie-greeting-desc,
+:root[data-theme="light"] .teksie-tips-desc {
+    color: #555555;
+}
+
+:root[data-theme="light"] .dict-mock-searchbar input,
+:root[data-theme="light"] .dict-mock-word h4 {
+    color: #171717;
+}
+
+:root[data-theme="light"] .badge-yellow {
+    color: #806000;
+}
+
+:root[data-theme="light"] .admin-dashboard-heading h1,
+:root[data-theme="light"] .admin-logs-heading h2 {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .admin-dashboard-button {
+    color: #123d36;
+}
+
+:root[data-theme="light"] .admin-dashboard-button.secondary {
+    background: #edf1f2;
+    border-color: #cbd3d6;
+    color: #171717;
+}
