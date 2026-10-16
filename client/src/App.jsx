@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import BackgroundDrift from './components/BackgroundDrift';
 import { Analytics2DIcon } from './components/Art2DIcons';
 import { dict } from './utils/i18n';
 import { apolloClient } from './apolloClient';
@@ -73,6 +72,16 @@ const isAdminPath = (path = window.location.pathname) => (
   path.replace(/\/+$/, '').toLowerCase() === '/admin'
 );
 
+function getInitialTheme() {
+  try {
+    const savedTheme = localStorage.getItem('pahamteks_theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+  } catch (error) {
+    console.warn('Preferensi tema lokal tidak bisa dibaca:', error.message);
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export default function App() {
   const [activeTab, setActiveTabState] = useState(() => (
     isAdminPath() ? 'admin' : 'home'
@@ -83,6 +92,23 @@ export default function App() {
   const [authInitialMode, setAuthInitialMode] = useState('login');
   const [quizHistory, setQuizHistory] = useState([]);
   const [centerNotice, setCenterNotice] = useState(null);
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(currentTheme => {
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('pahamteks_theme', nextTheme);
+      } catch (error) {
+        console.warn('Preferensi tema tidak bisa disimpan:', error.message);
+      }
+      return nextTheme;
+    });
+  };
 
   // Gunakan URL langsung untuk halaman admin dan root untuk tab aplikasi lainnya.
   const setActiveTab = (tab) => {
@@ -265,9 +291,6 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
-      {/* Background Floating Greetings */}
-      <BackgroundDrift />
-
       {/* Garis Blok Paling Atas (Full width dari samping ke samping) */}
       {user?.isGuest && (
         <div className="guest-top-banner">
@@ -313,6 +336,8 @@ export default function App() {
         onLogout={handleLogout}
         currentLang={currentLang}
         onToggleLang={toggleLanguage}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         t={t}
       />
 
