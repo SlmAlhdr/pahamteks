@@ -4402,6 +4402,8 @@ textarea {
 }
 
 .quiz-setting-card {
+    display: grid;
+    grid-template-rows: 1fr auto;
     padding: 16px 20px;
     background: var(--card-bg);
     border-color: var(--card-border);
@@ -4455,6 +4457,10 @@ textarea {
 @media (max-width: 540px) {
     .quiz-settings-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quiz-setting-card {
+        display: block;
     }
 
     .quiz-setting-label {
