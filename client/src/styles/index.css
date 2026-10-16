@@ -96,8 +96,9 @@ body {
     min-height: 62px;
     background: var(--navbar-bg);
     border-bottom: 1px solid var(--card-border);
-    z-index: 10; 
-    position: relative;
+    z-index: 100;
+    position: sticky;
+    top: 0;
     box-sizing: border-box;
 }
 
@@ -190,6 +191,21 @@ body {
     z-index: 5;
 }
 
+.nav-appearance-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px;
+    background: var(--nav-surface);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+}
+
+.nav-appearance-controls .lang-toggle {
+    margin: 0;
+    border-color: transparent;
+}
+
 .user-profile-header {
     display: flex;
     align-items: center;
@@ -212,7 +228,23 @@ body {
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
-    margin-right: 12px;
+    margin: 0;
+}
+
+.nav-appearance-controls .theme-toggle {
+    background: var(--nav-control-bg);
+}
+
+@media (min-width: 1240px) {
+    .nav-links-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: max-content;
+        max-width: calc(100vw - 700px);
+        margin: 0;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .theme-toggle > span {
@@ -4704,5 +4736,143 @@ textarea {
 :root[data-theme="light"] .admin-dashboard-button.secondary {
     background: #edf1f2;
     border-color: #cbd3d6;
+    color: #171717;
+}
+
+/* Additional light-theme surfaces and admin text contrast fixes. */
+:root[data-theme="light"] .nav-appearance-controls {
+    background: #e3e7e9;
+    border-color: #cbd1d4;
+}
+
+:root[data-theme="light"] .nav-appearance-controls .lang-toggle {
+    background: transparent;
+    color: #171717;
+}
+
+:root[data-theme="light"] .nav-appearance-controls .theme-toggle {
+    background: #f8f9fa;
+    color: #171717;
+}
+
+:root[data-theme="light"] .feature-card {
+    background: #e6e9eb;
+    border-color: #cbd1d4;
+}
+
+:root[data-theme="light"] .feature-card:hover {
+    background: #dfe4e6;
+}
+
+:root[data-theme="light"] .modal-box,
+:root[data-theme="light"] .welcome-card-wrapper {
+    background: #e6e9eb;
+    border-color: #c8ced1;
+}
+
+:root[data-theme="light"] .welcome-tabs {
+    background: #dce1e3;
+    border-color: #c4cbce;
+}
+
+:root[data-theme="light"] .watermark-footer {
+    border-top-color: #aeb7bb;
+}
+
+:root[data-theme="light"] .admin-dashboard-card {
+    background: #e6e9eb;
+    border-color: #cbd1d4;
+    color: #171717;
+}
+
+:root[data-theme="light"] .admin-dashboard-page h1,
+:root[data-theme="light"] .admin-dashboard-page h2,
+:root[data-theme="light"] .admin-dashboard-page h3,
+:root[data-theme="light"] .admin-dashboard-page p,
+:root[data-theme="light"] .admin-dashboard-page .admin-stat-label,
+:root[data-theme="light"] .admin-dashboard-page .admin-stat-time,
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-footnote,
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-empty,
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-table td,
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-table th {
+    color: #303638;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-eyebrow,
+:root[data-theme="light"] .admin-dashboard-page .admin-log-action {
+    color: #087e73;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-stats strong {
+    color: #171717;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-stats .admin-stat-good {
+    color: #237a35;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-button {
+    background: #087e73;
+    border-color: #087e73;
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-button.secondary {
+    background: #dfe4e6;
+    border-color: #bcc5c9;
+    color: #171717;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-search {
+    background: #ffffff;
+    border-color: #b9c2c6;
+    color: #171717;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-table-wrap {
+    border-color: #c4cbce;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-table th,
+:root[data-theme="light"] .admin-dashboard-page .admin-logs-table td {
+    border-bottom-color: #d2d8da;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-tab-btn {
+    background: #dfe4e6;
+    border-color: #c4cbce;
+    color: #303638;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-tab-btn:hover {
+    background: #d2dadd;
+    color: #171717;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-tab-btn.active {
+    background: #087e73;
+    border-color: #087e73;
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-dashboard-notice {
+    background: #fff1d6;
+    border-color: #e1bd75;
+    color: #674414;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-badge-admin {
+    background: #fff0bc;
+    border-color: #c69a27;
+    color: #614800;
+}
+
+:root[data-theme="light"] .admin-dashboard-page .admin-badge-user {
+    background: #d9f0ed;
+    border-color: #80bdb5;
+    color: #075d55;
+}
+
+:root[data-theme="light"] .admin-login-link:hover {
     color: #171717;
 }

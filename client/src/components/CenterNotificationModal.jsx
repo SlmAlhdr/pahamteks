@@ -90,7 +90,8 @@ export default function CenterNotificationModal({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '0.72rem',
+            fontSize: '1.35rem',
+            lineHeight: 1,
             transition: '0.2s'
           }}
           onMouseEnter={(e) => {
@@ -104,7 +105,7 @@ export default function CenterNotificationModal({
           title="Tutup"
           aria-label="Tutup pemberitahuan"
         >
-          Tutup
+          <span aria-hidden="true">×</span>
         </button>
 
         {icon && <div

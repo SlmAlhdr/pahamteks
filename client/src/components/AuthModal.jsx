@@ -210,8 +210,8 @@ export default function AuthModal({
           <h2 style={{ fontSize: '1.6rem', margin: 0, fontWeight: 900, color: '#ffffff' }}>
             {getModalTitle()}
           </h2>
-          <button className="modal-close-btn" onClick={onClose} title="Tutup / Close">
-            Tutup
+          <button type="button" className="modal-close-btn" onClick={onClose} title="Tutup / Close" aria-label="Tutup">
+            <span aria-hidden="true">×</span>
           </button>
         </div>
 
