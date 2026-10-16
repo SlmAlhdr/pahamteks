@@ -242,6 +242,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
         const res = await fetchChallenge({
           variables: { category: selectedTopic, lang: currentLang, count: expectedQuestionCount }
         });
+        if (res.error) throw res.error;
         const generatedQuestions = res.data?.generateChallenge;
         if (!Array.isArray(generatedQuestions) || generatedQuestions.length !== expectedQuestionCount) {
           throw new Error(currentLang === 'en'
@@ -261,6 +262,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             count: expectedQuestionCount
           }
         });
+        if (res.error) throw res.error;
         const generatedQuestions = res.data?.generateQuiz;
         if (!Array.isArray(generatedQuestions) || generatedQuestions.length !== expectedQuestionCount) {
           throw new Error(currentLang === 'en'
