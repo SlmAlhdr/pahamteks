@@ -524,16 +524,18 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                 <label className="quiz-setting-label" htmlFor="quiz-level">
                   {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
                 </label>
-                <select
-                  id="quiz-level"
-                  className="styled-select"
-                  value={level}
-                  onChange={(e) => setLevel(e.target.value)}
-                >
-                  <option value="Pemula">{t('opt_level_1')}</option>
-                  <option value="Menengah">{t('opt_level_2')}</option>
-                  <option value="Mahir">{t('opt_level_3')}</option>
-                </select>
+                <div className="quiz-select-wrap">
+                  <select
+                    id="quiz-level"
+                    className="styled-select"
+                    value={level}
+                    onChange={(e) => setLevel(e.target.value)}
+                  >
+                    <option value="Pemula">{t('opt_level_1')}</option>
+                    <option value="Menengah">{t('opt_level_2')}</option>
+                    <option value="Mahir">{t('opt_level_3')}</option>
+                  </select>
+                </div>
               </div>
 
               {mode === 'learn' && (
@@ -541,18 +543,20 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
                   <label className="quiz-setting-label" htmlFor="quiz-question-count">
                     {currentLang === 'en' ? 'Number of questions' : 'Jumlah pertanyaan'}
                   </label>
-                  <select
-                    id="quiz-question-count"
-                    className="styled-select"
-                    value={questionCount}
-                    onChange={(e) => setQuestionCount(Number(e.target.value))}
-                  >
-                    {[5, 10, 15, 20].map((count) => (
-                      <option key={count} value={count}>
-                        {currentLang === 'en' ? `${count} questions` : `${count} pertanyaan`}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="quiz-select-wrap">
+                    <select
+                      id="quiz-question-count"
+                      className="styled-select"
+                      value={questionCount}
+                      onChange={(e) => setQuestionCount(Number(e.target.value))}
+                    >
+                      {[5, 10, 15, 20].map((count) => (
+                        <option key={count} value={count}>
+                          {currentLang === 'en' ? `${count} questions` : `${count} pertanyaan`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               )}
             </div>

@@ -4416,6 +4416,42 @@ textarea {
     font-weight: 800;
 }
 
+.quiz-select-wrap {
+    position: relative;
+}
+
+.quiz-select-wrap::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 22px;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: translateY(-50%) rotate(-45deg);
+    transition: transform 180ms ease;
+    pointer-events: none;
+}
+
+.quiz-select-wrap:focus-within::after {
+    transform: translateY(-65%) rotate(45deg);
+}
+
+.quiz-select-wrap:has(> .styled-select:open)::after {
+    transform: translateY(-65%) rotate(45deg);
+}
+
+.quiz-select-wrap > .styled-select {
+    background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-select-wrap::after {
+        transition: none;
+    }
+}
+
 @media (max-width: 540px) {
     .quiz-settings-grid {
         grid-template-columns: minmax(0, 1fr);
