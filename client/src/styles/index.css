@@ -183,7 +183,7 @@ body {
 .nav-right-balancer { 
     display: flex; 
     align-items: center; 
-    gap: 12px;
+    column-gap: 14px;
     flex: 0 0 auto;
     justify-content: flex-end; /* nempel di pojok kanan */
     z-index: 5;
@@ -207,11 +207,20 @@ body {
     background: var(--nav-control-bg);
     color: var(--text-main);
     font: inherit;
-    font-size: 0.82rem;
-    font-weight: 800;
+    font-size: 0;
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
+    margin-right: 12px;
+}
+
+.theme-toggle > span {
+    display: none !important;
+}
+
+.theme-toggle svg {
+    display: block;
+    flex: 0 0 18px;
 }
 
 .theme-toggle:hover {
@@ -369,7 +378,12 @@ body {
     text-align: center; 
     margin-top: 10px; 
     width: 100%; 
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+    color: var(--text-main);
+}
+.hero h1,
+.hero p {
+    color: var(--text-main);
+    text-shadow: none;
 }
 .hero h1 { 
     font-size: 2.5rem; 
@@ -378,7 +392,6 @@ body {
 }
 .hero p { 
     font-size: 1.1rem; 
-    color: rgba(255,255,255,0.85); 
     margin-bottom: 30px; 
     font-weight: 700; 
 }
@@ -4381,3 +4394,75 @@ textarea {
 :root[data-theme="dark"] .nav-links { background: var(--nav-surface); }
 :root[data-theme="dark"] .nav-links .lang-toggle,
 :root[data-theme="dark"] .nav-right-balancer .lang-toggle { background: var(--nav-control-bg); }
+
+/* Light mode text and surfaces for content that was designed with fixed dark colors. */
+:root[data-theme="light"] .welcome-hero-title {
+    background-image: linear-gradient(135deg, #171717 35%, #087e73 78%, #347a16 100%);
+}
+
+:root[data-theme="light"] .welcome-hero-desc,
+:root[data-theme="light"] .welcome-badge-pill,
+:root[data-theme="light"] .perk-pill,
+:root[data-theme="light"] .welcome-tab-btn,
+:root[data-theme="light"] .showcase-main-title,
+:root[data-theme="light"] .showcase-main-sub,
+:root[data-theme="light"] .showcase-desc,
+:root[data-theme="light"] .showcase-perk-list li,
+:root[data-theme="light"] .showcase-divider-badge,
+:root[data-theme="light"] .mock-text strong,
+:root[data-theme="light"] .mock-text span,
+:root[data-theme="light"] .code-filename,
+:root[data-theme="light"] .dict-type-pill,
+:root[data-theme="light"] .dict-mock-meaning,
+:root[data-theme="light"] .dict-mock-synonyms span,
+:root[data-theme="light"] .coding-lang-name {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .welcome-badge-pill,
+:root[data-theme="light"] .perk-pill {
+    background: #f1f4f4;
+    border-color: #d4dddd;
+}
+
+:root[data-theme="light"] .welcome-tabs {
+    background: #eceff0;
+    border-color: #d4d9db;
+}
+
+:root[data-theme="light"] .welcome-card-wrapper h3 {
+    color: var(--text-main) !important;
+}
+
+:root[data-theme="light"] .welcome-tab-btn.active {
+    background: #ffffff;
+    color: #171717;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+:root[data-theme="light"] .showcase-row {
+    background: #f3f5f5;
+    border-color: #d4dada;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .showcase-divider-badge {
+    background: #e8eded;
+    border-color: #cbd5d5;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .mock-card,
+:root[data-theme="light"] .dict-mock-searchbar,
+:root[data-theme="light"] .avatar-chip {
+    background: #f1f3f4;
+    border-color: #d8dddf;
+}
+
+:root[data-theme="light"] .coding-lang-item {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .text-yellow {
+    color: #806000;
+}
