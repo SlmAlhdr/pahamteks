@@ -67,4 +67,8 @@ Thumbs.db
 /requirements.txt
 api/index.py
 
+# Keep environment example/template files local; do not publish them to GitHub.
+*.example
+*.example.*
+
 
