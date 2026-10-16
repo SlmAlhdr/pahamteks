@@ -7,10 +7,11 @@ Panduan operasional ini memakai **Vercel** untuk hosting aplikasi, **TiDB Cloud*
 ## 1. Deploy aplikasi ke Vercel
 
 1. Push branch deployment ke GitHub dan impor repositori PahamTeks ke Vercel.
-2. Pastikan Root Directory memakai root repo. Konfigurasi repo menjalankan `npm install --include=dev`, `npm --prefix client run build`, menghasilkan `client/dist`, dan me-rewrite `/graphql`, `/health`, serta `/healthz` ke fungsi `api/graphql.js`.
-3. Sebelum deploy pertama, hubungkan TiDB Cloud (bagian 2) dan isi environment variables backend (bagian 3).
-4. Pilih Production untuk domain produksi. Atur Preview terpisah bila diperlukan; jangan arahkan Preview ke database produksi tanpa persetujuan tim.
-5. Deploy, lalu periksa halaman utama, `/healthz`, registrasi/login, dan penyimpanan progres. Push ke branch yang terhubung akan memicu deployment sesuai pengaturan proyek Vercel.
+2. Buat **satu proyek** dari root repo (`./`). Pada layar seperti impor di Vercel, pilih **Other** sebagai framework/preset; jangan pilih **Services** dan jangan impor `client` atau `server` sebagai proyek terpisah. Root `vercel.json` mengatur build frontend dan fungsi API bersama dalam satu domain.
+3. Pastikan pengaturan proyek memakai Install Command `npm install --include=dev`, Build Command `npm --prefix client run build`, dan Output Directory `client/dist`. Root `vercel.json` sudah menetapkan nilai ini serta rewrite `/graphql`, `/health`, dan `/healthz` ke fungsi `api/graphql.js`.
+4. Sebelum deploy pertama, hubungkan TiDB Cloud (bagian 2) dan isi environment variables backend (bagian 3).
+5. Pilih Production untuk domain produksi. Atur Preview terpisah bila diperlukan; jangan arahkan Preview ke database produksi tanpa persetujuan tim.
+6. Deploy, lalu periksa halaman utama, `/healthz`, registrasi/login, dan penyimpanan progres. Push ke branch yang terhubung akan memicu deployment sesuai pengaturan proyek Vercel.
 
 ## 2. Hubungkan TiDB Cloud
 
@@ -18,7 +19,7 @@ Integrasi Vercel Marketplace adalah cara yang disarankan untuk TiDB Cloud Starte
 
 1. Buka [TiDB Cloud di Vercel Marketplace](https://vercel.com/marketplace/tidb-cloud) dan pilih **Add Integration**.
 2. Pilih scope dan project Vercel PahamTeks, lalu lanjutkan ke TiDB Cloud.
-3. Pilih organisasi/project TiDB, tipe koneksi **Cluster**, lalu pilih atau buat cluster dan database.
+3. Pilih organisasi/project TiDB, tipe koneksi **Cluster**, lalu pilih cluster dan database yang memang ingin dipakai aplikasi. Untuk menjaga akun lama, hubungkan kembali database lama yang sama; jangan membuat database kosong baru sebagai pengganti.
 4. Pilih framework **General** agar integrasi menyediakan variabel `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, dan `TIDB_DATABASE`.
 5. Kembali ke Vercel → project → **Settings → Environment Variables**. Pastikan kelima variabel tersebut tersedia untuk environment yang akan dideploy.
 6. Redeploy setelah variabel tersedia. Backend saat ini menerima `TIDB_*` langsung dan mengaktifkan TLS ketika menggunakan `TIDB_HOST` (kecuali `DB_SSL=false`).
@@ -29,14 +30,28 @@ Nilai hostname, username, password, port, dan nama database dibuat oleh TiDB Clo
 
 | Key | Sumber / aturan |
 | --- | --- |
-| `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, `TIDB_DATABASE` | Dibuat oleh integrasi TiDB untuk framework General; rahasiakan kredensial. Alternatif manual memakai nama `DB_*`. |
+| `TIDB_HOST`, `TIDB_PORT`, `TIDB_USER`, `TIDB_PASSWORD`, `TIDB_DATABASE` | Wajib untuk data akun/progres persisten. Dibuat integrasi TiDB untuk framework General; gunakan cluster/database lama bila ingin mempertahankan akun. Alternatif manual memakai nama `DB_*`. |
 | `JWT_SECRET` | Secret acak privat minimal 32 karakter. Mengubahnya membatalkan sesi yang sudah terbit. |
-| `GEMINI_API_KEY_1` | Kunci API Gemini untuk fitur AI; `_2`–`_9` opsional untuk rotasi. |
-| `EMAIL_USER`, `EMAIL_PASS` | Kredensial SMTP/App Password untuk OTP, bila fitur akun email dipakai. |
-| `ADMIN_EMAILS`, `ADMIN_PASSWORD` | Opsional, untuk admin; jangan pernah menaruh `ADMIN_PASSWORD` di frontend. |
+| `GEMINI_API_KEY_1` atau `GEMINI_API_KEY` | Kunci API Gemini untuk fitur AI; `_2`–`_9` opsional untuk rotasi. |
+| `EMAIL_USER`, `EMAIL_PASS` | Dibutuhkan untuk pengiriman OTP email; isi kredensial SMTP/App Password yang valid. |
+| `GEMINI_MODEL` | Opsional; jika tidak diisi, backend memakai model bawaan. |
+| `ADMIN_EMAILS`, `ADMIN_PASSWORD` | Opsional, untuk admin. Password admin minimal 16 karakter; jangan pernah menaruhnya di frontend. |
 | `ALLOWED_ORIGINS` | Opsional untuk origin tambahan; isi hanya origin frontend yang diperlukan. |
+| `NODE_ENV` | Isi `production` pada environment Production. |
+
+Tambahkan setiap variabel lewat **Settings → Environment Variables** dan centang environment yang sesuai (Production, Preview, atau Development). Nilai database, Gemini, email, dan JWT tidak tersedia otomatis kecuali integrasi/provider mengisinya. Setelah mengubah variabel, lakukan redeploy.
+
+Buat nilai `JWT_SECRET` baru secara lokal lewat PowerShell, lalu tempel hasilnya langsung ke Vercel tanpa mengirimkannya lewat chat atau Git:
+
+```powershell
+$jwtBytes = New-Object byte[] 48
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($jwtBytes)
+[Convert]::ToBase64String($jwtBytes)
+```
 
 `server/.env` lokal tetap untuk development. Gunakan `DB_HOST=localhost` hanya bila memang MySQL lokal tersedia. File tersebut tidak disalin ke Vercel dan tidak boleh dipush.
+
+Akun yang tersimpan di SQLite lokal atau database lain tidak otomatis berpindah ke TiDB saat deploy. Jika akun lama hanya ada di lokal, database tersebut perlu dimigrasikan sebelum pengguna memakai deployment baru. Jangan mengarahkan Vercel ke `localhost`; fungsi Vercel tidak dapat mengakses database di laptop.
 
 ## 3. Pasang UptimeRobot
 

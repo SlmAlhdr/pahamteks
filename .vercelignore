@@ -1,0 +1,7 @@
+archive/
+docs/
+scripts/
+server/backups/
+server/data/
+server/.env.example
+server/vercel-env.example

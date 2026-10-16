@@ -6,7 +6,7 @@ import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 const JWT_ISSUER = 'pahamteks-api';
 const JWT_AUDIENCE = 'pahamteks-client';
 
-const EMERGENCY_FALLBACK_SECRET = 'pahamteks-emergency-fallback-session-secret-key-32-chars-long';
+const LOCAL_DEVELOPMENT_SECRET = 'pahamteks-local-development-secret-only-32-chars';
 const BCRYPT_SALT_ROUNDS = 10;
 
 /**
@@ -84,11 +84,11 @@ export function verifyOtpSignature(email, otpCode, signature) {
 function getJwtSecret() {
     const secret = process.env.JWT_SECRET?.trim();
     if (!secret || secret.length < 32) {
-        if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+        if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
             throw new Error('JWT_SECRET must be configured with at least 32 characters in production.');
         }
-        console.warn('⚠️ [JWT WARN] JWT_SECRET belum disetel di environment Vercel. Menggunakan session secret darurat.');
-        return EMERGENCY_FALLBACK_SECRET;
+        console.warn('⚠️ [JWT WARN] JWT_SECRET belum disetel. Secret lokal development sementara digunakan.');
+        return LOCAL_DEVELOPMENT_SECRET;
     }
     return secret;
 }
@@ -96,7 +96,10 @@ function getJwtSecret() {
 export function assertJwtSecretConfigured() {
     const secret = process.env.JWT_SECRET?.trim();
     if (!secret || secret.length < 32) {
-        console.warn('⚠️ [AUTH CONFIG] Perhatian: JWT_SECRET belum disetel di Vercel Dashboard -> Environment Variables. Harap tambahkan JWT_SECRET untuk keamanan maksimal.');
+        if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+            throw new Error('JWT_SECRET must be configured with at least 32 characters in production.');
+        }
+        console.warn('⚠️ [AUTH CONFIG] JWT_SECRET belum disetel untuk development lokal.');
     }
 }
 

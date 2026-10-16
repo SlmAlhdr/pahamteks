@@ -89,6 +89,10 @@ Backend kita bangun dengan **Node.js (ES Modules)**:
 2. **Monitoring Endpoint (`GET /healthz`)**:
    - Endpoint publik ringan yang mengembalikan HTTP 200 dan `{ "status": "OK" }` untuk liveness check UptimeRobot.
    - `GET /health` menampilkan telemetri internal dan memerlukan token admin; jangan daftarkan endpoint ini sebagai monitor publik.
+3. **Pola deployment Vercel**:
+   - Satu proyek memakai root repository (`./`) dengan framework **Other**. `vercel.json` membangun `client/dist` dan mengarahkan endpoint API ke `api/graphql.js`.
+   - Jangan deploy `client` dan `server` sebagai proyek terpisah: keduanya perlu berbagi domain agar frontend dapat memanggil `/graphql`.
+   - Backend menolak startup produksi jika `JWT_SECRET` tidak valid. Database produksi wajib menunjuk ke TiDB persisten; jangan gunakan `localhost` atau SQLite `/tmp` di Vercel.
 
 ---
 
