@@ -4410,6 +4410,7 @@ textarea {
 .quiz-setting-label {
     display: block;
     margin: 0 0 8px;
+    min-height: 2.8em;
     color: var(--text-muted);
     font-size: 0.98rem;
     font-weight: 800;
@@ -4418,6 +4419,10 @@ textarea {
 @media (max-width: 540px) {
     .quiz-settings-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quiz-setting-label {
+        min-height: 0;
     }
 }
 
