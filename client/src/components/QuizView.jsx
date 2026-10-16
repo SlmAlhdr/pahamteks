@@ -175,6 +175,7 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
 
   const [selectedTopic, setSelectedTopic] = useState(defaultTopic);
   const [level, setLevel] = useState('Pemula');
+  const [questionCount, setQuestionCount] = useState(5);
   const [openGroup, setOpenGroup] = useState(0);
 
   // Progres Bab Pembelajaran
@@ -245,7 +246,8 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             lang: currentLang,
             unit: targetUnitObj.unit,
             topicDetail: currentLang === 'en' ? targetUnitObj.titleEn : targetUnitObj.titleId,
-            refresh: forceRefresh
+            refresh: forceRefresh,
+            count: questionCount
           }
         });
         if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
@@ -517,19 +519,42 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             </div>
 
             {/* Tingkat Kesulitan */}
-            <div className="input-group" style={{ padding: '16px 20px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '0.98rem', color: 'var(--text-muted)' }}>
-                {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
-              </h3>
-              <select
-                className="styled-select"
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
-              >
-                <option value="Pemula">{t('opt_level_1')}</option>
-                <option value="Menengah">{t('opt_level_2')}</option>
-                <option value="Mahir">{t('opt_level_3')}</option>
-              </select>
+            <div className={`quiz-settings-grid ${mode === 'learn' ? '' : 'single-setting'}`}>
+              <div className="input-group quiz-setting-card">
+                <label className="quiz-setting-label" htmlFor="quiz-level">
+                  {mode === 'learn' ? t('setup_level') : t('setup_code_level')} (Rekomendasi Bab: {activeUnitObj.level})
+                </label>
+                <select
+                  id="quiz-level"
+                  className="styled-select"
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                >
+                  <option value="Pemula">{t('opt_level_1')}</option>
+                  <option value="Menengah">{t('opt_level_2')}</option>
+                  <option value="Mahir">{t('opt_level_3')}</option>
+                </select>
+              </div>
+
+              {mode === 'learn' && (
+                <div className="input-group quiz-setting-card">
+                  <label className="quiz-setting-label" htmlFor="quiz-question-count">
+                    {currentLang === 'en' ? 'Number of questions' : 'Jumlah pertanyaan'}
+                  </label>
+                  <select
+                    id="quiz-question-count"
+                    className="styled-select"
+                    value={questionCount}
+                    onChange={(e) => setQuestionCount(Number(e.target.value))}
+                  >
+                    {[5, 10, 15, 20].map((count) => (
+                      <option key={count} value={count}>
+                        {currentLang === 'en' ? `${count} questions` : `${count} pertanyaan`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Error Banner */}

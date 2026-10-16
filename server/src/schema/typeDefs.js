@@ -85,6 +85,7 @@ export const typeDefs = `#graphql
             unit: Int
             topicDetail: String
             refresh: Boolean
+            count: Int
         ): [QuizItem!]!
         generateChallenge(category: String!, lang: String): [QuizItem!]!
         me: User

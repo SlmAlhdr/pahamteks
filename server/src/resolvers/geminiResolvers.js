@@ -91,17 +91,18 @@ Pedoman Penulisan:
         },
 
         // Buat soal sesuai topik/unit dan gunakan cache kecuali diminta refresh.
-        generateQuiz: async (_, { categories, level, lang = 'id', unit = 1, topicDetail = '', refresh = false }) => {
+        generateQuiz: async (_, { categories, level, lang = 'id', unit = 1, topicDetail = '', refresh = false, count = 5 }) => {
             const isEn = lang === 'en';
+            const questionCount = Math.min(20, Math.max(1, Math.trunc(Number(count) || 5)));
             const cleanCategories = Array.isArray(categories) ? categories : [categories || 'General'];
             const topicStr = cleanCategories.sort().join('_');
-            const cacheKey = `${lang}_${level}_${topicStr}_u${unit}_${topicDetail || ''}`;
+            const cacheKey = `${lang}_${level}_${topicStr}_u${unit}_n${questionCount}_${topicDetail || ''}`;
 
             if (refresh && quizCache.has(cacheKey)) {
                 quizCache.delete(cacheKey);
             } else if (!refresh && quizCache.has(cacheKey)) {
                 const cached = [...quizCache.get(cacheKey)];
-                return cached.sort(() => Math.random() - 0.5);
+                return cached.sort(() => Math.random() - 0.5).slice(0, questionCount);
             }
 
             const unitFocusMap = {
@@ -116,7 +117,7 @@ Pedoman Penulisan:
             const seed = Math.floor(Math.random() * 9000) + 1000;
 
             const prompt = isEn
-                ? `You are an expert curriculum designer. Create 5 FRESH, ENGAGING, and UNIQUE multiple-choice questions for ${level || 'Beginner'} level on: ${cleanCategories.join(', ')}.\n` +
+                ? `You are an expert curriculum designer. Create exactly ${questionCount} FRESH, ENGAGING, and UNIQUE multiple-choice questions for ${level || 'Beginner'} level on: ${cleanCategories.join(', ')}.\n` +
                   `Focus specifically on ${selectedFocus}.\n` +
                   `Question Variety Seed #${seed}: Make sure questions are practical, varied, and not repetitive clichés. For coding, include real short code snippets. For languages, test realistic contextual usage.\n\n` +
                   `Format as exact JSON Array:\n` +
@@ -132,7 +133,7 @@ Pedoman Penulisan:
                   `- In 'options', provide ONLY pure option text without 'A.', 'B.', '1.', etc.\n` +
                   `- 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') matching the correct option index.\n` +
                   `- Replace double quotes (") inside questions/options with single quotes ('). Output ONLY valid JSON.`
-                : `Kamu adalah kurator materi edukasi profesional. Buat 5 soal kuis pilihan ganda yang SEGAR, MENARIK, dan TIDAK MONOTON (Anti-Repetisi) tingkat ${level || 'Pemula'} materi: ${cleanCategories.join(', ')}.\n` +
+                : `Kamu adalah kurator materi edukasi profesional. Buat tepat ${questionCount} soal kuis pilihan ganda yang SEGAR, MENARIK, dan TIDAK MONOTON (Anti-Repetisi) tingkat ${level || 'Pemula'} materi: ${cleanCategories.join(', ')}.\n` +
                   `Fokus khusus materi: ${selectedFocus}.\n` +
                   `Variasi Soal #${seed}: Buat soal yang aplikatif dan kaya konteks (bukan pertanyaan hafalan klise yang membosankan). Untuk koding, sertakan potongan kode nyata atau tebak alur. Untuk bahasa dunia, uji pemahaman konteks percakapan nyata.\n\n` +
                   `Format JSON Array persis ini:\n` +
@@ -153,8 +154,9 @@ Pedoman Penulisan:
                 const raw = await generateSafeContent(prompt);
                 const quizList = parseSafeJson(raw);
                 if (Array.isArray(quizList) && quizList.length > 0) {
-                    quizCache.set(cacheKey, quizList);
-                    return quizList;
+                    const selectedQuiz = quizList.slice(0, questionCount);
+                    quizCache.set(cacheKey, selectedQuiz);
+                    return selectedQuiz;
                 }
             } catch (err) {
                 console.warn(`⚠️ [Gemini Quiz Fallback] Gagal memuat soal AI (${err.message}). Menggunakan bank soal darurat.`);

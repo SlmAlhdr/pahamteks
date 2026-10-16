@@ -30,8 +30,8 @@ export const GET_DICTIONARY = gql`
 `;
 
 export const GENERATE_QUIZ = gql`
-  query GenerateQuiz($categories: [String!]!, $level: String!, $lang: String, $unit: Int, $topicDetail: String, $refresh: Boolean) {
-    generateQuiz(categories: $categories, level: $level, lang: $lang, unit: $unit, topicDetail: $topicDetail, refresh: $refresh) {
+  query GenerateQuiz($categories: [String!]!, $level: String!, $lang: String, $unit: Int, $topicDetail: String, $refresh: Boolean, $count: Int) {
+    generateQuiz(categories: $categories, level: $level, lang: $lang, unit: $unit, topicDetail: $topicDetail, refresh: $refresh, count: $count) {
       instruction
       question
       options
