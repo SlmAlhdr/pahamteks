@@ -4436,10 +4436,6 @@ textarea {
     pointer-events: none;
 }
 
-.quiz-select-wrap:focus-within::after {
-    transform: translateY(-65%) rotate(45deg);
-}
-
 .quiz-select-wrap:has(> .styled-select:open)::after {
     transform: translateY(-65%) rotate(45deg);
 }
