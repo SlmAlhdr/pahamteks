@@ -3,6 +3,9 @@
     --page-bg: #000000;
     --card-bg: #111111;
     --card-border: #333333;
+    --navbar-bg: #141a1f;
+    --nav-surface: #202930;
+    --nav-control-bg: #28333b;
     --btn-green: #b4f27e; 
     --btn-cyan: #7ef2e0; 
     --btn-grey: #c8d6ce;
@@ -18,6 +21,9 @@
     --page-bg: #ffffff;
     --card-bg: #ffffff;
     --card-border: #d4d4d4;
+    --navbar-bg: #f1f3f4;
+    --nav-surface: #e3e7e9;
+    --nav-control-bg: #f8f9fa;
     --text-main: #171717;
     --text-muted: #555555;
     --btn-green: #347a16;
@@ -87,7 +93,7 @@ body {
     justify-content: space-between; 
     margin: 0 0 10px; 
     min-height: 62px;
-    background: var(--page-bg);
+    background: var(--navbar-bg);
     border-bottom: 1px solid var(--card-border);
     z-index: 10; 
     position: relative;
@@ -127,7 +133,7 @@ body {
 .nav-links { 
     display: flex; 
     gap: 4px; 
-    background: var(--card-bg);
+    background: var(--nav-surface);
     padding: 5px 8px; 
     border-radius: 30px; 
     align-items: center; 
@@ -158,7 +164,7 @@ body {
 .btn-nav:hover:not(.active) { color: var(--text-main); }
 
 .lang-toggle { 
-    background: var(--card-bg);
+    background: var(--nav-control-bg);
     color: var(--text-main);
     border: 1px solid var(--card-border); 
     padding: 8px 12px; 
@@ -177,6 +183,7 @@ body {
 .nav-right-balancer { 
     display: flex; 
     align-items: center; 
+    gap: 12px;
     flex: 0 0 auto;
     justify-content: flex-end; /* nempel di pojok kanan */
     z-index: 5;
@@ -192,12 +199,12 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    min-height: 38px;
-    padding: 7px 12px;
+    width: 38px;
+    height: 38px;
+    padding: 8px;
     border: 1px solid var(--card-border);
     border-radius: 20px;
-    background: var(--card-bg);
+    background: var(--nav-control-bg);
     color: var(--text-main);
     font: inherit;
     font-size: 0.82rem;
@@ -295,10 +302,14 @@ body {
 :root[data-theme="light"] .nav-links,
 :root[data-theme="light"] .nav-links .lang-toggle,
 :root[data-theme="light"] .nav-right-balancer .lang-toggle {
-    background: #ffffff;
+    background: var(--navbar-bg);
     color: #171717;
     border-color: #d4d4d4;
 }
+
+:root[data-theme="light"] .nav-links { background: var(--nav-surface); }
+:root[data-theme="light"] .nav-links .lang-toggle,
+:root[data-theme="light"] .nav-right-balancer .lang-toggle { background: var(--nav-control-bg); }
 
 .btn-logout { 
     background: var(--wrong); 
@@ -4362,7 +4373,11 @@ textarea {
 :root[data-theme="dark"] .nav-links,
 :root[data-theme="dark"] .nav-links .lang-toggle,
 :root[data-theme="dark"] .nav-right-balancer .lang-toggle {
-    background: #000000;
+    background: var(--navbar-bg);
     color: #f5f5f5;
     border-color: #333333;
 }
+
+:root[data-theme="dark"] .nav-links { background: var(--nav-surface); }
+:root[data-theme="dark"] .nav-links .lang-toggle,
+:root[data-theme="dark"] .nav-right-balancer .lang-toggle { background: var(--nav-control-bg); }

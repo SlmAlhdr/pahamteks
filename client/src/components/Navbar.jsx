@@ -106,7 +106,6 @@ export default function Navbar({
               </>
             )}
           </svg>
-          <span>{theme === 'dark' ? 'Siang' : 'Malam'}</span>
         </button>
         {user && !user.isGuest ? (
           <div className="user-profile-header">
