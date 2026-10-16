@@ -602,7 +602,7 @@ export default function WelcomePortal({
           <div>
             {t('guest_warning_desc')}
           </div>
-          <div style={{ marginTop: '4px', fontSize: '0.82rem', color: 'rgba(255, 234, 167, 0.85)' }}>
+          <div className="guest-warning-tip">
             {t('guest_warning_tip')}
           </div>
         </div>

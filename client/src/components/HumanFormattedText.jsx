@@ -26,7 +26,7 @@ function renderInline(text) {
         const inner = bPart.slice(2, -2);
         // Cek apakah di dalam bold ada italic: *italic*
         return (
-          <strong key={`${idx}-${bIdx}`} style={{ color: '#fff', fontWeight: 800 }}>
+          <strong key={`${idx}-${bIdx}`} style={{ color: 'inherit', fontWeight: 800 }}>
             {renderItalicOnly(inner)}
           </strong>
         );

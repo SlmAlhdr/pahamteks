@@ -70,9 +70,9 @@ export default function KamusFloating({ t, currentLang }) {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 style={{
                   flex: 1,
-                  background: 'rgba(255,255,255,0.1)',
+                  background: 'var(--card-bg)',
                   border: '1px solid var(--card-border)',
-                  color: 'white',
+                  color: 'var(--text-main)',
                   padding: '10px 14px',
                   borderRadius: '10px',
                   fontSize: '0.92rem',
