@@ -4410,6 +4410,22 @@ textarea {
     background-image: linear-gradient(135deg, #171717 35%, #087e73 78%, #347a16 100%);
 }
 
+:root[data-theme="light"] .explanation-content,
+:root[data-theme="light"] .human-text-container,
+:root[data-theme="light"] .human-paragraph,
+:root[data-theme="light"] .human-list-item {
+    color: var(--text-main);
+}
+
+:root[data-theme="light"] .human-meta-row {
+    border-bottom-color: #d4dadd;
+}
+
+:root[data-theme="light"] .inline-code-pill {
+    background: #e9eef2;
+    color: #174c86;
+}
+
 :root[data-theme="light"] .welcome-hero-desc,
 :root[data-theme="light"] .welcome-badge-pill,
 :root[data-theme="light"] .perk-pill,
