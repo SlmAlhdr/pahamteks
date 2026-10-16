@@ -39,6 +39,36 @@ function parseSafeJson(rawText) {
     }
 }
 
+// Terima hanya soal objektif dengan empat opsi dan kunci jawaban yang cocok.
+function filterKnowledgeQuestions(items, lang = 'id') {
+    if (!Array.isArray(items)) return [];
+
+    const metaQuestionPattern = lang === 'en'
+        ? /\b(?:what do you think|in your opinion|what is your opinion|what is your experience|how do you feel|how do you learn|how do you study|best way (?:to )?learn|chapter\s+\d+|unit\s+\d+)\b/i
+        : /\b(?:menurut (?:kamu|anda)|apa pendapat|pendapatmu|pengalaman(?:mu| anda)?|bagaimana perasaan|cara (?:terbaik )?(?:untuk )?(?:belajar|menguasai)|bab\s+\d+|unit\s+\d+)\b/i;
+    const normalize = (value) => String(value || '').trim().replace(/^[A-D][.)]\s*/i, '').toLocaleLowerCase();
+    const seenQuestions = new Set();
+
+    return items.filter((item) => {
+        if (!item || typeof item.question !== 'string' || !item.question.trim()) return false;
+        if (metaQuestionPattern.test(item.question)) return false;
+        if (!Array.isArray(item.options) || item.options.length !== 4) return false;
+
+        const options = item.options.map((option) => typeof option === 'string' ? option.trim() : '');
+        if (options.some((option) => !option) || new Set(options.map(normalize)).size !== 4) return false;
+
+        const answer = String(item.answer || '').trim();
+        const answerIsLetter = /^[A-D]$/i.test(answer) || /^[A-D][.)]\s*/i.test(answer);
+        const answerIsOption = options.some((option) => normalize(option) === normalize(answer));
+        if (!answerIsLetter && !answerIsOption) return false;
+
+        const questionKey = normalize(item.question);
+        if (seenQuestions.has(questionKey)) return false;
+        seenQuestions.add(questionKey);
+        return true;
+    });
+}
+
 export const geminiResolvers = {
     Query: {
         languages: () => {
@@ -96,13 +126,16 @@ Pedoman Penulisan:
             const questionCount = Math.min(20, Math.max(1, Math.trunc(Number(count) || 5)));
             const cleanCategories = Array.isArray(categories) ? categories : [categories || 'General'];
             const topicStr = cleanCategories.sort().join('_');
-            const cacheKey = `knowledge_v2_${lang}_${level}_${topicStr}_u${unit}_n${questionCount}_${topicDetail || ''}`;
+            const cacheKey = `knowledge_v3_${lang}_${level}_${topicStr}_u${unit}_n${questionCount}_${topicDetail || ''}`;
 
             if (refresh && quizCache.has(cacheKey)) {
                 quizCache.delete(cacheKey);
             } else if (!refresh && quizCache.has(cacheKey)) {
                 const cached = [...quizCache.get(cacheKey)];
-                return cached.sort(() => Math.random() - 0.5).slice(0, questionCount);
+                if (cached.length === questionCount) {
+                    return cached.sort(() => Math.random() - 0.5);
+                }
+                quizCache.delete(cacheKey);
             }
 
             const unitFocusMap = {
@@ -119,7 +152,7 @@ Pedoman Penulisan:
             const prompt = isEn
                 ? `You are an expert curriculum designer. Create exactly ${questionCount} FRESH, ENGAGING, and UNIQUE multiple-choice questions for ${level || 'Beginner'} level on: ${cleanCategories.join(', ')}.\n` +
                   `Focus specifically on ${selectedFocus}.\n` +
-                  `Question Variety Seed #${seed}: Make questions varied and non-repetitive. Every question MUST assess objective knowledge of the subject and selected focus. Do not ask about the learner's personal experiences, opinions, preferences, habits, or biography. A language scenario is allowed only when the answer tests vocabulary, grammar, meaning, or comprehension; coding questions should test concepts, syntax, code output, debugging, or logic. Ensure each question has one objectively correct answer and plausible distractors.\n\n` +
+                  `Question Variety Seed #${seed}: Make questions varied and non-repetitive. Every question MUST assess objective knowledge of the subject and selected focus. Ask direct content questions, not questions about the chapter, learning strategies, or how to master the material. Do not ask about the learner's personal experiences, opinions, preferences, habits, or biography. A language scenario is allowed only when the answer tests vocabulary, grammar, meaning, or comprehension; coding questions should test concepts, syntax, code output, debugging, or logic. Ensure each question has one objectively correct answer and plausible distractors.\n\n` +
                   `Format as exact JSON Array:\n` +
                   `[\n` +
                   `  {\n` +
@@ -136,7 +169,7 @@ Pedoman Penulisan:
                   `- Replace double quotes (") inside questions/options with single quotes ('). Output ONLY valid JSON.`
                 : `Kamu adalah kurator materi edukasi profesional. Buat tepat ${questionCount} soal kuis pilihan ganda yang SEGAR, MENARIK, dan TIDAK MONOTON (Anti-Repetisi) tingkat ${level || 'Pemula'} materi: ${cleanCategories.join(', ')}.\n` +
                   `Fokus khusus materi: ${selectedFocus}.\n` +
-                  `Variasi Soal #${seed}: Buat soal yang bervariasi dan tidak monoton. Setiap soal WAJIB menguji pengetahuan objektif tentang materi dan fokus bab. Jangan menanyakan pengalaman pribadi, pendapat, preferensi, kebiasaan, atau riwayat hidup pemelajar. Konteks percakapan bahasa hanya boleh digunakan jika jawabannya menguji kosakata, tata bahasa, makna, atau pemahaman; soal koding harus menguji konsep, sintaks, keluaran kode, debugging, atau logika. Setiap soal harus memiliki satu jawaban yang benar secara objektif dan opsi pengecoh yang masuk akal.\n\n` +
+                  `Variasi Soal #${seed}: Buat soal yang bervariasi dan tidak monoton. Setiap soal WAJIB menguji pengetahuan objektif tentang isi materi dan fokus bab. Tanyakan langsung konsep/materi yang dipelajari, bukan tentang babnya, cara belajar, strategi belajar, atau cara menguasai materi. Jangan menanyakan pengalaman pribadi, pendapat, preferensi, kebiasaan, atau riwayat hidup pemelajar. Konteks percakapan bahasa hanya boleh digunakan jika jawabannya menguji kosakata, tata bahasa, makna, atau pemahaman; soal koding harus menguji konsep, sintaks, keluaran kode, debugging, atau logika. Setiap soal harus memiliki satu jawaban yang benar secara objektif dan opsi pengecoh yang masuk akal.\n\n` +
                   `Format JSON Array persis ini:\n` +
                   `[\n` +
                   `  {\n` +
@@ -154,44 +187,54 @@ Pedoman Penulisan:
 
             try {
                 const raw = await generateSafeContent(prompt);
-                const quizList = parseSafeJson(raw);
-                if (Array.isArray(quizList) && quizList.length > 0) {
-                    const selectedQuiz = quizList.slice(0, questionCount);
-                    quizCache.set(cacheKey, selectedQuiz);
-                    return selectedQuiz;
+                let quizList = [];
+                try {
+                    quizList = filterKnowledgeQuestions(parseSafeJson(raw), lang);
+                } catch (parseError) {
+                    console.warn('[Gemini Quiz] Jawaban AI tidak valid; meminta soal pengganti:', parseError.message);
                 }
+
+                if (quizList.length < questionCount) {
+                    const missingCount = questionCount - quizList.length;
+                    const previousQuestions = JSON.stringify(quizList.map((item) => item.question));
+                    const supplementPrompt = isEn
+                        ? `The first response did not contain enough valid questions. Generate exactly ${missingCount} ADDITIONAL unique multiple-choice questions for ${level || 'Beginner'} level on ${cleanCategories.join(', ')}, focused on ${selectedFocus}. Ask direct, objectively answerable subject-knowledge questions. Do not ask about the chapter, study strategies, opinions, or personal experience. Do not repeat these questions: ${previousQuestions}. Return ONLY a JSON array with exactly ${missingCount} objects, each with instruction, question, exactly four string options, and an answer of A, B, C, or D.`
+                        : `Respons pertama belum berisi cukup soal yang valid. Buat tepat ${missingCount} soal pilihan ganda TAMBAHAN yang unik untuk tingkat ${level || 'Pemula'}, materi ${cleanCategories.join(', ')}, fokus ${selectedFocus}. Tanyakan langsung pengetahuan materi yang objektif dan dapat dijawab dengan benar. Jangan bertanya tentang bab, strategi belajar, pendapat, atau pengalaman pribadi. Jangan mengulang soal berikut: ${previousQuestions}. Keluarkan HANYA array JSON dengan tepat ${missingCount} objek, setiap objek memiliki instruction, question, tepat empat opsi teks, dan answer berupa A, B, C, atau D.`;
+
+                    const supplementRaw = await generateSafeContent(supplementPrompt);
+                    const supplementQuestions = filterKnowledgeQuestions(parseSafeJson(supplementRaw), lang);
+                    const knownQuestions = new Set(quizList.map((item) => item.question.trim().toLocaleLowerCase()));
+                    const uniqueSupplements = supplementQuestions.filter((item) => {
+                        const key = item.question.trim().toLocaleLowerCase();
+                        if (knownQuestions.has(key)) return false;
+                        knownQuestions.add(key);
+                        return true;
+                    });
+                    quizList = [...quizList, ...uniqueSupplements];
+                }
+
+                if (quizList.length < questionCount) {
+                    throw new Error(`AI only returned ${quizList.length} of ${questionCount} valid knowledge questions.`);
+                }
+
+                const selectedQuiz = quizList.slice(0, questionCount);
+                quizCache.set(cacheKey, selectedQuiz);
+                return selectedQuiz;
             } catch (err) {
-                console.warn(`⚠️ [Gemini Quiz Fallback] Gagal memuat soal AI (${err.message}). Menggunakan bank soal darurat.`);
-                return [
-                    {
-                        instruction: isEn ? `Review Exercise - ${selectedFocus}` : `Latihan Mandiri - ${selectedFocus}`,
-                        question: isEn
-                            ? `Which statement represents the core principle of ${cleanCategories[0]} in ${selectedFocus}?`
-                            : `Manakah konsep yang paling tepat merepresentasikan materi ${cleanCategories[0]} pada ${selectedFocus}?`,
-                        options: isEn
-                            ? ["Understanding structured core fundamentals", "Random unverified assumptions", "Skipping syntax logic", "Ignoring execution contexts"]
-                            : ["Memahami fondasi struktur dan konteks dengan tepat", "Asumsi acak tanpa verifikasi", "Mengabaikan logika sintaksis", "Melewatkan konteks penggunaan"],
-                        answer: "A"
-                    },
-                    {
-                        instruction: isEn ? "Concept Check" : "Pemahaman Konsep",
-                        question: isEn
-                            ? `Which approach correctly applies a concept from ${cleanCategories[0]} to a new question?`
-                            : `Pendekatan mana yang tepat untuk menerapkan konsep ${cleanCategories[0]} pada soal baru?`,
-                        options: isEn
-                            ? ["Identify the relevant rule or concept and apply it to the given context", "Choose an answer based only on a guess", "Ignore the details in the question", "Reuse an unrelated rule"]
-                            : ["Menentukan aturan atau konsep yang relevan lalu menerapkannya pada konteks soal", "Memilih jawaban hanya berdasarkan tebakan", "Mengabaikan rincian yang diberikan dalam soal", "Menggunakan aturan yang tidak berkaitan"],
-                        answer: "A"
-                    }
-                ];
+                console.error(`[Gemini Quiz] Gagal membuat ${questionCount} soal pengetahuan (${lang}, ${topicStr}, unit ${unit}):`, err.message);
+                throw new Error(isEn
+                    ? `Could not generate exactly ${questionCount} knowledge questions. Please try again.`
+                    : `Belum berhasil membuat tepat ${questionCount} soal pengetahuan. Silakan coba lagi.`);
             }
         },
 
         // Hasilkan soal tantangan untuk kategori yang dipilih.
-        generateChallenge: async (_, { category, lang = 'id' }) => {
+        generateChallenge: async (_, { category, lang = 'id', count = 3 }) => {
             const isEn = lang === 'en';
+            const questionCount = Math.min(20, Math.max(1, Math.trunc(Number(count) || 3)));
+            const challengeTopic = category || 'General';
             const prompt = isEn
-                ? `Create 3 challenging multiple-choice questions that test objective knowledge of the topic: ${category || 'General'}. Do not ask about the learner's personal experience, opinion, preferences, habits, or biography. Questions must be answerable from subject knowledge and each must have exactly one objectively correct answer.\n` +
+                ? `Create exactly ${questionCount} challenging multiple-choice questions that test objective knowledge of the topic: ${challengeTopic}. Ask direct content questions, not about the chapter, study strategies, opinions, or personal experience. Each question must have exactly one objectively correct answer.\n` +
                   `Format as exact JSON Array:\n` +
                   `[\n` +
                   `  {\n` +
@@ -206,7 +249,7 @@ Pedoman Penulisan:
                   `- The 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') corresponding to the correct option index.\n` +
                   `- Test concepts, rules, meaning, comprehension, syntax, or application of the topic; never ask about personal experiences or opinions.\n` +
                   `- Replace double quotes (") with single quotes ('). Return ONLY a valid JSON array.`
-                : `Buat 3 soal pilihan ganda tantangan yang menguji pengetahuan objektif tentang materi: ${category || 'General'}. Jangan menanyakan pengalaman pribadi, pendapat, preferensi, kebiasaan, atau riwayat hidup pemelajar. Soal harus dapat dijawab berdasarkan pengetahuan materi dan memiliki tepat satu jawaban yang benar secara objektif.\n` +
+                : `Buat tepat ${questionCount} soal pilihan ganda tantangan yang menguji pengetahuan objektif tentang materi: ${challengeTopic}. Tanyakan langsung isi materi, bukan tentang bab, strategi belajar, pendapat, atau pengalaman pribadi. Setiap soal harus dapat dijawab berdasarkan pengetahuan materi dan memiliki tepat satu jawaban yang benar secara objektif.\n` +
                   `Format JSON Array persis ini:\n` +
                   `[\n` +
                   `  {\n` +
@@ -224,16 +267,42 @@ Pedoman Penulisan:
 
             try {
                 const raw = await generateSafeContent(prompt);
-                return parseSafeJson(raw);
+                let questions = [];
+                try {
+                    questions = filterKnowledgeQuestions(parseSafeJson(raw), lang);
+                } catch (parseError) {
+                    console.warn('[Gemini Challenge] Jawaban AI tidak valid; meminta soal pengganti:', parseError.message);
+                }
+
+                if (questions.length < questionCount) {
+                    const missingCount = questionCount - questions.length;
+                    const previousQuestions = JSON.stringify(questions.map((item) => item.question));
+                    const supplementPrompt = isEn
+                        ? `Generate exactly ${missingCount} additional unique multiple-choice knowledge questions about ${challengeTopic}. Ask direct subject-content questions, not questions about study habits, opinions, or personal experience. Do not repeat these questions: ${previousQuestions}. Return only a JSON array with exactly ${missingCount} objects; each must have one question, exactly four string options, and an answer A, B, C, or D.`
+                        : `Buat tepat ${missingCount} soal pilihan ganda pengetahuan tambahan yang unik tentang ${challengeTopic}. Tanyakan langsung isi materi, bukan kebiasaan belajar, pendapat, atau pengalaman pribadi. Jangan mengulang soal berikut: ${previousQuestions}. Keluarkan hanya array JSON dengan tepat ${missingCount} objek; setiap objek memiliki satu pertanyaan, tepat empat opsi teks, dan jawaban A, B, C, atau D.`;
+                    const supplementRaw = await generateSafeContent(supplementPrompt);
+                    const supplements = filterKnowledgeQuestions(parseSafeJson(supplementRaw), lang);
+                    const knownQuestions = new Set(questions.map((item) => item.question.trim().toLocaleLowerCase()));
+                    questions = [
+                        ...questions,
+                        ...supplements.filter((item) => {
+                            const key = item.question.trim().toLocaleLowerCase();
+                            if (knownQuestions.has(key)) return false;
+                            knownQuestions.add(key);
+                            return true;
+                        })
+                    ];
+                }
+
+                if (questions.length < questionCount) {
+                    throw new Error(`AI only returned ${questions.length} of ${questionCount} valid challenge questions.`);
+                }
+                return questions.slice(0, questionCount);
             } catch (err) {
-                return [
-                    {
-                        instruction: isEn ? "🚨 SYSTEM ERROR" : "🚨 SISTEM ERROR",
-                        question: `Detail: ${err.message}`,
-                        options: isEn ? ["Check API", "Wait", "Ok", "Cancel"] : ["Cek API", "Tunggu", "Ok", "Batal"],
-                        answer: "A"
-                    }
-                ];
+                console.error(`[Gemini Challenge] Gagal membuat ${questionCount} soal (${lang}, ${challengeTopic}):`, err.message);
+                throw new Error(isEn
+                    ? `Could not generate exactly ${questionCount} challenge questions. Please try again.`
+                    : `Belum berhasil membuat tepat ${questionCount} soal tantangan. Silakan coba lagi.`);
             }
         }
     },

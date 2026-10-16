@@ -87,7 +87,7 @@ export const typeDefs = `#graphql
             refresh: Boolean
             count: Int
         ): [QuizItem!]!
-        generateChallenge(category: String!, lang: String): [QuizItem!]!
+        generateChallenge(category: String!, lang: String, count: Int): [QuizItem!]!
         me: User
         userLogs(limit: Int): [UserActivityLog!]!
         adminUsers(limit: Int): [User!]!

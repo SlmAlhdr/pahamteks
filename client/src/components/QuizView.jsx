@@ -233,11 +233,22 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
     setLoadError('');
     const targetUnitObj = unitsList.find(u => u.unit === unitToLoad) || activeUnitObj;
     setCurrentUnit(targetUnitObj.unit);
+    const expectedQuestionCount = isChallengeMode
+      ? (mode === 'learn' ? questionCount : 3)
+      : questionCount;
 
     try {
       if (isChallengeMode) {
-        const res = await fetchChallenge({ variables: { category: selectedTopic, lang: currentLang } });
-        if (res.data?.generateChallenge) setQuestions(res.data.generateChallenge);
+        const res = await fetchChallenge({
+          variables: { category: selectedTopic, lang: currentLang, count: expectedQuestionCount }
+        });
+        const generatedQuestions = res.data?.generateChallenge;
+        if (!Array.isArray(generatedQuestions) || generatedQuestions.length !== expectedQuestionCount) {
+          throw new Error(currentLang === 'en'
+            ? `The server returned ${generatedQuestions?.length || 0} of ${expectedQuestionCount} requested questions.`
+            : `Server mengembalikan ${generatedQuestions?.length || 0} dari ${expectedQuestionCount} soal yang diminta.`);
+        }
+        setQuestions(generatedQuestions);
       } else {
         const res = await fetchQuiz({
           variables: {
@@ -247,10 +258,16 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
             unit: targetUnitObj.unit,
             topicDetail: currentLang === 'en' ? targetUnitObj.titleEn : targetUnitObj.titleId,
             refresh: forceRefresh,
-            count: questionCount
+            count: expectedQuestionCount
           }
         });
-        if (res.data?.generateQuiz) setQuestions(res.data.generateQuiz);
+        const generatedQuestions = res.data?.generateQuiz;
+        if (!Array.isArray(generatedQuestions) || generatedQuestions.length !== expectedQuestionCount) {
+          throw new Error(currentLang === 'en'
+            ? `The server returned ${generatedQuestions?.length || 0} of ${expectedQuestionCount} requested questions.`
+            : `Server mengembalikan ${generatedQuestions?.length || 0} dari ${expectedQuestionCount} soal yang diminta.`);
+        }
+        setQuestions(generatedQuestions);
       }
     } catch (err) {
       console.warn('[QuizView] Gagal memuat soal:', err.message);

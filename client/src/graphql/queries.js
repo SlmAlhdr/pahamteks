@@ -41,8 +41,8 @@ export const GENERATE_QUIZ = gql`
 `;
 
 export const GENERATE_CHALLENGE = gql`
-  query GenerateChallenge($category: String!, $lang: String) {
-    generateChallenge(category: $category, lang: $lang) {
+  query GenerateChallenge($category: String!, $lang: String, $count: Int) {
+    generateChallenge(category: $category, lang: $lang, count: $count) {
       instruction
       question
       options
