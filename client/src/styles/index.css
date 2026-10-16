@@ -254,6 +254,11 @@ body {
         margin: 0;
         transform: translate(-50%, -50%);
     }
+
+    .nav-links-wrapper-admin {
+        left: calc(50% - 30px);
+        max-width: calc(100vw - 640px);
+    }
 }
 
 .theme-toggle > span {
