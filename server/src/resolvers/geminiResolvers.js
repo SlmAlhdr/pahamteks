@@ -96,7 +96,7 @@ Pedoman Penulisan:
             const questionCount = Math.min(20, Math.max(1, Math.trunc(Number(count) || 5)));
             const cleanCategories = Array.isArray(categories) ? categories : [categories || 'General'];
             const topicStr = cleanCategories.sort().join('_');
-            const cacheKey = `${lang}_${level}_${topicStr}_u${unit}_n${questionCount}_${topicDetail || ''}`;
+            const cacheKey = `knowledge_v2_${lang}_${level}_${topicStr}_u${unit}_n${questionCount}_${topicDetail || ''}`;
 
             if (refresh && quizCache.has(cacheKey)) {
                 quizCache.delete(cacheKey);
@@ -119,7 +119,7 @@ Pedoman Penulisan:
             const prompt = isEn
                 ? `You are an expert curriculum designer. Create exactly ${questionCount} FRESH, ENGAGING, and UNIQUE multiple-choice questions for ${level || 'Beginner'} level on: ${cleanCategories.join(', ')}.\n` +
                   `Focus specifically on ${selectedFocus}.\n` +
-                  `Question Variety Seed #${seed}: Make sure questions are practical, varied, and not repetitive clichés. For coding, include real short code snippets. For languages, test realistic contextual usage.\n\n` +
+                  `Question Variety Seed #${seed}: Make questions varied and non-repetitive. Every question MUST assess objective knowledge of the subject and selected focus. Do not ask about the learner's personal experiences, opinions, preferences, habits, or biography. A language scenario is allowed only when the answer tests vocabulary, grammar, meaning, or comprehension; coding questions should test concepts, syntax, code output, debugging, or logic. Ensure each question has one objectively correct answer and plausible distractors.\n\n` +
                   `Format as exact JSON Array:\n` +
                   `[\n` +
                   `  {\n` +
@@ -132,10 +132,11 @@ Pedoman Penulisan:
                   `CRITICAL RULES:\n` +
                   `- In 'options', provide ONLY pure option text without 'A.', 'B.', '1.', etc.\n` +
                   `- 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') matching the correct option index.\n` +
+                  `- Questions must be answerable from subject knowledge, without relying on personal experience or opinion.\n` +
                   `- Replace double quotes (") inside questions/options with single quotes ('). Output ONLY valid JSON.`
                 : `Kamu adalah kurator materi edukasi profesional. Buat tepat ${questionCount} soal kuis pilihan ganda yang SEGAR, MENARIK, dan TIDAK MONOTON (Anti-Repetisi) tingkat ${level || 'Pemula'} materi: ${cleanCategories.join(', ')}.\n` +
                   `Fokus khusus materi: ${selectedFocus}.\n` +
-                  `Variasi Soal #${seed}: Buat soal yang aplikatif dan kaya konteks (bukan pertanyaan hafalan klise yang membosankan). Untuk koding, sertakan potongan kode nyata atau tebak alur. Untuk bahasa dunia, uji pemahaman konteks percakapan nyata.\n\n` +
+                  `Variasi Soal #${seed}: Buat soal yang bervariasi dan tidak monoton. Setiap soal WAJIB menguji pengetahuan objektif tentang materi dan fokus bab. Jangan menanyakan pengalaman pribadi, pendapat, preferensi, kebiasaan, atau riwayat hidup pemelajar. Konteks percakapan bahasa hanya boleh digunakan jika jawabannya menguji kosakata, tata bahasa, makna, atau pemahaman; soal koding harus menguji konsep, sintaks, keluaran kode, debugging, atau logika. Setiap soal harus memiliki satu jawaban yang benar secara objektif dan opsi pengecoh yang masuk akal.\n\n` +
                   `Format JSON Array persis ini:\n` +
                   `[\n` +
                   `  {\n` +
@@ -148,6 +149,7 @@ Pedoman Penulisan:
                   `ATURAN PENTING:\n` +
                   `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.", "1." dsb.\n` +
                   `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") yang sesuai dengan urutan opsi yang benar.\n` +
+                  `- Soal harus dapat dijawab berdasarkan pengetahuan materi, tanpa bergantung pada pengalaman atau pendapat pribadi pemelajar.\n` +
                   `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {
@@ -174,11 +176,11 @@ Pedoman Penulisan:
                     {
                         instruction: isEn ? "Concept Check" : "Pemahaman Konsep",
                         question: isEn
-                            ? `In ${cleanCategories[0]}, how is continuous mastery best achieved across learning units?`
-                            : `Dalam ${cleanCategories[0]}, bagaimana cara terbaik meningkatkan penguasaan materi secara bertahap?`,
+                            ? `Which approach correctly applies a concept from ${cleanCategories[0]} to a new question?`
+                            : `Pendekatan mana yang tepat untuk menerapkan konsep ${cleanCategories[0]} pada soal baru?`,
                         options: isEn
-                            ? ["Step-by-step progressive practice & real application", "Cramming without context", "Only memorizing static questions", "Never reviewing mistakes"]
-                            : ["Latihan bertahap, variasi soal, dan penerapan kontekstual", "Menghafal tanpa konteks", "Hanya mengulang soal yang sama", "Tidak mengevaluasi kesalahan"],
+                            ? ["Identify the relevant rule or concept and apply it to the given context", "Choose an answer based only on a guess", "Ignore the details in the question", "Reuse an unrelated rule"]
+                            : ["Menentukan aturan atau konsep yang relevan lalu menerapkannya pada konteks soal", "Memilih jawaban hanya berdasarkan tebakan", "Mengabaikan rincian yang diberikan dalam soal", "Menggunakan aturan yang tidak berkaitan"],
                         answer: "A"
                     }
                 ];
@@ -189,7 +191,7 @@ Pedoman Penulisan:
         generateChallenge: async (_, { category, lang = 'id' }) => {
             const isEn = lang === 'en';
             const prompt = isEn
-                ? `Create 3 challenging exam questions on the topic: ${category || 'General'}.\n` +
+                ? `Create 3 challenging multiple-choice questions that test objective knowledge of the topic: ${category || 'General'}. Do not ask about the learner's personal experience, opinion, preferences, habits, or biography. Questions must be answerable from subject knowledge and each must have exactly one objectively correct answer.\n` +
                   `Format as exact JSON Array:\n` +
                   `[\n` +
                   `  {\n` +
@@ -202,8 +204,9 @@ Pedoman Penulisan:
                   `IMPORTANT:\n` +
                   `- In the 'options' array, provide ONLY clean option text without 'A.', 'B.' prefixes.\n` +
                   `- The 'answer' MUST be a single capital letter ('A', 'B', 'C', or 'D') corresponding to the correct option index.\n` +
+                  `- Test concepts, rules, meaning, comprehension, syntax, or application of the topic; never ask about personal experiences or opinions.\n` +
                   `- Replace double quotes (") with single quotes ('). Return ONLY a valid JSON array.`
-                : `Buat 3 soal ujian tantangan materi: ${category || 'General'}.\n` +
+                : `Buat 3 soal pilihan ganda tantangan yang menguji pengetahuan objektif tentang materi: ${category || 'General'}. Jangan menanyakan pengalaman pribadi, pendapat, preferensi, kebiasaan, atau riwayat hidup pemelajar. Soal harus dapat dijawab berdasarkan pengetahuan materi dan memiliki tepat satu jawaban yang benar secara objektif.\n` +
                   `Format JSON Array persis ini:\n` +
                   `[\n` +
                   `  {\n` +
@@ -216,6 +219,7 @@ Pedoman Penulisan:
                   `PENTING:\n` +
                   `- Di array "options", tulis teks pilihannya saja secara murni tanpa awalan huruf seperti "A.", "B.".\n` +
                   `- Nilai "answer" HARUS berupa satu huruf kapital ("A", "B", "C", atau "D") sesuai opsi yang benar.\n` +
+                  `- Uji konsep, aturan, makna, pemahaman, sintaks, atau penerapan materi; jangan menanyakan pengalaman atau pendapat pribadi.\n` +
                   `- GANTI tanda kutip ganda (") di dalam teks soal/opsi dengan kutip tunggal ('). Output HANYA array JSON yang valid.`;
 
             try {

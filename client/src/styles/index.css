@@ -741,6 +741,8 @@ textarea {
 .mc-btn.selected { 
     border-color: var(--btn-green); 
     background: rgba(180, 242, 126, 0.2); 
+    outline: 2px solid var(--btn-cyan);
+    outline-offset: 2px;
 }
 .mc-btn.correct { 
     border-color: var(--correct); 
@@ -4502,6 +4504,16 @@ textarea {
     background: #111111;
     color: #f5f5f5;
     border-color: #333333;
+}
+
+:root[data-theme="dark"] .mc-btn.correct {
+    background: rgba(88, 204, 2, 0.3);
+    border-color: var(--correct);
+}
+
+:root[data-theme="dark"] .mc-btn.wrong {
+    background: rgba(255, 71, 87, 0.3);
+    border-color: var(--wrong);
 }
 
 :root[data-theme="dark"] input,

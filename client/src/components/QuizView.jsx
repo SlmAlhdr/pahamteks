@@ -644,22 +644,24 @@ export default function QuizView({ mode = 'learn', t, currentLang, onFinishQuiz,
               {currentQ.options.map((opt, i) => {
                 const letter = LETTERS[i] || String.fromCharCode(65 + i);
                 const text = cleanOptionText(opt);
-                let btnClass = 'mc-btn';
+                const isChosen = selectedAnswerIndex === i;
+                const btnClasses = ['mc-btn'];
+
+                if (isChosen) btnClasses.push('selected');
 
                 if (selectedAnswerIndex !== null) {
                   const isThisCorrect = isOptionCorrect(opt, i, currentQ);
-                  const isChosen = selectedAnswerIndex === i;
                   if (isThisCorrect) {
-                    btnClass = 'mc-btn correct';
+                    btnClasses.push('correct');
                   } else if (isChosen) {
-                    btnClass = 'mc-btn wrong';
+                    btnClasses.push('wrong');
                   }
                 }
 
                 return (
                   <button
                     key={i}
-                    className={btnClass}
+                    className={btnClasses.join(' ')}
                     onClick={() => handleSelectAnswer(opt, i)}
                     disabled={selectedAnswerIndex !== null}
                   >
